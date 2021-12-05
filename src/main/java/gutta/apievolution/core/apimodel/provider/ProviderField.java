@@ -1,0 +1,64 @@
+package gutta.apievolution.core.apimodel.provider;
+
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.Type;
+
+import java.util.Optional;
+
+/**
+ * Provider-specific implementation of a {@link Field}.
+ */
+public class ProviderField extends Field<ProviderRecordType, ProviderField>
+        implements RevisionedElement<ProviderField>, ProviderUDTMember {
+
+    private final Optional<ProviderField> predecessor;
+
+    private Optional<ProviderField> successor;
+
+    /**
+     * Creates a new field from the given data.
+     * @param publicName The field's public name
+     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
+     * @param owner The record type that owns this field
+     * @param type The field's type
+     * @param optionality The field's optionality
+     * @param predecessor The field's predecessor, if any
+     */
+    public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
+                         final Type type, Optionality optionality, final Optional<ProviderField> predecessor) {
+        super(publicName, internalName, owner, type, optionality);
+
+        this.predecessor = predecessor;
+        this.successor = Optional.empty();
+
+        if (predecessor.isPresent()) {
+            predecessor.get().setSuccessor(this);
+        }
+    }
+
+    @Override
+    public Optional<ProviderField> getPredecessor() {
+        return this.predecessor;
+    }
+
+    @Override
+    public Optional<ProviderField> getSuccessor() {
+        return this.successor;
+    }
+
+    private void setSuccessor(final ProviderField successor) {
+        this.successor = Optional.of(successor);
+    }
+
+    @Override
+    public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleProviderField(this);
+    }
+
+    @Override
+    public String toString() {
+        return this.getInternalName() + "@" + this.getOwner().toString();
+    }
+
+}
