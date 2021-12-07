@@ -26,4 +26,24 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
         super(publicName, internalName, typeId, owner, abstractFlag, superType, optionality);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerRecordType) {
+            return this.stateEquals((ConsumerRecordType) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerRecordType that) {
+        return super.stateEquals(that);
+    }
+
 }

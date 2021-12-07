@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
@@ -32,6 +33,27 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition> 
      */
     public int getReferencedRevision() {
         return this.referencedRevision;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + this.referencedRevision;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerApiDefinition) {
+            return this.stateEquals((ConsumerApiDefinition) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerApiDefinition that) {
+        return super.stateEquals(that) &&
+                this.referencedRevision == that.referencedRevision;
     }
 
 }

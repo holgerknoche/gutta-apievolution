@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.Objects;
+
 /**
  * Annotations allow to embed additional information within an API model, such as, for instance, specific names of types
  * for particular programming languages.
@@ -37,6 +39,27 @@ public class Annotation {
      */
     public String getValue() {
         return this.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name, this.value);
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof Annotation) {
+            return this.stateEquals((Annotation) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(Annotation that) {
+        return this.name.equals(that.name) &&
+                this.value.equals(that.value);
     }
 
 }

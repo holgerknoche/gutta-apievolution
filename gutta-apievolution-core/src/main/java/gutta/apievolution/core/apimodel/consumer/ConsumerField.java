@@ -24,4 +24,24 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> {
         super(publicName, internalName, owner, type, optionality);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerField) {
+            return this.stateEquals((ConsumerField) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerField that) {
+        return super.stateEquals(that);
+    }
+
 }

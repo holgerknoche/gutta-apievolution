@@ -48,13 +48,13 @@ public class QualifiedName {
         if (this == other) {
             return true;
         } else if (other instanceof QualifiedName) {
-            return this.equals((QualifiedName) other);
+            return this.stateEquals((QualifiedName) other);
         } else {
             return false;
         }
     }
 
-    private boolean equals(QualifiedName other) {
+    private boolean stateEquals(QualifiedName other) {
         return (this.parts.equals(other.parts));
     }
 

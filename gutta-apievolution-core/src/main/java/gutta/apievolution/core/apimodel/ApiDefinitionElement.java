@@ -1,5 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,6 +36,27 @@ public abstract class ApiDefinitionElement {
      */
     public String getInternalName() {
         return this.internalName;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.publicName, this.internalName);
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ApiDefinitionElement) {
+            return this.stateEquals((ApiDefinitionElement) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ApiDefinitionElement that) {
+        return this.publicName.equals(that.publicName) &&
+                this.internalName.equals(that.internalName);
     }
 
     @Override

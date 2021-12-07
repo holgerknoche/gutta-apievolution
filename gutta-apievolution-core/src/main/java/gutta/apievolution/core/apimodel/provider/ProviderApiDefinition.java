@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -67,6 +68,27 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
     public void forEach(Consumer<ProviderApiDefinitionElement> action) {
         // Iterate over all user-defined types
         this.getUserDefinedTypes().forEach(udt -> action.accept((ProviderApiDefinitionElement) udt));
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + this.revision;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderApiDefinition) {
+            return this.stateEquals((ProviderApiDefinition) that);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean stateEquals(ProviderApiDefinition that) {
+        return super.stateEquals(that) &&
+                this.revision == that.revision;
     }
 
     @Override

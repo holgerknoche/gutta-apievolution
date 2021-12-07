@@ -28,9 +28,7 @@ public class ProviderServiceOperation extends ServiceOperation<ProviderService, 
         this.predecessor = predecessor;
         this.successor = Optional.empty();
 
-        if (predecessor.isPresent()) {
-            predecessor.get().setSuccessor(this);
-        }
+        predecessor.ifPresent(operation -> operation.setSuccessor(this));
     }
 
     @Override
@@ -50,6 +48,28 @@ public class ProviderServiceOperation extends ServiceOperation<ProviderService, 
     @Override
     public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
         return visitor.handleProviderServiceOperation(this);
+    }
+
+    @Override
+    public int hashCode() {
+        // No predecessors or successors to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderServiceOperation) {
+            return this.stateEquals((ProviderServiceOperation) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ProviderServiceOperation that) {
+        // No predecessors or successors to avoid cycles
+        return super.stateEquals(that);
     }
 
 }

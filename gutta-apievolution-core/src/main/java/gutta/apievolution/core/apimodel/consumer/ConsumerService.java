@@ -20,4 +20,24 @@ public class ConsumerService extends Service<ConsumerApiDefinition, ConsumerServ
         super(publicName, internalName, owner);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerService) {
+            return this.stateEquals((ConsumerService) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerService that) {
+        return super.stateEquals(that);
+    }
+
 }

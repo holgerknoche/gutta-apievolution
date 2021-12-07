@@ -1,10 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A Service represents a group of coherent service operations.
@@ -58,6 +54,21 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
      */
     public Optional<O> resolveServiceOperation(final String name) {
         return Optional.ofNullable(this.operationsLookup.get(name));
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + this.declaredOperations.hashCode();
+    }
+
+    /**
+     * Compares this service's state against the state of the given member.
+     * @param that The service to compare against
+     * @return Whether the states are equal
+     */
+    protected boolean stateEquals(Service<A, S, O> that) {
+        return super.stateEquals(that) &&
+                this.declaredOperations.equals(that.declaredOperations);
     }
 
 }

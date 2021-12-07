@@ -32,9 +32,7 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
         this.predecessor = predecessor;
         this.successor = Optional.empty();
 
-        if (predecessor.isPresent()) {
-            predecessor.get().setSuccessor(this);
-        }
+        predecessor.ifPresent(field -> field.setSuccessor(this));
     }
 
     @Override
@@ -59,6 +57,28 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     @Override
     public String toString() {
         return this.getInternalName() + "@" + this.getOwner().toString();
+    }
+
+    @Override
+    public int hashCode() {
+        // No predecessors or successors to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderField) {
+            return this.stateEquals((ProviderField) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ProviderField that) {
+        // No predecessors or successors to avoid cycles
+        return super.stateEquals(that);
     }
 
 }

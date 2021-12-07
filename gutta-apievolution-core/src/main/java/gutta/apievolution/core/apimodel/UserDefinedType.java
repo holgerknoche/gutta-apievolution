@@ -45,4 +45,16 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends ApiDef
         return this.owner;
     }
 
+    @Override
+    public int hashCode() {
+        // Owner is excluded as to avoid cycles
+        return super.hashCode() + this.typeId;
+    }
+
+    boolean stateEquals(UserDefinedType<A> that) {
+        // Owner is excluded as to avoid cycles
+        return super.stateEquals(that) &&
+                this.typeId == that.typeId;
+    }
+
 }

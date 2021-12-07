@@ -20,4 +20,24 @@ public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnu
         super(publicName, internalName, owner);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerEnumMember) {
+            return this.stateEquals((ConsumerEnumMember) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerEnumMember that) {
+        return super.stateEquals(that);
+    }
+
 }

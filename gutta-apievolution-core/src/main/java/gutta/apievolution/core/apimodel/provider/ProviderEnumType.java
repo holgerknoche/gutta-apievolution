@@ -29,9 +29,7 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
         this.predecessor = predecessor;
         this.successor = Optional.empty();
 
-        if (predecessor.isPresent()) {
-            predecessor.get().setSuccessor(this);
-        }
+        predecessor.ifPresent(enumType -> enumType.setSuccessor(this));
     }
 
     @Override
@@ -51,6 +49,28 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
     @Override
     public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
         return visitor.handleProviderEnumType(this);
+    }
+
+    @Override
+    public int hashCode() {
+        // No predecessors or successors to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderEnumType) {
+            return this.stateEquals((ProviderEnumType) that);
+        } else {
+            return true;
+        }
+    }
+
+    boolean stateEquals(ProviderEnumType that) {
+        // No predecessors or successors to avoid cycles
+        return super.stateEquals(that);
     }
 
 }

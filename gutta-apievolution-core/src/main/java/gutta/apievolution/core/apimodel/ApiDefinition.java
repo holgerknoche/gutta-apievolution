@@ -1,10 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * An API definition is the root element of the API model. It serves as the container for its elements, such as
@@ -108,6 +104,24 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     @SuppressWarnings("unchecked")
     public <S extends Service<A, ?, ?>> Optional<S> resolveService(final String name) {
         return (Optional<S>) Optional.ofNullable(this.serviceLookup.get(name));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.services);
+    }
+
+    /**
+     * Checks whether the given object's state matches this one's. This method is used as part of
+     * {@link #equals(Object)}.
+     * @param that The object to compare against
+     * @return {@code True}, if the state matches, {@code false} otherwise
+     */
+    protected boolean stateEquals(ApiDefinition<A> that) {
+        return this.name.equals(that.name) &&
+                this.annotations.equals(that.annotations) &&
+                this.userDefinedTypes.equals(that.userDefinedTypes) &&
+                this.services.equals(that.services);
     }
 
 }

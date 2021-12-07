@@ -7,7 +7,7 @@ import java.util.Optional;
  * @param <E> The concrete type of the enum type
  * @param <M> The concrete type of enum member type (e.g., provider or consumer)
  */
-public class EnumMember<E extends EnumType<?, E, M>, M extends EnumMember<E, M>> extends ApiDefinitionElement {
+public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMember<E, M>> extends ApiDefinitionElement {
 
     private final E owner;
 
@@ -31,6 +31,22 @@ public class EnumMember<E extends EnumType<?, E, M>, M extends EnumMember<E, M>>
      */
     public E getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public int hashCode() {
+        // Owner is excluded as to avoid cycles
+        return super.hashCode();
+    }
+
+    /**
+     * Compares this enum member's state against the state of the given member.
+     * @param that The enum member to compare against
+     * @return Whether the states are equal
+     */
+    protected boolean stateEquals(EnumMember<E, M> that) {
+        // Owner is excluded as to avoid cycles
+        return super.stateEquals(that);
     }
 
 }

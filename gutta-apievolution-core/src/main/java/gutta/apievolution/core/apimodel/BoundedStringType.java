@@ -15,4 +15,23 @@ class BoundedStringType extends StringType {
         return this.bound;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode() + this.bound;
+    }
+
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof BoundedStringType) {
+            return this.stateEquals((BoundedStringType) that);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean stateEquals(BoundedStringType that) {
+        return this.bound == that.bound;
+    }
+
 }

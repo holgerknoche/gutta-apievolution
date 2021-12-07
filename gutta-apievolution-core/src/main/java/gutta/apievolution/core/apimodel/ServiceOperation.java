@@ -37,4 +37,20 @@ public abstract class ServiceOperation<S extends Service<?, S, O>, O extends Ser
         return this.owner;
     }
 
+    @Override
+    public int hashCode() {
+        // No owner in the hash code as to avoid cycles
+        return super.hashCode();
+    }
+
+    /**
+     * Compares this service operation's state against the state of the given member.
+     * @param that The service operation to compare against
+     * @return Whether the states are equal
+     */
+    protected boolean stateEquals(ServiceOperation<S, O> that) {
+        // No owner as to avoid cycles
+        return super.stateEquals(that);
+    }
+
 }

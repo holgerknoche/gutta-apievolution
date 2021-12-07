@@ -11,7 +11,7 @@ public enum Optionality {
     /**
      * The respective element is optional for input, put required for output.
      */
-    OPTIN,
+    OPT_IN,
     /**
      * The respective element is always mandatory.
      */

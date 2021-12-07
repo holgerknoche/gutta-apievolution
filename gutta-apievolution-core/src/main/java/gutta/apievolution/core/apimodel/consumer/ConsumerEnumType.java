@@ -21,4 +21,24 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
         super(publicName, internalName, typeId, owner);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerEnumType) {
+            return this.stateEquals((ConsumerEnumType) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerEnumType that) {
+        return super.stateEquals(that);
+    }
+
 }

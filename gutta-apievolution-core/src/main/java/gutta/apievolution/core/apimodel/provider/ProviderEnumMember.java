@@ -50,4 +50,26 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
         return visitor.handleProviderEnumMember(this);
     }
 
+    @Override
+    public int hashCode() {
+        // No successors and predecessors as to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderEnumMember) {
+            return this.stateEquals((ProviderEnumMember) that);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean stateEquals(ProviderEnumMember that) {
+        // No successors and predecessors as to avoid cycles
+        return super.stateEquals(that);
+    }
+
 }

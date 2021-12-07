@@ -20,4 +20,24 @@ public class ConsumerServiceOperation extends ServiceOperation<ConsumerService, 
         super(publicName, internalName, owner);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ConsumerServiceOperation) {
+            return this.stateEquals((ConsumerServiceOperation) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ConsumerServiceOperation that) {
+        return super.stateEquals(that);
+    }
+
 }

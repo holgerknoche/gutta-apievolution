@@ -1,11 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A record type represents a user-defined record, i.e., a type that consists of fields.
@@ -51,9 +46,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
         owner.addUserDefinedType(this);
 
-        if (superType.isPresent()) {
-            superType.get().registerSubType((R) this);
-        }
+        superType.ifPresent(type -> type.registerSubType((R) this));
     }
 
     /**
@@ -121,6 +114,24 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     @Override
     public Iterator<F> iterator() {
         return this.declaredFields.iterator();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.declaredFields, this.superType, this.optionality);
+    }
+
+    /**
+     * Compares this record type's state against the state of the given member.
+     * @param that The record type to compare against
+     * @return Whether the states are equal
+     */
+    protected boolean stateEquals(RecordType<A, R, F> that) {
+        return this.declaredFields.equals(that.declaredFields) &&
+                this.subTypes == that.subTypes &&
+                this.abstractFlag == that.abstractFlag &&
+                this.superType.equals(that.superType) &&
+                this.optionality.equals(that.optionality);
     }
 
 }

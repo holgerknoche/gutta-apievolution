@@ -50,4 +50,26 @@ public class ProviderService extends Service<ProviderApiDefinition, ProviderServ
         return visitor.handleProviderService(this);
     }
 
+    @Override
+    public int hashCode() {
+        // No predecessors or successors to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderService) {
+            return this.stateEquals((ProviderService) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ProviderService that) {
+        // No predecessors or successors to avoid cycles
+        return super.stateEquals(that);
+    }
+
 }

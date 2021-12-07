@@ -1,5 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -57,6 +58,22 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      */
     public Optionality getOptionality() {
         return this.optionality;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(this.optionality, this.type);
+    }
+
+    /**
+     * Compares this field's state against the state of the given member.
+     * @param that The field to compare against
+     * @return Whether the states are equal
+     */
+    protected boolean stateEquals(Field<R, F> that) {
+        return super.stateEquals(that) &&
+                this.type.equals(that.type) &&
+                this.optionality.equals(that.optionality);
     }
 
 }

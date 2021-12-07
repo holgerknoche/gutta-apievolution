@@ -62,4 +62,26 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
         return this.getInternalName() + "@" + this.getOwner().toString();
     }
 
+    @Override
+    public int hashCode() {
+        // No predecessor / successor to avoid cycles
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof ProviderRecordType) {
+            return this.stateEquals((ProviderRecordType) that);
+        } else {
+            return false;
+        }
+    }
+
+    boolean stateEquals(ProviderRecordType that) {
+        // No predecessor / successor to avoid cycles
+        return super.stateEquals(that);
+    }
+
 }

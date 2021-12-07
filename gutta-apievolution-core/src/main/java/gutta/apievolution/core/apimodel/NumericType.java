@@ -40,4 +40,25 @@ public class NumericType implements BoundedType {
         return this.fractionalPlaces;
     }
 
+    @Override
+    public int hashCode() {
+        return this.integerPlaces + this.fractionalPlaces;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof NumericType) {
+            return this.stateEquals((NumericType) that);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean stateEquals(NumericType that) {
+        return this.integerPlaces == that.integerPlaces &&
+                this.fractionalPlaces == that.fractionalPlaces;
+    }
+
 }

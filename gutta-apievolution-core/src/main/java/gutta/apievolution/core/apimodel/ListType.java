@@ -50,4 +50,13 @@ public abstract class ListType implements BoundedType {
      */
     public abstract int getBound();
 
+    @Override
+    public int hashCode() {
+        return this.elementType.hashCode();
+    }
+
+    boolean stateEquals(ListType that) {
+        return this.elementType.equals(that.elementType);
+    }
+
 }
