@@ -56,7 +56,7 @@ public class NumericType implements BoundedType {
         }
     }
 
-    private boolean stateEquals(NumericType that) {
+    boolean stateEquals(NumericType that) {
         return this.integerPlaces == that.integerPlaces &&
                 this.fractionalPlaces == that.fractionalPlaces;
     }

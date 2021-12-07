@@ -32,7 +32,7 @@ class UnboundedListType extends ListType {
         }
     }
 
-    private boolean stateEquals(UnboundedListType that) {
+    boolean stateEquals(UnboundedListType that) {
         return super.stateEquals(that);
     }
 

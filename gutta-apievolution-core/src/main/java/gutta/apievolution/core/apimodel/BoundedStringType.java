@@ -30,7 +30,7 @@ class BoundedStringType extends StringType {
         }
     }
 
-    private boolean stateEquals(BoundedStringType that) {
+    boolean stateEquals(BoundedStringType that) {
         return this.bound == that.bound;
     }
 

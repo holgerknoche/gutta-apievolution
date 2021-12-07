@@ -86,7 +86,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
         }
     }
 
-    private boolean stateEquals(ProviderApiDefinition that) {
+    boolean stateEquals(ProviderApiDefinition that) {
         return super.stateEquals(that) &&
                 this.revision == that.revision;
     }

@@ -67,7 +67,7 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
         }
     }
 
-    private boolean stateEquals(ProviderEnumMember that) {
+    boolean stateEquals(ProviderEnumMember that) {
         // No successors and predecessors as to avoid cycles
         return super.stateEquals(that);
     }

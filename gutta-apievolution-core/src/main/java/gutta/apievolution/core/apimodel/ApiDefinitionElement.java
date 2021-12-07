@@ -43,17 +43,6 @@ public abstract class ApiDefinitionElement {
         return Objects.hash(this.publicName, this.internalName);
     }
 
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ApiDefinitionElement) {
-            return this.stateEquals((ApiDefinitionElement) that);
-        } else {
-            return false;
-        }
-    }
-
     boolean stateEquals(ApiDefinitionElement that) {
         return this.publicName.equals(that.publicName) &&
                 this.internalName.equals(that.internalName);
