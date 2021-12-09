@@ -43,5 +43,10 @@ class BoundedListType extends ListType {
         return super.stateEquals(that) &&
                 this.bound == that.bound;
     }
-    
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleBoundedListType(this);
+    }
+
 }

@@ -7,7 +7,8 @@ import java.util.Optional;
 /**
  * Consumer-specific implementation of an {@link EnumMember}.
  */
-public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnumMember> {
+public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnumMember>
+        implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new enum member from the given data.
@@ -40,4 +41,8 @@ public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnu
         return super.stateEquals(that);
     }
 
+    @Override
+    public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleConsumerEnumMember(this);
+    }
 }

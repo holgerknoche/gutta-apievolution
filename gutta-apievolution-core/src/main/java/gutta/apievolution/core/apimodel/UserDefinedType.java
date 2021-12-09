@@ -8,7 +8,7 @@ import java.util.Optional;
  *
  * @param <A> The concrete type of the API definition this UDT resides in
  */
-public abstract class UserDefinedType<A extends ApiDefinition<A>> extends ApiDefinitionElement implements Type {
+public abstract class UserDefinedType<A extends ApiDefinition<A>> extends AbstractApiDefinitionElement implements Type {
 
     private final int typeId;
 

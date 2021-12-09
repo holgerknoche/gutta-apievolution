@@ -2,6 +2,7 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
@@ -55,6 +56,11 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
     @Override
     public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
         return visitor.handleProviderRecordType(this);
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleRecordType(this);
     }
 
     @Override

@@ -25,4 +25,9 @@ class UnboundedStringType extends StringType {
         return (this == that);
     }
 
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleUnboundedStringType(this);
+    }
+
 }

@@ -11,5 +11,10 @@ public enum AtomicType implements BasicType {
     /**
      * Atomic type representing "64-bit signed integer".
      */
-    INT_64    
+    INT_64;
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleAtomicType(this);
+    }
 }

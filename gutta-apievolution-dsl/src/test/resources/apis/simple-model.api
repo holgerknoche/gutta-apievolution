@@ -1,0 +1,35 @@
+api test.customer {
+
+	record Address {
+		string street
+		string number
+		numeric(5) postalCode
+		string city
+	}
+
+    enum Gender {
+        MALE
+        FEMALE
+        THIRD
+    }
+
+	record Customer {
+		string firstName
+		string lastName
+		Gender gender
+		Address address
+	}
+
+    record FormattedAddress {
+        string address
+    }
+
+	service CustomerService {
+		// Save customer to database
+		Customer save(Customer)
+
+		// Format address
+		FormattedAddress formatAddress(Address)
+	}
+
+}

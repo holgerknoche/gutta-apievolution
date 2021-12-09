@@ -6,6 +6,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerApiDefinition, ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService, ConsumerServiceOperation> {
 
@@ -48,8 +49,12 @@ public class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<Con
 	}
 
 	@Override
-	protected ConsumerServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context, final String name, final Optional<String> internalName, final ConsumerService owner) {
-		return new ConsumerServiceOperation(name, internalName, owner);
+	protected ConsumerServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+															  final String name, final Optional<String> internalName,
+															  final ConsumerService owner,
+															  ConsumerRecordType returnType,
+															  ConsumerRecordType parameterType) {
+		return new ConsumerServiceOperation(name, internalName, owner, returnType, parameterType);
 	}
 
 	@Override

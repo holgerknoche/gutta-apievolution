@@ -8,7 +8,7 @@ import java.util.Optional;
  * @param <R> The concrete type of the record type
  * @param <F> The concrete type of the field (e.g., provider or consumer)
  */
-public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>> extends ApiDefinitionElement {
+public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>> extends AbstractApiDefinitionElement {
 
     private final R owner;
 

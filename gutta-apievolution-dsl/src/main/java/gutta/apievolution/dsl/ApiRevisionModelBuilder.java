@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
-public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends RecordType<A, R, F>, F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, S extends Service<A, S, O>, O extends ServiceOperation<S, O>> extends ApiRevisionBaseVisitor<Void> {
+public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends RecordType<A, R, F>, F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>> extends ApiRevisionBaseVisitor<Void> {
 	
 	private int currentTypeId;
 	
@@ -106,7 +106,7 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 					break;
 
 				case K_OPTIN:
-					optionality = setOnce(optionality, Optionality.OPTIN, modifierToken, () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
+					optionality = setOnce(optionality, Optionality.OPT_IN, modifierToken, () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
 					break;
 
 				case K_MANDATORY:
@@ -116,7 +116,7 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 		}
 
 		// Use defaults, if necessary
-		return new RecordTypeModifiers(abstractFlag.orElse(Boolean.FALSE), optionality.orElse(Optionality.OPTIN));
+		return new RecordTypeModifiers(abstractFlag.orElse(Boolean.FALSE), optionality.orElse(Optionality.MANDATORY));
 	}
 	
 	private static <T> Optional<T> setOnce(final Optional<T> currentValue, final T newValue, final Token referenceToken, final Supplier<String> errorMessageSupplier) {
@@ -158,7 +158,7 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 		Optional<String> internalName = this.determineInternalName(ctx.as);
 		
 		F field = this.createField(ctx, name, internalName, type, optionality, this.currentRecordType);
-		this.registerNewField(field);		
+		this.registerNewField(field);
 		
 		return null;
 	}
@@ -181,7 +181,7 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 				return Optionality.OPTIONAL;
 
 			case K_OPTIN:
-				return Optionality.OPTIN;
+				return Optionality.OPT_IN;
 
 			case K_MANDATORY:
 			default:
@@ -255,19 +255,26 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public Void visitServiceOperation(final ApiRevisionParser.ServiceOperationContext ctx) {
 		String name = this.identifierAsText(ctx.name);
 
 		// Determine internal name
 		Optional<String> internalName = this.determineInternalName(ctx.as);
-				
-		O operation = this.createServiceOperation(ctx, name, internalName, this.currentService);
+
+		// Determine return and parameter types
+		R returnType = (R) this.resolveType(ctx.resultType);
+		R parameterType = (R) this.resolveType(ctx.parameterType);
+
+		O operation = this.createServiceOperation(ctx, name, internalName, this.currentService, returnType,
+				parameterType);
 		this.registerNewServiceOperation(operation);
 		
 		return null;
 	}
 	
-	protected abstract O createServiceOperation(ApiRevisionParser.ServiceOperationContext context, String name, Optional<String> internalName, S owner);
+	protected abstract O createServiceOperation(ApiRevisionParser.ServiceOperationContext context, String name,
+												Optional<String> internalName, S owner, R returnType, R parameterType);
 	
 	protected void registerNewServiceOperation(final O serviceOperation) {
 		// Do nothing by default
@@ -332,7 +339,11 @@ public abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R exte
 		
 	private Type resolveType(final ApiRevisionParser.TypeReferenceContext context) {
 		return new TypeResolver().visit(context);
-	}	
+	}
+
+	private Type resolveType(ApiRevisionParser.UserDefinedTypeReferenceContext context) {
+		return new TypeResolver().visitUserDefinedTypeReference(context);
+	}
 	
 	protected abstract R assertRecordType(UserDefinedType<A> type);
 	

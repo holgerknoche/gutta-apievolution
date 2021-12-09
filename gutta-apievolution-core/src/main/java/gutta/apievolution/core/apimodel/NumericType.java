@@ -61,4 +61,8 @@ public class NumericType implements BoundedType {
                 this.fractionalPlaces == that.fractionalPlaces;
     }
 
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleNumericType(this);
+    }
 }

@@ -7,7 +7,8 @@ import java.util.Optional;
  * @param <E> The concrete type of the enum type
  * @param <M> The concrete type of enum member type (e.g., provider or consumer)
  */
-public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMember<E, M>> extends ApiDefinitionElement {
+public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMember<E, M>>
+        extends AbstractApiDefinitionElement {
 
     private final E owner;
 

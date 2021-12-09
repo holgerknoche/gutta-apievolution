@@ -55,7 +55,9 @@ public class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<Pro
 	}
 	
 	@Override
-	protected ProviderField createField(final ApiRevisionParser.FieldContext context, final String name, final Optional<String> internalName, final Type type, final Optionality optionality, final ProviderRecordType owner) {
+	protected ProviderField createField(final ApiRevisionParser.FieldContext context, final String name,
+										final Optional<String> internalName, final Type type,
+										final Optionality optionality, final ProviderRecordType owner) {
 		// Resolve predecessor field, if present
 		PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
 		Optional<ProviderField> predecessor;
@@ -84,7 +86,7 @@ public class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<Pro
 		List<ApiRevisionParser.QualifiedNameContext> itemNames = context.items;
 
 		if (itemNames.size() > 1) {
-			// TODO Support multiple predecessors
+			// TODO Support multiple predecessors for pushing up fields
 			throw new APIParseException(context.refToken, "More than one predecessor is currently unsupported.");
 		}
 
@@ -285,13 +287,14 @@ public class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<Pro
 			}
 		}
 		
-		Optional<Service<ProviderApiDefinition, ?, ?>> optionalPredecessor = predecessorRevision.resolveService(name);
+		Optional<Service<ProviderApiDefinition, ?, ?, ?>> optionalPredecessor =
+				predecessorRevision.resolveService(name);
 
 		if (!optionalPredecessor.isPresent()) {
 			throw new APIResolutionException(nameToken, "No predecessor element named '" + name + "'.");	
 		}
 
-		Service<ProviderApiDefinition, ?, ?> predecessorType = optionalPredecessor.get();
+		Service<ProviderApiDefinition, ?, ?, ?> predecessorType = optionalPredecessor.get();
 		if (predecessorType instanceof ProviderService) {
 			return Optional.of((ProviderService) predecessorType);
 		} else {
@@ -300,7 +303,11 @@ public class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<Pro
 	}
 	
 	@Override
-	protected ProviderServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context, final String name, final Optional<String> internalName, final ProviderService owner) {
+	protected ProviderServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+															  final String name, final Optional<String> internalName,
+															  final ProviderService owner,
+															  final ProviderRecordType returnType,
+															  final ProviderRecordType parameterType) {
 		// Resolve predecessor, if applicable
 		PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
 		Optional<ProviderServiceOperation> predecessor;
@@ -322,7 +329,7 @@ public class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<Pro
 			break;
 		}
 
-		return new ProviderServiceOperation(name, internalName, owner, predecessor);
+		return new ProviderServiceOperation(name, internalName, owner, returnType, parameterType, predecessor);
 	}	
 	
 	private Optional<ProviderServiceOperation> resolvePredecessorServiceOperation(final String name, final boolean explicitReference, final Token refToken, final Token nameToken) {

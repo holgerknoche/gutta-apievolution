@@ -10,6 +10,7 @@ import java.util.Optional;
 public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnumMember>
         implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private final Optional<ProviderEnumMember> predecessor;
 
     private Optional<ProviderEnumMember> successor;

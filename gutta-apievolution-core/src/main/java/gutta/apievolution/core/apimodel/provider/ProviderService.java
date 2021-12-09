@@ -7,8 +7,8 @@ import java.util.Optional;
 /**
  * Provider-specific implementation of a {@link Service}.
  */
-public class ProviderService extends Service<ProviderApiDefinition, ProviderService, ProviderServiceOperation>
-        implements RevisionedElement<ProviderService>, ProviderApiDefinitionElement {
+public class ProviderService extends Service<ProviderApiDefinition, ProviderService, ProviderServiceOperation,
+        ProviderRecordType> implements RevisionedElement<ProviderService>, ProviderApiDefinitionElement {
 
     private final Optional<ProviderService> predecessor;
 

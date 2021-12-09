@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Consumer-specific implementations of a {@link Field}.
  */
-public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> {
+public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new field from the given data.
@@ -42,6 +42,11 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> {
 
     boolean stateEquals(ConsumerField that) {
         return super.stateEquals(that);
+    }
+
+    @Override
+    public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleConsumerField(this);
     }
 
 }

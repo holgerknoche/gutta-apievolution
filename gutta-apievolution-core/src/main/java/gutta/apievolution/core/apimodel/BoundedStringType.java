@@ -34,4 +34,9 @@ class BoundedStringType extends StringType {
         return this.bound == that.bound;
     }
 
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleBoundedStringType(this);
+    }
+
 }

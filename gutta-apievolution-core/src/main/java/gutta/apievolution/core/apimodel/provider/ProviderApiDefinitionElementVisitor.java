@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.TypeVisitor;
+
 /**
  * Visitor interface for {@link ProviderApiDefinitionElement}.
  * @param <T> The return type for the operation encoded in this visitor

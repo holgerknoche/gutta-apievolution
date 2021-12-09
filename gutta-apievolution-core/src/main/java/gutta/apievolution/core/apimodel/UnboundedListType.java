@@ -36,4 +36,9 @@ class UnboundedListType extends ListType {
         return super.stateEquals(that);
     }
 
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleUnboundedListType(this);
+    }
+
 }

@@ -1,6 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * An API definition is the root element of the API model. It serves as the container for its elements, such as
@@ -24,9 +26,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     private final Map<String, UserDefinedType<A>> udtLookup;
 
-    private final List<Service<A, ?, ?>> services;
+    private final List<Service<A, ?, ?, ?>> services;
 
-    private final Map<String, Service<A, ?, ?>> serviceLookup;
+    private final Map<String, Service<A, ?, ?, ?>> serviceLookup;
 
     /**
      * Creates a new API definition from the given data.
@@ -71,7 +73,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * Adds the given service to this API definition. Note that no service may be part of two different API definitions.
      * @param service The service to add
      */
-    protected void addService(final Service<A, ?, ?> service) {
+    protected void addService(final Service<A, ?, ?, ?> service) {
         this.services.add(service);
         this.serviceLookup.put(service.getPublicName(), service);
     }
@@ -102,7 +104,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * @return The resolved service, if it exists
      */
     @SuppressWarnings("unchecked")
-    public <S extends Service<A, ?, ?>> Optional<S> resolveService(final String name) {
+    public <S extends Service<A, ?, ?, ?>> Optional<S> resolveService(final String name) {
         return (Optional<S>) Optional.ofNullable(this.serviceLookup.get(name));
     }
 

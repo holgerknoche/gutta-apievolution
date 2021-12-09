@@ -23,6 +23,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private boolean subTypes;
 
+    private Usage usage = Usage.NONE;
+
     /**
      * Creates a new record type from the given data.
      * @param publicName The public name of this record type

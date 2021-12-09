@@ -2,13 +2,15 @@ package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
 /**
  * Consumer-specific implementation of a {@link RecordType}.
  */
-public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, ConsumerRecordType, ConsumerField> {
+public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, ConsumerRecordType, ConsumerField>
+        implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new record type from the given data.
@@ -44,6 +46,16 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
 
     boolean stateEquals(ConsumerRecordType that) {
         return super.stateEquals(that);
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleRecordType(this);
+    }
+
+    @Override
+    public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleConsumerRecordType(this);
     }
 
 }

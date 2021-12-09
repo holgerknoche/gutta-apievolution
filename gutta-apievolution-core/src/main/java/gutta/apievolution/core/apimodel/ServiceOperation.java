@@ -9,8 +9,12 @@ import java.util.Optional;
  * @param <S> The concrete service type (e.g., provider or consumer) used by the operation type
  * @param <O> The concrete service operation type (e.g., provider or consumer)
  */
-public abstract class ServiceOperation<S extends Service<?, S, O>, O extends ServiceOperation<S, O>>
-        extends ApiDefinitionElement {
+public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends ServiceOperation<S, O, R>,
+        R extends RecordType<?, R, ?>> extends AbstractApiDefinitionElement {
+
+    private final R returnType;
+
+    private final R parameterType;
 
     private final S owner;
 
@@ -22,10 +26,14 @@ public abstract class ServiceOperation<S extends Service<?, S, O>, O extends Ser
      * @param owner The service that owns this service operation
      */
     @SuppressWarnings("unchecked")
-    protected ServiceOperation(final String publicName, final Optional<String> internalName, final S owner) {
+    protected ServiceOperation(final String publicName, final Optional<String> internalName, final S owner,
+                               R returnType, R parameterType) {
         super(publicName, internalName);
 
         this.owner = owner;
+        this.returnType = returnType;
+        this.parameterType = parameterType;
+
         owner.addServiceOperation((O) this);
     }
 
@@ -48,9 +56,11 @@ public abstract class ServiceOperation<S extends Service<?, S, O>, O extends Ser
      * @param that The service operation to compare against
      * @return Whether the states are equal
      */
-    protected boolean stateEquals(ServiceOperation<S, O> that) {
+    protected boolean stateEquals(ServiceOperation<S, O, R> that) {
         // No owner as to avoid cycles
-        return super.stateEquals(that);
+        return super.stateEquals(that) &&
+                this.parameterType.equals(that.parameterType) &&
+                this.returnType.equals(that.returnType);
     }
 
 }

@@ -7,7 +7,8 @@ import java.util.Optional;
 /**
  * Consumer-specific implementation of a {@link Service}.
  */
-public class ConsumerService extends Service<ConsumerApiDefinition, ConsumerService, ConsumerServiceOperation> {
+public class ConsumerService extends Service<ConsumerApiDefinition, ConsumerService, ConsumerServiceOperation,
+        ConsumerRecordType> implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new service from the given data.
@@ -38,6 +39,11 @@ public class ConsumerService extends Service<ConsumerApiDefinition, ConsumerServ
 
     boolean stateEquals(ConsumerService that) {
         return super.stateEquals(that);
+    }
+
+    @Override
+    public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleConsumerService(this);
     }
 
 }

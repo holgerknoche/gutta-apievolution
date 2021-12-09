@@ -1,13 +1,15 @@
 package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
 /**
  * Consumer-specific implementation of an {@link EnumType}.
  */
-public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEnumType, ConsumerEnumMember> {
+public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEnumType, ConsumerEnumMember>
+        implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new enum type from the given data.
@@ -39,6 +41,16 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
 
     boolean stateEquals(ConsumerEnumType that) {
         return super.stateEquals(that);
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleEnumType(this);
+    }
+
+    @Override
+    public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
+        return visitor.handleConsumerEnumType(this);
     }
 
 }

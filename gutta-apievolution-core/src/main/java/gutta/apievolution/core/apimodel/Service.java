@@ -8,8 +8,8 @@ import java.util.*;
  * @param <S> The concrete service type of this service (e.g., provider or consumer)
  * @param <O> The concrete service operation type
  */
-public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S, O>, O extends ServiceOperation<S, O>>
-        extends ApiDefinitionElement {
+public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S, O, R>,
+        O extends ServiceOperation<S, O, R>, R extends RecordType<A, R, ?>> extends AbstractApiDefinitionElement {
 
     private final A owner;
 
@@ -66,7 +66,7 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
      * @param that The service to compare against
      * @return Whether the states are equal
      */
-    protected boolean stateEquals(Service<A, S, O> that) {
+    protected boolean stateEquals(Service<A, S, O, R> that) {
         return super.stateEquals(that) &&
                 this.declaredOperations.equals(that.declaredOperations);
     }
