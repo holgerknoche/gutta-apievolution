@@ -3,7 +3,7 @@ package gutta.apievolution.core.apimodel;
 /**
  * This type represents the unbounded variant of the {@link StringType}.
  */
-class UnboundedStringType extends StringType {
+public class UnboundedStringType extends StringType {
 
     private static final UnboundedStringType INSTANCE = new UnboundedStringType();
 

@@ -1,0 +1,16 @@
+package ${type.packageName};
+
+/**
+ * Representation of the API enumeration ${type.name}.
+*/
+public enum ${type.name} {
+
+#foreach ($member in ${type.members})
+    /**
+     * API enumeration value ${member.name}.
+     */
+    ${member.name}#if($foreach.hasNext),#else;#end
+
+#end
+
+}

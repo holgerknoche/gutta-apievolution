@@ -1,0 +1,21 @@
+package ${type.packageName};
+
+/**
+ * Interface for the API type ${type.name}.
+ */
+public interface ${type.name} {
+#foreach ($field in ${type.fields})
+    /**
+     * Returns the value of property ${field.name}.
+     * @return see above
+    */
+    ${field.type.fullyQualifiedName} get${field.capitalizedName}();
+
+    /**
+     * Sets the value of property ${field.name}.
+     * @param ${field.name} The value to set
+     */
+    void set${field.capitalizedName}(${field.type.fullyQualifiedName} ${field.name});
+
+#end
+}

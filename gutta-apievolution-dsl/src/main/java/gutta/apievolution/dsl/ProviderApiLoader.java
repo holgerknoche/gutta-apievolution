@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.dsl.parser.ApiRevisionLexer;
@@ -36,7 +37,9 @@ public class ProviderApiLoader {
 		return new ProviderApiRevisionModelBuilder().buildProviderRevision(revision, specification, optionalPredecessor);
 	}
 
-	public static List<ProviderApiDefinition> loadHistoryFromStreams(final Iterable<Integer> revisionIds, final Collection<InputStream> streams) throws IOException {
+	public static List<ProviderApiDefinition> loadHistoryFromStreams(final Iterable<Integer> revisionIds,
+																	 final Collection<? extends InputStream> streams)
+			throws IOException {
 		if (streams.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -44,17 +47,22 @@ public class ProviderApiLoader {
 		int streamCount = streams.size();	
 		List<ProviderApiDefinition> revisions = new ArrayList<ProviderApiDefinition>(streamCount);
 		Iterator<Integer> revisionsIdsIterator = revisionIds.iterator();
-		Iterator<InputStream> streamIterator = streams.iterator();
+		Iterator<? extends InputStream> streamIterator = streams.iterator();
 		
 		// Convert the first stream (i.e. first revision in the history)
-		ProviderApiDefinition currentRevision = loadFromStream(revisionsIdsIterator.next(), streamIterator.next()); 
-		revisions.add(currentRevision);
+		ProviderApiDefinition currentRevision;
+		try (InputStream stream = streamIterator.next()) {
+			currentRevision = loadFromStream(revisionsIdsIterator.next(), stream);
+			revisions.add(currentRevision);
+		}
 		
 		// Convert the remaining streams		
 		while (streamIterator.hasNext()) {
-			Optional<ProviderApiDefinition> optionalPredecessor = Optional.of(currentRevision);
-			currentRevision = loadFromStream(revisionsIdsIterator.next(), streamIterator.next(), optionalPredecessor);
-			revisions.add(currentRevision);			
+			try (InputStream stream = streamIterator.next()) {
+				Optional<ProviderApiDefinition> optionalPredecessor = Optional.of(currentRevision);
+				currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, optionalPredecessor);
+				revisions.add(currentRevision);
+			}
 		}
 		
 		return revisions;
