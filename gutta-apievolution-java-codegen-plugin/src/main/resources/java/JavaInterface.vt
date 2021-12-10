@@ -4,18 +4,18 @@ package ${type.packageName};
  * Interface for the API type ${type.name}.
  */
 public interface ${type.name} {
-#foreach ($field in ${type.fields})
+#foreach ($property in ${type.properties})
     /**
-     * Returns the value of property ${field.name}.
+     * Returns the value of property ${property.name}.
      * @return see above
     */
-    ${field.type.fullyQualifiedName} get${field.capitalizedName}();
+    ${property.type.fullyQualifiedName} get${property.capitalizedName}();
 
     /**
-     * Sets the value of property ${field.name}.
-     * @param ${field.name} The value to set
+     * Sets the value of property ${$property.name}.
+     * @param ${$property.name} The value to set
      */
-    void set${field.capitalizedName}(${field.type.fullyQualifiedName} ${field.name});
+    void set${property.capitalizedName}(${property.type.fullyQualifiedName} ${property.name});
 
 #end
 }
