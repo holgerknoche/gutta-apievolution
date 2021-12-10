@@ -65,8 +65,8 @@ class UnifiedModelBuilder implements ProviderApiDefinitionElementVisitor<JavaTyp
 
         for (ProviderField field : recordType.getDeclaredFields()) {
             JavaType fieldType = this.resolveType(field.getType());
-            JavaField javaField = new JavaField(field.getInternalName(), fieldType);
-            targetClass.addField(javaField);
+            JavaProperty javaProperty = new JavaProperty(field.getInternalName(), fieldType);
+            targetClass.addField(javaProperty);
         }
 
         return targetClass;

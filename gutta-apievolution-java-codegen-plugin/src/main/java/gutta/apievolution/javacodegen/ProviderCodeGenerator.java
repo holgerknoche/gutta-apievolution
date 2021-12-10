@@ -9,7 +9,10 @@ import org.apache.velocity.app.VelocityEngine;
 import java.io.*;
 import java.util.*;
 
-public class ProviderCodeGenerator {
+/**
+ * This class derives the actual code model and generates the provider Java code.
+ */
+class ProviderCodeGenerator {
 
     /**
      * Generates the provider code for the given definitions into the given output directory.

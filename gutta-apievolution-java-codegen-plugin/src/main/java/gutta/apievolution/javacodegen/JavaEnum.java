@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Representation of a Java enumeration for code generation.
+ *
+ * <p/> <b>Note:</b> This class must be public for Velocity code generation to work.
+ */
 public class JavaEnum extends JavaUserDefinedType {
 
     private final List<JavaEnumMember> members = new ArrayList<>();
@@ -15,6 +20,10 @@ public class JavaEnum extends JavaUserDefinedType {
         super(packageName, name);
     }
 
+    /**
+     * Returns the members of this enumeration.
+     * @return see above
+     */
     public List<JavaEnumMember> getMembers() {
         return this.members;
     }

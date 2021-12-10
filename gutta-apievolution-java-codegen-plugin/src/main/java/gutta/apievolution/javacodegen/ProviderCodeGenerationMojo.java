@@ -18,6 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Mojo for generating provider code from a revision of API definitions.
+ */
 @Mojo(name = "generate-provider-code")
 public class ProviderCodeGenerationMojo extends AbstractMojo {
 

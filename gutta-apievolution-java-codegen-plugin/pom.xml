@@ -24,6 +24,11 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.6.2</version>
             </plugin>
+            <!-- Run CheckStyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 

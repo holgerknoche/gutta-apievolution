@@ -1,5 +1,8 @@
 package gutta.apievolution.javacodegen;
 
+/**
+ * Abstract superclass for user-defined types for Java code generation.
+ */
 public abstract class JavaUserDefinedType implements JavaType {
 
     public final String packageName;
@@ -11,10 +14,18 @@ public abstract class JavaUserDefinedType implements JavaType {
         this.name = name;
     }
 
+    /**
+     * Returns this type's package name.
+     * @return see above
+     */
     public String getPackageName() {
         return this.packageName;
     }
 
+    /**
+     * Returns this type's name.
+     * @return see above
+     */
     public String getName() {
         return this.name;
     }
