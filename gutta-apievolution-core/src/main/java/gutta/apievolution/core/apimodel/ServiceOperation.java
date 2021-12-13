@@ -34,6 +34,9 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
         this.returnType = returnType;
         this.parameterType = parameterType;
 
+        returnType.registerUsage(Usage.OUTPUT);
+        parameterType.registerUsage(Usage.INPUT);
+
         owner.addServiceOperation((O) this);
     }
 
