@@ -22,26 +22,20 @@ class ProviderCodeGenerator {
      * @param outputDirectory The directory to generate the sources into
      */
     public void generateCode(List<ProviderApiDefinition> supportedDefinitions, File outputDirectory) {
-        Collection<JavaUserDefinedType> classesToGenerate = this.createUnifiedCodeModel(supportedDefinitions);
+        Collection<JavaUserDefinedType> classesToGenerate = this.createCodeModel(supportedDefinitions);
         this.generateSources(classesToGenerate, outputDirectory);
     }
 
-    Collection<JavaUserDefinedType> createUnifiedCodeModel(List<ProviderApiDefinition> supportedDefinitions) {
+    Collection<JavaUserDefinedType> createCodeModel(List<ProviderApiDefinition> supportedDefinitions) {
         if (supportedDefinitions.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Collect the types from the supported definitions
-        UnifiedModelBuilder modelBuilder = new UnifiedModelBuilder();
-        ListIterator<ProviderApiDefinition> definitions =
-                supportedDefinitions.listIterator(supportedDefinitions.size());
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(supportedDefinitions);
+        JavaModelBuilder javaModelBuilder = new JavaModelBuilder();
+        mergedDefinition.forEach(element -> javaModelBuilder.processElement(element));
 
-        while (definitions.hasPrevious()) {
-            ProviderApiDefinition currentDefinition = definitions.previous();
-            currentDefinition.forEach(modelBuilder::processElement);
-        }
-
-        return modelBuilder.getJavaClasses();
+        return javaModelBuilder.getJavaClasses();
     }
 
     void generateSources(Collection<JavaUserDefinedType> classesToGenerate, File outputDirectory) {

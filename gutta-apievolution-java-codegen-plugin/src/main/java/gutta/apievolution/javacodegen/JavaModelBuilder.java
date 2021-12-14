@@ -9,13 +9,12 @@ import gutta.apievolution.core.apimodel.provider.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-class UnifiedModelBuilder implements ProviderApiDefinitionElementVisitor<JavaType>, TypeVisitor<JavaType> {
+class JavaModelBuilder implements ProviderApiDefinitionElementVisitor<JavaType>, TypeVisitor<JavaType> {
 
     private final Map<Type, JavaUserDefinedType> knownClasses;
 
-    public UnifiedModelBuilder() {
+    public JavaModelBuilder() {
         this.knownClasses = new HashMap<>();
     }
 
@@ -48,20 +47,9 @@ class UnifiedModelBuilder implements ProviderApiDefinitionElementVisitor<JavaTyp
 
     @Override
     public JavaType handleProviderRecordType(ProviderRecordType recordType) {
-        // See if there is already a Java type for any successor of this type
-        Optional<ProviderRecordType> knownSuccessor =
-                recordType.findFirstSuccessorMatching(type -> this.knownClasses.containsKey(type));
-
-        JavaInterface targetClass;
-        if (knownSuccessor.isPresent()) {
-            // If there is a type for a successor, reuse this type
-            targetClass = (JavaInterface) this.knownClasses.get(knownSuccessor);
-        } else {
-            // Otherwise, create and register a new one
-            String packageName = recordType.getOwner().getName().toString();
-            targetClass = new JavaInterface(packageName, recordType.getInternalName());
-            this.knownClasses.put(recordType, targetClass);
-        }
+        String packageName = recordType.getOwner().getName().toString();
+        JavaInterface targetClass = new JavaInterface(packageName, recordType.getInternalName());
+        this.knownClasses.put(recordType, targetClass);
 
         for (ProviderField field : recordType.getDeclaredFields()) {
             JavaType fieldType = this.resolveType(field.getType());
@@ -74,20 +62,10 @@ class UnifiedModelBuilder implements ProviderApiDefinitionElementVisitor<JavaTyp
 
     @Override
     public JavaType handleProviderEnumType(ProviderEnumType enumType) {
-        // See if there is already a Java type for any successor of this type
-        Optional<ProviderEnumType> knownSuccessor =
-                enumType.findFirstSuccessorMatching(type -> this.knownClasses.containsKey(type));
-
-        JavaEnum targetClass;
-        if (knownSuccessor.isPresent()) {
-            // If there is a type for a successor, reuse this type
-            targetClass = (JavaEnum) this.knownClasses.get(knownSuccessor);
-        } else {
-            // Otherwise, create and register a new one
-            String packageName = enumType.getOwner().getName().toString();
-            targetClass = new JavaEnum(packageName, enumType.getInternalName());
-            this.knownClasses.put(enumType, targetClass);
-        }
+        // Otherwise, create and register a new one
+        String packageName = enumType.getOwner().getName().toString();
+        JavaEnum targetClass = new JavaEnum(packageName, enumType.getInternalName());
+        this.knownClasses.put(enumType, targetClass);
 
         for (ProviderEnumMember member : enumType.getMembers()) {
             JavaEnumMember javaMember = new JavaEnumMember(member.getInternalName());
