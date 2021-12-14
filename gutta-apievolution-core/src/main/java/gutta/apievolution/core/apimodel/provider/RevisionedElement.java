@@ -38,6 +38,17 @@ public interface RevisionedElement<T extends RevisionedElement<T>> {
     }
 
     /**
+     * Finds the first predecessor of this revisioned element matching the given predicate.
+     * @param matchPredicate The predicate to match
+     * @return The first predecessor matching the predicate
+     */
+    default Optional<T> findFirstPredecessorMatching(Predicate<T> matchPredicate) {
+        return this.predecessorStream(false)
+                .filter(matchPredicate)
+                .findFirst();
+    }
+
+    /**
      * Returns a stream of all predecessors of this element, possibly including the element itself.
      * @param inclusive Denotes whether the element itself should be included in the stream
      * @return The stream of predecessors

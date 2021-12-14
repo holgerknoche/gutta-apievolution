@@ -2,7 +2,6 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.*;
 
-import java.security.Provider;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,7 +18,7 @@ public class ModelMerger {
      * @param revisionHistory A non-empty revision history to merge
      * @return A merged API definition that represents the union of the definition history
      */
-    public ProviderApiDefinition createMergedDefinition(List<ProviderApiDefinition> revisionHistory) {
+    public ProviderApiDefinition createMergedDefinition(RevisionHistory revisionHistory) {
         if (revisionHistory == null || revisionHistory.isEmpty()) {
             throw new ModelMergeException("No or empty revision history given.");
         }
@@ -37,8 +36,8 @@ public class ModelMerger {
         return mergedDefinition;
     }
 
-    private QualifiedName determineHistoryName(List<ProviderApiDefinition> revisionHistory) {
-        ListIterator<ProviderApiDefinition> revisions = revisionHistory.listIterator(revisionHistory.size());
+    private QualifiedName determineHistoryName(RevisionHistory revisionHistory) {
+        ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
         QualifiedName nameCandidate = revisions.previous().getName();
 
         while (revisions.hasPrevious()) {
@@ -51,11 +50,11 @@ public class ModelMerger {
         return nameCandidate;
     }
 
-    private Set<Annotation> mergeAnnotations(List<ProviderApiDefinition> revisionHistory) {
+    private Set<Annotation> mergeAnnotations(RevisionHistory revisionHistory) {
         Set<String> existingAnnotationTypes = new HashSet<>();
         Set<Annotation> mergedAnnotations = new HashSet<>();
 
-        ListIterator<ProviderApiDefinition> revisions = revisionHistory.listIterator(revisionHistory.size());
+        ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
         while (revisions.hasPrevious()) {
             ProviderApiDefinition currentRevision = revisions.previous();
 
@@ -72,10 +71,10 @@ public class ModelMerger {
         return mergedAnnotations;
     }
 
-    private void mergeElementsIntoRevision(List<ProviderApiDefinition> revisionHistory,
+    private void mergeElementsIntoRevision(RevisionHistory revisionHistory,
                                            ProviderApiDefinition mergedDefinition) {
-        ListIterator<ProviderApiDefinition> revisions = revisionHistory.listIterator(revisionHistory.size());
-        Set<ProviderApiDefinition> supportedRevisions = new HashSet<>(revisionHistory);
+        ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
+        Set<ProviderApiDefinition> supportedRevisions = revisionHistory.revisionSet();
 
         RevisionMergePass1 pass1 = new RevisionMergePass1();
         TypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
@@ -102,12 +101,15 @@ public class ModelMerger {
 
         private ProviderApiDefinition mergedDefinition;
 
-        public TypeLookup createTypeLookup(List<ProviderApiDefinition> revisionHistory,
+        public TypeLookup createTypeLookup(RevisionHistory revisionHistory,
                                            Set<ProviderApiDefinition> supportedRevisions,
                                            ProviderApiDefinition mergedDefinition) {
+            // Ensure that the revision history is consistent
+            revisionHistory.checkConsistency();
+
             this.mergedDefinition = mergedDefinition;
 
-            ListIterator<ProviderApiDefinition> revisions = revisionHistory.listIterator(revisionHistory.size());
+            ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
             while (revisions.hasPrevious()) {
                 ProviderApiDefinition currentRevision = revisions.previous();
                 currentRevision.forEach(element -> element.accept(this));
@@ -116,6 +118,7 @@ public class ModelMerger {
             return new TypeLookup(this.udtLookup);
         }
 
+        @SuppressWarnings("unchecked")
         private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType>
             Void handleUserDefinedType(T inType, Function<T, T> mapperFunction) {
 
@@ -324,9 +327,7 @@ public class ModelMerger {
 
             // Then, check whether the field exists in all supported revisions
             Set<ProviderApiDefinition> defsInWhichFieldExists = new HashSet<>();
-            TypeChangeDetectionPredicate typeChangePredicate = new TypeChangeDetectionPredicate(field);
             field.predecessorStream(true)
-                    .filter(typeChangePredicate)
                     .forEach(fld -> defsInWhichFieldExists.add(fld.getOwner().getOwner()));
             boolean existsInAllRevisions = defsInWhichFieldExists.containsAll(this.supportedRevisions);
 
@@ -413,7 +414,7 @@ public class ModelMerger {
 
         /**
          * Predicate to detect type changes in a revision history. This is essentially a workaround as the
-         * takeWhile operation is only introduced in Java 9 and we want Java 8 support.
+         * takeWhile operation is only introduced in Java 9, and we want Java 8 support.
          */
         private static class TypeChangeDetectionPredicate implements Predicate<ProviderField> {
 

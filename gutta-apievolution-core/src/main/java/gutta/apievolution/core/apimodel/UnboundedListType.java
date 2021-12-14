@@ -2,7 +2,7 @@ package gutta.apievolution.core.apimodel;
 
 class UnboundedListType extends ListType {
 
-    public UnboundedListType(final Type elementType) {
+    UnboundedListType(final Type elementType) {
         super(elementType);
     }
 

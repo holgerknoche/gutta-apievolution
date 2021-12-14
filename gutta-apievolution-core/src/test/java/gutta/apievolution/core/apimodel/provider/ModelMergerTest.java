@@ -11,26 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ModelMergerTest {
 
     /**
-     * Ensure that an error occurs when the revisions to merge have inconsistent names.
-     */
-    @Test
-    void testInconsistentRevisionNaming() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                0,
-                Optional.empty());
-
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("b.c"),
-                Collections.emptySet(),
-                0,
-                Optional.empty());
-
-        assertThrows(ModelMergeException.class, () ->
-                new ModelMerger().createMergedDefinition(Arrays.asList(revision1, revision2))
-                );
-    }
-
-    /**
      * Ensure that merging annotations works as expected.
      */
     @Test
@@ -44,11 +24,11 @@ class ModelMergerTest {
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
                 new HashSet<>(
                         Arrays.asList(new Annotation("b", "x"), new Annotation("c", "d"))),
-                0,
+                1,
                 Optional.empty());
 
-        ProviderApiDefinition mergedRevision = new ModelMerger().createMergedDefinition(Arrays.asList(revision1,
-                revision2));
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedRevision = new ModelMerger().createMergedDefinition(revisionHistory);
 
         // We expect that annotations a to c exist, with the value for b from revision 2 as it is the "newer" revision
         Set<Annotation> expectedAnnotations = new HashSet<>(Arrays.asList(
@@ -92,7 +72,7 @@ class ModelMergerTest {
                 Optionality.MANDATORY,
                 Optional.empty());
 
-        ProviderField deletedField = new ProviderField("deletedField",
+        new ProviderField("deletedField",
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
@@ -117,7 +97,7 @@ class ModelMergerTest {
                 testTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
-                Optional.of(typeChangeFieldV1));
+                Optional.empty());
 
         new ProviderField("unchangedField",
                 Optional.empty(),
@@ -134,8 +114,8 @@ class ModelMergerTest {
                 Optional.empty());
 
         // Merge the test revision history into a single definition
-        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(Arrays.asList(revision1,
-                revision2));
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
         // Compare the created revision against the expected one. All optional fields are opt-in because the type
         // is not used as output
@@ -201,8 +181,8 @@ class ModelMergerTest {
                 Optional.empty());
 
         // Merge the test revision history into a single definition
-        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(Arrays.asList(revision1,
-                revision2));
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
         // Compare the created revision against the expected one
         String expected = "api test [] {\n" +

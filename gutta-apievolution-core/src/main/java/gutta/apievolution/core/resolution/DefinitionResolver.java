@@ -174,9 +174,7 @@ public class DefinitionResolver {
         ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker(consumerToProviderType,
                 consumerToProviderField);
 
-        consumerToProviderType.forEach(
-                (consumerType, providerType) -> checker.checkConsistency(consumerType, providerType)
-        );
+        consumerToProviderType.forEach(checker::checkConsistency);
     }
 
     private void checkProviderMaps(Map<Type, Type> providerToConsumerType,
@@ -185,7 +183,7 @@ public class DefinitionResolver {
         // TODO
     }
 
-    private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
+    private static class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
 
         private final Map<Type, Type> consumerToProviderType;
 
