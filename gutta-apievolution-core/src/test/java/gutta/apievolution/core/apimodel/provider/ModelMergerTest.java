@@ -112,32 +112,109 @@ class ModelMergerTest {
                 Optional.empty(),
                 Optional.of(testTypeV1));
 
-        ProviderField typeChangeFieldV2 = new ProviderField("typeChangeField",
+        new ProviderField("typeChangeField",
                 Optional.of("newTypeChangeField"),
                 testTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
                 Optional.of(typeChangeFieldV1));
 
-        ProviderField unchangedFieldV2 = new ProviderField("unchangedField",
+        new ProviderField("unchangedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
                 Optional.of(unchangedFieldV1));
 
-        ProviderField addedField = new ProviderField("addedField",
+        new ProviderField("addedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
                 Optional.empty());
 
-        // TODO
+        // Merge the test revision history into a single definition
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(Arrays.asList(revision1,
                 revision2));
 
-        System.out.println(new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition));
+        // Compare the created revision against the expected one. All optional fields are opt-in because the type
+        // is not used as output
+        String expected = "api test [] {\n" +
+                " record Test {\n" +
+                "  optin typeChangeField(newTypeChangeField):int64\n" + // Must be opt-in due to the type change
+                "  mandatory unchangedField(unchangedField):string\n" + // Must be mandatory as it does not change
+                "  optin addedField(addedField):string\n" + // Must be opt-in because it is added
+                "  optin typeChangeField(typeChangeField):int32\n" + // Must be opt-in due to type change
+                "  optin deletedField(deletedField):string\n" + // Must be opt-in as it is deleted
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Tests that merging the members of an enumeration across revisions works as expected.
+     */
+    @Test
+    public void testEnumMemberMerging() {
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                1,
+                Optional.empty());
+
+        ProviderEnumType testEnumV1 = new ProviderEnumType("Test",
+                Optional.empty(),
+                0,
+                revision1,
+                Optional.empty());
+
+        ProviderEnumMember unchangedMember = new ProviderEnumMember("UNCHANGED",
+                Optional.empty(),
+                testEnumV1,
+                Optional.empty());
+
+        new ProviderEnumMember("DELETED",
+                Optional.empty(),
+                testEnumV1,
+                Optional.empty());
+
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                2,
+                Optional.of(revision1));
+
+        ProviderEnumType testEnumV2 = new ProviderEnumType("Test",
+                Optional.empty(),
+                0,
+                revision2,
+                Optional.of(testEnumV1));
+
+        new ProviderEnumMember("UNCHANGED",
+                Optional.empty(),
+                testEnumV2,
+                Optional.of(unchangedMember));
+
+        new ProviderEnumMember("ADDED",
+                Optional.empty(),
+                testEnumV2,
+                Optional.empty());
+
+        // Merge the test revision history into a single definition
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(Arrays.asList(revision1,
+                revision2));
+
+        // Compare the created revision against the expected one
+        String expected = "api test [] {\n" +
+                " enum Test {\n" +
+                "  UNCHANGED(UNCHANGED)\n" +
+                "  ADDED(ADDED)\n" +
+                "  DELETED(DELETED)\n" +
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
     }
 
 }

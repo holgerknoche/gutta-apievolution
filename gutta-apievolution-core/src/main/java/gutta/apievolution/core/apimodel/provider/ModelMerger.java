@@ -2,8 +2,10 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.*;
 
+import java.security.Provider;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -96,6 +98,8 @@ public class ModelMerger {
 
         private final Map<ProviderUserDefinedType, ProviderUserDefinedType> udtLookup = new HashMap<>();
 
+        private final Set<String> knownTypeNames = new HashSet<>();
+
         private ProviderApiDefinition mergedDefinition;
 
         public TypeLookup createTypeLookup(List<ProviderApiDefinition> revisionHistory,
@@ -112,30 +116,48 @@ public class ModelMerger {
             return new TypeLookup(this.udtLookup);
         }
 
-        @Override
-        public Void handleProviderRecordType(ProviderRecordType recordType) {
+        private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType>
+            Void handleUserDefinedType(T inType, Function<T, T> mapperFunction) {
+
             // Check if a successor of this type is already part of the merged model
-            Optional<ProviderRecordType> optionalMappedSuccessor = recordType.findFirstSuccessorMatching(
+            Optional<T> optionalMappedSuccessor = inType.findFirstSuccessorMatching(
                     this.udtLookup::containsKey
             );
 
-            ProviderRecordType mappedType;
+            T mappedType;
             if (optionalMappedSuccessor.isPresent()) {
-                mappedType = (ProviderRecordType) this.udtLookup.get(optionalMappedSuccessor.get());
+                mappedType = (T) this.udtLookup.get(optionalMappedSuccessor.get());
             } else {
-                mappedType = this.convertRecordType(recordType);
+                // Check for duplicate internal names
+                this.assertUniqueInternalName(inType);
+                mappedType = mapperFunction.apply(inType);
             }
 
-            this.udtLookup.put(recordType, mappedType);
+            this.udtLookup.put(inType, mappedType);
             return null;
         }
 
-        private ProviderRecordType convertRecordType(ProviderRecordType inType) {
-            Optional<String> internalName = (inType.getPublicName().equals(inType.getInternalName())) ?
-                    Optional.empty() : Optional.of(inType.getInternalName());
+        @Override
+        public Void handleProviderRecordType(ProviderRecordType recordType) {
+            return this.handleUserDefinedType(recordType, this::convertRecordType);
+        }
 
+        private Optional<String> determineInternalName(UserDefinedType<ProviderApiDefinition> inType) {
+            return (inType.getPublicName().equals(inType.getInternalName())) ? Optional.empty() :
+                    Optional.of(inType.getInternalName());
+        }
+
+        private void assertUniqueInternalName(UserDefinedType<ProviderApiDefinition> type) {
+            if (this.knownTypeNames.contains(type.getInternalName())) {
+                throw new ModelMergeException("Duplicate internal name '" + type.getInternalName() + "'.");
+            }
+
+            this.knownTypeNames.add(type.getInternalName());
+        }
+
+        private ProviderRecordType convertRecordType(ProviderRecordType inType) {
             return new ProviderRecordType(inType.getPublicName(),
-                    internalName,
+                    this.determineInternalName(inType),
                     inType.getTypeId(),
                     this.mergedDefinition,
                     inType.isAbstract(),
@@ -145,11 +167,15 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderEnumType(ProviderEnumType enumType) {
-            System.out.println(enumType);
+            return this.handleUserDefinedType(enumType, this::convertEnumType);
+        }
 
-            // TODO
-
-            return null;
+        private ProviderEnumType convertEnumType(ProviderEnumType inType) {
+            return new ProviderEnumType(inType.getPublicName(),
+                    this.determineInternalName(inType),
+                    inType.getTypeId(),
+                    this.mergedDefinition,
+                    Optional.empty());
         }
 
     }
@@ -196,11 +222,15 @@ public class ModelMerger {
 
         private final TypeLookup typeLookup;
 
-        private ProviderRecordType currentRecordType;
+        private final Set<MemberName> knownMemberNames = new HashSet<>();
 
         private final Set<ProviderField> mappedFields = new HashSet<>();
 
-        private final Set<MemberName> knownMemberNames = new HashSet<>();
+        private final Set<ProviderEnumMember> mappedMembers = new HashSet<>();
+
+        private ProviderRecordType currentRecordType;
+
+        private ProviderEnumType currentEnumType;
 
         public RevisionMergePass2(ProviderApiDefinition mergedDefinition, Set<ProviderApiDefinition> supportedRevisions,
                                   TypeLookup typeLookup) {
@@ -225,7 +255,28 @@ public class ModelMerger {
                 field.accept(this);
             }
 
+            this.currentRecordType = null;
             return null;
+        }
+
+        @Override
+        public Void handleProviderEnumType(ProviderEnumType enumType) {
+            this.currentEnumType = this.typeLookup.lookupType(enumType);
+
+            for (ProviderEnumMember member : enumType.getMembers()) {
+                member.accept(this);
+            }
+
+            this.currentEnumType = null;
+            return null;
+        }
+
+        private void assertUniqueMemberName(MemberName memberName) {
+            if (this.knownMemberNames.contains(memberName)) {
+                throw new ModelMergeException("Duplicate internal name '" + memberName + "'.");
+            }
+
+            this.knownMemberNames.add(memberName);
         }
 
         @Override
@@ -246,9 +297,7 @@ public class ModelMerger {
 
                 // Ensure that the internal name is unique
                 MemberName memberName = new MemberName(field.getOwner().getInternalName(), field.getInternalName());
-                if (this.knownMemberNames.contains(memberName)) {
-                    throw new ModelMergeException("Duplicate internal name '" + memberName + "'.");
-                }
+                this.assertUniqueMemberName(memberName);
 
                 ProviderField mappedField = new ProviderField(field.getPublicName(),
                         internalName,
@@ -295,6 +344,35 @@ public class ModelMerger {
             return Optionality.max(specifiedOptionality, minimalOptionality);
         }
 
+        @Override
+        public Void handleProviderEnumMember(ProviderEnumMember enumMember) {
+            Optional<ProviderEnumMember> optionalMappedPredecessor = enumMember.findFirstSuccessorMatching(
+                    this.mappedMembers::contains
+            );
+
+            if (!optionalMappedPredecessor.isPresent()) {
+                Optional<String> internalName = (enumMember.getPublicName().equals(enumMember.getInternalName())) ?
+                        Optional.empty() : Optional.of(enumMember.getInternalName());
+
+                // Ensure that the internal name is unique
+                MemberName memberName = new MemberName(enumMember.getOwner().getInternalName(),
+                        enumMember.getInternalName());
+                this.assertUniqueMemberName(memberName);
+
+                ProviderEnumMember mappedMember = new ProviderEnumMember(enumMember.getPublicName(),
+                        internalName,
+                        this.currentEnumType,
+                        Optional.empty());
+
+                this.mappedMembers.add(mappedMember);
+            }
+
+            return null;
+        }
+
+        /**
+         * Representation of a type-qualified member name for uniqueness tests.
+         */
         private static class MemberName {
 
             public final String typeName;

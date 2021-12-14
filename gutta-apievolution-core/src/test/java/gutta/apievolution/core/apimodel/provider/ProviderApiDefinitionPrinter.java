@@ -1,5 +1,9 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.Annotation;
+
+import java.util.Iterator;
+
 /**
  * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
  */
@@ -22,9 +26,24 @@ class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisito
     }
 
     private void printAnnotations(ProviderApiDefinition definition) {
-        this.outputBuilder.append("[");
-        // TODO
-        this.outputBuilder.append("]");
+        StringBuilder builder = this.outputBuilder;
+        builder.append("[");
+
+        Iterator<Annotation> annotations = definition.getAnnotations().iterator();
+        while (annotations.hasNext()) {
+            Annotation annotation = annotations.next();
+            builder.append("@");
+            builder.append(annotation.getName());
+            builder.append("(");
+            builder.append(annotation.getValue());
+            builder.append(")");
+
+            if (annotations.hasNext()) {
+                builder.append(", ");
+            }
+        }
+
+        builder.append("]");
     }
 
     @Override
@@ -56,4 +75,27 @@ class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisito
         return null;
     }
 
+    @Override
+    public Void handleProviderEnumType(ProviderEnumType enumType) {
+        StringBuilder builder = this.outputBuilder;
+
+        builder.append(" enum " + enumType.getPublicName() + " {\n");
+        enumType.forEach(member -> member.accept(this));
+        builder.append(" }\n");
+
+        return null;
+    }
+
+    @Override
+    public Void handleProviderEnumMember(ProviderEnumMember enumMember) {
+        StringBuilder builder = this.outputBuilder;
+
+        builder.append("  ");
+        builder.append(enumMember.getPublicName());
+        builder.append("(");
+        builder.append(enumMember.getInternalName());
+        builder.append(")\n");
+
+        return null;
+    }
 }
