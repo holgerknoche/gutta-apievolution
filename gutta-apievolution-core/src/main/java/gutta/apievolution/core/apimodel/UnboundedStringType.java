@@ -30,4 +30,8 @@ public class UnboundedStringType extends StringType {
         return visitor.handleUnboundedStringType(this);
     }
 
+    @Override
+    public String toString() {
+        return "string";
+    }
 }

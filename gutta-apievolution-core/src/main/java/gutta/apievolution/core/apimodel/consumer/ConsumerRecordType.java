@@ -20,12 +20,11 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
      * @param owner The API definition that owns this type
      * @param abstractFlag Denotes whether this type is abstract
      * @param superType The type's supertype, if any
-     * @param optionality The default optionality for this type's fields
      */
     public ConsumerRecordType(final String publicName, final Optional<String> internalName, final int typeId,
                               final ConsumerApiDefinition owner, final boolean abstractFlag,
-                              final Optional<ConsumerRecordType> superType, final Optionality optionality) {
-        super(publicName, internalName, typeId, owner, abstractFlag, superType, optionality);
+                              final Optional<ConsumerRecordType> superType) {
+        super(publicName, internalName, typeId, owner, abstractFlag, superType);
     }
 
     @Override

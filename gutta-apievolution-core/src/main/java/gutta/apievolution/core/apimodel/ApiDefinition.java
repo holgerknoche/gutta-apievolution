@@ -1,8 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * An API definition is the root element of the API model. It serves as the container for its elements, such as
@@ -20,7 +18,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     private final QualifiedName name;
 
-    private final List<Annotation> annotations;
+    private final Set<Annotation> annotations;
 
     private final List<UserDefinedType<A>> userDefinedTypes;
 
@@ -35,9 +33,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * @param name The name of the API definition
      * @param annotations Annotations of this API definition
      */
-    protected ApiDefinition(final QualifiedName name, final List<Annotation> annotations) {
+    protected ApiDefinition(final QualifiedName name, final Set<Annotation> annotations) {
         this.name = name;
-        this.annotations = (annotations == null) ? new ArrayList<>() : annotations;
+        this.annotations = (annotations == null) ? new HashSet<>() : annotations;
         this.userDefinedTypes = new ArrayList<>();
         this.udtLookup = new HashMap<>();
         this.services = new ArrayList<>();
@@ -56,7 +54,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * Returns the annotations on this API definition.
      * @return see above
      */
-    public List<Annotation> getAnnotations() {
+    public Set<Annotation> getAnnotations() {
         return this.annotations;
     }
 

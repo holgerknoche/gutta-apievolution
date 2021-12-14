@@ -24,7 +24,7 @@ class ModelCreationTest {
         // Create an API definition with four types, one used only for input, one only for output, one for both and one
         // not at all
         ProviderApiDefinition apiDefinition = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptyList(),
+                Collections.emptySet(),
                 1,
                 Optional.empty());
 
@@ -34,7 +34,6 @@ class ModelCreationTest {
                 apiDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         ProviderRecordType returnType = new ProviderRecordType("ReturnType",
@@ -43,7 +42,6 @@ class ModelCreationTest {
                 apiDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         ProviderRecordType inoutType = new ProviderRecordType("InOutType",
@@ -52,7 +50,6 @@ class ModelCreationTest {
                 apiDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         ProviderRecordType unusedType = new ProviderRecordType("UnusedType",
@@ -61,7 +58,6 @@ class ModelCreationTest {
                 apiDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         ProviderService service = new ProviderService("TestService",

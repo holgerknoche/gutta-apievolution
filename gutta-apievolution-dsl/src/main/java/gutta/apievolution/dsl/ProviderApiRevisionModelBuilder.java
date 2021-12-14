@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.Token;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Specific revision model builder for consumer API definitions.
@@ -33,7 +34,7 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
 
     @Override
     protected ProviderApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
-                                                   final QualifiedName name, final List<Annotation> annotations,
+                                                   final QualifiedName name, final Set<Annotation> annotations,
                                                    final Optional<ProviderApiDefinition> predecessor) {
         return new ProviderApiDefinition(name, annotations, this.revision, predecessor);
     }
@@ -43,8 +44,7 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
                                                   final Optional<String> internalName, final int typeId,
                                                   final ProviderApiDefinition currentRevision,
                                                   final boolean abstractFlag,
-                                                  final Optional<ProviderRecordType> superType,
-                                                  final Optionality optionality) {
+                                                  final Optional<ProviderRecordType> superType) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderRecordType> predecessor;
@@ -69,7 +69,7 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
         }
 
         return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, superType,
-                optionality, predecessor);
+                predecessor);
     }
 
     @Override

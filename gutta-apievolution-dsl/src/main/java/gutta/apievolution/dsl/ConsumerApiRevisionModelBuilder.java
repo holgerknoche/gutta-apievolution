@@ -6,6 +6,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -26,7 +27,7 @@ class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerAp
 
     @Override
     protected ConsumerApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
-                                                   final QualifiedName name, final List<Annotation> annotations,
+                                                   final QualifiedName name, final Set<Annotation> annotations,
                                                    final Optional<ConsumerApiDefinition> predecessor) {
         return new ConsumerApiDefinition(name, annotations, this.referencedRevision);
     }
@@ -36,10 +37,8 @@ class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerAp
                                                   final Optional<String> internalName, final int typeId,
                                                   final ConsumerApiDefinition currentRevision,
                                                   final boolean abstractFlag,
-                                                  final Optional<ConsumerRecordType> superType,
-                                                  final Optionality optionality) {
-        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, superType,
-                optionality);
+                                                  final Optional<ConsumerRecordType> superType) {
+        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, superType);
     }
 
     @Override

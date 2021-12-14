@@ -4,9 +4,8 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -28,7 +27,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
      * @param revision The revision number of this API definition
      * @param predecessor The predecessor of this API definition
      */
-    public ProviderApiDefinition(final QualifiedName name, final List<Annotation> annotations,
+    public ProviderApiDefinition(final QualifiedName name, final Set<Annotation> annotations,
                                  final int revision,
                                  final Optional<ProviderApiDefinition> predecessor) {
         super(name, annotations);

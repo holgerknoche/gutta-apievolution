@@ -5,9 +5,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionBaseVisitor;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -69,7 +67,7 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
     }
 
     protected abstract A createRevision(ApiRevisionParser.ApiDefinitionContext context, QualifiedName name,
-                                        List<Annotation> annotations, Optional<A> predecessor);
+                                        Set<Annotation> annotations, Optional<A> predecessor);
 
     @Override
     public final Void visitRecordType(final ApiRevisionParser.RecordTypeContext ctx) {
@@ -86,7 +84,7 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
         Optional<R> superType = this.resolveRecord(superTypeName, () -> ctx.superType.start);
 
         R recordType = this.createRecordType(ctx, name, internalName, this.getNextTypeId(), this.currentRevision,
-                modifiers.isAbstract(), superType, modifiers.getOptionality());
+                modifiers.isAbstract(), superType);
         this.registerNewRecordType(recordType);
 
         this.currentRecordType = recordType;
@@ -98,8 +96,7 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
 
     protected abstract R createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
                                           final Optional<String> internalName, int typeId, final A currentRevision,
-                                          final boolean abstractFlag, Optional<R> superType,
-                                          final Optionality optionality);
+                                          final boolean abstractFlag, Optional<R> superType);
 
     protected void registerNewRecordType(final R recordType) {
         // Do nothing by default
@@ -313,8 +310,8 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
         // Do nothing by default
     }
 
-    protected List<Annotation> handleAnnotations(final List<ApiRevisionParser.AnnotationContext> annotationContexts) {
-        List<Annotation> annotations = new ArrayList<>(annotationContexts.size());
+    protected Set<Annotation> handleAnnotations(final List<ApiRevisionParser.AnnotationContext> annotationContexts) {
+        Set<Annotation> annotations = new HashSet<>(annotationContexts.size());
 
         for (ApiRevisionParser.AnnotationContext annotationContext : annotationContexts) {
             String typeText = annotationContext.typeToken.getText();
