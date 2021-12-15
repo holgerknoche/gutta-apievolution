@@ -22,8 +22,9 @@ public class DefinitionResolver {
      * @param revisionHistory The provider revision history
      * @param supportedRevisions The set of supported revision numbers
      * @param consumerApi The consumer API to resolve
+     * @return A resolution of the consumer API against the provider's internal representation
      */
-    public void resolveConsumerDefinition(RevisionHistory revisionHistory,
+    public DefinitionResolution resolveConsumerDefinition(RevisionHistory revisionHistory,
                                           Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
 
         int desiredRevision = consumerApi.getReferencedRevision();
@@ -36,27 +37,19 @@ public class DefinitionResolver {
             throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exist.");
         }
 
-        this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi, revisionHistory);
+        return this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi, revisionHistory);
     }
 
-    void resolveConsumerDefinitionAgainst(ProviderApiDefinition providerApi,
+    DefinitionResolution resolveConsumerDefinitionAgainst(ProviderApiDefinition providerApi,
                                           ConsumerApiDefinition consumerApi,
                                           RevisionHistory revisionHistory) {
         ConsumerToProviderMap consumerToProviderMap = this.createConsumerToProviderMap(consumerApi, providerApi);
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
 
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
+        ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();
 
-        // Step 3: Invert the maps to obtain the provider's view
-        // Map<Type, Type> providerToConsumerType = invertMap(consumerToProviderType, this::onTypeConflict);
-        // Map<ProviderField, ConsumerField> providerToConsumerField = invertMap(consumerToProviderField,
-        //    this::onFieldConflict);
-        // Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember = invertMap(consumerToProviderMember,
-        //    this::onEnumMemberConflict);
-
-        // Step 4: Perform consistency checks on the maps
-        // this.checkConsumerMaps(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
-        // this.checkProviderMaps(providerToConsumerType, providerToConsumerField, providerToConsumerMember);
+        return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap);
     }
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
