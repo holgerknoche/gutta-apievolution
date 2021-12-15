@@ -36,30 +36,39 @@ public class DefinitionResolver {
             throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exist.");
         }
 
-        this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi);
+        this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi, revisionHistory);
     }
 
     void resolveConsumerDefinitionAgainst(ProviderApiDefinition providerApi,
-                                          ConsumerApiDefinition consumerApi) {
-        // Step 1: Establish a type-type mapping for user-defined types
+                                          ConsumerApiDefinition consumerApi,
+                                          RevisionHistory revisionHistory) {
+        ConsumerToProviderMap consumerToProviderMap = this.createConsumerToProviderMap(consumerApi, providerApi);
+        ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
+
+        ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
+
+        // Step 3: Invert the maps to obtain the provider's view
+        // Map<Type, Type> providerToConsumerType = invertMap(consumerToProviderType, this::onTypeConflict);
+        // Map<ProviderField, ConsumerField> providerToConsumerField = invertMap(consumerToProviderField,
+        //    this::onFieldConflict);
+        // Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember = invertMap(consumerToProviderMember,
+        //    this::onEnumMemberConflict);
+
+        // Step 4: Perform consistency checks on the maps
+        // this.checkConsumerMaps(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
+        // this.checkProviderMaps(providerToConsumerType, providerToConsumerField, providerToConsumerMember);
+    }
+
+    private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
+                                                              ProviderApiDefinition providerApi) {
         Map<Type, Type> consumerToProviderType = this.createTypeMapping(providerApi, consumerApi);
 
-        // Step 2: Establish mappings between members and fields for each user-defined type
         Map<ConsumerField, ProviderField> consumerToProviderField = this.createFieldMapping(consumerApi,
                 consumerToProviderType);
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = this.createMemberMapping(consumerApi,
                 consumerToProviderType);
 
-        // Step 3: Invert the maps to obtain the provider's view
-        Map<Type, Type> providerToConsumerType = invertMap(consumerToProviderType, this::onTypeConflict);
-        Map<ProviderField, ConsumerField> providerToConsumerField = invertMap(consumerToProviderField,
-                this::onFieldConflict);
-        Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember = invertMap(consumerToProviderMember,
-                this::onEnumMemberConflict);
-
-        // Step 4: Perform consistency checks on the maps
-        this.checkConsumerMaps(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
-        this.checkProviderMaps(providerToConsumerType, providerToConsumerField, providerToConsumerMember);
+        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
     }
 
     private void onTypeConflict(Type providerType) {
