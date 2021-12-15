@@ -1,9 +1,12 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.ListType;
+import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.Type;
 
-import java.security.Provider;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A revision history embodies an ordered sequence of dependent provider API definitions.
@@ -11,6 +14,8 @@ import java.util.*;
 public class RevisionHistory {
 
     private final List<ProviderApiDefinition> revisions;
+
+    private final Map<Integer, ProviderApiDefinition> revisionLookup;
 
     /**
      * Creates a new revision history from the given revisions.
@@ -26,6 +31,9 @@ public class RevisionHistory {
      */
     public RevisionHistory(List<ProviderApiDefinition> revisions) {
         this.revisions = revisions;
+
+        this.revisionLookup = revisions.stream()
+                .collect(Collectors.toMap(ProviderApiDefinition::getRevision, Function.identity()));
     }
 
     /**
@@ -34,6 +42,15 @@ public class RevisionHistory {
      */
     public boolean isEmpty() {
         return this.revisions.isEmpty();
+    }
+
+    /**
+     * Retrieves a revision within this history by its revision number.
+     * @param revisionNo The desired revision's revision number
+     * @return The desired revision, if it exists
+     */
+    public Optional<ProviderApiDefinition> getRevision(int revisionNo) {
+        return Optional.ofNullable(this.revisionLookup.get(revisionNo));
     }
 
     /**

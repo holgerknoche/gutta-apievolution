@@ -33,7 +33,7 @@ class RevisionHistoryTest {
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
-                () -> revisionHistory.checkConsistency());
+                revisionHistory::checkConsistency);
 
         assertTrue(exception.getMessage().contains("Different API names"));
     }
@@ -45,7 +45,7 @@ class RevisionHistoryTest {
     void testNonMonotonicRevisionNumbers() {
         ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
                 Collections.emptySet(),
-                0,
+                1,
                 Optional.empty());
 
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
@@ -55,7 +55,7 @@ class RevisionHistoryTest {
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
-                () -> revisionHistory.checkConsistency());
+                revisionHistory::checkConsistency);
 
         assertTrue(exception.getMessage().contains("ascending revision numbers"));
     }
@@ -108,7 +108,7 @@ class RevisionHistoryTest {
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
-                () -> revisionHistory.checkConsistency());
+                revisionHistory::checkConsistency);
 
         assertTrue(exception.getMessage().contains("Illegal type change"));
     }

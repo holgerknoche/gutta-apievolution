@@ -6,6 +6,7 @@ import gutta.apievolution.core.apimodel.provider.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -18,24 +19,24 @@ public class DefinitionResolver {
 
     /**
      * Resolves the given consumer API definition against a given provider revision history.
-     * @param revisionMap The provider revision history, represented as a map from revision number to revision
+     * @param revisionHistory The provider revision history
      * @param supportedRevisions The set of supported revision numbers
      * @param consumerApi The consumer API to resolve
      */
-    public void resolveConsumerDefinition(Map<Integer, ProviderApiDefinition> revisionMap,
+    public void resolveConsumerDefinition(RevisionHistory revisionHistory,
                                           Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
 
-        Integer desiredRevision = consumerApi.getReferencedRevision();
+        int desiredRevision = consumerApi.getReferencedRevision();
         if (!supportedRevisions.contains(desiredRevision)) {
             throw new DefinitionResolutionException("Revision " + desiredRevision + " is not supported.");
         }
 
-        ProviderApiDefinition providerApi = revisionMap.get(desiredRevision);
-        if (providerApi == null) {
-            throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exists.");
+        Optional<ProviderApiDefinition> optionalProviderApi = revisionHistory.getRevision(desiredRevision);
+        if (!optionalProviderApi.isPresent()) {
+            throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exist.");
         }
 
-        this.resolveConsumerDefinitionAgainst(providerApi, consumerApi);
+        this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi);
     }
 
     void resolveConsumerDefinitionAgainst(ProviderApiDefinition providerApi,
