@@ -1,7 +1,12 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -15,10 +20,20 @@ public class DefinitionResolution {
 
     private final ProviderToConsumerMap providerToConsumerMap;
 
+    private final Map<String, Type> consumerTypeMap;
+
     DefinitionResolution(ConsumerToProviderMap consumerToProviderMap,
                          ProviderToConsumerMap providerToConsumerMap) {
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
+
+        this.consumerTypeMap = createTypeMap(consumerToProviderMap.consumerTypes());
+    }
+
+    private static Map<String, Type> createTypeMap(Stream<Type> types) {
+        return types.filter(type -> (type instanceof UserDefinedType))
+                .map(type -> (UserDefinedType<?>) type)
+                .collect(Collectors.toMap(type -> type.getInternalName(), Function.identity()));
     }
 
     /**
@@ -27,6 +42,15 @@ public class DefinitionResolution {
      */
     public Stream<Type> consumerTypes() {
         return this.consumerToProviderMap.consumerTypes();
+    }
+
+    /**
+     * Resolves the given internal name into a consumer type.
+     * @param internalName The internal name of the desired type
+     * @return The consumer type, if it exists
+     */
+    public Type resolveConsumerType(String internalName) {
+        return this.consumerTypeMap.get(internalName);
     }
 
     /**

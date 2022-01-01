@@ -1,6 +1,7 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.core.apimodel.provider.*;
 
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * The definition resolver resolves client API definitions against provider API revisions. The resulting resolution
@@ -49,6 +49,10 @@ public class DefinitionResolver {
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
         ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();
 
+        // Perform consistency checks on the maps
+        consumerToRepresentationMap.checkConsistency();
+        representationToConsumerMap.checkConsistency();
+
         return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap);
     }
 
@@ -62,31 +66,6 @@ public class DefinitionResolver {
                 consumerToProviderType);
 
         return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
-    }
-
-    private void onTypeConflict(Type providerType) {
-        throw new DefinitionResolutionException("Ambiguous provider type " + providerType + ".");
-    }
-
-    private void onFieldConflict(ProviderField providerField) {
-        throw new DefinitionResolutionException("Ambiguous provider field " + providerField + ".");
-    }
-
-    private void onEnumMemberConflict(ProviderEnumMember providerEnumMember) {
-        throw new DefinitionResolutionException("Ambiguous provider enum member " + providerEnumMember + ".");
-    }
-
-    private static <K, V> Map<V, K> invertMap(Map<K, V> inMap, Consumer<V> onConflict) {
-        Map<V, K> invertedMap = new HashMap<>(inMap.size());
-
-        inMap.forEach((key, value) -> {
-            K existingValue = invertedMap.put(value, key);
-            if (existingValue != null) {
-                onConflict.accept(value);
-            }
-        });
-
-        return invertedMap;
     }
 
     private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
@@ -163,99 +142,6 @@ public class DefinitionResolver {
         }
 
         return consumerToProviderMember;
-    }
-
-    private void checkConsumerMaps(Map<Type, Type> consumerToProviderType,
-                                   Map<ConsumerField, ProviderField> consumerToProviderField,
-                                   Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember) {
-        // Check the consumer-to-provider type associations for consistency
-        this.checkConsumerToProviderTypeAssociation(consumerToProviderType, consumerToProviderField);
-    }
-
-    private void checkConsumerToProviderTypeAssociation(Map<Type, Type> consumerToProviderType,
-                                                        Map<ConsumerField, ProviderField> consumerToProviderField) {
-        ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker(consumerToProviderType,
-                consumerToProviderField);
-
-        consumerToProviderType.forEach(checker::checkConsistency);
-    }
-
-    private void checkProviderMaps(Map<Type, Type> providerToConsumerType,
-                                   Map<ProviderField, ConsumerField> providerToConsumerField,
-                                   Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember) {
-        // TODO
-    }
-
-    private static class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
-
-        private final Map<Type, Type> consumerToProviderType;
-
-        private final Map<ConsumerField, ProviderField> consumerToProviderField;
-
-        private Type foreignType;
-
-        public ConsumerTypeConsistencyChecker(Map<Type, Type> consumerToProviderType,
-                                              Map<ConsumerField, ProviderField> consumerToProviderField) {
-            this.consumerToProviderType = consumerToProviderType;
-            this.consumerToProviderField = consumerToProviderField;
-        }
-
-        public void checkConsistency(Type ownType, Type foreignType) {
-            this.foreignType = foreignType;
-            ownType.accept(this);
-        }
-
-        @Override
-        public Void handleEnumType(EnumType<?, ?, ?> enumType) {
-            // No specific checks as of now
-
-            return null;
-        }
-
-        @SuppressWarnings("unchecked")
-        private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) this.consumerToProviderType.get(ownType);
-        }
-
-        private ProviderField resolveForeignField(ConsumerField ownField) {
-            return this.consumerToProviderField.get(ownField);
-        }
-
-        @Override
-        public Void handleRecordType(RecordType<?, ?, ?> recordType) {
-            RecordType<?, ?, ?> foreignRecordType = (RecordType<?, ?, ?>) this.foreignType;
-
-            if (recordType.getSuperType().isPresent()) {
-                // When the current record has a supertype, ensure that it is mapped in a compatible way
-                RecordType<?, ?, ?> ownSuperType = recordType.getSuperType().get();
-                RecordType<?, ?, ?> foreignSuperType = foreignRecordType.getSuperType().orElseThrow(
-                        () -> new DefinitionResolutionException("Missing supertype on " + foreignRecordType + ".")
-                );
-
-                Type mappedForeignSupertype = this.resolveForeignType(ownSuperType);
-                if (!foreignSuperType.equals(mappedForeignSupertype)) {
-                    throw new DefinitionResolutionException("Supertype of " + foreignRecordType + " is mapped to " +
-                            mappedForeignSupertype + ", expected " + foreignSuperType + ".");
-                }
-            }
-
-            // Assert that the types of the fields are compatible
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
-                ConsumerField ownField = (ConsumerField) field;
-                ProviderField foreignField = this.resolveForeignField(ownField);
-                this.checkField(ownField, foreignField);
-            }
-
-            return null;
-        }
-
-        private void checkField(ConsumerField ownField, ProviderField foreignField) {
-            // TODO
-            Optionality consumerOptionality = ownField.getOptionality();
-            Optionality providerOptionality = foreignField.getOptionality();
-
-        }
-
     }
 
 }

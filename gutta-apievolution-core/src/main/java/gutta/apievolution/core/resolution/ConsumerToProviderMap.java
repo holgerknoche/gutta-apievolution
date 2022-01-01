@@ -1,6 +1,6 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
@@ -76,6 +76,17 @@ class ConsumerToProviderMap {
         throw new DefinitionResolutionException("Ambiguous enum member " + enumMember + ".");
     }
 
+    void checkConsistency() {
+        this.checkTypeAssociation(this.consumerToProviderType, this.consumerToProviderField);
+    }
+
+    private void checkTypeAssociation(Map<Type, Type> consumerToProviderType,
+                                      Map<ConsumerField, ProviderField> consumerToProviderField) {
+        ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker();
+
+        consumerToProviderType.forEach(checker::checkConsistency);
+    }
+
     private static <A, B, C> Map<A, C> composeMaps(Map<A, B> map1, Function<B, C> map2) {
         Map<A, C> composedMap = new HashMap<>(map1.size());
 
@@ -110,6 +121,50 @@ class ConsumerToProviderMap {
 
     Type mapConsumerType(Type consumerType) {
         return this.consumerToProviderType.get(consumerType);
+    }
+
+    private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
+
+        private Type foreignType;
+
+        public void checkConsistency(Type ownType, Type foreignType) {
+            this.foreignType = foreignType;
+            ownType.accept(this);
+        }
+
+        @Override
+        public Void handleEnumType(EnumType<?, ?, ?> enumType) {
+            // No specific checks as of now
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        private <T extends Type> T resolveForeignType(Type ownType) {
+            return (T) ConsumerToProviderMap.this.consumerToProviderType.get(ownType);
+        }
+
+        private ProviderField resolveForeignField(ConsumerField ownField) {
+            return ConsumerToProviderMap.this.consumerToProviderField.get(ownField);
+        }
+
+        @Override
+        public Void handleRecordType(RecordType<?, ?, ?> recordType) {
+            // Assert that the types of the fields are compatible
+            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+                ConsumerField ownField = (ConsumerField) field;
+                ProviderField foreignField = this.resolveForeignField(ownField);
+                this.checkField(ownField, foreignField);
+            }
+
+            return null;
+        }
+
+        private void checkField(ConsumerField ownField, ProviderField foreignField) {
+            // TODO Make sure that the optionalities match or are at least compatible
+            Optionality consumerOptionality = ownField.getOptionality();
+            Optionality providerOptionality = foreignField.getOptionality();
+        }
+
     }
 
 }

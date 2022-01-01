@@ -104,6 +104,7 @@
         <module>gutta-apievolution-core</module>
         <module>gutta-apievolution-dsl</module>
         <module>gutta-apievolution-java-codegen-plugin</module>
+        <module>gutta-apievolution-json</module>
     </modules>
 
 </project>

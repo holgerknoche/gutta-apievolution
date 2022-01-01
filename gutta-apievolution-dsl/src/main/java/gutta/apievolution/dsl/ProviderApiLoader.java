@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Utility class for loading provider API definitions.
  */
-public class ProviderApiLoader {
+public class ProviderApiLoader extends ApiDefinitionLoader {
 
     /**
      * Loads an API definition from the given input stream.
@@ -37,14 +37,7 @@ public class ProviderApiLoader {
     public static ProviderApiDefinition loadFromStream(final int revision, final InputStream inputStream,
                                                        final Optional<ProviderApiDefinition> optionalPredecessor)
             throws IOException {
-        CharStream stream = CharStreams.fromStream(inputStream);
-        ApiRevisionLexer lexer = new ApiRevisionLexer(stream);
-        TokenStream tokenStream = new CommonTokenStream(lexer);
-        ApiRevisionParser parser = new ApiRevisionParser(tokenStream);
-
-        parser.setErrorHandler(new BailErrorStrategy());
-
-        ApiRevisionParser.ApiDefinitionContext specification = parser.apiDefinition();
+        ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
         return new ProviderApiRevisionModelBuilder().buildProviderRevision(revision, specification,
                 optionalPredecessor);
     }

@@ -17,12 +17,11 @@ class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerAp
 
     private int referencedRevision;
 
-    public ConsumerApiDefinition buildProviderRevision(final int referencedRevision,
-                                                       final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                                       final Optional<ConsumerApiDefinition> optionalPredecessor) {
+    public ConsumerApiDefinition buildConsumerRevision(final int referencedRevision,
+                                                       final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec) {
         this.referencedRevision = referencedRevision;
 
-        return this.buildRevision(apiRevisionSpec, optionalPredecessor);
+        return this.buildRevision(apiRevisionSpec, Optional.empty());
     }
 
     @Override
