@@ -4,10 +4,8 @@ import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Specific revision model builder for consumer API definitions.

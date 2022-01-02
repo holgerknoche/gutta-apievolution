@@ -3,7 +3,6 @@ package gutta.apievolution.core.resolution;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,9 +30,9 @@ public class DefinitionResolution {
     }
 
     private static Map<String, Type> createTypeMap(Stream<Type> types) {
-        return types.filter(type -> (type instanceof UserDefinedType))
+        return types.filter(UserDefinedType.class::isInstance)
                 .map(type -> (UserDefinedType<?>) type)
-                .collect(Collectors.toMap(type -> type.getInternalName(), Function.identity()));
+                .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));
     }
 
     /**

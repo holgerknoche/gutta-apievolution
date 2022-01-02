@@ -1,6 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.TypeVisitor;
 

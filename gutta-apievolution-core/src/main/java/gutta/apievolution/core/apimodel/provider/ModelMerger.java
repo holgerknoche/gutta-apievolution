@@ -4,8 +4,7 @@ import gutta.apievolution.core.apimodel.*;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * The model merger builds a merged definition from a history of definitions. This merged definition is the basis for
@@ -35,8 +34,8 @@ public class ModelMerger {
     public ToMergedModelMap createMergedDefinition(RevisionHistory revisionHistory,
                                                    ProviderApiDefinition referenceRevision) {
         ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
-        MergePass2Creator pass2Creator = (targetDefinition, supportedRevisions, typeLookup) ->
-                new RevisionMergePass2.MappingRevisionMergePass2(targetDefinition, supportedRevisions, typeLookup,
+        MergePass2Creator pass2Creator = (supportedRevisions, typeLookup) ->
+                new RevisionMergePass2.MappingRevisionMergePass2(supportedRevisions, typeLookup,
                         referenceRevision);
         RevisionMergePass2.MappingRevisionMergePass2 pass2 = (RevisionMergePass2.MappingRevisionMergePass2)
                 this.mergeElementsIntoRevision(revisionHistory, mergedDefinition, pass2Creator);
@@ -104,7 +103,7 @@ public class ModelMerger {
         ProviderTypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
 
         // Then, convert the remaining elements using the previously created type lookup
-        RevisionMergePass2 pass2 = pass2Creator.create(mergedDefinition, supportedRevisions, typeLookup);
+        RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup);
 
         while (revisions.hasPrevious()) {
             ProviderApiDefinition currentRevision = revisions.previous();
@@ -146,7 +145,7 @@ public class ModelMerger {
 
         @SuppressWarnings("unchecked")
         private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType>
-            Void handleUserDefinedType(T inType, Function<T, T> mapperFunction) {
+            Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
 
             // Check if a successor of this type is already part of the merged model
             Optional<T> optionalMappedSuccessor = inType.findFirstSuccessorMatching(
@@ -212,8 +211,7 @@ public class ModelMerger {
     @FunctionalInterface
     private interface MergePass2Creator {
 
-        RevisionMergePass2 create(ProviderApiDefinition mergedDefinition, Set<ProviderApiDefinition> supportedRevisions,
-                                  ProviderTypeLookup typeLookup);
+        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup);
 
     }
 
@@ -223,8 +221,6 @@ public class ModelMerger {
      * passed on from the first pass.
      */
     private static class RevisionMergePass2 implements ProviderApiDefinitionElementVisitor<Void> {
-
-        private final ProviderApiDefinition mergedDefinition;
 
         private final Set<ProviderApiDefinition> supportedRevisions;
 
@@ -240,9 +236,8 @@ public class ModelMerger {
 
         private ProviderEnumType currentEnumType;
 
-        public RevisionMergePass2(ProviderApiDefinition mergedDefinition, Set<ProviderApiDefinition> supportedRevisions,
+        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
                                   ProviderTypeLookup typeLookup) {
-            this.mergedDefinition = mergedDefinition;
             this.supportedRevisions = supportedRevisions;
             this.typeLookup = typeLookup;
         }
@@ -326,7 +321,9 @@ public class ModelMerger {
             return null;
         }
 
-        protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {}
+        protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
+            // Do nothing as of now
+        }
 
         private Optionality determineOptionalityForField(ProviderField field) {
             // First, determine the minimal specified optionality. Note that the field is always from the latest
@@ -388,7 +385,9 @@ public class ModelMerger {
             return null;
         }
 
-        protected void registerEnumMemberMapping(ProviderEnumMember originalMember, ProviderEnumMember mappedMember) {}
+        protected void registerEnumMemberMapping(ProviderEnumMember originalMember, ProviderEnumMember mappedMember) {
+            // Do nothing as of now
+        }
 
         private static class MappingRevisionMergePass2 extends RevisionMergePass2 {
 
@@ -398,11 +397,10 @@ public class ModelMerger {
 
             private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap = new HashMap<>();
 
-            public MappingRevisionMergePass2(ProviderApiDefinition mergedRevision,
-                                             Set<ProviderApiDefinition> supportedRevisions,
+            public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
                                              ProviderTypeLookup typeLookup,
                                              ProviderApiDefinition referenceRevision) {
-                super(mergedRevision, supportedRevisions, typeLookup);
+                super(supportedRevisions, typeLookup);
 
                 this.referenceRevision = referenceRevision;
             }
@@ -436,7 +434,7 @@ public class ModelMerger {
 
             public final String typeName;
 
-            public final String memberName;
+            public final String memberName; // NOSONAR This name is appropriate
 
             public MemberName(String typeName, String memberName) {
                 this.typeName = typeName;
@@ -467,33 +465,6 @@ public class ModelMerger {
             @Override
             public String toString() {
                 return this.typeName + "." + this.memberName;
-            }
-        }
-
-        /**
-         * Predicate to detect type changes in a revision history. This is essentially a workaround as the
-         * takeWhile operation is only introduced in Java 9, and we want Java 8 support.
-         */
-        private static class TypeChangeDetectionPredicate implements Predicate<ProviderField> {
-
-            private final Type referenceType;
-
-            private boolean changeDetected = false;
-
-            public TypeChangeDetectionPredicate(ProviderField referenceField) {
-                this.referenceType = referenceField.getType();
-            }
-
-            @Override
-            public boolean test(ProviderField providerField) {
-                if (this.changeDetected) {
-                    return false;
-                } else if (!this.referenceType.equals(providerField.getType())) {
-                    this.changeDetected = true;
-                    return false;
-                } else {
-                    return true;
-                }
             }
         }
 

@@ -9,7 +9,7 @@ public class APIResolutionException extends RuntimeException {
 
     private static final long serialVersionUID = -2560140692689234150L;
 
-    private final Token token;
+    private final transient Token token;
 
     /**
      * Creates a new exception from the given data.

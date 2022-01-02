@@ -20,4 +20,8 @@ class ApiDefinitionLoader {
         return parser.apiDefinition();
     }
 
+    protected ApiDefinitionLoader() {
+        // Protected default constructor
+    }
+
 }

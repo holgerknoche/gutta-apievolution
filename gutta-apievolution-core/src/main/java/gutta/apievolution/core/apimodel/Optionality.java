@@ -1,7 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import javax.swing.text.html.Option;
-
 /**
  * Optionality represents to which degree a given element (such as a parameter or a field) is optional.
  */

@@ -1,6 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import java.security.cert.PolicyQualifierInfo;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -60,13 +59,13 @@ public class QualifiedName {
 
     @Override
     public String toString() {
-        Iterator<String> parts = this.parts.iterator();
+        Iterator<String> localParts = this.parts.iterator();
 
         StringBuilder builder = new StringBuilder();
-        while (parts.hasNext()) {
-            builder.append(parts.next());
+        while (localParts.hasNext()) {
+            builder.append(localParts.next());
 
-            if (parts.hasNext()) {
+            if (localParts.hasNext()) {
                 builder.append('.');
             }
         }

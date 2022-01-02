@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import java.io.*;
 import java.util.*;
@@ -34,14 +35,14 @@ class ProviderCodeGenerator {
 
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
         JavaModelBuilder javaModelBuilder = new JavaModelBuilder();
-        mergedDefinition.forEach(element -> javaModelBuilder.processElement(element));
+        mergedDefinition.forEach(javaModelBuilder::processElement);
 
         return javaModelBuilder.getJavaClasses();
     }
 
     void generateSources(Collection<JavaUserDefinedType> classesToGenerate, File outputDirectory) {
         Properties properties = new Properties();
-        properties.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+        properties.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         properties.setProperty("classpath.resource.loader.class",
                 "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 
@@ -88,7 +89,7 @@ class ProviderCodeGenerator {
         VelocityContext context = new VelocityContext();
 
         context.put("type", classToGenerate);
-        context.put("stringUtil", new StringUtils());
+        context.put("stringUtil", new StringUtils()); // NOSONAR Must be instantiated to be used in the context
 
         engine.mergeTemplate("java/JavaInterface.vt", "UTF-8", context, writer);
     }
@@ -97,7 +98,7 @@ class ProviderCodeGenerator {
         VelocityContext context = new VelocityContext();
 
         context.put("type", enumToGenerate);
-        context.put("stringUtil", new StringUtils());
+        context.put("stringUtil", new StringUtils()); // NOSONAR Must be instantiated to be used in the context
 
         engine.mergeTemplate("java/JavaEnum.vt", "UTF-8", context, writer);
     }

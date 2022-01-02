@@ -16,7 +16,7 @@ public abstract class TypeLookup<U> {
      * Creates a new type lookup using the given lookup map for user-defined types.
      * @param udtLookup A lookup map for user-defined types
      */
-    public TypeLookup(Map<U, U> udtLookup) {
+    protected TypeLookup(Map<U, U> udtLookup) {
         this.udtLookup = udtLookup;
     }
 

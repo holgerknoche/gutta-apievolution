@@ -61,7 +61,7 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return super.hashCode() + Objects.hash(this.optionality, this.type);
     }
 

@@ -56,7 +56,7 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends Abstra
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         // Owner is excluded as to avoid cycles
         return super.hashCode() + this.typeId;
     }

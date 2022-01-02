@@ -227,7 +227,7 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
         this.registerNewEnumType(enumType);
 
         this.currentEnumType = enumType;
-        ctx.members.forEach(member -> this.visitEnumMember(member));
+        ctx.members.forEach(this::visitEnumMember);
         this.currentEnumType = null;
 
         return null;
@@ -271,7 +271,7 @@ abstract class ApiRevisionModelBuilder<A extends ApiDefinition<A>, R extends Rec
         this.registerNewService(service);
 
         this.currentService = service;
-        ctx.operations.forEach(operation -> this.visitServiceOperation(operation));
+        ctx.operations.forEach(this::visitServiceOperation);
         this.currentService = null;
 
         return null;

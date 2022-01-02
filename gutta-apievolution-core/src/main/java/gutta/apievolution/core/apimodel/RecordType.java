@@ -33,7 +33,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @param superType An optional supertype for this record type
      */
     @SuppressWarnings("unchecked")
-    public RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
+    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
                       final boolean abstractFlag, final Optional<R> superType) {
         super(publicName, internalName, typeId, owner);
 
@@ -107,7 +107,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subtypes
         return Objects.hash(this.declaredFields, this.superType);
     }
 

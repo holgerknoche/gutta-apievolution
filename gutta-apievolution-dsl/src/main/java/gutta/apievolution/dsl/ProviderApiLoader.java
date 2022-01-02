@@ -1,9 +1,7 @@
 package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
-import gutta.apievolution.dsl.parser.ApiRevisionLexer;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
-import org.antlr.v4.runtime.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +55,7 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
         }
 
         int streamCount = streams.size();
-        List<ProviderApiDefinition> revisions = new ArrayList<ProviderApiDefinition>(streamCount);
+        List<ProviderApiDefinition> revisions = new ArrayList<>(streamCount);
         Iterator<Integer> revisionsIdsIterator = revisionIds.iterator();
         Iterator<? extends InputStream> streamIterator = streams.iterator();
 

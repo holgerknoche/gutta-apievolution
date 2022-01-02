@@ -107,7 +107,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.services);
     }
 

@@ -5,7 +5,8 @@ import java.util.Iterator;
 /**
  * Iterable integer range.
  */
-public abstract class IntegerRange implements Iterable<Integer> {
+public abstract class IntegerRange implements Iterable<Integer> { // NOSONAR This must be a class due to inner
+    // classes
 
     /**
      * Creates a new unbounded integer range.
@@ -19,12 +20,12 @@ public abstract class IntegerRange implements Iterable<Integer> {
 
         @Override
         public Iterator<Integer> iterator() {
-            return new IntegerRangeIterator();
+            return new UnboundedIntegerRangeIterator();
         }
 
     }
 
-    private static class IntegerRangeIterator implements Iterator<Integer> {
+    private static class UnboundedIntegerRangeIterator implements Iterator<Integer> {
 
         private int value;
 
@@ -34,7 +35,7 @@ public abstract class IntegerRange implements Iterable<Integer> {
         }
 
         @Override
-        public Integer next() {
+        public Integer next() { // NOSONAR The range is unbounded, so there is no end of the collection
             return this.value++;
         }
 

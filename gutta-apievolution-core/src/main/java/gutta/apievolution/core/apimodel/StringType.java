@@ -3,7 +3,7 @@ package gutta.apievolution.core.apimodel;
 /**
  * String types represent character strings, which may be bounded.
  */
-public abstract class StringType implements BoundedType {
+public abstract class StringType implements BoundedType { // NOSONAR Must be a class due to inner classes
 
     /**
      * Creates an unbounded string type.

@@ -76,7 +76,7 @@ class ProviderToConsumerMap {
 
             if (recordType.getSuperType().isPresent()) {
                 // When the current record has a supertype, ensure that it is mapped in a compatible way
-                RecordType<?, ?, ?> ownSuperType = recordType.getSuperType().get();
+                RecordType<?, ?, ?> ownSuperType = recordType.getSuperType().get(); // NOSONAR IsPresent is called
                 RecordType<?, ?, ?> foreignSuperType = foreignRecordType.getSuperType().orElseThrow(
                         () -> new DefinitionResolutionException("Missing supertype on " + foreignRecordType + ".")
                 );
@@ -89,7 +89,7 @@ class ProviderToConsumerMap {
             }
 
             // Assert that the types of the fields are compatible
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+            for (Field<?, ?> field : recordType.getDeclaredFields()) { // NOSONAR Type is correct
                 ProviderField ownField = (ProviderField) field;
                 ConsumerField foreignField = this.resolveForeignField(ownField);
                 this.checkField(ownField, foreignField);

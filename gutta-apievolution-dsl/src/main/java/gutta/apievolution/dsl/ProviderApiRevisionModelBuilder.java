@@ -149,8 +149,9 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
                             "Evolution clause specified, but no predecessor structure is available.")
             );
         } else {
-            if (this.currentRecordType.getPredecessor().isPresent()) {
-                predecessorRecordType = this.currentRecordType.getPredecessor().get();
+            Optional<ProviderRecordType> optionalPredecessor = this.currentRecordType.getPredecessor();
+            if (optionalPredecessor.isPresent()) {
+                predecessorRecordType = optionalPredecessor.get();
             } else {
                 return Optional.empty();
             }
@@ -284,8 +285,9 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
                             "Replaces clause specified, but no predecessor is available.")
             );
         } else {
-            if (this.currentEnumType.getPredecessor().isPresent()) {
-                predecessorEnumType = this.currentEnumType.getPredecessor().get();
+            Optional<ProviderEnumType> optionalPredecessor = this.currentEnumType.getPredecessor();
+            if (optionalPredecessor.isPresent()) {
+                predecessorEnumType = optionalPredecessor.get();
             } else {
                 return Optional.empty();
             }
@@ -405,8 +407,9 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
                             "Replaces clause specified, but no predecessor service is available.")
             );
         } else {
-            if (this.currentService.getPredecessor().isPresent()) {
-                predecessorService = this.currentService.getPredecessor().get();
+            Optional<ProviderService> optionalPredecessor = this.currentService.getPredecessor();
+            if (optionalPredecessor.isPresent()) {
+                predecessorService = optionalPredecessor.get();
             } else {
                 return Optional.empty();
             }

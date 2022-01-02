@@ -49,7 +49,7 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         // No owner in the hash code as to avoid cycles
         return super.hashCode();
     }

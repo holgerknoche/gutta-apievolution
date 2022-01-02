@@ -137,7 +137,7 @@ class ModelMergerTest {
      * Tests that merging the members of an enumeration across revisions works as expected.
      */
     @Test
-    public void testEnumMemberMerging() {
+    void testEnumMemberMerging() {
         ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
                 Collections.emptySet(),
                 1,
