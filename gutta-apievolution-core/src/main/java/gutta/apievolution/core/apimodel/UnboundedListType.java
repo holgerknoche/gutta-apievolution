@@ -2,7 +2,7 @@ package gutta.apievolution.core.apimodel;
 
 class UnboundedListType extends ListType {
 
-    public UnboundedListType(final Type elementType) {
+    UnboundedListType(final Type elementType) {
         super(elementType);
     }
 
@@ -30,10 +30,6 @@ class UnboundedListType extends ListType {
         } else {
             return false;
         }
-    }
-
-    boolean stateEquals(UnboundedListType that) {
-        return super.stateEquals(that);
     }
 
     @Override

@@ -1,0 +1,16 @@
+name: Maven CI
+on: [push]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up JDK
+              uses: actions/setup-java@v2
+              with:
+                java-version: '8'
+                distribution: 'temurin'
+            - name: Maven Build
+              run: ./mvnw --batch-mode --update-snapshots verify
+

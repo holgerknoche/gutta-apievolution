@@ -24,7 +24,6 @@
     </build>
 
     <dependencies>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -22,7 +22,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
      * @param typeId The enum type's type id
      * @param owner The API definition that owns this enum type
      */
-    public EnumType(final String publicName, final Optional<String> internalName, final int typeId, final A owner) {
+    protected EnumType(final String publicName, final Optional<String> internalName, final int typeId, final A owner) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredMembers = new ArrayList<>();
@@ -63,7 +63,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return super.hashCode() + this.declaredMembers.hashCode();
     }
 

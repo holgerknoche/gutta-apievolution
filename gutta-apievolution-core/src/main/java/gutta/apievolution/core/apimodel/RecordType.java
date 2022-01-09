@@ -15,8 +15,6 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final Optional<R> superType;
 
-    private final Optionality optionality;
-
     private final List<F> declaredFields;
 
     private final Map<String, F> fieldLookup;
@@ -33,17 +31,15 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @param owner The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
      * @param superType An optional supertype for this record type
-     * @param optionality The default optionality for the fields of this type
      */
     @SuppressWarnings("unchecked")
-    public RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
-                      final boolean abstractFlag, final Optional<R> superType, final Optionality optionality) {
+    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
+                      final boolean abstractFlag, final Optional<R> superType) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
         this.superType = superType;
-        this.optionality = optionality;
         this.fieldLookup = new HashMap<>();
 
         owner.addUserDefinedType(this);
@@ -93,14 +89,6 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
-     * Returns the default optionality of the type's fields.
-     * @return see above
-     */
-    public Optionality getOptionality() {
-        return this.optionality;
-    }
-
-    /**
      * Resolves a field identified by its name within this record type.
      * @param name The name of the desired field
      * @return The resolved field, if it exists
@@ -119,8 +107,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(this.declaredFields, this.superType, this.optionality);
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subtypes
+        return Objects.hash(this.declaredFields, this.superType);
     }
 
     /**
@@ -132,8 +120,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
         return this.declaredFields.equals(that.declaredFields) &&
                 this.subTypes == that.subTypes &&
                 this.abstractFlag == that.abstractFlag &&
-                this.superType.equals(that.superType) &&
-                this.optionality.equals(that.optionality);
+                this.superType.equals(that.superType);
     }
 
 }

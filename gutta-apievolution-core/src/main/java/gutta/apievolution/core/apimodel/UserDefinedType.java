@@ -14,6 +14,8 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends Abstra
 
     private final A owner;
 
+    private Usage usage = Usage.NONE;
+
     /**
      * Creates a new UDT from the given data.
      * @param publicName The UDT's public name
@@ -45,8 +47,16 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends Abstra
         return this.owner;
     }
 
+    /**
+     * Returns the usage of this user-defined type.
+     * @return see above
+     */
+    public Usage getUsage() {
+        return this.usage;
+    }
+
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         // Owner is excluded as to avoid cycles
         return super.hashCode() + this.typeId;
     }
@@ -55,6 +65,10 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends Abstra
         // Owner is excluded as to avoid cycles
         return super.stateEquals(that) &&
                 this.typeId == that.typeId;
+    }
+
+    void registerUsage(Usage usage) {
+        this.usage = this.usage.lubOfThisAnd(usage);
     }
 
 }

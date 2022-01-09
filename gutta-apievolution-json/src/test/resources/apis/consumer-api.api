@@ -1,0 +1,11 @@
+api test.customer {
+
+    record TestParameter as ConsumerParameter {
+        string renamedField as testField
+    }
+
+    record TestResult as ConsumerResult {
+        string renamedField as resultField
+    }
+
+}

@@ -1,6 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.TypeVisitor;
 
@@ -24,14 +23,13 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
      * @param owner The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
      * @param superType This type's supertype, if any
-     * @param optionality The default optionality for this type's fields
      * @param predecessor The type's predecessor, if any
      */
     public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
                               final ProviderApiDefinition owner, final boolean abstractFlag,
-                              final Optional<ProviderRecordType> superType, final Optionality optionality,
+                              final Optional<ProviderRecordType> superType,
                               final Optional<ProviderRecordType> predecessor) {
-        super(publicName, internalName, typeId, owner, abstractFlag, superType, optionality);
+        super(publicName, internalName, typeId, owner, abstractFlag, superType);
 
         this.predecessor = predecessor;
         this.successor = Optional.empty();

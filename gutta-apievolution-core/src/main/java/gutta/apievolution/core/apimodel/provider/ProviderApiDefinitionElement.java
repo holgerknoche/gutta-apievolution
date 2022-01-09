@@ -3,7 +3,7 @@ package gutta.apievolution.core.apimodel.provider;
 /**
  * Interface for all elements that can be part of a provider API definition.
  */
-interface ProviderApiDefinitionElement {
+public interface ProviderApiDefinitionElement {
 
     /**
      * Accepts a given visitor for provider API definition elements.

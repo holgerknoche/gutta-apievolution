@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -25,9 +26,15 @@ abstract class RevisionHistoryIterator<T extends RevisionedElement<T>> implement
     @Override
     @SuppressWarnings("unchecked")
     public T next() {
-        RevisionedElement<T> next = this.navigateToNext(this.currentElement).get();
-        this.currentElement = next;
-        return (T) next;
+        Optional<T> optionalNext = this.navigateToNext(this.currentElement);
+
+        if (optionalNext.isPresent()) {
+            T next = optionalNext.get();
+            this.currentElement = next;
+            return next;
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
 }

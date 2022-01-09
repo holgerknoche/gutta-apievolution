@@ -51,7 +51,7 @@ public abstract class ListType implements BoundedType {
     public abstract int getBound();
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return this.elementType.hashCode();
     }
 

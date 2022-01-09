@@ -54,6 +54,12 @@
                     <artifactId>antlr4-maven-plugin</artifactId>
                     <version>${antlr.version}</version>
                 </plugin>
+                <!-- Recent Surefire plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -66,6 +72,11 @@
                 <artifactId>gutta-apievolution-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>gutta.apievolution</groupId>
+                <artifactId>gutta-apievolution-dsl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Third-party dependencies -->
             <dependency>
@@ -73,7 +84,13 @@
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
+            </dependency>
 
+            <!-- Test dependencies -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
@@ -86,6 +103,8 @@
     <modules>
         <module>gutta-apievolution-core</module>
         <module>gutta-apievolution-dsl</module>
+        <module>gutta-apievolution-java-codegen-plugin</module>
+        <module>gutta-apievolution-json</module>
     </modules>
 
 </project>

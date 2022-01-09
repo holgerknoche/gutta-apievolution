@@ -4,8 +4,7 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
 
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
@@ -20,7 +19,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition> 
      * @param annotations The annotations on this API definition, if any
      * @param referencedRevision The referenced revision number
      */
-    public ConsumerApiDefinition(final QualifiedName name, final List<Annotation> annotations,
+    public ConsumerApiDefinition(final QualifiedName name, final Set<Annotation> annotations,
                                  final int referencedRevision) {
         super(name, annotations);
 

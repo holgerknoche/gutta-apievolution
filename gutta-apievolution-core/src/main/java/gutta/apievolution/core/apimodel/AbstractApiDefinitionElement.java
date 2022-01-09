@@ -39,7 +39,7 @@ abstract class AbstractApiDefinitionElement {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return Objects.hash(this.publicName, this.internalName);
     }
 

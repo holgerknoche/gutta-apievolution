@@ -57,7 +57,7 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return super.hashCode() + this.declaredOperations.hashCode();
     }
 

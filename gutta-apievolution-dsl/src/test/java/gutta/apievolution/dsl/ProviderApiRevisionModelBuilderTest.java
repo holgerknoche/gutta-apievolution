@@ -28,7 +28,7 @@ class ProviderApiRevisionModelBuilderTest {
     void testSimpleAPIDefinition() {
         // Build the expected API definition with all expected elements
         ProviderApiDefinition expectedDefinition = new ProviderApiDefinition(QualifiedName.of("test.customer"),
-                Collections.emptyList(),
+                Collections.emptySet(),
                 0,
                 Optional.empty());
 
@@ -40,7 +40,6 @@ class ProviderApiRevisionModelBuilderTest {
                 expectedDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         new ProviderField("street",
@@ -104,7 +103,6 @@ class ProviderApiRevisionModelBuilderTest {
                 expectedDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         new ProviderField("firstName",
@@ -146,7 +144,6 @@ class ProviderApiRevisionModelBuilderTest {
                 expectedDefinition,
                 false,
                 Optional.empty(),
-                Optionality.MANDATORY,
                 Optional.empty());
 
         new ProviderField("address",
