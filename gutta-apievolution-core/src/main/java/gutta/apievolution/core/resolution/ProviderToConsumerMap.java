@@ -36,6 +36,10 @@ class ProviderToConsumerMap {
         return this.providerToConsumerType.get(providerType);
     }
 
+    ConsumerField mapProviderField(ProviderField providerField) {
+        return this.providerToConsumerField.get(providerField);
+    }
+
     void checkConsistency() {
         this.checkTypeAssociation();
     }

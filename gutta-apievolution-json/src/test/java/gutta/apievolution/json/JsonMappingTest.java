@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -19,6 +21,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class JsonMappingTest {
 
@@ -68,7 +73,32 @@ class JsonMappingTest {
         Type consumerType = definitionResolution.resolveConsumerType("ConsumerParameter");
         JsonNode externalParameterNode = this.rewriteInternalToPublic(consumerType, parameterNode);
 
-        System.out.println(externalParameterNode);
+        String requestJson = objectMapper.writeValueAsString(externalParameterNode);
+
+        Type providerParameterType = definitionResolution.mapConsumerType(consumerType);
+        JsonNode receivedRequestNode = objectMapper.readTree(requestJson);
+
+        JsonNode providerParameterNode = this.rewritePublicToProviderInternal(providerParameterType, definitionResolution, receivedRequestNode);
+        ProviderParameter providerParameter = objectMapper.treeToValue(providerParameterNode, ProviderParameter.class);
+
+        assertEquals("test value", providerParameter.getFieldA());
+        assertNull(providerParameter.getField2());
+
+        ProviderResult providerResult = new ProviderResult();
+        providerResult.setRetField("return value");
+
+        Type providerResultType = definitionResolution.resolveProviderType("TestResult");
+        JsonNode providerResultNode = objectMapper.valueToTree(providerResult);
+        JsonNode providerResponseNode = this.rewriteInternalToPublic(providerResultType, providerResultNode);
+
+        String responseJson = objectMapper.writeValueAsString(providerResponseNode);
+
+        Type clientResponseType = definitionResolution.resolveConsumerType("TestResult");
+        JsonNode receivedResponseNode = objectMapper.readTree(responseJson);
+        JsonNode consumerResponseNode = this.rewritePublicToConsumerInternal(clientResponseType, receivedResponseNode);
+
+        ConsumerResult consumerResult = objectMapper.treeToValue(consumerResponseNode, ConsumerResult.class);
+        assertEquals("return value", consumerResult.getResultField());
     }
 
     private JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
@@ -80,6 +110,63 @@ class JsonMappingTest {
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getInternalName());
                 objectNode.set(field.getPublicName(), this.rewriteInternalToPublic(field.getType(), value));
+            }
+
+            return objectNode;
+        } else if (type instanceof EnumType) {
+            // TODO
+            return representation;
+        } else if (type instanceof ListType) {
+            // TODO
+            return representation;
+        } else {
+            return representation;
+        }
+    }
+
+    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
+        if (type instanceof RecordType) {
+            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+
+            ObjectNode objectNode = (ObjectNode) representation;
+
+            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+                ConsumerField consumerField = definitionResolution.mapProviderField((ProviderField) field);
+                if (consumerField == null) {
+                    continue;
+                }
+
+                JsonNode value = objectNode.remove(consumerField.getPublicName());
+
+                if (value != null) {
+                    objectNode.set(field.getInternalName(), this.rewritePublicToProviderInternal(field.getType(), definitionResolution, value));
+                }
+            }
+
+            return objectNode;
+        } else if (type instanceof EnumType) {
+            // TODO
+            return representation;
+        } else if (type instanceof ListType) {
+            // TODO
+            return representation;
+        } else {
+            return representation;
+        }
+    }
+
+    private JsonNode rewritePublicToConsumerInternal(Type type, JsonNode representation) {
+        if (type instanceof RecordType) {
+            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+
+            ObjectNode objectNode = (ObjectNode) representation;
+
+            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+                JsonNode value = objectNode.remove(field.getPublicName());
+
+                if (value != null) {
+                    objectNode.set(field.getInternalName(), this.rewritePublicToConsumerInternal(field.getType(), value));
+                }
             }
 
             return objectNode;
@@ -122,7 +209,39 @@ class JsonMappingTest {
 
     private static class ProviderParameter {
 
+        private String fieldA;
 
+        private String field2;
+
+        public String getFieldA() {
+            return this.fieldA;
+        }
+
+        public void setFieldA(String fieldA) {
+            this.fieldA = fieldA;
+        }
+
+        public String getField2() {
+            return this.field2;
+        }
+
+        public void setField2(String field2) {
+            this.field2 = field2;
+        }
+
+    }
+
+    private static class ProviderResult {
+
+        private String retField;
+
+        public String getRetField() {
+            return this.retField;
+        }
+
+        public void setRetField(String retField) {
+            this.retField = retField;
+        }
 
     }
 

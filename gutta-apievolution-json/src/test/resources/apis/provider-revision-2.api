@@ -1,11 +1,11 @@
 api test.provider {
 
     record TestParameter {
-        string testField replaces renamedField as field1
+        string testField replaces renamedField as fieldA
     }
 
     record TestResult {
-        string resultField replaces renamedField
+        string resultField replaces renamedField as retField
     }
 
 }
