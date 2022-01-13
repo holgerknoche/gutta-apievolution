@@ -32,11 +32,6 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>gutta.apievolution</groupId>
-            <artifactId>gutta-apievolution-dsl</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 </project>

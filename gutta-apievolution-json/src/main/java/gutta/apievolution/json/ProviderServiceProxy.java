@@ -11,6 +11,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
+import gutta.apievolution.dsl.ConsumerApiLoader;
 
 import java.io.IOException;
 import java.util.Set;
@@ -77,7 +78,8 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
     public String invokeService(String consumerApiId, int referencedRevision, String requestJson) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
-        ConsumerApiDefinition consumerApi = null;
+        // We currently use the file name as the API id
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedRevision);
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory,
                 this.supportedRevisions, consumerApi);
 
