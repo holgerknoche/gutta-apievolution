@@ -179,7 +179,7 @@ public class RevisionHistory {
             Type expectedType = this.determineEquivalentInRevision(successorType, currentRevision);
 
             if (expectedType == null) {
-                throw new InconsistentHistoryException("No equivalent type for " + successorType + " in revision" +
+                throw new InconsistentHistoryException("No equivalent type for " + successorType + " in revision " +
                         currentRevision + ".");
             } else if (!expectedType.equals(field.getType())) {
                 throw new InconsistentHistoryException("Illegal type change for field " + field + ".");
