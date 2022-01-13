@@ -70,11 +70,7 @@ public class ProviderCodeGenerationMojo extends AbstractMojo {
                 .map(this::toInputStream)
                 .collect(Collectors.toList());
 
-        try {
-            return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), streams);
-        } catch (IOException e) {
-            throw new MojoFailureException("Error loading revision files.", e);
-        }
+        return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), streams);
     }
 
     private FileInputStream toInputStream(File file) {
