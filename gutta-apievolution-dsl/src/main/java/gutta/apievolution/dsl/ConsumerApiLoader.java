@@ -16,12 +16,30 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
      * @param inputStream The input stream to read the definition from
      * @param referencedRevision The revision number referenced in the provider history
      * @return The loaded API definition
-     * @throws IOException If an I/O error occurs while loading the definition
      */
-    public static ConsumerApiDefinition loadFromStream(InputStream inputStream, int referencedRevision)
-            throws IOException {
-        ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
-        return new ConsumerApiRevisionModelBuilder().buildConsumerRevision(referencedRevision, specification);
+    public static ConsumerApiDefinition loadFromStream(InputStream inputStream, int referencedRevision) {
+        try {
+            ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
+            return new ConsumerApiRevisionModelBuilder().buildConsumerRevision(referencedRevision, specification);
+        } catch (IOException e) {
+            throw new ApiLoadException("Error loading API definition.", e);
+        }
+    }
+
+    /**
+     * Loads a consumer API definition from the given file on the classpath.
+     * @param fileName The file name of the file to load the definition from
+     * @param referencedRevision The provider revision referenced by this definition
+     * @return The loaded API definition
+     */
+    public static ConsumerApiDefinition loadFromClasspath(String fileName, int referencedRevision) {
+        ClassLoader classLoader = ConsumerApiLoader.class.getClassLoader();
+
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            return loadFromStream(inputStream, referencedRevision);
+        } catch (IOException e) {
+            throw new ApiLoadException("Error loading API definition " + fileName + " from classpath.", e);
+        }
     }
 
 }

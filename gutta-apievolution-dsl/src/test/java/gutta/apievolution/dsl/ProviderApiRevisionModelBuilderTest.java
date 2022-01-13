@@ -182,18 +182,14 @@ class ProviderApiRevisionModelBuilderTest {
     }
 
     private List<ProviderApiDefinition> loadDefinitions(String... fileNames) {
-        try {
-            ClassLoader classLoader = this.getClass().getClassLoader();
+        ClassLoader classLoader = this.getClass().getClassLoader();
 
-            List<InputStream> streams = Stream.of(fileNames)
-                    .map(name -> classLoader.getResourceAsStream(name))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+        List<InputStream> streams = Stream.of(fileNames)
+                .map(name -> classLoader.getResourceAsStream(name))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-            return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), streams);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), streams);
     }
 
 }
