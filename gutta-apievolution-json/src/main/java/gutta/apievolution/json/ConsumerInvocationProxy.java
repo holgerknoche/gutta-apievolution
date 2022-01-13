@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public class ConsumerInvocationProxy extends AbstractInvocationProxy {
+/**
+ * A consumer invocation proxy transparently handles revisioned communication on the consumer side, i.e. it transforms
+ * the request to the public representation and the response to the internal representation.
+ */
+public abstract class ConsumerInvocationProxy extends AbstractInvocationProxy {
 
     private final ConsumerRecordType parameterType;
 
@@ -19,6 +23,13 @@ public class ConsumerInvocationProxy extends AbstractInvocationProxy {
 
     private final RequestRouter router;
 
+    /**
+     * Creates a new proxy using the given data.
+     * @param apiDefinition The API definition to use
+     * @param parameterTypeName The internal name of the parameter type in the API definition
+     * @param resultTypeName The internal name of the result name in the API definition
+     * @param router The router to use for the invocation
+     */
     protected ConsumerInvocationProxy(ConsumerApiDefinition apiDefinition, String parameterTypeName,
                                       String resultTypeName, RequestRouter router) {
         Optional<ConsumerRecordType> optionalParameterType = apiDefinition.findUDTByInternalName(parameterTypeName);
@@ -26,12 +37,6 @@ public class ConsumerInvocationProxy extends AbstractInvocationProxy {
 
         this.parameterType = optionalParameterType.orElseThrow(NoSuchElementException::new);
         this.resultType = optionalResultType.orElseThrow(NoSuchElementException::new);
-        this.router = router;
-    }
-
-    protected ConsumerInvocationProxy(ConsumerRecordType parameterType, ConsumerRecordType resultType, RequestRouter router) {
-        this.parameterType = parameterType;
-        this.resultType = resultType;
         this.router = router;
     }
 
@@ -45,7 +50,8 @@ public class ConsumerInvocationProxy extends AbstractInvocationProxy {
                 JsonNode value = objectNode.remove(field.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(), this.rewritePublicToConsumerInternal(field.getType(), value));
+                    objectNode.set(field.getInternalName(), this.rewritePublicToConsumerInternal(field.getType(),
+                            value));
                 }
             }
 
@@ -61,7 +67,18 @@ public class ConsumerInvocationProxy extends AbstractInvocationProxy {
         }
     }
 
-    protected <T> T invokeMethod(String apiId, int referencedRevision, String serviceName, Object parameterObject, Class<T> resultType) {
+    /**
+     * Invokes the provider method using the given data.
+     * @param <T> The type of the result
+     * @param apiId The API ID of the consumer API
+     * @param referencedRevision The referenced provider revision
+     * @param serviceName The service name to use
+     * @param parameterObject The parameter object for the method
+     * @param resultType The result type for result handling
+     * @return The deserialized result
+     */
+    protected <T> T invokeMethod(String apiId, int referencedRevision, String serviceName, Object parameterObject,
+                                 Class<T> resultType) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {

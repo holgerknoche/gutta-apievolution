@@ -16,6 +16,10 @@ import gutta.apievolution.dsl.ConsumerApiLoader;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * A consumer invocation proxy transparently handles revisioned communication on the provider side, i.e. it transforms
+ * the request to the internal representation and the response to the public representation.
+ */
 public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy {
 
     private final String serviceName;
@@ -30,6 +34,15 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
 
     private final Class<P> parameterType;
 
+    /**
+     * Creates a new proxy using the given data.
+     * @param serviceName The name of the proxied service
+     * @param revisionHistory The revision history to use
+     * @param supportedRevisions The set of supported revisions from the history
+     * @param parameterTypeName The internal name of the parameter type
+     * @param resultTypeName The internal name of the result type
+     * @param parameterType The actual parameter type for request handling
+     */
     public ProviderServiceProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
                                 String parameterTypeName, String resultTypeName, Class<P> parameterType) {
         this.serviceName = serviceName;
@@ -40,11 +53,16 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
         this.parameterType = parameterType;
     }
 
+    /**
+     * Returns the name of the proxied service.
+     * @return see above
+     */
     public String getServiceName() {
         return this.serviceName;
     }
 
-    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
+    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution,
+                                                     JsonNode representation) {
         if (type instanceof RecordType) {
             RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
 
@@ -59,7 +77,8 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
                 JsonNode value = objectNode.remove(consumerField.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(), this.rewritePublicToProviderInternal(field.getType(), definitionResolution, value));
+                    objectNode.set(field.getInternalName(), this.rewritePublicToProviderInternal(field.getType(),
+                            definitionResolution, value));
                 }
             }
 
@@ -75,6 +94,13 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
         }
     }
 
+    /**
+     * Invokes the underlying service method using the given data.
+     * @param consumerApiId The consumer API ID that was used for the request
+     * @param referencedRevision The provider revision referenced by the consumer API
+     * @param requestJson The request in JSON format
+     * @return The response in JSON format
+     */
     public String invokeService(String consumerApiId, int referencedRevision, String requestJson) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
@@ -101,6 +127,11 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
         }
     }
 
+    /**
+     * Invokes the actual service method with the given parameter.
+     * @param parameter The parameter to pass to the service method
+     * @return The result of the service method
+     */
     protected abstract R invokeService(P parameter);
 
 }

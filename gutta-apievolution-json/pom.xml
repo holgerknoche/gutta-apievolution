@@ -12,6 +12,16 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <build>
+        <plugins>
+            <!-- Run CheckStyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>gutta.apievolution</groupId>
