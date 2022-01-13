@@ -104,7 +104,36 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
                 break;
         }
 
-        return new ProviderField(name, internalName, owner, type, optionality, predecessor);
+        // Check for a type change, as it "breaks" the predecessor relationship
+        boolean typeChange = false;
+        if (predecessor.isPresent()) {
+            ProviderField predecessorField = predecessor.get();
+            Type predecessorFieldType = predecessorField.getType();
+
+            if (type instanceof RevisionedElement) {
+                // If the current type is revisioned, we must compare the its predecessor to the predecessor
+                // field's type
+                Optional<?> optionalOwnTypePredecessor = ((RevisionedElement<?>) type).getPredecessor();
+
+                if (optionalOwnTypePredecessor.isPresent()) {
+                    Type ownTypePredecessor = (Type) optionalOwnTypePredecessor.get();
+                    typeChange = !(ownTypePredecessor.equals(predecessorFieldType));
+                } else {
+                    // If no predecessor is present, we have a type change
+                    typeChange = true;
+                }
+            } else {
+                // Otherwise, the types can be imm
+                typeChange = !(type.equals(predecessorFieldType));
+            }
+        }
+
+        if (typeChange) {
+            // If a type change is detected, it is actually a new field (hence, no predecessor)
+            return new ProviderField(name, internalName, owner, type, optionality, Optional.empty());
+        } else {
+            return new ProviderField(name, internalName, owner, type, optionality, predecessor);
+        }
     }
 
     private FieldPredecessorSpec determinePredecessorSpec(final ApiRevisionParser.FieldReplacesClauseContext context) {
