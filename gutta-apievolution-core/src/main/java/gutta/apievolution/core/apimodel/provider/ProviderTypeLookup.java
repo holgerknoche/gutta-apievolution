@@ -1,5 +1,6 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.MapBackedTypeLookup;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeLookup;
 import gutta.apievolution.core.apimodel.UserDefinedType;
@@ -7,7 +8,7 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class ProviderTypeLookup extends TypeLookup<ProviderUserDefinedType> {
+class ProviderTypeLookup extends MapBackedTypeLookup<ProviderUserDefinedType, ProviderUserDefinedType> {
 
     ProviderTypeLookup(Map<ProviderUserDefinedType, ProviderUserDefinedType> udtLookup) {
         super(udtLookup);

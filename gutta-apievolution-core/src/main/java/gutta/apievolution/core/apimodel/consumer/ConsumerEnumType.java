@@ -9,7 +9,7 @@ import java.util.Optional;
  * Consumer-specific implementation of an {@link EnumType}.
  */
 public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEnumType, ConsumerEnumMember>
-        implements ConsumerApiDefinitionElement {
+        implements ConsumerUserDefinedType {
 
     /**
      * Creates a new enum type from the given data.

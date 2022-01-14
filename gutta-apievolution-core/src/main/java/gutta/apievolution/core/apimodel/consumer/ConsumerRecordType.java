@@ -9,7 +9,7 @@ import java.util.Optional;
  * Consumer-specific implementation of a {@link RecordType}.
  */
 public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, ConsumerRecordType, ConsumerField>
-        implements ConsumerApiDefinitionElement {
+        implements ConsumerUserDefinedType {
 
     /**
      * Creates a new record type from the given data.
