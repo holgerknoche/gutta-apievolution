@@ -8,11 +8,13 @@ api test.provider {
     record TestParameter {
         string testField replaces renamedField as fieldA
         TestEnum testEnum
+        TestEnum* testList
     }
 
     record TestResult {
         string resultField replaces renamedField as retField
         TestEnum resultEnum
+        TestEnum* resultList
     }
 
 }

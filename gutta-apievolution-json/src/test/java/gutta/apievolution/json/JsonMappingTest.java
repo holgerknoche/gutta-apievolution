@@ -42,12 +42,14 @@ class JsonMappingTest {
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestField("test value");
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
+        parameter.setTestList(Arrays.asList(ConsumerEnum.VALUE_A, ConsumerEnum.VALUE_B));
 
         TestProviderProxy providerProxy = new TestProviderProxy(requestRouter);
         ConsumerResult result = providerProxy.invokeProviderMethod(parameter);
 
         assertEquals("test valueX", result.getResultField());
         assertEquals(ConsumerEnum.VALUE_B, result.getResultEnum());
+        assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A), result.getResultList());
     }
 
 }

@@ -118,7 +118,8 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
             this.definitionResolution = definitionResolution;
         }
 
-        private PublicToInternalRewriter fork() {
+        @Override
+        protected PublicToInternalRewriter fork() {
             return new PublicToInternalRewriter(this.definitionResolution);
         }
 

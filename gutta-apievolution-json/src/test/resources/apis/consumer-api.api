@@ -8,11 +8,13 @@ api test.customer {
     record TestParameter as ConsumerParameter {
         string renamedField as testField
         TestEnum testEnum
+        TestEnum* testList
     }
 
     record TestResult as ConsumerResult {
         string renamedField as resultField
         TestEnum resultEnum
+        TestEnum* resultList
     }
 
 }

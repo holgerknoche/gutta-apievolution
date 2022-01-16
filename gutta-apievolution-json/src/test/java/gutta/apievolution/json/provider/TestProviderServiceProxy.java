@@ -4,8 +4,7 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.ProviderServiceProxy;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class TestProviderServiceProxy extends ProviderServiceProxy<ProviderParameter, ProviderResult> {
 
@@ -22,6 +21,11 @@ public class TestProviderServiceProxy extends ProviderServiceProxy<ProviderParam
         ProviderResult result = new ProviderResult();
         result.setRetField(parameter.getFieldA() + "X");
         result.setResultEnum(ProviderEnum.VALUE_2);
+
+        List<ProviderEnum> resultList = new ArrayList<>(parameter.getTestList());
+        Collections.reverse(resultList);
+        result.setResultList(resultList);
+
         return result;
     }
 }

@@ -1,5 +1,7 @@
 package gutta.apievolution.json.provider;
 
+import java.util.List;
+
 public class ProviderParameter {
 
     private String fieldA;
@@ -7,6 +9,8 @@ public class ProviderParameter {
     private String field2;
 
     private ProviderEnum testEnum;
+
+    private List<ProviderEnum> testList;
 
     public String getFieldA() {
         return this.fieldA;
@@ -32,4 +36,11 @@ public class ProviderParameter {
         this.testEnum = testEnum;
     }
 
+    public List<ProviderEnum> getTestList() {
+        return this.testList;
+    }
+
+    public void setTestList(List<ProviderEnum> testList) {
+        this.testList = testList;
+    }
 }

@@ -1,10 +1,14 @@
 package gutta.apievolution.json.consumer;
 
+import java.util.List;
+
 public class ConsumerParameter {
 
     private String testField;
 
     private ConsumerEnum testEnum;
+
+    private List<ConsumerEnum> testList;
 
     public String getTestField() {
         return this.testField;
@@ -22,4 +26,11 @@ public class ConsumerParameter {
         this.testEnum = testEnum;
     }
 
+    public List<ConsumerEnum> getTestList() {
+        return this.testList;
+    }
+
+    public void setTestList(List<ConsumerEnum> testList) {
+        this.testList = testList;
+    }
 }

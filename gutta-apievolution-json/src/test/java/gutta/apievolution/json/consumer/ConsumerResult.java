@@ -1,10 +1,14 @@
 package gutta.apievolution.json.consumer;
 
+import java.util.List;
+
 public class ConsumerResult {
 
     private String resultField;
 
     private ConsumerEnum resultEnum;
+
+    private List<ConsumerEnum> resultList;
 
     public String getResultField() {
         return this.resultField;
@@ -22,4 +26,11 @@ public class ConsumerResult {
         this.resultEnum = resultEnum;
     }
 
+    public List<ConsumerEnum> getResultList() {
+        return this.resultList;
+    }
+
+    public void setResultList(List<ConsumerEnum> resultList) {
+        this.resultList = resultList;
+    }
 }

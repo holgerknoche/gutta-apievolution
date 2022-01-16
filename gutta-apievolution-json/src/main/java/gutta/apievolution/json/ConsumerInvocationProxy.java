@@ -77,7 +77,8 @@ public abstract class ConsumerInvocationProxy extends AbstractInvocationProxy {
 
     private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
 
-        private PublicToInternalRewriter fork() {
+        @Override
+        protected PublicToInternalRewriter fork() {
             return new PublicToInternalRewriter();
         }
 

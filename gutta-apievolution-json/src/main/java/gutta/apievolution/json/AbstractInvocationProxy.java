@@ -2,10 +2,12 @@ package gutta.apievolution.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.*;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 abstract class AbstractInvocationProxy {
@@ -35,7 +37,7 @@ abstract class AbstractInvocationProxy {
 
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
-            ObjectNode objectNode = (ObjectNode) representation;
+            ObjectNode objectNode = (ObjectNode) this.representation;
 
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getInternalName());
@@ -47,7 +49,7 @@ abstract class AbstractInvocationProxy {
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
-            TextNode textNode = (TextNode) representation;
+            TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
             EnumMember<?, ?> enumMember = enumType.findMemberByInternalName(value)
@@ -57,8 +59,22 @@ abstract class AbstractInvocationProxy {
         }
 
         JsonNode handleListType(ListType listType) {
-            // TODO
-            return this.representation;
+            if (this.representation.isNull()) {
+                return this.representation;
+            }
+
+            InternalToPublicRewriter rewriter = this.fork();
+            Type elementType = listType.getElementType();
+
+            ArrayNode arrayNode = (ArrayNode) this.representation;
+            ArrayNode rewrittenArrayNode = OBJECT_MAPPER.createArrayNode();
+
+            for (JsonNode subNode : arrayNode) {
+                JsonNode rewrittenSubNode = rewriter.rewriteInternalToPublic(elementType, subNode);
+                rewrittenArrayNode.add(rewrittenSubNode);
+            }
+
+            return rewrittenArrayNode;
         }
 
         @Override
@@ -122,9 +138,25 @@ abstract class AbstractInvocationProxy {
             return this.representation;
         }
 
+        protected abstract AbstractPublicToInternalRewriter fork();
+
         private JsonNode handleListType(ListType listType) {
-            // TODO
-            return this.representation;
+            if (this.representation.isNull()) {
+                return this.representation;
+            }
+
+            AbstractPublicToInternalRewriter rewriter = this.fork();
+            Type elementType = listType.getElementType();
+
+            ArrayNode arrayNode = (ArrayNode) this.representation;
+            ArrayNode rewrittenArrayNode = OBJECT_MAPPER.createArrayNode();
+
+            for (JsonNode subNode : arrayNode) {
+                JsonNode rewrittenSubNode = rewriter.rewritePublicToInternal(elementType, subNode);
+                rewrittenArrayNode.add(rewrittenSubNode);
+            }
+
+            return rewrittenArrayNode;
         }
 
         @Override

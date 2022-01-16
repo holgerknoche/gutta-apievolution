@@ -9,11 +9,13 @@ api test.provider {
         string renamedField as field1
         optin string deletedField as field2
         TestEnum testEnum
+        TestEnum* testList
     }
 
     record TestResult {
         string renamedField as resultField
         TestEnum resultEnum
+        TestEnum* resultList
     }
 
 }
