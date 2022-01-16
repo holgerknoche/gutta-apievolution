@@ -10,6 +10,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
+import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
 import gutta.apievolution.json.consumer.TestProviderProxy;
@@ -40,11 +41,13 @@ class JsonMappingTest {
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestField("test value");
+        parameter.setTestEnum(ConsumerEnum.VALUE_A);
 
         TestProviderProxy providerProxy = new TestProviderProxy(requestRouter);
         ConsumerResult result = providerProxy.invokeProviderMethod(parameter);
 
         assertEquals("test valueX", result.getResultField());
+        assertEquals(ConsumerEnum.VALUE_B, result.getResultEnum());
     }
 
 }

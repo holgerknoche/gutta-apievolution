@@ -3,33 +3,150 @@ package gutta.apievolution.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.*;
+
+import java.util.NoSuchElementException;
 
 abstract class AbstractInvocationProxy {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     protected JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
-        if (type instanceof RecordType) {
-            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+        return new InternalToPublicRewriter().rewriteInternalToPublic(type, representation);
+    }
 
+    /**
+     * Visitor implementation for rewriting an internal representation to a public
+     * representation.
+     */
+    static class InternalToPublicRewriter implements TypeVisitor<JsonNode> {
+
+        JsonNode representation;
+
+        public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
+            this.representation = representation;
+            return type.accept(this);
+        }
+
+        InternalToPublicRewriter fork() {
+            return new InternalToPublicRewriter();
+        }
+
+        @Override
+        public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) representation;
 
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getInternalName());
-                objectNode.set(field.getPublicName(), this.rewriteInternalToPublic(field.getType(), value));
+                objectNode.set(field.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
             }
 
             return objectNode;
-        } else if (type instanceof EnumType) {
-            // TODO
-            return representation;
-        } else if (type instanceof ListType) {
-            // TODO
-            return representation;
-        } else {
-            return representation;
         }
+
+        @Override
+        public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
+            TextNode textNode = (TextNode) representation;
+            String value = textNode.asText();
+
+            EnumMember<?, ?> enumMember = enumType.findMemberByInternalName(value)
+                    .orElseThrow(NoSuchElementException::new);
+
+            return new TextNode(enumMember.getPublicName());
+        }
+
+        JsonNode handleListType(ListType listType) {
+            // TODO
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleBoundedListType(BoundedListType boundedListType) {
+            return this.handleListType(boundedListType);
+        }
+
+        @Override
+        public JsonNode handleUnboundedListType(UnboundedListType unboundedListType) {
+            return this.handleListType(unboundedListType);
+        }
+
+        @Override
+        public JsonNode handleAtomicType(AtomicType atomicType) {
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleNumericType(NumericType numericType) {
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleBoundedStringType(BoundedStringType boundedStringType) {
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleUnboundedStringType(UnboundedStringType unboundedStringType) {
+            return this.representation;
+        }
+    }
+
+    protected abstract static class AbstractPublicToInternalRewriter implements TypeVisitor<JsonNode> {
+
+        protected JsonNode representation;
+
+        public JsonNode rewritePublicToInternal(Type type, JsonNode representation) {
+            this.representation = representation;
+            return type.accept(this);
+        }
+
+        @Override
+        public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
+            TextNode textNode = (TextNode) representation;
+            String value = textNode.asText();
+
+            EnumMember<?, ?> enumMember = enumType.resolveMember(value)
+                    .orElseThrow(NoSuchElementException::new);
+
+            return new TextNode(enumMember.getInternalName());
+        }
+
+        @Override
+        public JsonNode handleAtomicType(AtomicType atomicType) {
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleNumericType(NumericType numericType) {
+            return this.representation;
+        }
+
+        private JsonNode handleListType(ListType listType) {
+            // TODO
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleBoundedListType(BoundedListType boundedListType) {
+            return this.handleListType(boundedListType);
+        }
+
+        @Override
+        public JsonNode handleUnboundedListType(UnboundedListType unboundedListType) {
+            return this.handleListType(unboundedListType);
+        }
+
+        @Override
+        public JsonNode handleBoundedStringType(BoundedStringType boundedStringType) {
+            return this.representation;
+        }
+
+        @Override
+        public JsonNode handleUnboundedStringType(UnboundedStringType unboundedStringType) {
+            return this.representation;
+        }
+
     }
 
 }

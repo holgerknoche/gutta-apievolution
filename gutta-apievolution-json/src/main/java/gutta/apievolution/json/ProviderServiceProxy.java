@@ -3,11 +3,12 @@ package gutta.apievolution.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -63,35 +64,7 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
 
     private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution,
                                                      JsonNode representation) {
-        if (type instanceof RecordType) {
-            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
-
-            ObjectNode objectNode = (ObjectNode) representation;
-
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
-                ConsumerField consumerField = definitionResolution.mapProviderField((ProviderField) field);
-                if (consumerField == null) {
-                    continue;
-                }
-
-                JsonNode value = objectNode.remove(consumerField.getPublicName());
-
-                if (value != null) {
-                    objectNode.set(field.getInternalName(), this.rewritePublicToProviderInternal(field.getType(),
-                            definitionResolution, value));
-                }
-            }
-
-            return objectNode;
-        } else if (type instanceof EnumType) {
-            // TODO
-            return representation;
-        } else if (type instanceof ListType) {
-            // TODO
-            return representation;
-        } else {
-            return representation;
-        }
+        return new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
     }
 
     /**
@@ -133,5 +106,43 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
      * @return The result of the service method
      */
     protected abstract R invokeService(P parameter);
+
+    /**
+     * Specific visitor for rewriting a public to a provider-internal representation.
+     */
+    private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
+
+        private final DefinitionResolution definitionResolution;
+
+        public PublicToInternalRewriter(DefinitionResolution definitionResolution) {
+            this.definitionResolution = definitionResolution;
+        }
+
+        private PublicToInternalRewriter fork() {
+            return new PublicToInternalRewriter(this.definitionResolution);
+        }
+
+        @Override
+        public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
+            ObjectNode objectNode = (ObjectNode) representation;
+
+            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+                ConsumerField consumerField = this.definitionResolution.mapProviderField((ProviderField) field);
+                if (consumerField == null) {
+                    continue;
+                }
+
+                JsonNode value = objectNode.remove(consumerField.getPublicName());
+
+                if (value != null) {
+                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(),
+                            value));
+                }
+            }
+
+            return objectNode;
+        }
+
+    }
 
 }

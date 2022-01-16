@@ -4,6 +4,8 @@ public class ProviderResult {
 
     private String retField;
 
+    private ProviderEnum resultEnum;
+
     public String getRetField() {
         return this.retField;
     }
@@ -12,5 +14,11 @@ public class ProviderResult {
         this.retField = retField;
     }
 
+    public ProviderEnum getResultEnum() {
+        return this.resultEnum;
+    }
 
+    public void setResultEnum(ProviderEnum resultEnum) {
+        this.resultEnum = resultEnum;
+    }
 }

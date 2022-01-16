@@ -21,6 +21,7 @@ public class TestProviderServiceProxy extends ProviderServiceProxy<ProviderParam
     protected ProviderResult invokeService(ProviderParameter parameter) {
         ProviderResult result = new ProviderResult();
         result.setRetField(parameter.getFieldA() + "X");
+        result.setResultEnum(ProviderEnum.VALUE_2);
         return result;
     }
 }

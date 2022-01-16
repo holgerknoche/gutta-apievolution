@@ -3,6 +3,7 @@ package gutta.apievolution.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
@@ -41,30 +42,7 @@ public abstract class ConsumerInvocationProxy extends AbstractInvocationProxy {
     }
 
     private JsonNode rewritePublicToConsumerInternal(Type type, JsonNode representation) {
-        if (type instanceof RecordType) {
-            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
-
-            ObjectNode objectNode = (ObjectNode) representation;
-
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
-                JsonNode value = objectNode.remove(field.getPublicName());
-
-                if (value != null) {
-                    objectNode.set(field.getInternalName(), this.rewritePublicToConsumerInternal(field.getType(),
-                            value));
-                }
-            }
-
-            return objectNode;
-        } else if (type instanceof EnumType) {
-            // TODO
-            return representation;
-        } else if (type instanceof ListType) {
-            // TODO
-            return representation;
-        } else {
-            return representation;
-        }
+        return new PublicToInternalRewriter().rewritePublicToInternal(type, representation);
     }
 
     /**
@@ -94,6 +72,29 @@ public abstract class ConsumerInvocationProxy extends AbstractInvocationProxy {
             return objectMapper.treeToValue(responseNode, resultType);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
+
+        private PublicToInternalRewriter fork() {
+            return new PublicToInternalRewriter();
+        }
+
+        @Override
+        public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
+            ObjectNode objectNode = (ObjectNode) representation;
+
+            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+                JsonNode value = objectNode.remove(field.getPublicName());
+
+                if (value != null) {
+                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(),
+                            value));
+                }
+            }
+
+            return objectNode;
         }
     }
 
