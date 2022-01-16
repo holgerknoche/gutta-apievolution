@@ -1,0 +1,23 @@
+api test {
+
+    record UnchangedType {
+        string field
+    }
+
+    record ChangedType {
+        string field
+    }
+
+    record DeletedType {
+        string field
+    }
+
+    record TestType {
+        string toRecord
+        DeletedType toSimple
+        ChangedType changedType
+        UnchangedType unchanged
+        int32 basicField
+    }
+
+}

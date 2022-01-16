@@ -6,35 +6,26 @@ import java.util.stream.Stream;
 /**
  * Abstract superclass for type lookups which support mapping types between different API definitions. This class may be
  * subclassed for resolving specific types, such as provider or consumer types.
- * @param <U> The concrete type of user-defined types that is managed in this type lookup
+ * @param <S> The concrete type of source user-defined types that is managed in this type lookup
+ * @param <T> The concrete type of target user-defined types
  */
-public abstract class TypeLookup<U> {
-
-    private final Map<U, U> udtLookup;
-
-    /**
-     * Creates a new type lookup using the given lookup map for user-defined types.
-     * @param udtLookup A lookup map for user-defined types
-     */
-    protected TypeLookup(Map<U, U> udtLookup) {
-        this.udtLookup = udtLookup;
-    }
+public abstract class TypeLookup<S, T> {
 
     /**
      * Looks up the equivalent of the given type in this type lookup.
-     * @param <T> The desired metatype of the result
+     * @param <X> The desired metatype of the result
      * @param inType The type to determine the equivalent for
      * @return see above
      */
     @SuppressWarnings("unchecked")
-    public <T extends Type> T lookupType(T inType) {
+    public <X extends Type> X lookupType(Type inType) {
         if (this.isUserDefinedType(inType)) {
             //noinspection SuspiciousMethodCalls
-            return (T) this.udtLookup.get(inType);
+            return (X) this.mapUserDefinedType((S) inType);
         } else if (inType instanceof ListType) {
-            return (T) this.convertListType((ListType) inType);
+            return (X) this.convertListType((ListType) inType);
         } else {
-            return inType;
+            return (X) inType;
         }
     }
 
@@ -46,12 +37,11 @@ public abstract class TypeLookup<U> {
     protected abstract boolean isUserDefinedType(Type type);
 
     /**
-     * Returns a stream of all UDT mappings in this type lookup.
-     * @return see above
+     * Maps the given user-defined type to its match, if it exists.
+     * @param type The user-defined type to map
+     * @return The matching type or {@code null}
      */
-    protected Stream<Map.Entry<U, U>> udtLookupStream() {
-        return this.udtLookup.entrySet().stream();
-    }
+    protected abstract T mapUserDefinedType(S type);
 
     private ListType convertListType(ListType inType) {
         if (inType.isBounded()) {

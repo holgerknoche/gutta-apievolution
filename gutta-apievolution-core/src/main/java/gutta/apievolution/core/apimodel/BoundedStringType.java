@@ -3,14 +3,18 @@ package gutta.apievolution.core.apimodel;
 /**
  * This type represents the bounded variant of the {@link StringType}.
  */
-class BoundedStringType extends StringType {
+public class BoundedStringType extends StringType {
 
     private final int bound;
 
-    public BoundedStringType(int bound) {
+    BoundedStringType(int bound) {
         this.bound = bound;
     }
 
+    /**
+     * Returns the bound of this string type.
+     * @return see above
+     */
     public int getBound() {
         return this.bound;
     }
@@ -20,6 +24,7 @@ class BoundedStringType extends StringType {
         return super.hashCode() + this.bound;
     }
 
+    @Override
     public boolean equals(Object that) {
         if (this == that) {
             return true;

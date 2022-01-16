@@ -2,6 +2,8 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -21,12 +23,15 @@ public class DefinitionResolution {
 
     private final Map<String, Type> consumerTypeMap;
 
+    private final Map<String, Type> providerTypeMap;
+
     DefinitionResolution(ConsumerToProviderMap consumerToProviderMap,
                          ProviderToConsumerMap providerToConsumerMap) {
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
 
         this.consumerTypeMap = createTypeMap(consumerToProviderMap.consumerTypes());
+        this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
     }
 
     private static Map<String, Type> createTypeMap(Stream<Type> types) {
@@ -61,6 +66,15 @@ public class DefinitionResolution {
     }
 
     /**
+     * Resolves the given internal name into a provider type.
+     * @param internalName The internal name of the desired type
+     * @return The consumer type, if it exists
+     */
+    public Type resolveProviderType(String internalName) {
+        return this.providerTypeMap.get(internalName);
+    }
+
+    /**
      * Maps a given consumer type to the corresponding provider type.
      * @param consumerType The consumer type to map
      * @return The provider type, if it exists
@@ -76,6 +90,15 @@ public class DefinitionResolution {
      */
     public Type mapProviderType(Type providerType) {
         return this.providerToConsumerMap.mapProviderType(providerType);
+    }
+
+    /**
+     * Maps a given provider field to the corresponding consumer field.
+     * @param providerField The provider field to map
+     * @return The corresponding consumer field, if it exists
+     */
+    public ConsumerField mapProviderField(ProviderField providerField) {
+        return this.providerToConsumerMap.mapProviderField(providerField);
     }
 
 }

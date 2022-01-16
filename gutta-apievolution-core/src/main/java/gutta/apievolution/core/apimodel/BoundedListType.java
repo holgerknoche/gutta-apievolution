@@ -3,11 +3,11 @@ package gutta.apievolution.core.apimodel;
 /**
  * This type represents the bounded variant of the {@link ListType}.
  */
-class BoundedListType extends ListType {
+public class BoundedListType extends ListType {
 
     private final int bound;
 
-    public BoundedListType(final Type elementType, final int bound) {
+    BoundedListType(final Type elementType, final int bound) {
         super(elementType);
 
         this.bound = bound;

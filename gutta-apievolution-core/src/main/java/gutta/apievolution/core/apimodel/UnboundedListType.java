@@ -1,6 +1,9 @@
 package gutta.apievolution.core.apimodel;
 
-class UnboundedListType extends ListType {
+/**
+ * This type represents the unbounded variant of the {@link ListType}.
+ */
+public class UnboundedListType extends ListType {
 
     UnboundedListType(final Type elementType) {
         super(elementType);

@@ -22,7 +22,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     private final List<UserDefinedType<A>> userDefinedTypes;
 
-    private final Map<String, UserDefinedType<A>> udtLookup;
+    private final Map<String, UserDefinedType<A>> udtPublicNameLookup;
+
+    private final Map<String, UserDefinedType<A>> udtInternalNameLookup;
 
     private final List<Service<A, ?, ?, ?>> services;
 
@@ -37,7 +39,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
         this.name = name;
         this.annotations = (annotations == null) ? new HashSet<>() : annotations;
         this.userDefinedTypes = new ArrayList<>();
-        this.udtLookup = new HashMap<>();
+        this.udtPublicNameLookup = new HashMap<>();
+        this.udtInternalNameLookup = new HashMap<>();
         this.services = new ArrayList<>();
         this.serviceLookup = new HashMap<>();
     }
@@ -64,7 +67,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      */
     protected void addUserDefinedType(final UserDefinedType<A> type) {
         this.userDefinedTypes.add(type);
-        this.udtLookup.put(type.getPublicName(), type);
+        this.udtPublicNameLookup.put(type.getPublicName(), type);
+        this.udtInternalNameLookup.put(type.getInternalName(), type);
     }
 
     /**
@@ -85,14 +89,25 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
-     * Resolves a name to an UDT provided by this API definition.
+     * Resolves a public name to an UDT provided by this API definition.
      * @param <T> The expected type of the UDT
-     * @param name The name of the UDT to resolve
+     * @param name The public name of the UDT to resolve
      * @return The resolved type, if it exists
      */
     @SuppressWarnings("unchecked")
     public <T extends UserDefinedType<A>> Optional<T> resolveUserDefinedType(final String name) {
-        return (Optional<T>) Optional.ofNullable(this.udtLookup.get(name));
+        return (Optional<T>) Optional.ofNullable(this.udtPublicNameLookup.get(name));
+    }
+
+    /**
+     * Finds an UDT in this API definition by its internal name.
+     * @param <T> The expected type of the UDT
+     * @param internalName The internal name of the UDT to find
+     * @return The resolved type, if it exists
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends UserDefinedType<A>> Optional<T> findUDTByInternalName(String internalName) {
+        return (Optional<T>) Optional.ofNullable(this.udtInternalNameLookup.get(internalName));
     }
 
     /**

@@ -1,0 +1,24 @@
+api test {
+
+    record UnchangedType {
+        string field
+    }
+
+    record ChangedType {
+        string field
+        string field2
+    }
+
+    record AddedType {
+        string field
+    }
+
+    record TestType {
+        AddedType toRecord as toRecord2
+        string toSimple as toSimple2
+        ChangedType changedType
+        UnchangedType unchanged
+        int64 basicField as basicFieldChanged
+    }
+
+}

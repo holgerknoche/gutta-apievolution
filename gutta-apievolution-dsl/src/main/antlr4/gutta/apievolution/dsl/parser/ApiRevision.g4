@@ -76,7 +76,7 @@ typeReference:
 ;
 
 atomicType:
-	K_INT32
+	K_INT32 | K_INT64
 ;
 boundedType:
 	type='string' ('(' bound=INT_LITERAL ')')? |
@@ -121,6 +121,10 @@ K_ABSTRACT:
 
 K_INT32:
     'int32'
+;
+
+K_INT64:
+    'int64'
 ;
 
 K_MANDATORY:

@@ -1,11 +1,20 @@
 api test.provider {
 
+    enum TestEnum as ProviderEnum {
+        A as VALUE_1
+        B as VALUE_2
+    }
+
     record TestParameter {
-        string testField replaces renamedField as field1
+        string testField replaces renamedField as fieldA
+        TestEnum testEnum
+        TestEnum* testList
     }
 
     record TestResult {
-        string resultField replaces renamedField
+        string resultField replaces renamedField as retField
+        TestEnum resultEnum
+        TestEnum* resultList
     }
 
 }

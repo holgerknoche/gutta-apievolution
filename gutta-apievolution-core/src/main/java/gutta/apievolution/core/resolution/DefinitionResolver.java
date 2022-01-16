@@ -44,14 +44,17 @@ public class DefinitionResolver {
                                           ConsumerApiDefinition consumerApi,
                                           RevisionHistory revisionHistory) {
         ConsumerToProviderMap consumerToProviderMap = this.createConsumerToProviderMap(consumerApi, providerApi);
+        ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
+
+        // Perform consistency checks on the maps between consumer API and provider revision
+        consumerToProviderMap.checkConsistency();
+        providerToConsumerMap.checkConsistency();
+
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
 
+        // Compose the two maps to create a consumer -> provider-internal map
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
         ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();
-
-        // Perform consistency checks on the maps
-        consumerToRepresentationMap.checkConsistency();
-        representationToConsumerMap.checkConsistency();
 
         return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap);
     }

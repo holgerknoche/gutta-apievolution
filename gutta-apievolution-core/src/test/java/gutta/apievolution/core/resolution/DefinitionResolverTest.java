@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * TODO
+ * Test cases for definition resolution.
  */
 class DefinitionResolverTest {
 
@@ -65,14 +65,14 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 testTypeV1,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
+                Optionality.OPT_IN,
                 Optional.empty());
 
         ProviderField deletedFieldV1 = new ProviderField("deletedField",
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
+                Optionality.OPTIONAL,
                 Optional.empty());
 
         ProviderEnumType testEnumV1 = new ProviderEnumType("TestEnum",
@@ -208,6 +208,58 @@ class DefinitionResolverTest {
 
         // Ensure that the exception has the right error message
         assertTrue(exception.getMessage().contains("is not mapped"));
+    }
+
+    @Test
+    void testIncompatibleTypesInMapping() {
+        // Provider revision
+        ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType providerType = new ProviderRecordType("TestType",
+                Optional.empty(),
+                0,
+                providerApi,
+                false,
+                Optional.empty(),
+                Optional.empty());
+
+        new ProviderField("testField",
+                Optional.empty(),
+                providerType,
+                AtomicType.INT_32,
+                Optionality.MANDATORY,
+                Optional.empty());
+
+        // Consumer definition
+        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0);
+
+        ConsumerRecordType consumerType = new ConsumerRecordType("TestType",
+                Optional.empty(),
+                0,
+                consumerApi,
+                false,
+                Optional.empty());
+
+        new ConsumerField("testField",
+                Optional.empty(),
+                consumerType,
+                AtomicType.INT_64,
+                Optionality.MANDATORY);
+
+        //
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0));
+        DefinitionResolver resolver = new DefinitionResolver();
+
+        DefinitionResolutionException exception = assertThrows(DefinitionResolutionException.class,
+                () -> resolver.resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi));
+
+        assertTrue(exception.getMessage().contains("do not match"));
     }
 
 }

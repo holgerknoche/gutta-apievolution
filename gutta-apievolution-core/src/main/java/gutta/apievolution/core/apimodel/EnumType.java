@@ -13,7 +13,9 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     private final List<M> declaredMembers;
 
-    private final Map<String, M> memberLookup;
+    private final Map<String, M> publicNameLookup;
+
+    private final Map<String, M> internalNameLookup;
 
     /**
      * Creates a new enum type from the given data.
@@ -26,7 +28,8 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
         super(publicName, internalName, typeId, owner);
 
         this.declaredMembers = new ArrayList<>();
-        this.memberLookup = new HashMap<>();
+        this.publicNameLookup = new HashMap<>();
+        this.internalNameLookup = new HashMap<>();
 
         owner.addUserDefinedType(this);
     }
@@ -45,7 +48,8 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
      */
     protected void addDeclaredMember(final M member) {
         this.declaredMembers.add(member);
-        this.memberLookup.put(member.getPublicName(), member);
+        this.publicNameLookup.put(member.getPublicName(), member);
+        this.internalNameLookup.put(member.getInternalName(), member);
     }
 
     @Override
@@ -54,12 +58,21 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
     }
 
     /**
-     * Resolves the member based on its name.
-     * @param name The name of the desired member
+     * Resolves the member based on its public name.
+     * @param name The public name of the desired member
      * @return The resolved member, if it exists
      */
     public Optional<M> resolveMember(final String name) {
-        return Optional.ofNullable(this.memberLookup.get(name));
+        return Optional.ofNullable(this.publicNameLookup.get(name));
+    }
+
+    /**
+     * Finds a member based on its internal name.
+     * @param internalName The internal name of the desired member
+     * @return The member, if it exists
+     */
+    public Optional<M> findMemberByInternalName(String internalName) {
+        return Optional.ofNullable(this.internalNameLookup.get(internalName));
     }
 
     @Override

@@ -1,11 +1,20 @@
 api test.customer {
 
+    enum TestEnum as ConsumerEnum {
+        A as VALUE_A
+        B as VALUE_B
+    }
+
     record TestParameter as ConsumerParameter {
         string renamedField as testField
+        TestEnum testEnum
+        TestEnum* testList
     }
 
     record TestResult as ConsumerResult {
         string renamedField as resultField
+        TestEnum resultEnum
+        TestEnum* resultList
     }
 
 }

@@ -3,8 +3,10 @@ package gutta.apievolution.core.resolution;
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
 import java.util.HashMap;
@@ -127,8 +129,11 @@ class ConsumerToProviderMap {
 
         private Type foreignType;
 
+        private ConsumerToProviderTypeLookup typeLookup;
+
         public void checkConsistency(Type ownType, Type foreignType) {
             this.foreignType = foreignType;
+            this.typeLookup = new ConsumerToProviderTypeLookup();
             ownType.accept(this);
         }
 
@@ -147,6 +152,11 @@ class ConsumerToProviderMap {
             return ConsumerToProviderMap.this.consumerToProviderField.get(ownField);
         }
 
+        private Type determineMatchingProviderType(Type consumerType) {
+            // TODO
+            return null;
+        }
+
         @Override
         public Void handleRecordType(RecordType<?, ?, ?> recordType) {
             // Assert that the types of the fields are compatible
@@ -160,11 +170,45 @@ class ConsumerToProviderMap {
         }
 
         private void checkField(ConsumerField ownField, ProviderField foreignField) {
-            // TODO Make sure that the optionalities match or are at least compatible
+            // Make sure that the optionalities match
             Optionality consumerOptionality = ownField.getOptionality();
             Optionality providerOptionality = foreignField.getOptionality();
+
+            if (consumerOptionality != providerOptionality) {
+                throw new DefinitionResolutionException("Optionalities of " + ownField + " and " + foreignField +
+                        " are not compatible.");
+            }
+
+            // Make sure that the types match
+            Type ownType = ownField.getType();
+            Type foreignType = foreignField.getType();
+
+            // The foreign type must be matched against the provider image of the
+            // current type
+            Type expectedType = this.typeLookup.lookupType(ownType);
+
+            if (!foreignType.equals(expectedType)) {
+                throw new DefinitionResolutionException("Types of " + ownField + " (" + ownType + ") and of " +
+                        foreignField + " (" + foreignType + ") do not match.");
+            }
         }
 
+    }
+
+    /**
+     * Type lookup for mapping consumer to provider types.
+     */
+    private class ConsumerToProviderTypeLookup extends TypeLookup<Type, Type> {
+
+        @Override
+        protected boolean isUserDefinedType(Type type) {
+            return (type instanceof ConsumerUserDefinedType);
+        }
+
+        @Override
+        protected Type mapUserDefinedType(Type type) {
+            return consumerToProviderType.get(type);
+        }
     }
 
 }
