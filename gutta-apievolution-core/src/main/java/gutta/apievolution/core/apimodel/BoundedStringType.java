@@ -44,4 +44,9 @@ public class BoundedStringType extends StringType {
         return visitor.handleBoundedStringType(this);
     }
 
+    @Override
+    public String toString() {
+        return "string(" + this.getBound() + ")";
+    }
+
 }
