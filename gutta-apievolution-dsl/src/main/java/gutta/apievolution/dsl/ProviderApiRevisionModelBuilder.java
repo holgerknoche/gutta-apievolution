@@ -110,22 +110,7 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
             ProviderField predecessorField = predecessor.get();
             Type predecessorFieldType = predecessorField.getType();
 
-            if (type instanceof RevisionedElement) {
-                // If the current type is revisioned, we must compare the its predecessor to the predecessor
-                // field's type
-                Optional<?> optionalOwnTypePredecessor = ((RevisionedElement<?>) type).getPredecessor();
-
-                if (optionalOwnTypePredecessor.isPresent()) {
-                    Type ownTypePredecessor = (Type) optionalOwnTypePredecessor.get();
-                    typeChange = !(ownTypePredecessor.equals(predecessorFieldType));
-                } else {
-                    // If no predecessor is present, we have a type change
-                    typeChange = true;
-                }
-            } else {
-                // Otherwise, the types can be imm
-                typeChange = !(type.equals(predecessorFieldType));
-            }
+            typeChange = ProviderField.isTypeChange(predecessorFieldType, type);
         }
 
         if (typeChange) {

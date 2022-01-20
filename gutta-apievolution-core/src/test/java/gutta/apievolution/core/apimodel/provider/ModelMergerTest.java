@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -381,6 +382,100 @@ class ModelMergerTest {
         ProviderEnumMember mergedDeletedMemberV2 = map2.mapEnumMember(addedMemberV2).get();
         assertEquals(addedMemberV2.getPublicName(), mergedDeletedMemberV2.getPublicName());
         assertEquals(addedMemberV2.getInternalName(), mergedDeletedMemberV2.getInternalName());
+    }
+
+    /**
+     * Ensure that a normal evolution of a record type is not considered a type change.
+     */
+    @Test
+    void testNoTypeChangeOnRecordTypeEvolution() {
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType extendedTypeV1 = new ProviderRecordType("ExtendedType",
+                Optional.empty(),
+                0,
+                revision1,
+                false,
+                Optional.empty(),
+                Optional.empty());
+
+        new ProviderField("field1",
+                Optional.empty(),
+                extendedTypeV1,
+                StringType.bounded(10),
+                Optionality.MANDATORY,
+                Optional.empty());
+
+        ProviderRecordType usingTypeV1 = new ProviderRecordType("UsingType",
+                Optional.empty(),
+                1,
+                revision1,
+                false,
+                Optional.empty(),
+                Optional.empty());
+
+        ProviderField usingFieldV1 = new ProviderField("usingField",
+                Optional.empty(),
+                usingTypeV1,
+                extendedTypeV1,
+                Optionality.MANDATORY,
+                Optional.empty());
+
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                1,
+                Optional.of(revision1));
+
+        ProviderRecordType extendedTypeV2 = new ProviderRecordType("ExtendedType",
+                Optional.empty(),
+                0,
+                revision2,
+                false,
+                Optional.empty(),
+                Optional.of(extendedTypeV1));
+
+        // Type change on field 1
+        new ProviderField("field1",
+                Optional.of("fieldX"),
+                extendedTypeV2,
+                StringType.bounded(20),
+                Optionality.MANDATORY,
+                Optional.empty());
+
+        ProviderRecordType usingTypeV2 = new ProviderRecordType("UsingType",
+                Optional.empty(),
+                1,
+                revision2,
+                false,
+                Optional.empty(),
+                Optional.of(usingTypeV1));
+
+        new ProviderField("usingField",
+                Optional.empty(),
+                usingTypeV2,
+                extendedTypeV2,
+                Optionality.MANDATORY,
+                Optional.of(usingFieldV1));
+
+        // Merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        String expected = "api test [] {\n" +
+                " record ExtendedType {\n" +
+                "  optin field1(fieldX):string(20)\n" +
+                "  optin field1(field1):string(10)\n" +
+                " }\n" +
+                " record UsingType {\n" +
+                "  mandatory usingField(usingField):ExtendedType@revision 0\n" +
+                " }\n" +
+                "}\n";
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+
+        assertEquals(expected, actual);
     }
 
 }

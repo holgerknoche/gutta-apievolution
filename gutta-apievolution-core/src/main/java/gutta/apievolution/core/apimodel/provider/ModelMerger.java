@@ -284,15 +284,20 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderField(ProviderField field) {
-            Optional<ProviderField> optionalMappedPredecessor = field.findFirstSuccessorMatching(
+            Optional<ProviderField> optionalMappedSuccessor = field.findFirstSuccessorMatching(
                     this.mappedFields::containsKey
             );
 
-            boolean typeChange = (optionalMappedPredecessor.isPresent() &&
-                    !optionalMappedPredecessor.get().getType().equals(field.getType()));
+            boolean typeChange = false;
+            if (optionalMappedSuccessor.isPresent()) {
+                Type currentFieldType = field.getType();
+                Type successorType = optionalMappedSuccessor.get().getType();
+
+                typeChange = ProviderField.isTypeChange(currentFieldType, successorType);
+            }
 
             ProviderField mappedField;
-            if (!optionalMappedPredecessor.isPresent() || typeChange) {
+            if (!optionalMappedSuccessor.isPresent() || typeChange) {
                 // If no predecessor exists or a type change has occurred, create a new field
                 Optional<String> internalName = (field.getPublicName().equals(field.getInternalName())) ?
                         Optional.empty() : Optional.of(field.getInternalName());
@@ -313,7 +318,7 @@ public class ModelMerger {
                 this.knownMemberNames.add(memberName);
                 this.mappedFields.put(field, mappedField);
             } else {
-                mappedField = this.mappedFields.get(optionalMappedPredecessor.get());
+                mappedField = this.mappedFields.get(optionalMappedSuccessor.get());
             }
 
             this.registerFieldMapping(field, mappedField);
