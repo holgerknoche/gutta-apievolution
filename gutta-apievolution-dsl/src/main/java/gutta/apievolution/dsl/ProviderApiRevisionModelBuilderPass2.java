@@ -1,14 +1,15 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.Service;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.provider.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Specific revision model builder for consumer API definitions.

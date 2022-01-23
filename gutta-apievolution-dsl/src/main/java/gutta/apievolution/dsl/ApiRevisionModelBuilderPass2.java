@@ -61,7 +61,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         // Resolve super type, if applicable
         Optional<String> superTypeName = this.optionalIdentifierAsText(ctx.superType);
         Optional<R> optionalSuperType = this.resolveRecord(superTypeName, () -> ctx.superType.start);
-        optionalSuperType.ifPresent(superType -> recordType.setSuperType(superType));
+        optionalSuperType.ifPresent(recordType::setSuperType);
 
         this.registerNewRecordType(recordType);
 
@@ -82,7 +82,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         R type = this.assertRecordType(optionalType.get());
 
         if (type == null) {
-            throw new APIResolutionException(nameToken, "User-defined type '" + name +
+            throw new APIResolutionException(nameToken, "User-defined type '" + name + // NOSONAR
                     "' is not a record type.");
         }
 

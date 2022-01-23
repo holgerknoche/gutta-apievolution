@@ -1,6 +1,5 @@
 package gutta.apievolution.json.provider;
 
-import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.ProviderServiceProxy;
 

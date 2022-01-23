@@ -1,12 +1,12 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Specific revision model builder for consumer API definitions.

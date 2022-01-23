@@ -1,7 +1,5 @@
 package gutta.apievolution.json.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.json.ConsumerInvocationProxy;
 import gutta.apievolution.json.RequestRouter;

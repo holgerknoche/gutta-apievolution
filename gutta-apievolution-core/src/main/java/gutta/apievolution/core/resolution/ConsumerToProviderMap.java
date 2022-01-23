@@ -6,7 +6,6 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
 import java.util.HashMap;

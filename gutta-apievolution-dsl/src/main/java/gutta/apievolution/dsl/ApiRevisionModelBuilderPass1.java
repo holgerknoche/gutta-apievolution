@@ -4,9 +4,10 @@ import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
