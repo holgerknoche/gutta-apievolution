@@ -22,6 +22,21 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
      * @param typeId The record type's type id
      * @param owner The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
+     * @param predecessor The type's predecessor, if any
+     */
+    public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
+                              final ProviderApiDefinition owner, final boolean abstractFlag,
+                              final Optional<ProviderRecordType> predecessor) {
+        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty(), predecessor);
+    }
+
+    /**
+     * Creates a new record type from the given data.
+     * @param publicName The record type's public name
+     * @param internalName The record type's internal name, if any. Otherwise, the public name is assumed
+     * @param typeId The record type's type id
+     * @param owner The API definition that owns this record type
+     * @param abstractFlag Denotes whether this type is abstract
      * @param superType This type's supertype, if any
      * @param predecessor The type's predecessor, if any
      */

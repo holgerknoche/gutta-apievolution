@@ -13,7 +13,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final boolean abstractFlag;
 
-    private final Optional<R> superType;
+    private Optional<R> superType;
 
     private final List<F> declaredFields;
 
@@ -22,6 +22,19 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     private boolean subTypes;
 
     private Usage usage = Usage.NONE;
+
+    /**
+     * Creates a new record type from the given data.
+     * @param publicName The public name of this record type
+     * @param internalName The internal name of this record type, if applicable. Otherwise, the public name is assumed
+     * @param typeId The type id of this record type
+     * @param owner The API definition that owns this record type
+     * @param abstractFlag A flag denoting whether this record type is abstract
+     */
+    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
+                         final boolean abstractFlag) {
+        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty());
+    }
 
     /**
      * Creates a new record type from the given data.
@@ -44,7 +57,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
         owner.addUserDefinedType(this);
 
-        superType.ifPresent(type -> type.registerSubType((R) this));
+        superType.ifPresent(this::setSuperType);
     }
 
     /**
@@ -53,6 +66,21 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      */
     public List<F> getDeclaredFields() {
         return this.declaredFields;
+    }
+
+    /**
+     * Sets the supertype for this record type. This method can only be called if no supertype
+     * is currently assigned to this type.
+     * @param superType The supertype to assign
+     */
+    @SuppressWarnings("unchecked")
+    public void setSuperType(R superType) {
+        if (this.superType.isPresent()) {
+            throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
+        }
+
+        this.superType = Optional.of(superType);
+        superType.registerSubType((R) this);
     }
 
     /**

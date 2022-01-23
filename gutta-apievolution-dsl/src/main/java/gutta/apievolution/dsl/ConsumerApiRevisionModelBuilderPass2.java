@@ -4,38 +4,20 @@ import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 /**
  * Specific revision model builder for consumer API definitions.
  */
-class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerApiDefinition, ConsumerRecordType,
-        ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService, ConsumerServiceOperation> {
+class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition,
+        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
+        ConsumerServiceOperation> {
 
-    private int referencedRevision;
-
-    public ConsumerApiDefinition buildConsumerRevision(final int referencedRevision,
-                                                       final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec) {
-        this.referencedRevision = referencedRevision;
-
-        return this.buildRevision(apiRevisionSpec, Optional.empty());
-    }
-
-    @Override
-    protected ConsumerApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
-                                                   final QualifiedName name, final Set<Annotation> annotations,
-                                                   final Optional<ConsumerApiDefinition> predecessor) {
-        return new ConsumerApiDefinition(name, annotations, this.referencedRevision);
-    }
-
-    @Override
-    protected ConsumerRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-                                                  final Optional<String> internalName, final int typeId,
-                                                  final ConsumerApiDefinition currentRevision,
-                                                  final boolean abstractFlag,
-                                                  final Optional<ConsumerRecordType> superType) {
-        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, superType);
+    public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
+                                        ConsumerApiDefinition apiDefinition) {
+        this.augmentRevision(apiRevisionSpec, apiDefinition, Optional.empty());
     }
 
     @Override
@@ -43,13 +25,6 @@ class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerAp
                                         final Optional<String> internalName, final Type type,
                                         final Optionality optionality, final ConsumerRecordType owner) {
         return new ConsumerField(name, internalName, owner, type, optionality);
-    }
-
-    @Override
-    protected ConsumerEnumType createEnumType(final ApiRevisionParser.EnumTypeContext context, final String name,
-                                              final Optional<String> internalName, final int typeId,
-                                              final ConsumerApiDefinition owner) {
-        return new ConsumerEnumType(name, internalName, typeId, owner);
     }
 
     @Override
@@ -78,4 +53,8 @@ class ConsumerApiRevisionModelBuilder extends ApiRevisionModelBuilder<ConsumerAp
         return (type instanceof ConsumerRecordType) ? (ConsumerRecordType) type : null;
     }
 
+    @Override
+    protected ConsumerEnumType assertEnumType(UserDefinedType<ConsumerApiDefinition> type) {
+        return (type instanceof ConsumerEnumType) ? (ConsumerEnumType) type : null;
+    }
 }

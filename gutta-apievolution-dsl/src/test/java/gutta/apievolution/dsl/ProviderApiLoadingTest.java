@@ -2,17 +2,13 @@ package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.provider.*;
-import gutta.apievolution.core.util.IntegerRange;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ProviderApiRevisionModelBuilderTest {
+class ProviderApiLoadingTest {
 
     /**
      * Test case: A simple model to test the overall parsing functionality.
@@ -388,6 +384,19 @@ class ProviderApiRevisionModelBuilderTest {
         // Compare expected and actual revisions
         assertEquals(expectedRevision1, revision1);
         assertEquals(expectedRevision2, revision2);
+
+    }
+
+    /**
+     * Test an API definition with forward references.
+     */
+    @Test
+    void apiDefinitionWithForwardReferences() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
+                "apis/revision-with-forward-reference.api");
+        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+
 
     }
 
