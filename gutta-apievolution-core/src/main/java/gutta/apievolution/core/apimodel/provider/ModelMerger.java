@@ -308,6 +308,7 @@ public class ModelMerger {
                         this.currentRecordType,
                         type,
                         optionality,
+                        field.isInherited(),
                         Optional.empty());
 
                 this.knownMemberNames.add(memberName);

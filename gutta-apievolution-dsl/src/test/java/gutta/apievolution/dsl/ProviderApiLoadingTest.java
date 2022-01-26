@@ -38,6 +38,7 @@ class ProviderApiLoadingTest {
                 addressType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -46,6 +47,7 @@ class ProviderApiLoadingTest {
                 addressType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -54,6 +56,7 @@ class ProviderApiLoadingTest {
                 addressType,
                 NumericType.bounded(5,0),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -62,6 +65,7 @@ class ProviderApiLoadingTest {
                 addressType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -101,6 +105,7 @@ class ProviderApiLoadingTest {
                 customerType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -109,6 +114,7 @@ class ProviderApiLoadingTest {
                 customerType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -117,6 +123,7 @@ class ProviderApiLoadingTest {
                 customerType,
                 genderEnum,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -125,6 +132,7 @@ class ProviderApiLoadingTest {
                 customerType,
                 addressType,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -142,6 +150,7 @@ class ProviderApiLoadingTest {
                 formattedAddressType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty()
         );
 
@@ -197,6 +206,7 @@ class ProviderApiLoadingTest {
                 unchangedTypeV1,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderRecordType changedTypeV1 = new ProviderRecordType("ChangedType",
@@ -212,6 +222,7 @@ class ProviderApiLoadingTest {
                 changedTypeV1,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderRecordType deletedType = new ProviderRecordType("DeletedType",
@@ -227,6 +238,7 @@ class ProviderApiLoadingTest {
                 deletedType,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderRecordType testTypeV1 = new ProviderRecordType("TestType",
@@ -242,6 +254,7 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         new ProviderField("toSimple",
@@ -249,6 +262,7 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 deletedType,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderField changedTypeTestFieldV1 = new ProviderField("changedType",
@@ -256,6 +270,7 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 changedTypeV1,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderField unchangedTypeTestFieldV1 = new ProviderField("unchanged",
@@ -263,6 +278,7 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 unchangedTypeV1,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         new ProviderField("basicField",
@@ -270,6 +286,7 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 AtomicType.INT_32,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         // Define the second expected revision programmatically
@@ -291,6 +308,7 @@ class ProviderApiLoadingTest {
                 unchangedTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.of(unchangedTypeFieldV1));
 
         ProviderRecordType changedTypeV2 = new ProviderRecordType("ChangedType",
@@ -306,6 +324,7 @@ class ProviderApiLoadingTest {
                 changedTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.of(changedTypeFieldV1));
 
         new ProviderField("field2",
@@ -313,6 +332,7 @@ class ProviderApiLoadingTest {
                 changedTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderRecordType addedTypeV2 = new ProviderRecordType("AddedType",
@@ -328,6 +348,7 @@ class ProviderApiLoadingTest {
                 addedTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderRecordType testTypeV2 = new ProviderRecordType("TestType",
@@ -343,6 +364,7 @@ class ProviderApiLoadingTest {
                 testTypeV2,
                 addedTypeV2,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         new ProviderField("toSimple",
@@ -350,6 +372,7 @@ class ProviderApiLoadingTest {
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         new ProviderField("changedType",
@@ -357,6 +380,7 @@ class ProviderApiLoadingTest {
                 testTypeV2,
                 changedTypeV2,
                 Optionality.MANDATORY,
+                false,
                 Optional.of(changedTypeTestFieldV1));
 
         new ProviderField("unchanged",
@@ -364,6 +388,7 @@ class ProviderApiLoadingTest {
                 testTypeV2,
                 unchangedTypeV2,
                 Optionality.MANDATORY,
+                false,
                 Optional.of(unchangedTypeTestFieldV1));
 
         new ProviderField("basicField",
@@ -371,6 +396,7 @@ class ProviderApiLoadingTest {
                 testTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         // Load and build the revision history from the given API definitions
@@ -400,6 +426,18 @@ class ProviderApiLoadingTest {
                 .orElseThrow(NoSuchElementException::new);
 
 
+        // TODO Check the resulting model
+    }
+
+    /**
+     * Test an API with supertypes.
+     */
+    @Test
+    void apiDefinitionWithSupertypes() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
+                "apis/revision-with-supertypes.api");
+        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
     }
 
 }

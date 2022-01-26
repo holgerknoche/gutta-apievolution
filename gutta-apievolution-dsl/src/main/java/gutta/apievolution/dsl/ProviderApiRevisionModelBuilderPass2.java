@@ -9,6 +9,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -20,9 +21,10 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
     public void augmentProviderRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                    ProviderApiDefinition apiDefinition,
-                                   final Optional<ProviderApiDefinition> optionalPredecessor) {
+                                   final Optional<ProviderApiDefinition> optionalPredecessor,
+                                   Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord) {
 
-        this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor);
+        this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor, nameToRecord);
     }
 
     @Override
@@ -81,17 +83,24 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                     typeChange = true;
                 }
             } else {
-                // Otherwise, the types can be imm
+                // Otherwise, the types can be immediately compared
                 typeChange = !(type.equals(predecessorFieldType));
             }
         }
 
         if (typeChange) {
             // If a type change is detected, it is actually a new field (hence, no predecessor)
-            return new ProviderField(name, internalName, owner, type, optionality, Optional.empty());
+            return new ProviderField(name, internalName, owner, type, optionality, false,
+                    Optional.empty());
         } else {
-            return new ProviderField(name, internalName, owner, type, optionality, predecessor);
+            return new ProviderField(name, internalName, owner, type, optionality, false, predecessor);
         }
+    }
+
+    @Override
+    protected ProviderField createInheritedField(ProviderField originalField, ProviderRecordType owner) {
+        // TODO
+        return originalField;
     }
 
     private FieldPredecessorSpec determinePredecessorSpec(final ApiRevisionParser.FieldReplacesClauseContext context) {

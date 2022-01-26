@@ -1,0 +1,15 @@
+api test {
+
+    abstract record TypeA {
+        string fieldA
+    }
+
+    record TypeB extends TypeA {
+        string fieldB
+    }
+
+    record TypeC extends TypeB {
+        string fieldC
+    }
+
+}

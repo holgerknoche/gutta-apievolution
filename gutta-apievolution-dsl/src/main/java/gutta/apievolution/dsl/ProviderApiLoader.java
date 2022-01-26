@@ -41,11 +41,13 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
             throws IOException {
         ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
 
+        NameToRecordMapBuilder mapBuilder = new NameToRecordMapBuilder();
         ProviderApiRevisionModelBuilderPass1 pass1 = new ProviderApiRevisionModelBuilderPass1();
         ProviderApiRevisionModelBuilderPass2 pass2 = new ProviderApiRevisionModelBuilderPass2();
 
+        Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord = mapBuilder.createMap(specification);
         ProviderApiDefinition apiDefinition = pass1.buildProviderRevision(revision, specification, optionalPredecessor);
-        pass2.augmentProviderRevision(specification, apiDefinition, optionalPredecessor);
+        pass2.augmentProviderRevision(specification, apiDefinition, optionalPredecessor, nameToRecord);
 
         return apiDefinition;
     }

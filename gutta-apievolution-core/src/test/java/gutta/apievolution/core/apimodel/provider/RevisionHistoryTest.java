@@ -84,6 +84,7 @@ class RevisionHistoryTest {
                 recordTypeV1,
                 AtomicType.INT_32,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
@@ -104,6 +105,7 @@ class RevisionHistoryTest {
                 recordTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
+                false,
                 Optional.of(fieldV1));
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);

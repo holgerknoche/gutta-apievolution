@@ -6,6 +6,7 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,15 +17,34 @@ class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
         ConsumerServiceOperation> {
 
     public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                        ConsumerApiDefinition apiDefinition) {
-        this.augmentRevision(apiRevisionSpec, apiDefinition, Optional.empty());
+                                        ConsumerApiDefinition apiDefinition,
+                                        Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord) {
+        this.augmentRevision(apiRevisionSpec, apiDefinition, Optional.empty(), nameToRecord);
     }
 
     @Override
     protected ConsumerField createField(final ApiRevisionParser.FieldContext context, final String name,
                                         final Optional<String> internalName, final Type type,
                                         final Optionality optionality, final ConsumerRecordType owner) {
-        return new ConsumerField(name, internalName, owner, type, optionality);
+        return new ConsumerField(name, internalName, owner, type, optionality, false);
+    }
+
+    @Override
+    protected ConsumerField createInheritedField(ConsumerField originalField, ConsumerRecordType owner) {
+        String publicName = originalField.getPublicName();
+        Optional<String> internalName;
+        if (originalField.getInternalName().equals(publicName)) {
+            internalName = Optional.empty();
+        } else {
+            internalName = Optional.of(originalField.getInternalName());
+        }
+
+        return new ConsumerField(originalField.getPublicName(),
+                internalName,
+                owner,
+                originalField.getType(),
+                originalField.getOptionality(),
+                true);
     }
 
     @Override

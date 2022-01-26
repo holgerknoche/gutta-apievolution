@@ -23,11 +23,13 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
      * @param owner The record type that owns this field
      * @param type The field's type
      * @param optionality The field's optionality
+     * @param inherited Denotes whether this field is inherited
      * @param predecessor The field's predecessor, if any
      */
     public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
-                         final Type type, Optionality optionality, final Optional<ProviderField> predecessor) {
-        super(publicName, internalName, owner, type, optionality);
+                         final Type type, Optionality optionality, boolean inherited,
+                         final Optional<ProviderField> predecessor) {
+        super(publicName, internalName, owner, type, optionality, inherited);
 
         this.predecessor = predecessor;
         this.successor = Optional.empty();

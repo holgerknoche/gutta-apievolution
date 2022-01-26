@@ -38,7 +38,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 StringType.unbounded(),
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false);
 
         // Create the provider revision history
         ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
@@ -59,6 +60,7 @@ class DefinitionResolverTest {
                 testTypeV1,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
@@ -66,6 +68,7 @@ class DefinitionResolverTest {
                 testTypeV1,
                 AtomicType.INT_32,
                 Optionality.OPT_IN,
+                false,
                 Optional.empty());
 
         ProviderField deletedFieldV1 = new ProviderField("deletedField",
@@ -73,6 +76,7 @@ class DefinitionResolverTest {
                 testTypeV1,
                 StringType.unbounded(),
                 Optionality.OPTIONAL,
+                false,
                 Optional.empty());
 
         ProviderEnumType testEnumV1 = new ProviderEnumType("TestEnum",
@@ -109,6 +113,7 @@ class DefinitionResolverTest {
                 testTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderField unchangedFieldV2 = new ProviderField("unchangedField",
@@ -116,6 +121,7 @@ class DefinitionResolverTest {
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.of(unchangedFieldV1));
 
         ProviderField addedFieldV2 = new ProviderField("addedField",
@@ -123,6 +129,7 @@ class DefinitionResolverTest {
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         ProviderEnumType testEnumV2 = new ProviderEnumType("TestEnum",
@@ -167,7 +174,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 AtomicType.INT_32,
-                Optionality.OPTIONAL);
+                Optionality.OPTIONAL,
+                false);
 
         // Define a provider API with a mandatory field
         ProviderApiDefinition revision = new ProviderApiDefinition(QualifiedName.of("test"),
@@ -188,6 +196,7 @@ class DefinitionResolverTest {
                 recordType,
                 AtomicType.INT_32,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         new ProviderField("optionalField",
@@ -195,6 +204,7 @@ class DefinitionResolverTest {
                 recordType,
                 AtomicType.INT_32,
                 Optionality.OPTIONAL,
+                false,
                 Optional.empty());
 
         // Resolve the consumer definition against the revision history
@@ -231,6 +241,7 @@ class DefinitionResolverTest {
                 providerType,
                 AtomicType.INT_32,
                 Optionality.MANDATORY,
+                false,
                 Optional.empty());
 
         // Consumer definition
@@ -249,7 +260,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 AtomicType.INT_64,
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false);
 
         //
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);

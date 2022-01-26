@@ -5,7 +5,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionBaseVisitor;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
@@ -29,18 +29,25 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
 
     protected Optional<A> previousRevision;
 
+    protected Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord;
+
     protected R currentRecordType;
 
     protected E currentEnumType;
 
     protected S currentService;
 
+    protected Set<String> processedRecordTypes;
+
     protected void augmentRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                              A apiDefinition,
-                              final Optional<A> optionalPredecessor) {
+                                   A apiDefinition,
+                                   final Optional<A> optionalPredecessor,
+                                   Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord) {
         this.currentRevision = apiDefinition;
         this.currentRecordType = null;
+        this.processedRecordTypes = new HashSet<>();
         this.previousRevision = optionalPredecessor;
+        this.nameToRecord = nameToRecord;
 
         apiRevisionSpec.accept(this);
     }
@@ -53,23 +60,57 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         return null;
     }
 
+    private void processSuperType(String superTypeName) {
+        ApiRevisionParser.RecordTypeContext recordTypeContext = this.nameToRecord.get(superTypeName);
+
+        // Process the super type recursively within a scope that saves the state stored within
+        // the instance variables
+        try (RecursiveInvocationScope scope = new RecursiveInvocationScope()) {
+            recordTypeContext.accept(this);
+        }
+    }
+
     @Override
     public final Void visitRecordType(final ApiRevisionParser.RecordTypeContext ctx) {
         String typeName = this.identifierAsText(ctx.name);
         R recordType = this.resolveRecord(typeName, ctx.name.start);
 
-        // Resolve super type, if applicable
-        Optional<String> superTypeName = this.optionalIdentifierAsText(ctx.superType);
-        Optional<R> optionalSuperType = this.resolveRecord(superTypeName, () -> ctx.superType.start);
-        optionalSuperType.ifPresent(recordType::setSuperType);
+        // TODO Check equals stability for record type
+        this.processedRecordTypes.add(typeName);
 
-        this.registerNewRecordType(recordType);
+        // Resolve super type, if applicable
+        Optional<String> optionalSuperTypeName = this.optionalIdentifierAsText(ctx.superType);
+        Optional<R> optionalSuperType = this.resolveRecord(optionalSuperTypeName, () -> ctx.superType.start);
+
+        if (optionalSuperType.isPresent()) {
+            R superType = optionalSuperType.get();
+            recordType.setSuperType(superType);
+
+            // Ensure that the supertype is already initialized
+            String superTypeName = optionalSuperTypeName.get();
+            if (!this.processedRecordTypes.contains(superTypeName)) {
+                this.processSuperType(superTypeName);
+            }
+
+            // TODO Add fields from supertypes to the current record so that they
+            // appear in the desired order
+        }
 
         this.currentRecordType = recordType;
         ctx.fields.forEach(field -> field.accept(this));
         this.currentRecordType = null;
 
         return null;
+    }
+
+    private void addSuperTypeFieldsTo(R targetType, R superType) {
+        // Ensure that the types from the most abstract type are added first
+        Optional<R> superSuperType = superType.getSuperType();
+        superSuperType.ifPresent(supSupType -> this.addSuperTypeFieldsTo(targetType, supSupType));
+
+        for (F field : superType.getDeclaredFields()) {
+
+        }
     }
 
     private R resolveRecord(String name, Token nameToken) {
@@ -129,6 +170,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
     protected abstract F createField(final ApiRevisionParser.FieldContext context, final String name,
                                      final Optional<String> internalName, Type type, Optionality optionality,
                                      final R owner);
+
+    protected abstract F createInheritedField(F originalField, R type);
 
     private Optionality determineFieldModifiers(final ApiRevisionParser.FieldModifierContext context) {
         if (context == null) {
@@ -342,6 +385,28 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
             return new TypeResolver();
         }
 
+    }
+
+    private class RecursiveInvocationScope implements AutoCloseable {
+
+        private final R recordType;
+
+        private final E enumType;
+
+        private final S service;
+
+        public RecursiveInvocationScope() {
+            this.recordType = ApiRevisionModelBuilderPass2.this.currentRecordType;
+            this.enumType = ApiRevisionModelBuilderPass2.this.currentEnumType;
+            this.service = ApiRevisionModelBuilderPass2.this.currentService;
+        }
+
+        @Override
+        public void close() {
+            ApiRevisionModelBuilderPass2.this.currentRecordType = this.recordType;
+            ApiRevisionModelBuilderPass2.this.currentEnumType = this.enumType;
+            ApiRevisionModelBuilderPass2.this.currentService = this.service;
+        }
     }
 
 }
