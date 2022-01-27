@@ -92,8 +92,9 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
                 this.processSuperType(superTypeName);
             }
 
-            // TODO Add fields from supertypes to the current record so that they
+            // Add fields from supertypes to the current record so that they
             // appear in the desired order
+            this.addSuperTypeFieldsTo(recordType, superType);
         }
 
         this.currentRecordType = recordType;
@@ -108,9 +109,11 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         Optional<R> superSuperType = superType.getSuperType();
         superSuperType.ifPresent(supSupType -> this.addSuperTypeFieldsTo(targetType, supSupType));
 
-        for (F field : superType.getDeclaredFields()) {
-
-        }
+        // Copy non-inherited fields
+        // TODO Separate declared fields / all fields
+        superType.getDeclaredFields().stream()
+                .filter(field -> !field.isInherited())
+                .forEach(field -> this.createInheritedField(field, targetType));
     }
 
     private R resolveRecord(String name, Token nameToken) {

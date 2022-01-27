@@ -1,9 +1,6 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.Optionality;
-import gutta.apievolution.core.apimodel.Service;
-import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.provider.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
@@ -70,22 +67,7 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
             ProviderField predecessorField = predecessor.get();
             Type predecessorFieldType = predecessorField.getType();
 
-            if (type instanceof RevisionedElement) {
-                // If the current type is revisioned, we must compare the its predecessor to the predecessor
-                // field's type
-                Optional<?> optionalOwnTypePredecessor = ((RevisionedElement<?>) type).getPredecessor();
-
-                if (optionalOwnTypePredecessor.isPresent()) {
-                    Type ownTypePredecessor = (Type) optionalOwnTypePredecessor.get();
-                    typeChange = !(ownTypePredecessor.equals(predecessorFieldType));
-                } else {
-                    // If no predecessor is present, we have a type change
-                    typeChange = true;
-                }
-            } else {
-                // Otherwise, the types can be immediately compared
-                typeChange = !(type.equals(predecessorFieldType));
-            }
+            typeChange = ProviderField.isTypeChange(predecessorFieldType, type);
         }
 
         if (typeChange) {
@@ -99,8 +81,38 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
     @Override
     protected ProviderField createInheritedField(ProviderField originalField, ProviderRecordType owner) {
-        // TODO
-        return originalField;
+        // TODO Handle explicitly given predecessors
+
+        // Determine the predecessor field, if it exists
+        Optional<ProviderRecordType> optionalPredecessorType = owner.getPredecessor();
+        Optional<ProviderField> optionalPredecessor;
+        if (optionalPredecessorType.isPresent()) {
+            ProviderRecordType predecessor = optionalPredecessorType.get();
+            optionalPredecessor = predecessor.resolveField(originalField.getPublicName());
+
+            if (optionalPredecessor.isPresent()) {
+                boolean typeChange = ProviderField.isTypeChange(optionalPredecessor.get().getType(),
+                        originalField.getType());
+
+                if (typeChange) {
+                    throw new RuntimeException("Type changes are not allowed for inherited fields.");
+                }
+            }
+        } else {
+            optionalPredecessor = Optional.empty();
+        }
+
+        String publicName = originalField.getPublicName();
+        Optional<String> internalName = (publicName.equals(originalField.getInternalName())) ?
+                Optional.empty() : Optional.of(originalField.getInternalName());
+
+        return new ProviderField(publicName,
+                internalName,
+                owner,
+                originalField.getType(),
+                originalField.getOptionality(),
+                true,
+                optionalPredecessor);
     }
 
     private FieldPredecessorSpec determinePredecessorSpec(final ApiRevisionParser.FieldReplacesClauseContext context) {

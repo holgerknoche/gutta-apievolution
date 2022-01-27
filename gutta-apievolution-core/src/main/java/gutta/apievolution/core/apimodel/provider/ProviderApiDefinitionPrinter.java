@@ -7,11 +7,16 @@ import java.util.Iterator;
 /**
  * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
  */
-class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisitor<Void> {
+public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisitor<Void> {
 
     private StringBuilder outputBuilder;
 
-    String printApiDefinition(ProviderApiDefinition definition) {
+    /**
+     * Prints a given API definition into a string.
+     * @param definition The definition to print
+     * @return The string representation of the definition
+     */
+    public String printApiDefinition(ProviderApiDefinition definition) {
         StringBuilder builder = new StringBuilder();
         this.outputBuilder = builder;
 
@@ -62,6 +67,11 @@ class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisito
         StringBuilder builder = this.outputBuilder;
 
         builder.append("  ");
+
+        if (field.isInherited()) {
+            builder.append("inherited ");
+        }
+
         builder.append(field.getOptionality());
         builder.append(" ");
         builder.append(field.getPublicName());

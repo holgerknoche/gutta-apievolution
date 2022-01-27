@@ -434,10 +434,88 @@ class ProviderApiLoadingTest {
      */
     @Test
     void apiDefinitionWithSupertypes() {
+        ProviderApiDefinition expectedDefinition = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType typeA = new ProviderRecordType("TypeA",
+                Optional.empty(),
+                0,
+                expectedDefinition,
+                true,
+                Optional.empty());
+
+        new ProviderField("fieldA",
+                Optional.empty(),
+                typeA,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                false,
+                Optional.empty());
+
+        ProviderRecordType typeB = new ProviderRecordType("TypeB",
+                Optional.empty(),
+                1,
+                expectedDefinition,
+                false,
+                Optional.of(typeA),
+                Optional.empty());
+
+        new ProviderField("fieldA",
+                Optional.empty(),
+                typeB,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                true,
+                Optional.empty());
+
+        new ProviderField("fieldB",
+                Optional.empty(),
+                typeB,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                false,
+                Optional.empty());
+
+        ProviderRecordType typeC = new ProviderRecordType("TypeC",
+                Optional.empty(),
+                2,
+                expectedDefinition,
+                false,
+                Optional.of(typeB),
+                Optional.empty());
+
+        new ProviderField("fieldA",
+                Optional.empty(),
+                typeC,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                true,
+                Optional.empty());
+
+        new ProviderField("fieldB",
+                Optional.empty(),
+                typeC,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                true,
+                Optional.empty());
+
+        new ProviderField("fieldC",
+                Optional.empty(),
+                typeC,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                false,
+                Optional.empty());
+
         RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
                 "apis/revision-with-supertypes.api");
         ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
                 .orElseThrow(NoSuchElementException::new);
+
+        assertEquals(expectedDefinition, apiDefinition);
     }
 
 }

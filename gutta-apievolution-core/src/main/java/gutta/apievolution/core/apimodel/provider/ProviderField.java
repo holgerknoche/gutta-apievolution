@@ -17,6 +17,31 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     private Optional<ProviderField> successor;
 
     /**
+     * Determines whether the types of two successive fields represent a type change.
+     * @param predecessorType The type of the predecessor field
+     * @param successorType The type of the successor field
+     * @return {@code True}, if the types are considered different, {@code false} otherwise
+     */
+    public static boolean isTypeChange(Type predecessorType, Type successorType) {
+        if (successorType instanceof RevisionedElement) {
+            // If the current type is revisioned, we must compare the its predecessor to the predecessor
+            // field's type
+            Optional<?> optionalOwnTypePredecessor = ((RevisionedElement<?>) successorType).getPredecessor();
+
+            if (optionalOwnTypePredecessor.isPresent()) {
+                Type ownTypePredecessor = (Type) optionalOwnTypePredecessor.get();
+                return !(ownTypePredecessor.equals(predecessorType));
+            } else {
+                // If no predecessor is present, we have a type change
+                return true;
+            }
+        } else {
+            // Otherwise, the types can be compared immediately
+            return !(successorType.equals(predecessorType));
+        }
+    }
+
+    /**
      * Creates a new field from the given data.
      * @param publicName The field's public name
      * @param internalName The field's internal name, if any. Otherwise, the public name is assumed

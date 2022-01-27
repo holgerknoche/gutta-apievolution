@@ -13,7 +13,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final boolean abstractFlag;
 
-    private Optional<R> superType;
+    private Optional<R> superType = Optional.empty();
 
     private final List<F> declaredFields;
 
@@ -52,12 +52,13 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
         this.declaredFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
-        this.superType = superType;
         this.fieldLookup = new HashMap<>();
 
         owner.addUserDefinedType(this);
 
-        superType.ifPresent(this::setSuperType);
+        if (superType.isPresent()) {
+            this.setSuperType(superType.get());
+        }
     }
 
     /**
