@@ -42,7 +42,13 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
         return this.owner;
     }
 
+    private void assertMutability() {
+        this.getOwner().assertMutability();
+    }
+
     void addServiceOperation(final O operation) {
+        this.assertMutability();
+
         this.declaredOperations.add(operation);
         this.operationsLookup.put(operation.getPublicName(), operation);
     }

@@ -76,6 +76,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      */
     @SuppressWarnings("unchecked")
     public void setSuperType(R superType) {
+        this.assertMutability();
+
         if (this.superType.isPresent()) {
             throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
         }
@@ -89,6 +91,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @param field The field to add
      */
     protected void addDeclaredField(final F field) {
+        this.assertMutability();
+
         this.declaredFields.add(field);
         this.fieldLookup.put(field.getPublicName(), field);
     }
@@ -127,6 +131,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     void registerSubType(final R subType) {
+        this.assertMutability();
+
         this.subTypes = true;
     }
 

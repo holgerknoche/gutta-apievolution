@@ -47,6 +47,8 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
      * @param member The member to add
      */
     protected void addDeclaredMember(final M member) {
+        this.assertMutability();
+
         this.declaredMembers.add(member);
         this.publicNameLookup.put(member.getPublicName(), member);
         this.internalNameLookup.put(member.getInternalName(), member);
