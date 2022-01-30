@@ -62,25 +62,19 @@ class ModelMergerTest {
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
                 Optional.empty(),
                 testTypeV1,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         new ProviderField("deletedField",
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
                 Collections.emptySet(),
@@ -99,25 +93,19 @@ class ModelMergerTest {
                 Optional.of("newTypeChangeField"),
                 testTypeV2,
                 AtomicType.INT_64,
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         new ProviderField("unchangedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.of(unchangedFieldV1));
+                Optionality.MANDATORY);
 
         new ProviderField("addedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -227,25 +215,19 @@ class ModelMergerTest {
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
                 Optional.empty(),
                 testTypeV1,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField deletedFieldV1 = new ProviderField("deletedField",
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderEnumType testEnumV1 = new ProviderEnumType("Test",
                 Optional.empty(),
@@ -280,9 +262,7 @@ class ModelMergerTest {
                 Optional.of("newTypeChangeField"),
                 testTypeV2,
                 AtomicType.INT_64,
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField unchangedFieldV2 = new ProviderField("unchangedField",
                 Optional.empty(),
@@ -290,15 +270,14 @@ class ModelMergerTest {
                 StringType.unbounded(),
                 Optionality.MANDATORY,
                 false,
+                Arrays.asList(unchangedFieldV1),
                 Optional.of(unchangedFieldV1));
 
         ProviderField addedFieldV2 = new ProviderField("addedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderEnumType testEnumV2 = new ProviderEnumType("Test",
                 Optional.empty(),
@@ -417,9 +396,7 @@ class ModelMergerTest {
                 Optional.empty(),
                 extendedTypeV1,
                 StringType.bounded(10),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderRecordType usingTypeV1 = new ProviderRecordType("UsingType",
                 Optional.empty(),
@@ -433,9 +410,7 @@ class ModelMergerTest {
                 Optional.empty(),
                 usingTypeV1,
                 extendedTypeV1,
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
                 Collections.emptySet(),
@@ -455,9 +430,7 @@ class ModelMergerTest {
                 Optional.of("fieldX"),
                 extendedTypeV2,
                 StringType.bounded(20),
-                Optionality.MANDATORY,
-                false,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderRecordType usingTypeV2 = new ProviderRecordType("UsingType",
                 Optional.empty(),
@@ -471,9 +444,7 @@ class ModelMergerTest {
                 Optional.empty(),
                 usingTypeV2,
                 extendedTypeV2,
-                Optionality.MANDATORY,
-                false,
-                Optional.of(usingFieldV1));
+                Optionality.MANDATORY);
 
         // Merge the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);

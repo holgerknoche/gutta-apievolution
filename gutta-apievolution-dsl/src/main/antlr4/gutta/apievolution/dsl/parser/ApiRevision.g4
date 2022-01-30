@@ -95,7 +95,7 @@ service:
 ;
 
 serviceOperation:
-   resultType=userDefinedTypeReference name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ('throws' exceptions+=userDefinedTypeReference (', ' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
+   resultType=userDefinedTypeReference name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
 ;
 
 exceptionType:

@@ -314,6 +314,7 @@ public class ModelMerger {
                         type,
                         optionality,
                         field.isInherited(),
+                        Collections.emptyList(),
                         Optional.empty());
 
                 this.knownMemberNames.add(memberName);

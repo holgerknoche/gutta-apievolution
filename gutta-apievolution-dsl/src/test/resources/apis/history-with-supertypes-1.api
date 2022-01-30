@@ -1,0 +1,15 @@
+api test {
+
+    record TypeA {
+        string fieldA
+    }
+
+    record TypeB {
+        string fieldB
+    }
+
+    record TypeC {
+        string fieldC
+    }
+
+}

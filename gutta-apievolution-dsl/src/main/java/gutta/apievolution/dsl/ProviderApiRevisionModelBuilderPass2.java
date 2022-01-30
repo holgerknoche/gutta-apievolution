@@ -5,9 +5,8 @@ import gutta.apievolution.core.apimodel.provider.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Specific revision model builder for consumer API definitions.
@@ -40,24 +39,34 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                                         final Optionality optionality, final ProviderRecordType owner) {
         // Resolve predecessor field, if present
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
+
         Optional<ProviderField> predecessor;
+        List<ProviderField> declaredPredecessors;
         switch (predecessorType) {
             case EXPLICIT:
-                // Resolve an explicit predecessor
-                FieldPredecessorSpec predecessorSpec = this.determinePredecessorSpec(context.replaces);
-                predecessor = this.resolvePredecessorField(predecessorSpec, true,
-                        context.replaces.refToken, context.replaces.qualifiedName.start);
+                // Resolve explicit predecessors
+                List<FieldPredecessorSpec> predecessorSpecs = this.determinePredecessorSpecs(context.replaces);
+                declaredPredecessors = this.resolvePredecessorFields(predecessorSpecs, context.replaces);
+
+                // Use the (first) predecessor owned by the current type as the
+                // actual predecessor. For inherited fields, there may be no matching
+                // predecessor
+                predecessor = declaredPredecessors.stream()
+                        .filter(field -> field.getOwner().equals(owner))
+                        .findFirst();
                 break;
 
             case IMPLICIT:
                 // Perform implicit predecessor resolution
                 predecessor = this.resolvePredecessorField(new FieldPredecessorSpec(name), false,
                         context.name.start, context.name.start);
+                declaredPredecessors = Collections.emptyList();
                 break;
 
             case NONE:
             default:
                 predecessor = Optional.empty();
+                declaredPredecessors = Collections.emptyList();
                 break;
         }
 
@@ -72,11 +81,28 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
         if (typeChange) {
             // If a type change is detected, it is actually a new field (hence, no predecessor)
-            return new ProviderField(name, internalName, owner, type, optionality, false,
+            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
                     Optional.empty());
         } else {
-            return new ProviderField(name, internalName, owner, type, optionality, false, predecessor);
+            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
+                    predecessor);
         }
+    }
+
+    private List<ProviderField> resolvePredecessorFields(List<FieldPredecessorSpec> specs,
+                                                         ApiRevisionParser.FieldReplacesClauseContext context) {
+        int specCount = specs.size();
+        Token refToken = context.refToken;
+
+        List<ProviderField> predecessors = new ArrayList<>(specCount);
+        for (int index = 0; index < specCount; index++) {
+            FieldPredecessorSpec spec = specs.get(index);
+            Optional<ProviderField> predecessor = this.resolvePredecessorField(spec, true, refToken,
+                    context.qualifiedName(index).start);
+            predecessor.ifPresent(predecessors::add);
+        }
+
+        return predecessors;
     }
 
     @Override
@@ -112,18 +138,19 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                 originalField.getType(),
                 originalField.getOptionality(),
                 true,
-                optionalPredecessor);
+                Collections.emptyList(),
+                optionalPredecessor
+                );
     }
 
-    private FieldPredecessorSpec determinePredecessorSpec(final ApiRevisionParser.FieldReplacesClauseContext context) {
-        List<ApiRevisionParser.QualifiedNameContext> itemNames = context.items;
+    private List<FieldPredecessorSpec> determinePredecessorSpecs(final ApiRevisionParser.FieldReplacesClauseContext context) {
+        return context.items.stream()
+                .map(this::createPredecessorSpec)
+                .collect(Collectors.toList());
+    }
 
-        if (itemNames.size() > 1) {
-            // TODO Support multiple predecessors for pushing up fields
-            throw new APIParseException(context.refToken, "More than one predecessor is currently unsupported.");
-        }
-
-        List<String> itemNameParts = this.splitQualifiedName(itemNames.get(0));
+    private FieldPredecessorSpec createPredecessorSpec(ApiRevisionParser.QualifiedNameContext qualifiedNameContext) {
+        List<String> itemNameParts = this.splitQualifiedName(qualifiedNameContext);
         int itemPartCount = itemNameParts.size();
 
         if (itemPartCount == 1) {
@@ -131,7 +158,8 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
         } else if (itemPartCount == 2) {
             return new FieldPredecessorSpec(Optional.of(itemNameParts.get(0)), itemNameParts.get(1));
         } else {
-            throw new APIParseException(context.refToken, "Predecessor names may only consist of two parts.");
+            Token refToken = qualifiedNameContext.start;
+            throw new APIParseException(refToken, "Predecessor names may only consist of two parts.");
         }
     }
 
@@ -141,11 +169,19 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
         ProviderRecordType predecessorRecordType;
 
         if (predecessorSpec.typeName.isPresent()) {
-            // TODO Allow specifying types in predecessors
-            throw new APIParseException(refToken, "Type specs in field predecessors are currently not supported.");
-        }
+            String predecessorTypeName = predecessorSpec.typeName.get();
+            ProviderApiDefinition previousRevision = this.currentRevision.getPredecessor().orElseThrow(
+                    () -> new APIResolutionException(refToken, "No predecessor revision available.")
+            );
 
-        if (explicitReference) {
+            UserDefinedType<ProviderApiDefinition> predecessorType =
+                    previousRevision.resolveUserDefinedType(predecessorTypeName).orElseThrow(
+                            () -> new APIResolutionException(refToken, "Predecessor type" + predecessorTypeName
+                            + "does not exist.")
+                    );
+
+            predecessorRecordType = this.assertRecordType(predecessorType);
+        } else if (explicitReference) {
             predecessorRecordType = this.currentRecordType.getPredecessor().orElseThrow(
                     () -> new APIResolutionException(refToken,
                             "Evolution clause specified, but no predecessor structure is available.")
