@@ -80,6 +80,12 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(")");
         builder.append(":");
         builder.append(field.getType());
+
+        field.getPredecessor().ifPresent(predecessor -> {
+            builder.append(" <- ");
+            builder.append(predecessor.getPublicName());
+        });
+
         builder.append("\n");
 
         return null;

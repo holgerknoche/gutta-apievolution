@@ -37,7 +37,11 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
         this.optionality = optionality;
         this.inherited = inherited;
 
-        owner.addDeclaredField((F) this);
+        if (inherited) {
+            owner.addInheritedField((F) this);
+        } else {
+            owner.addDeclaredField((F) this);
+        }
     }
 
     /**

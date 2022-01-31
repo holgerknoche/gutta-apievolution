@@ -5,7 +5,6 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * Utility class for loading consumer API definitions.
@@ -22,13 +21,11 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
         try {
             ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
 
-            NameToRecordMapBuilder mapBuilder = new NameToRecordMapBuilder();
             ConsumerApiRevisionModelBuilderPass1 pass1 = new ConsumerApiRevisionModelBuilderPass1();
             ConsumerApiRevisionModelBuilderPass2 pass2 = new ConsumerApiRevisionModelBuilderPass2();
 
-            Map<String, ApiRevisionParser.RecordTypeContext> identifierToRecord = mapBuilder.createMap(specification);
             ConsumerApiDefinition apiDefinition = pass1.buildConsumerRevision(specification, referencedRevision);
-            pass2.augmentConsumerRevision(specification, apiDefinition, identifierToRecord);
+            pass2.augmentConsumerRevision(specification, apiDefinition);
 
             return apiDefinition;
         } catch (IOException e) {

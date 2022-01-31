@@ -17,10 +17,9 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
     public void augmentProviderRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                    ProviderApiDefinition apiDefinition,
-                                   final Optional<ProviderApiDefinition> optionalPredecessor,
-                                   Map<String, ApiRevisionParser.RecordTypeContext> nameToRecord) {
+                                   final Optional<ProviderApiDefinition> optionalPredecessor) {
 
-        this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor, nameToRecord);
+        this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor);
     }
 
     @Override
@@ -105,45 +104,8 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
         return predecessors;
     }
 
-    @Override
-    protected ProviderField createInheritedField(ProviderField originalField, ProviderRecordType owner) {
-        // TODO Handle explicitly given predecessors
-
-        // Determine the predecessor field, if it exists
-        Optional<ProviderRecordType> optionalPredecessorType = owner.getPredecessor();
-        Optional<ProviderField> optionalPredecessor;
-        if (optionalPredecessorType.isPresent()) {
-            ProviderRecordType predecessor = optionalPredecessorType.get();
-            optionalPredecessor = predecessor.resolveField(originalField.getPublicName());
-
-            if (optionalPredecessor.isPresent()) {
-                boolean typeChange = ProviderField.isTypeChange(optionalPredecessor.get().getType(),
-                        originalField.getType());
-
-                if (typeChange) {
-                    throw new RuntimeException("Type changes are not allowed for inherited fields.");
-                }
-            }
-        } else {
-            optionalPredecessor = Optional.empty();
-        }
-
-        String publicName = originalField.getPublicName();
-        Optional<String> internalName = (publicName.equals(originalField.getInternalName())) ?
-                Optional.empty() : Optional.of(originalField.getInternalName());
-
-        return new ProviderField(publicName,
-                internalName,
-                owner,
-                originalField.getType(),
-                originalField.getOptionality(),
-                true,
-                Collections.emptyList(),
-                optionalPredecessor
-                );
-    }
-
-    private List<FieldPredecessorSpec> determinePredecessorSpecs(final ApiRevisionParser.FieldReplacesClauseContext context) {
+    private List<FieldPredecessorSpec> determinePredecessorSpecs(
+            final ApiRevisionParser.FieldReplacesClauseContext context) {
         return context.items.stream()
                 .map(this::createPredecessorSpec)
                 .collect(Collectors.toList());
@@ -176,8 +138,8 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
             UserDefinedType<ProviderApiDefinition> predecessorType =
                     previousRevision.resolveUserDefinedType(predecessorTypeName).orElseThrow(
-                            () -> new APIResolutionException(refToken, "Predecessor type" + predecessorTypeName
-                            + "does not exist.")
+                            () -> new APIResolutionException(refToken, "Predecessor type" + predecessorTypeName +
+                            "does not exist.")
                     );
 
             predecessorRecordType = this.assertRecordType(predecessorType);

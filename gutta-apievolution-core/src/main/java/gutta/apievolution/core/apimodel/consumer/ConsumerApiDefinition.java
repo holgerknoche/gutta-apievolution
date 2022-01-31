@@ -55,4 +55,9 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition> 
                 this.referencedRevision == that.referencedRevision;
     }
 
+    @Override
+    protected void propagateInheritedFields() {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
 }

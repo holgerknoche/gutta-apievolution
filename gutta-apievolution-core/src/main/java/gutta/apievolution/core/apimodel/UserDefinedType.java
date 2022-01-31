@@ -67,6 +67,9 @@ public abstract class UserDefinedType<A extends ApiDefinition<A>> extends Abstra
                 this.typeId == that.typeId;
     }
 
+    /**
+     * Asserts that this type is mutable, and throws an exception otherwise.
+     */
     protected void assertMutability() {
         this.getOwner().assertMutability();
     }

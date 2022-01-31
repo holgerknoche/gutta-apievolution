@@ -4,9 +4,11 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
@@ -95,4 +97,14 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
         return "revision " + this.revision;
     }
 
+    @Override
+    protected void propagateInheritedFields() {
+        List<ProviderRecordType> recordTypes = this.getUserDefinedTypes().stream()
+                .filter(ProviderRecordType.class::isInstance)
+                .map(ProviderRecordType.class::cast)
+                .collect(Collectors.toList());
+
+        ProviderInheritedFieldPropagator propagator = new ProviderInheritedFieldPropagator();
+        propagator.propagateFieldsFor(recordTypes);
+    }
 }

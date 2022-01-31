@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -99,7 +98,10 @@ class ModelMergerTest {
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false,
+                Collections.emptyList(),
+                Optional.of(unchangedFieldV1));
 
         new ProviderField("addedField",
                 Optional.empty(),
@@ -444,7 +446,10 @@ class ModelMergerTest {
                 Optional.empty(),
                 usingTypeV2,
                 extendedTypeV2,
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false,
+                Collections.emptyList(),
+                Optional.of(usingFieldV1));
 
         // Merge the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);

@@ -63,6 +63,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
         return this.annotations;
     }
 
+    /**
+     * Asserts that this API definition is currently mutable, and throws an exception otherwise.
+     */
     protected void assertMutability() {
         if (this.state != ApiDefinitionState.UNDER_CONSTRUCTION) {
             throw new IllegalStateException("An attempt was made to change an immutable API definition.");
@@ -147,12 +150,15 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
         this.state = ApiDefinitionState.FINALIZED;
     }
 
-    private void propagateInheritedFields() {
-        // TODO Propagate fields in inheritance order (!)
+    /**
+     * Propagates inherited fields to subtypes as part of the finalization process.
+     */
+    protected abstract void propagateInheritedFields();
 
-        // TODO
-    }
-
+    /**
+     * Performs specific finalization actions. This is essentially a template method for
+     * provider and consumer specializations.
+     */
     protected void performSpecificFinalizationActions() {
         // Do nothing by default
     }
