@@ -9,7 +9,8 @@ import java.util.*;
  * @param <O> The concrete service operation type
  */
 public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S, O, R>,
-        O extends ServiceOperation<S, O, R>, R extends RecordType<A, R, ?>> extends AbstractApiDefinitionElement {
+        O extends ServiceOperation<S, O, R>, R extends RecordType<A, R, ?>> extends AbstractApiDefinitionElement
+        implements Iterable<O> {
 
     private final A owner;
 
@@ -40,6 +41,11 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
      */
     public A getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public Iterator<O> iterator() {
+        return this.declaredOperations.iterator();
     }
 
     private void assertMutability() {

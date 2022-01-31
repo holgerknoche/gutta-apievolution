@@ -27,6 +27,8 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
             ConsumerApiDefinition apiDefinition = pass1.buildConsumerRevision(specification, referencedRevision);
             pass2.augmentConsumerRevision(specification, apiDefinition);
 
+            apiDefinition.finalizeDefinition();
+
             return apiDefinition;
         } catch (IOException e) {
             throw new ApiLoadException("Error loading API definition.", e);

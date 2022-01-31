@@ -114,4 +114,39 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
 
         return null;
     }
+
+    @Override
+    public Void handleProviderService(ProviderService service) {
+        StringBuilder builder = this.outputBuilder;
+
+        builder.append(" service ");
+        builder.append(service.getPublicName());
+        builder.append("(");
+        builder.append(service.getInternalName());
+        builder.append(") {\n");
+
+        service.forEach(operation -> operation.accept(this));
+
+        builder.append(" }\n");
+        return null;
+    }
+
+    @Override
+    public Void handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
+        StringBuilder builder = this.outputBuilder;
+
+        builder.append("  ");
+        builder.append(serviceOperation.getPublicName());
+        builder.append("(");
+        builder.append(serviceOperation.getInternalName());
+        builder.append(")");
+
+        builder.append(" (");
+        builder.append(serviceOperation.getParameterType());
+        builder.append(") : ");
+        builder.append(serviceOperation.getReturnType());
+        builder.append("\n");
+
+        return null;
+    }
 }

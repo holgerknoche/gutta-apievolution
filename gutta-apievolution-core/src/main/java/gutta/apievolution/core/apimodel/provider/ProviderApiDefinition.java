@@ -67,8 +67,9 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
      * @param action The action to perform
      */
     public void forEach(Consumer<ProviderApiDefinitionElement> action) {
-        // Iterate over all user-defined types
+        // Iterate over all user-defined types and services
         this.getUserDefinedTypes().forEach(udt -> action.accept((ProviderApiDefinitionElement) udt));
+        this.getServices().forEach(service -> action.accept((ProviderApiDefinitionElement) service));
     }
 
     @Override

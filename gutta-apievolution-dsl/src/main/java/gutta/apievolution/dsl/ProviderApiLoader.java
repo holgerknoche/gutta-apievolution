@@ -47,6 +47,8 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
         ProviderApiDefinition apiDefinition = pass1.buildProviderRevision(revision, specification, optionalPredecessor);
         pass2.augmentProviderRevision(specification, apiDefinition, optionalPredecessor);
 
+        apiDefinition.finalizeDefinition();
+
         return apiDefinition;
     }
 

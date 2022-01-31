@@ -104,6 +104,14 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
+     * Returns the services provided by this API definition.
+     * @return see above
+     */
+    protected List<Service<A, ?, ?, ?>> getServices() {
+        return this.services;
+    }
+
+    /**
      * Resolves a public name to an UDT provided by this API definition.
      * @param <T> The expected type of the UDT
      * @param name The public name of the UDT to resolve

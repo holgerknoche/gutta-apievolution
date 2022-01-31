@@ -28,7 +28,7 @@ class ProviderApiLoadingTest {
         // Address type
         ProviderRecordType addressType = new ProviderRecordType("Address",
                 Optional.empty(),
-                1,
+                0,
                 expectedDefinition,
                 false,
                 Optional.empty(),
@@ -148,6 +148,8 @@ class ProviderApiLoadingTest {
                 addressType,
                 Optional.empty());
 
+        expectedDefinition.finalizeDefinition();
+
         // Load the API definition from a file
         ProviderApiDefinition loadedDefinition = ProviderApiLoader.loadHistoryFromClasspath(
                 "apis/simple-model.api").getRevision(0).orElseThrow(NoSuchElementException::new);
@@ -246,6 +248,8 @@ class ProviderApiLoadingTest {
                 testTypeV1,
                 AtomicType.INT_32,
                 Optionality.MANDATORY);
+
+        expectedRevision1.finalizeDefinition();
 
         // Define the second expected revision programmatically
         ProviderApiDefinition expectedRevision2 = new ProviderApiDefinition(QualifiedName.of("test"),
@@ -351,6 +355,8 @@ class ProviderApiLoadingTest {
                 AtomicType.INT_64,
                 Optionality.MANDATORY);
 
+        expectedRevision2.finalizeDefinition();
+
         // Load and build the revision history from the given API definitions
         RevisionHistory history = ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api",
                 "apis/provider-revision-2.api");
@@ -364,7 +370,6 @@ class ProviderApiLoadingTest {
         // Compare expected and actual revisions
         assertEquals(expectedRevision1, revision1);
         assertEquals(expectedRevision2, revision2);
-
     }
 
     /**
@@ -412,12 +417,6 @@ class ProviderApiLoadingTest {
                 Optional.of(typeA),
                 Optional.empty());
 
-        new ProviderField("fieldA",
-                Optional.empty(),
-                typeB,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
-
         new ProviderField("fieldB",
                 Optional.empty(),
                 typeB,
@@ -432,23 +431,13 @@ class ProviderApiLoadingTest {
                 Optional.of(typeB),
                 Optional.empty());
 
-        new ProviderField("fieldA",
-                Optional.empty(),
-                typeC,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
-
-        new ProviderField("fieldB",
-                Optional.empty(),
-                typeC,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
-
         new ProviderField("fieldC",
                 Optional.empty(),
                 typeC,
                 StringType.unbounded(),
                 Optionality.MANDATORY);
+
+        expectedDefinition.finalizeDefinition();
 
         RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
                 "apis/revision-with-supertypes.api");
