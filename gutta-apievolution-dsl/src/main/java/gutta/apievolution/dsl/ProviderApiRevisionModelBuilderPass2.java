@@ -51,7 +51,15 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                 // actual predecessor. For inherited fields, there may be no matching
                 // predecessor
                 predecessor = declaredPredecessors.stream()
-                        .filter(field -> field.getOwner().equals(owner))
+                        .filter(field -> {
+                            Optional<ProviderRecordType> optionalPredecessor = owner.getPredecessor();
+
+                            if (optionalPredecessor.isPresent()) {
+                                return field.getOwner().equals(owner.getPredecessor().get());
+                            } else {
+                                return false;
+                            }
+                        })
                         .findFirst();
                 break;
 
