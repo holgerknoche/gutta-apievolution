@@ -55,7 +55,29 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
     public Void handleProviderRecordType(ProviderRecordType recordType) {
         StringBuilder builder = this.outputBuilder;
 
-        builder.append(" record " + recordType.getPublicName() + " {\n");
+        builder.append(" ");
+
+        if (recordType.isAbstract()) {
+            builder.append("abstract ");
+        }
+
+        builder.append("record ");
+        builder.append(recordType.getPublicName());
+        builder.append("(");
+        builder.append(recordType.getInternalName());
+        builder.append(")");
+
+        recordType.getSuperType().ifPresent(type -> {
+            builder.append(" extends ");
+            builder.append(type.getPublicName());
+        });
+
+        recordType.getPredecessor().ifPresent(pred -> {
+            builder.append(" <- ");
+            builder.append(pred.getPublicName());
+        });
+
+        builder.append(" {\n");
         recordType.forEach(field -> field.accept(this));
         builder.append(" }\n");
 
@@ -95,7 +117,18 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
     public Void handleProviderEnumType(ProviderEnumType enumType) {
         StringBuilder builder = this.outputBuilder;
 
-        builder.append(" enum " + enumType.getPublicName() + " {\n");
+        builder.append(" enum ");
+        builder.append(enumType.getPublicName());
+        builder.append("(");
+        builder.append(enumType.getInternalName());
+        builder.append(")");
+
+        enumType.getPredecessor().ifPresent(pred -> {
+            builder.append(" <- ");
+            builder.append(pred.getPublicName());
+        });
+
+        builder.append(" {\n");
         enumType.forEach(member -> member.accept(this));
         builder.append(" }\n");
 

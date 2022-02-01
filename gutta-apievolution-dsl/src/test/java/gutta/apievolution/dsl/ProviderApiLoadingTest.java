@@ -382,8 +382,19 @@ class ProviderApiLoadingTest {
         ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
                 .orElseThrow(NoSuchElementException::new);
 
+        String expected = "api test [] {\n" +
+                " record TypeA(TypeA) extends TypeB {\n" +
+                "  mandatory field(field):TypeC\n" +
+                " }\n" +
+                " record TypeB(TypeB) {\n" +
+                " }\n" +
+                " enum TypeC(TypeC) {\n" +
+                "  MEMBER(MEMBER)\n" +
+                " }\n" +
+                "}\n";
 
-        // TODO Check the resulting model
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(apiDefinition);
+        assertEquals(expected, actual);
     }
 
     /**
@@ -447,12 +458,63 @@ class ProviderApiLoadingTest {
         assertEquals(expectedDefinition, apiDefinition);
     }
 
+    /**
+     * Test case: Fields are pulled up along the inheritance hierarchy in a revision history.
+     */
     @Test
-    void historyWithSupertypes() {
+    void pullUpAttribute() {
         RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/history-with-supertypes-1.api",
-                "apis/history-with-supertypes-2.api"
+                "apis/pull-up-attribute-1.api",
+                "apis/pull-up-attribute-2.api"
         );
+
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
+                .orElseThrow(NoSuchElementException::new);;
+
+        String expected1 = "api test [] {\n" +
+                " record TypeA(TypeA) {\n" +
+                "  mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                " record TypeB(TypeB) {\n" +
+                "  mandatory fieldB(fieldB):string\n" +
+                " }\n" +
+                " record TypeC(TypeC) {\n" +
+                "  mandatory fieldC(fieldC):string\n" +
+                " }\n" +
+                "}\n";
+
+        String expected2 = "api test [] {\n" +
+                " record SuperType(SuperType) {\n" +
+                "  mandatory field(field):string\n" +
+                " }\n" +
+                " record TypeA(TypeA) extends SuperType <- TypeA {\n" +
+                "  inherited mandatory field(field):string <- fieldA\n" +
+                " }\n" +
+                " record TypeB(TypeB) extends SuperType <- TypeB {\n" +
+                "  inherited mandatory field(field):string <- fieldB\n" +
+                " }\n" +
+                " record TypeC(TypeC) <- TypeC {\n" +
+                "  mandatory fieldC(fieldC):string <- fieldC\n" +
+                " }\n" +
+                "}\n";
+
+        ProviderApiDefinitionPrinter printer = new ProviderApiDefinitionPrinter();
+
+        String actual1 = printer.printApiDefinition(revision1);
+        String actual2 = printer.printApiDefinition(revision2);
+
+        assertEquals(expected1, actual1);
+        assertEquals(expected2, actual2);
+    }
+
+    /**
+     * Test case: A field is pushed down along the inheritance hierarchy in a revision history.
+     */
+    @Test
+    void pushDownAttribute() {
+        // TODO
     }
 
 }

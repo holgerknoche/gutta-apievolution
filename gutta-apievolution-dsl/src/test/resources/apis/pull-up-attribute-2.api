@@ -4,10 +4,10 @@ api test {
         string field replaces TypeA.fieldA, TypeB.fieldB
     }
 
-    record TypeA {
+    record TypeA extends SuperType {
     }
 
-    record TypeB {
+    record TypeB extends SuperType {
     }
 
     record TypeC {

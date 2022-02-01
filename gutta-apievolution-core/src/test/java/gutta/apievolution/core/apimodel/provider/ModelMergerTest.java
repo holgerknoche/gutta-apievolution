@@ -116,7 +116,7 @@ class ModelMergerTest {
         // Compare the created revision against the expected one. All optional fields are opt-in because the type
         // is not used as output
         String expected = "api test [] {\n" +
-                " record Test {\n" +
+                " record Test(Test) {\n" +
                 "  optin typeChangeField(newTypeChangeField):int64\n" + // Must be opt-in due to the type change
                 "  mandatory unchangedField(unchangedField):string\n" + // Must be mandatory as it does not change
                 "  optin addedField(addedField):string\n" + // Must be opt-in because it is added
@@ -182,7 +182,7 @@ class ModelMergerTest {
 
         // Compare the created revision against the expected one
         String expected = "api test [] {\n" +
-                " enum Test {\n" +
+                " enum Test(Test) {\n" +
                 "  UNCHANGED(UNCHANGED)\n" +
                 "  ADDED(ADDED)\n" +
                 "  DELETED(DELETED)\n" +
@@ -456,11 +456,11 @@ class ModelMergerTest {
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
         String expected = "api test [] {\n" +
-                " record ExtendedType {\n" +
+                " record ExtendedType(ExtendedType) {\n" +
                 "  optin field1(fieldX):string(20)\n" +
                 "  optin field1(field1):string(10)\n" +
                 " }\n" +
-                " record UsingType {\n" +
+                " record UsingType(UsingType) {\n" +
                 "  mandatory usingField(usingField):ExtendedType@revision 0\n" +
                 " }\n" +
                 "}\n";
