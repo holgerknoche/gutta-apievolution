@@ -19,6 +19,7 @@ public class ConcatenatedIterator<T> implements Iterator<T> {
      * Creates a new concatenated iterators of the given iterables.
      * @param iterables The iterables to build a concatenated iterator of
      */
+    @SafeVarargs
     public ConcatenatedIterator(Iterable<T>... iterables) {
         this(createIterators(iterables));
     }
@@ -36,6 +37,7 @@ public class ConcatenatedIterator<T> implements Iterator<T> {
      * Creates a new concatenated iterator from the given iterators.
      * @param iterators The iterators to concatenate
      */
+    @SafeVarargs
     public ConcatenatedIterator(Iterator<T>... iterators) {
         this.iterators = iterators;
         this.currentIterator = (iterators.length == 0) ? new EmptyIterator<>() : iterators[0];

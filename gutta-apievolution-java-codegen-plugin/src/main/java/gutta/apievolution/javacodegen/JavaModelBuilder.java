@@ -67,7 +67,7 @@ class JavaModelBuilder implements ProviderApiDefinitionElementVisitor<JavaType>,
         JavaEnum targetClass = new JavaEnum(packageName, enumType.getInternalName());
         this.knownClasses.put(enumType, targetClass);
 
-        for (ProviderEnumMember member : enumType.getMembers()) {
+        for (ProviderEnumMember member : enumType.getDeclaredMembers()) {
             JavaEnumMember javaMember = new JavaEnumMember(member.getInternalName());
             targetClass.addMember(javaMember);
         }

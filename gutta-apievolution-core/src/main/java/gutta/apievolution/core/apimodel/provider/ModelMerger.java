@@ -266,7 +266,7 @@ public class ModelMerger {
         public Void handleProviderEnumType(ProviderEnumType enumType) {
             this.currentEnumType = this.typeLookup.lookupType(enumType);
 
-            for (ProviderEnumMember member : enumType.getMembers()) {
+            for (ProviderEnumMember member : enumType.getDeclaredMembers()) {
                 member.accept(this);
             }
 

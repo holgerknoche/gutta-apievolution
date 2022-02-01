@@ -63,7 +63,7 @@ class ModelMergerTest {
                 StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
+        new ProviderField("typeChangeField",
                 Optional.empty(),
                 testTypeV1,
                 AtomicType.INT_32,
@@ -272,7 +272,7 @@ class ModelMergerTest {
                 StringType.unbounded(),
                 Optionality.MANDATORY,
                 false,
-                Arrays.asList(unchangedFieldV1),
+                Collections.singletonList(unchangedFieldV1),
                 Optional.of(unchangedFieldV1));
 
         ProviderField addedFieldV2 = new ProviderField("addedField",
@@ -467,6 +467,100 @@ class ModelMergerTest {
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
 
         assertEquals(expected, actual);
+    }
+
+    /**
+     * Test case: The newest internal name of an element is used in the merge.
+     */
+    @Test
+    void newestInternalNameIsUsed() {
+        // Build the first revision
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType recordTypeV1 = new ProviderRecordType("TypeA",
+                Optional.of("A1"),
+                0,
+                revision1,
+                false,
+                Optional.empty());
+
+        ProviderField providerFieldV1 = new ProviderField("fieldA",
+                Optional.of("a1"),
+                recordTypeV1,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        ProviderEnumType enumTypeV1 = new ProviderEnumType("EnumA",
+                Optional.of("E1"),
+                1,
+                revision1,
+                Optional.empty());
+
+        ProviderEnumMember enumMemberV1 = new ProviderEnumMember("MEMBER_A",
+                Optional.of("M1"),
+                enumTypeV1,
+                Optional.empty());
+
+        revision1.finalizeDefinition();
+
+        // Build the second revision
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                1,
+                Optional.of(revision1));
+
+        ProviderRecordType recordTypeV2 = new ProviderRecordType("TypeA",
+                Optional.of("A2"),
+                0,
+                revision2,
+                false,
+                Optional.of(recordTypeV1));
+
+        new ProviderField("fieldA",
+                Optional.of("a2"),
+                recordTypeV2,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                false,
+                Collections.emptyList(),
+                Optional.of(providerFieldV1));
+
+        ProviderEnumType enumTypeV2 = new ProviderEnumType("EnumA",
+                Optional.of("E2"),
+                1,
+                revision2,
+                Optional.of(enumTypeV1));
+
+        new ProviderEnumMember("MEMBER_A",
+                Optional.of("M2"),
+                enumTypeV2,
+                Optional.of(enumMemberV1));
+
+        revision2.finalizeDefinition();
+
+        // Merge the revisions and check the result
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        ProviderRecordType mergedRecordType = (ProviderRecordType) mergedDefinition
+                .resolveUserDefinedType("TypeA")
+                .orElseThrow(NoSuchElementException::new);
+        ProviderField mergedField = mergedRecordType.resolveField("fieldA")
+                .orElseThrow(NoSuchElementException::new);
+
+        assertEquals(1, mergedRecordType.getDeclaredFields().size());
+        assertEquals("a2", mergedField.getInternalName());
+
+        ProviderEnumType mergedEnumType = (ProviderEnumType) mergedDefinition.resolveUserDefinedType("EnumA")
+                .orElseThrow(NoSuchElementException::new);
+        ProviderEnumMember mergedMember = mergedEnumType.resolveMember("MEMBER_A")
+                .orElseThrow(NoSuchElementException::new);
+
+        assertEquals(1, mergedEnumType.getDeclaredMembers().size());
+        assertEquals("M2", mergedMember.getInternalName());
     }
 
 }

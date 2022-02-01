@@ -133,7 +133,7 @@ public class DefinitionResolver {
 
             ConsumerEnumType consumerType = (ConsumerEnumType) consumerUDT;
             ProviderEnumType providerType = (ProviderEnumType) consumerToProviderType.get(consumerType);
-            for (ConsumerEnumMember consumerMember : consumerType.getMembers()) {
+            for (ConsumerEnumMember consumerMember : consumerType.getDeclaredMembers()) {
                 String memberName = consumerMember.getPublicName();
                 ProviderEnumMember providerMember = providerType.resolveMember(memberName).orElseThrow(
                         () -> new DefinitionResolutionException("Missing member " + memberName + " in provider type " +
