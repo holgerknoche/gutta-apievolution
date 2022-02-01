@@ -21,6 +21,8 @@ public class ModelMerger {
         ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
         this.mergeElementsIntoRevision(revisionHistory, mergedDefinition, RevisionMergePass2::new);
 
+        mergedDefinition.finalizeDefinition();
+
         return mergedDefinition;
     }
 
@@ -189,7 +191,6 @@ public class ModelMerger {
                     inType.getTypeId(),
                     this.mergedDefinition,
                     inType.isAbstract(),
-                    inType.getSuperType(),
                     Optional.empty());
         }
 
@@ -253,6 +254,21 @@ public class ModelMerger {
         @Override
         public Void handleProviderRecordType(ProviderRecordType recordType) {
             this.currentRecordType = this.typeLookup.lookupType(recordType);
+
+            // Set supertype, if applicable
+            recordType.getSuperType().ifPresent(originalSuperType -> {
+                ProviderRecordType superType = this.typeLookup.lookupType(originalSuperType);
+
+                // If the current record already has a supertype, make sure that it is the
+                // same as the one we would add
+                if (this.currentRecordType.getSuperType().isPresent()) {
+                    if (!this.currentRecordType.getSuperType().get().equals(superType)) {
+                        throw new ModelMergeException("Inconsistent supertype for " + this.currentRecordType + ".");
+                    }
+                } else {
+                    this.currentRecordType.setSuperType(superType);
+                }
+            });
 
             for (ProviderField field : recordType.getDeclaredFields()) {
                 field.accept(this);

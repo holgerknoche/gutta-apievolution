@@ -563,4 +563,85 @@ class ModelMergerTest {
         assertEquals("M2", mergedMember.getInternalName());
     }
 
+    /**
+     * Test case: Inherited fields are handled correctly in the merge.
+     */
+    @Test
+    void mergeWithInheritedFields() {
+        // Build the first revision
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType superTypeV1 = new ProviderRecordType("SuperType",
+                Optional.empty(),
+                0,
+                revision1,
+                true,
+                Optional.empty());
+
+        new ProviderField("inheritedField",
+                Optional.empty(),
+                superTypeV1,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        ProviderRecordType subTypeAV1 = new ProviderRecordType("SubTypeA",
+                Optional.empty(),
+                1,
+                revision1,
+                false,
+                Optional.of(superTypeV1),
+                Optional.empty());
+
+        revision1.finalizeDefinition();
+
+        // Build the second revision
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                1,
+                Optional.of(revision1));
+
+        ProviderRecordType superTypeV2 = new ProviderRecordType("SuperType",
+                Optional.empty(),
+                0,
+                revision2,
+                true,
+                Optional.of(superTypeV1));
+
+        ProviderRecordType subTypeAV2 = new ProviderRecordType("SubTypeA",
+                Optional.empty(),
+                1,
+                revision2,
+                false,
+                Optional.of(superTypeV2),
+                Optional.of(subTypeAV1));
+
+        new ProviderField("addedField",
+                Optional.empty(),
+                subTypeAV2,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        revision2.finalizeDefinition();
+
+        // Merge the revisions and inspect the merged revision
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        String expected = "api test [] {\n" +
+                " abstract record SuperType(SuperType) {\n" +
+                "  optin inheritedField(inheritedField):string\n" +
+                " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType {\n" +
+                "  inherited optin inheritedField(inheritedField):string\n" +
+                "  optin addedField(addedField):string\n" +
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+
 }
