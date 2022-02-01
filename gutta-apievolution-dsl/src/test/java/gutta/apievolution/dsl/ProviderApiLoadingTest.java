@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProviderApiLoadingTest {
 
@@ -514,7 +515,59 @@ class ProviderApiLoadingTest {
      */
     @Test
     void pushDownAttribute() {
-        // TODO
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
+                "apis/push-down-attribute-1.api",
+                "apis/push-down-attribute-2.api"
+        );
+
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
+                .orElseThrow(NoSuchElementException::new);
+
+        String expected1 = "api test [] {\n" +
+                " record SuperType(SuperType) {\n" +
+                "  mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType {\n" +
+                "  inherited mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType {\n" +
+                "  inherited mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                "}\n";
+
+        String expected2 = "api test [] {\n" +
+                " record SuperType(SuperType) <- SuperType {\n" +
+                " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType <- SubTypeA {\n" +
+                "  mandatory fieldA(fieldA):string <- fieldA\n" +
+                " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType <- SubTypeB {\n" +
+                "  mandatory fieldB(fieldB):string <- fieldA\n" +
+                " }\n" +
+                "}\n";
+
+        ProviderApiDefinitionPrinter printer = new ProviderApiDefinitionPrinter();
+
+        String actual1 = printer.printApiDefinition(revision1);
+        String actual2 = printer.printApiDefinition(revision2);
+
+        assertEquals(expected1, actual1);
+        assertEquals(expected2, actual2);
+
+        // Assert that the predecessor of the field in type B is actually the inherited field
+        // from the first revision. This is checked explicitly as it is not shown in the
+        // string representation
+        ProviderRecordType recordType = (ProviderRecordType) revision2.resolveUserDefinedType("SubTypeB")
+                .orElseThrow(NoSuchElementException::new);
+        ProviderField field = recordType.resolveField("fieldB").orElseThrow(NoSuchElementException::new);
+
+        ProviderRecordType predecessorType = recordType.getPredecessor().orElseThrow(NoSuchElementException::new);
+        ProviderField predecessorField = field.getPredecessor().orElseThrow(NoSuchElementException::new);
+
+        assertEquals(predecessorField.getOwner(), predecessorType);
+        assertTrue(predecessorField.isInherited());
     }
 
 }
