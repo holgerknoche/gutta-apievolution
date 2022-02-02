@@ -54,6 +54,16 @@
                     <artifactId>antlr4-maven-plugin</artifactId>
                     <version>${antlr.version}</version>
                 </plugin>
+                <!-- Recent compiler plugin with parameter metadata -->
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
                 <!-- Recent Surefire plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -105,6 +115,7 @@
         <module>gutta-apievolution-dsl</module>
         <module>gutta-apievolution-java-codegen-plugin</module>
         <module>gutta-apievolution-json</module>
+        <module>gutta-apievolution-repository</module>
     </modules>
 
 </project>
