@@ -15,10 +15,14 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
         ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
         ProviderServiceOperation> implements ProviderApiRevisionModelBuilderPass {
 
+    private boolean ignoreReplacements;
+
     public void augmentProviderRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                    ProviderApiDefinition apiDefinition,
+                                   boolean ignoreReplacements,
                                    final Optional<ProviderApiDefinition> optionalPredecessor) {
 
+        this.ignoreReplacements = ignoreReplacements;
         this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor);
     }
 
@@ -98,6 +102,11 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
     private List<ProviderField> resolvePredecessorFields(List<FieldPredecessorSpec> specs,
                                                          ApiRevisionParser.FieldReplacesClauseContext context) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Collections.emptyList();
+        }
+
         int specCount = specs.size();
         Token refToken = context.refToken;
 
@@ -136,6 +145,11 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     private Optional<ProviderField> resolvePredecessorField(final FieldPredecessorSpec predecessorSpec,
                                                             final boolean explicitReference, final Token refToken,
                                                             final Token nameToken) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Optional.empty();
+        }
+
         ProviderRecordType predecessorRecordType;
 
         if (predecessorSpec.typeName.isPresent()) {
@@ -207,6 +221,11 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     private Optional<ProviderEnumMember> resolvePredecessorEnumMember(final String name,
                                                                       final boolean explicitReference,
                                                                       final Token refToken, final Token nameToken) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Optional.empty();
+        }
+
         ProviderEnumType predecessorEnumType;
 
         if (explicitReference) {
@@ -262,6 +281,11 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
 
     private Optional<ProviderService> resolvePredecessorService(final String name, final boolean explicitReference,
                                                                 final Token refToken, final Token nameToken) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Optional.empty();
+        }
+
         ProviderApiDefinition predecessorRevision;
 
         if (explicitReference) {
@@ -329,6 +353,11 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                                                                                   final boolean explicitReference,
                                                                                   final Token refToken,
                                                                                   final Token nameToken) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Optional.empty();
+        }
+
         ProviderService predecessorService;
 
         if (explicitReference) {

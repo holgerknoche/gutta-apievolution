@@ -16,17 +16,22 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
 
     private int revision;
 
+    private boolean ignoreReplacements;
+
     /**
      * Builds a provider API definition from the given spec object.
      * @param revision The revision number to assign to the API definition
      * @param apiRevisionSpec The spec object to build the revision from
+     * @param ignoreReplacements Flag whether to ignore replacement clauses
      * @param optionalPredecessor An optional predecessor to resolve the new definition against
      * @return The built and resolved definition
      */
     public ProviderApiDefinition buildProviderRevision(final int revision,
                                                        final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
+                                                       boolean ignoreReplacements,
                                                        final Optional<ProviderApiDefinition> optionalPredecessor) {
         this.revision = revision;
+        this.ignoreReplacements = ignoreReplacements;
 
         return this.buildApiDefinition(apiRevisionSpec, optionalPredecessor);
     }
@@ -118,6 +123,11 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
                                                                              final Token refToken,
                                                                              final Token nameToken,
                                                                              final String typeErrorMessage) {
+        // If replacements are ignored, just return "no predecessor"
+        if (this.ignoreReplacements) {
+            return Optional.empty();
+        }
+
         ProviderApiDefinition predecessorRevision;
 
         if (explicitReference) {
