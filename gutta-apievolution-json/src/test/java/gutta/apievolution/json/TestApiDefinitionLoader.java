@@ -24,8 +24,8 @@ class TestApiDefinitionLoader {
                 .collect(Collectors.toList());
 
         try {
-            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(),
-                    streams);
+            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader.loadHistoryFromStreams(
+                    IntegerRange.unbounded(), false, streams);
             RevisionHistory revisionHistory = new RevisionHistory(apiDefinitions);
 
             for (InputStream stream : streams) {

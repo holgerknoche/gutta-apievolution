@@ -570,4 +570,29 @@ class ProviderApiLoadingTest {
         assertTrue(predecessorField.isInherited());
     }
 
+    /**
+     * Test case: Load an API revision without considering replacements.
+     */
+    @Test
+    void loadRevisionIgnoringReplacements() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(true,
+                "apis/push-down-attribute-2.api");
+        ProviderApiDefinition definition = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+
+        String expected = "api test [] {\n" +
+                " record SuperType(SuperType) {\n" +
+                " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType {\n" +
+                "  mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType {\n" +
+                "  mandatory fieldB(fieldB):string\n" +
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(definition);
+        assertEquals(expected, actual);
+    }
+
 }
