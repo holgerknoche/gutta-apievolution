@@ -1,0 +1,11 @@
+api test {
+
+    abstract record SuperType {
+        string inheritedField
+    }
+
+    record SubType extends SuperType {
+        string normalField
+    }
+
+}

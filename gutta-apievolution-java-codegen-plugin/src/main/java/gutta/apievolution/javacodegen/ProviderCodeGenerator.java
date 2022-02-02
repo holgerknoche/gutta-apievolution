@@ -42,9 +42,7 @@ class ProviderCodeGenerator {
 
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
         JavaModelBuilder javaModelBuilder = new JavaModelBuilder();
-        mergedDefinition.forEach(javaModelBuilder::processElement);
-
-        return javaModelBuilder.getJavaClasses();
+        return javaModelBuilder.buildModelForApi(mergedDefinition);
     }
 
     void generateSources(Collection<JavaUserDefinedType> classesToGenerate, File outputDirectory) {

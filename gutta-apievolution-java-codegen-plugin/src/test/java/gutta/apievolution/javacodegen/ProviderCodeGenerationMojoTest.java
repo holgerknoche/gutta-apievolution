@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.Parameter;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.MojoRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -83,7 +84,7 @@ public class ProviderCodeGenerationMojoTest {
     }
 
     @Test
-    public void testSingleRevision() throws MojoFailureException, IOException, ClassNotFoundException {
+    public void testSingleRevision() throws MojoFailureException, IOException {
         ProviderCodeGenerationMojo mojo = this.createMojo("single-revision-project");
 
         File outputDirectory = this.tempFolder.newFolder();
@@ -140,6 +141,45 @@ public class ProviderCodeGenerationMojoTest {
         builder.append(method.getType());
 
         return builder.toString();
+    }
+
+    @Test
+    public void testProjectWithInheritance() throws MojoFailureException, IOException {
+        ProviderCodeGenerationMojo mojo = this.createMojo("project-with-inheritance");
+
+        File outputDirectory = this.tempFolder.newFolder();
+        mojo.outputPath = outputDirectory;
+
+        // Generate provider code
+        mojo.execute();
+
+        // Parse the generated code for inspection
+        Map<String, CompilationUnit> compilationUnits = this.parseClasses(outputDirectory);
+
+        ClassOrInterfaceDeclaration superType = compilationUnits.get("SuperType")
+                .getInterfaceByName("SuperType").orElseThrow(NoSuchElementException::new);
+        List<String> actualSuperTypeMethods = listMethods(superType);
+
+        ClassOrInterfaceDeclaration subType = compilationUnits.get("SubType")
+                .getInterfaceByName("SubType").orElseThrow(NoSuchElementException::new);
+        List<String> actualSubTypeMethods = listMethods(subType);
+
+        // Assert that the supertype reference is present
+        assertEquals(1, subType.getExtendedTypes().size());
+        assertEquals(superType.getName(), subType.getExtendedTypes(0).getName());
+
+        // Check the generated methods
+        List<String> expectedSuperTypeMethods = Arrays.asList(
+                "getInheritedField():String",
+                "setInheritedField(String):void"
+        );
+        List<String> expectedSubTypeMethods = Arrays.asList(
+                "getNormalField():String",
+                "setNormalField(String):void"
+        );
+
+        assertEquals(expectedSuperTypeMethods, actualSuperTypeMethods);
+        assertEquals(expectedSubTypeMethods, actualSubTypeMethods);
     }
 
 }
