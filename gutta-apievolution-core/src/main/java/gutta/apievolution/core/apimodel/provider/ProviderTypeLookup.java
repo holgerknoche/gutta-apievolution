@@ -2,7 +2,6 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.MapBackedTypeLookup;
 import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.TypeLookup;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 
 import java.util.Map;

@@ -48,6 +48,22 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
         return this.owner;
     }
 
+    /**
+     * Returns the operation's parameter type.
+     * @return see above
+     */
+    public R getParameterType() {
+        return this.parameterType;
+    }
+
+    /**
+     * Returns the operation's return type.
+     * @return see above
+     */
+    public R getReturnType() {
+        return this.returnType;
+    }
+
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         // No owner in the hash code as to avoid cycles

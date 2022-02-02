@@ -1,8 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.Map;
-import java.util.stream.Stream;
-
 /**
  * Abstract superclass for type lookups which support mapping types between different API definitions. This class may be
  * subclassed for resolving specific types, such as provider or consumer types.

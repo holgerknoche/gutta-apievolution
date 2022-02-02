@@ -16,6 +16,8 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
 
     private final Optionality optionality;
 
+    private final boolean inherited;
+
     /**
      * Creates a new field from the given data.
      * @param publicName The public name of the field
@@ -23,17 +25,23 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      * @param owner The record type that owns this field
      * @param type The field's type
      * @param optionality The field's optionality
+     * @param inherited Denotes whether the field is inherited from a supertype
      */
     @SuppressWarnings("unchecked")
     protected Field(final String publicName, final Optional<String> internalName, final R owner, final Type type,
-                    Optionality optionality) {
+                    Optionality optionality, boolean inherited) {
         super(publicName, internalName);
 
         this.owner = owner;
         this.type = type;
         this.optionality = optionality;
+        this.inherited = inherited;
 
-        owner.addDeclaredField((F) this);
+        if (inherited) {
+            owner.addInheritedField((F) this);
+        } else {
+            owner.addDeclaredField((F) this);
+        }
     }
 
     /**
@@ -60,6 +68,14 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
         return this.optionality;
     }
 
+    /**
+     * Returns whether this field is inherited from a supertype.
+     * @return see above
+     */
+    public boolean isInherited() {
+        return this.inherited;
+    }
+
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return super.hashCode() + Objects.hash(this.optionality, this.type);
@@ -73,7 +89,8 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
     protected boolean stateEquals(Field<R, F> that) {
         return super.stateEquals(that) &&
                 this.type.equals(that.type) &&
-                this.optionality.equals(that.optionality);
+                this.optionality.equals(that.optionality) &&
+                this.inherited == that.inherited;
     }
 
 }

@@ -40,8 +40,16 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
                                                        final Optional<ProviderApiDefinition> optionalPredecessor)
             throws IOException {
         ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
-        return new ProviderApiRevisionModelBuilder().buildProviderRevision(revision, specification,
-                optionalPredecessor);
+
+        ProviderApiRevisionModelBuilderPass1 pass1 = new ProviderApiRevisionModelBuilderPass1();
+        ProviderApiRevisionModelBuilderPass2 pass2 = new ProviderApiRevisionModelBuilderPass2();
+
+        ProviderApiDefinition apiDefinition = pass1.buildProviderRevision(revision, specification, optionalPredecessor);
+        pass2.augmentProviderRevision(specification, apiDefinition, optionalPredecessor);
+
+        apiDefinition.finalizeDefinition();
+
+        return apiDefinition;
     }
 
     /**

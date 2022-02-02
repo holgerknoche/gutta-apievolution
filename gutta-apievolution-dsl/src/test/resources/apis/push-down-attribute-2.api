@@ -1,0 +1,14 @@
+api test {
+
+    record SuperType {
+    }
+
+    record SubTypeA extends SuperType {
+        string fieldA
+    }
+
+    record SubTypeB extends SuperType {
+        string fieldB replaces fieldA
+    }
+
+}

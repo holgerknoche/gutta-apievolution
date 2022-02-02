@@ -1,6 +1,9 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.ConcatenatedIterator;
+
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A record type represents a user-defined record, i.e., a type that consists of fields.
@@ -13,9 +16,11 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final boolean abstractFlag;
 
-    private final Optional<R> superType;
+    private Optional<R> superType = Optional.empty();
 
     private final List<F> declaredFields;
+
+    private final List<F> inheritedFields;
 
     private final Map<String, F> fieldLookup;
 
@@ -30,21 +35,33 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @param typeId The type id of this record type
      * @param owner The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
+     */
+    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
+                         final boolean abstractFlag) {
+        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty());
+    }
+
+    /**
+     * Creates a new record type from the given data.
+     * @param publicName The public name of this record type
+     * @param internalName The internal name of this record type, if applicable. Otherwise, the public name is assumed
+     * @param typeId The type id of this record type
+     * @param owner The API definition that owns this record type
+     * @param abstractFlag A flag denoting whether this record type is abstract
      * @param superType An optional supertype for this record type
      */
-    @SuppressWarnings("unchecked")
     protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
                       final boolean abstractFlag, final Optional<R> superType) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
+        this.inheritedFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
-        this.superType = superType;
         this.fieldLookup = new HashMap<>();
 
         owner.addUserDefinedType(this);
 
-        superType.ifPresent(type -> type.registerSubType((R) this));
+        superType.ifPresent(this::setSuperType);
     }
 
     /**
@@ -56,11 +73,52 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
+     * Returns all fields of this type, including inherited fields.
+     * @return see above
+     */
+    public Stream<F> getFields() {
+        return Stream.concat(
+                this.inheritedFields.stream(),
+                this.declaredFields.stream()
+        );
+    }
+
+    /**
+     * Sets the supertype for this record type. This method can only be called if no supertype
+     * is currently assigned to this type.
+     * @param superType The supertype to assign
+     */
+    @SuppressWarnings("unchecked")
+    public void setSuperType(R superType) {
+        this.assertMutability();
+
+        if (this.superType.isPresent()) {
+            throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
+        }
+
+        this.superType = Optional.of(superType);
+        superType.registerSubType((R) this);
+    }
+
+    /**
      * Adds a declared field to this record type.
      * @param field The field to add
      */
     protected void addDeclaredField(final F field) {
+        this.assertMutability();
+
         this.declaredFields.add(field);
+        this.fieldLookup.put(field.getPublicName(), field);
+    }
+
+    /**
+     * Adds an inherited field to this record type.
+     * @param field The field to add
+     */
+    protected void addInheritedField(final F field) {
+        this.assertMutability();
+
+        this.inheritedFields.add(field);
         this.fieldLookup.put(field.getPublicName(), field);
     }
 
@@ -81,6 +139,14 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
+     * Returns whether this record type has a supertype.
+     * @return see above
+     */
+    public boolean hasSuperType() {
+        return this.superType.isPresent();
+    }
+
+    /**
      * Returns this record type's supertype.
      * @return see above
      */
@@ -98,17 +164,20 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     void registerSubType(final R subType) {
+        this.assertMutability();
+
         this.subTypes = true;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<F> iterator() {
-        return this.declaredFields.iterator();
+        return new ConcatenatedIterator<>(this.inheritedFields, this.declaredFields);
     }
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subtypes
-        return Objects.hash(this.declaredFields, this.superType);
+        return super.hashCode() + Objects.hash(this.declaredFields, this.superType);
     }
 
     /**
@@ -117,7 +186,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @return Whether the states are equal
      */
     protected boolean stateEquals(RecordType<A, R, F> that) {
-        return this.declaredFields.equals(that.declaredFields) &&
+        return super.stateEquals(that) &&
+                this.declaredFields.equals(that.declaredFields) &&
                 this.subTypes == that.subTypes &&
                 this.abstractFlag == that.abstractFlag &&
                 this.superType.equals(that.superType);

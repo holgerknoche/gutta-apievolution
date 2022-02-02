@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -83,8 +84,7 @@ class RevisionHistoryTest {
                 Optional.empty(),
                 recordTypeV1,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
                 Collections.emptySet(),
@@ -104,6 +104,8 @@ class RevisionHistoryTest {
                 recordTypeV2,
                 AtomicType.INT_64,
                 Optionality.MANDATORY,
+                false,
+                Arrays.asList(fieldV1),
                 Optional.of(fieldV1));
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);

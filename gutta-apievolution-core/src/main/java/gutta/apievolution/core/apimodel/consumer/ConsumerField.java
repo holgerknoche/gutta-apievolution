@@ -18,10 +18,11 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> impl
      * @param owner The record type that owns this field
      * @param type The type of this field
      * @param optionality The field's optionality
+     * @param inherited Denotes whether this field is inherited
      */
     public ConsumerField(final String publicName, final Optional<String> internalName, final ConsumerRecordType owner,
-                         final Type type, Optionality optionality) {
-        super(publicName, internalName, owner, type, optionality);
+                         final Type type, Optionality optionality, boolean inherited) {
+        super(publicName, internalName, owner, type, optionality, inherited);
     }
 
     @Override

@@ -3,8 +3,9 @@ package gutta.apievolution.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 
@@ -71,7 +72,7 @@ public abstract class ConsumerInvocationProxy extends AbstractInvocationProxy {
 
             return objectMapper.treeToValue(responseNode, resultType);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new InvocationFailedException(e);
         }
     }
 

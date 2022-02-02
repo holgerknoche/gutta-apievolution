@@ -1,0 +1,17 @@
+api test {
+
+    record SuperType {
+        string field replaces TypeA.fieldA, TypeB.fieldB
+    }
+
+    record TypeA extends SuperType {
+    }
+
+    record TypeB extends SuperType {
+    }
+
+    record TypeC {
+        string fieldC
+    }
+
+}

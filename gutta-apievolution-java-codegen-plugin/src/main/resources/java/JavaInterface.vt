@@ -3,7 +3,7 @@ package ${type.packageName};
 /**
  * Interface for the API type ${type.name}.
  */
-public interface ${type.name} {
+public interface ${type.name}#if (${type.superType}) extends ${type.superType.name} #end{
 #foreach ($property in ${type.properties})
     /**
      * Returns the value of property ${property.name}.

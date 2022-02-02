@@ -16,6 +16,8 @@ import java.util.*;
  */
 public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
+    private ApiDefinitionState state = ApiDefinitionState.UNDER_CONSTRUCTION;
+
     private final QualifiedName name;
 
     private final Set<Annotation> annotations;
@@ -62,10 +64,21 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
+     * Asserts that this API definition is currently mutable, and throws an exception otherwise.
+     */
+    protected void assertMutability() {
+        if (this.state != ApiDefinitionState.UNDER_CONSTRUCTION) {
+            throw new IllegalStateException("An attempt was made to change an immutable API definition.");
+        }
+    }
+
+    /**
      * Adds the given UDT to this API definition. Note that no UDT may be part of two different API definitions.
      * @param type The UDT to add
      */
     protected void addUserDefinedType(final UserDefinedType<A> type) {
+        this.assertMutability();
+
         this.userDefinedTypes.add(type);
         this.udtPublicNameLookup.put(type.getPublicName(), type);
         this.udtInternalNameLookup.put(type.getInternalName(), type);
@@ -76,6 +89,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * @param service The service to add
      */
     protected void addService(final Service<A, ?, ?, ?> service) {
+        this.assertMutability();
+
         this.services.add(service);
         this.serviceLookup.put(service.getPublicName(), service);
     }
@@ -86,6 +101,14 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      */
     public List<UserDefinedType<A>> getUserDefinedTypes() {
         return this.userDefinedTypes;
+    }
+
+    /**
+     * Returns the services provided by this API definition.
+     * @return see above
+     */
+    protected List<Service<A, ?, ?, ?>> getServices() {
+        return this.services;
     }
 
     /**
@@ -121,6 +144,33 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
         return (Optional<S>) Optional.ofNullable(this.serviceLookup.get(name));
     }
 
+    /**
+     * Finalizes this definition, i.e., performs all necessary checks to ensure that the definition is complete and
+     * consistent. After finalization, the definition is immutable.
+     */
+    public void finalizeDefinition() {
+        // Propagate inherited fields to the subtypes
+        this.propagateInheritedFields();
+
+        // Perform specific finalization actions, if any
+        this.performSpecificFinalizationActions();
+
+        this.state = ApiDefinitionState.FINALIZED;
+    }
+
+    /**
+     * Propagates inherited fields to subtypes as part of the finalization process.
+     */
+    protected abstract void propagateInheritedFields();
+
+    /**
+     * Performs specific finalization actions. This is essentially a template method for
+     * provider and consumer specializations.
+     */
+    protected void performSpecificFinalizationActions() {
+        // Do nothing by default
+    }
+
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.services);
@@ -133,7 +183,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * @return {@code True}, if the state matches, {@code false} otherwise
      */
     protected boolean stateEquals(ApiDefinition<A> that) {
-        return this.name.equals(that.name) &&
+        return (this.state == that.state) &&
+                this.name.equals(that.name) &&
                 this.annotations.equals(that.annotations) &&
                 this.userDefinedTypes.equals(that.userDefinedTypes) &&
                 this.services.equals(that.services);

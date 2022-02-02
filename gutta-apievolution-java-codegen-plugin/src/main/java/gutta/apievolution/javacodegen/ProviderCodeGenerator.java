@@ -1,14 +1,21 @@
 package gutta.apievolution.javacodegen;
 
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.provider.ModelMerger;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This class derives the actual code model and generates the provider Java code.
@@ -35,9 +42,7 @@ class ProviderCodeGenerator {
 
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
         JavaModelBuilder javaModelBuilder = new JavaModelBuilder();
-        mergedDefinition.forEach(javaModelBuilder::processElement);
-
-        return javaModelBuilder.getJavaClasses();
+        return javaModelBuilder.buildModelForApi(mergedDefinition);
     }
 
     void generateSources(Collection<JavaUserDefinedType> classesToGenerate, File outputDirectory) {

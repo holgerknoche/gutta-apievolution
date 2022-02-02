@@ -1,0 +1,14 @@
+api test {
+
+    record TypeA extends TypeB {
+        TypeC field
+    }
+
+    record TypeB {
+    }
+
+    enum TypeC {
+        MEMBER
+    }
+
+}

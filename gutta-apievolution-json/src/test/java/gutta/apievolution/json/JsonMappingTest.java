@@ -1,28 +1,15 @@
 package gutta.apievolution.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
 import gutta.apievolution.json.consumer.TestProviderProxy;
 import gutta.apievolution.json.provider.TestProviderServiceProxy;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test case for the JSON mapping functionality.

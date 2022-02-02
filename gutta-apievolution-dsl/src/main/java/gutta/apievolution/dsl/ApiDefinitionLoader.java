@@ -15,7 +15,7 @@ class ApiDefinitionLoader {
         TokenStream tokenStream = new CommonTokenStream(lexer);
         ApiRevisionParser parser = new ApiRevisionParser(tokenStream);
 
-        parser.setErrorHandler(new BailErrorStrategy());
+        //parser.setErrorHandler(new BailErrorStrategy());
 
         return parser.apiDefinition();
     }

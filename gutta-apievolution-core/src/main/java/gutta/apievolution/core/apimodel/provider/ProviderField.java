@@ -4,6 +4,8 @@ import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.Type;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,6 +15,8 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
         implements RevisionedElement<ProviderField>, ProviderUDTMember {
 
     private final Optional<ProviderField> predecessor;
+
+    private final List<ProviderField> declaredPredecessors;
 
     private Optional<ProviderField> successor;
 
@@ -48,13 +52,31 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
      * @param owner The record type that owns this field
      * @param type The field's type
      * @param optionality The field's optionality
+     */
+    public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
+                         final Type type, Optionality optionality) {
+        this(publicName, internalName, owner, type, optionality, false, Collections.emptyList(), Optional.empty());
+    }
+
+    /**
+     * Creates a new field from the given data.
+     * @param publicName The field's public name
+     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
+     * @param owner The record type that owns this field
+     * @param type The field's type
+     * @param optionality The field's optionality
+     * @param inherited Denotes whether this field is inherited
+     * @param declaredPredecessors The declared predecessors, if any
      * @param predecessor The field's predecessor, if any
      */
     public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
-                         final Type type, Optionality optionality, final Optional<ProviderField> predecessor) {
-        super(publicName, internalName, owner, type, optionality);
+                         final Type type, Optionality optionality, boolean inherited,
+                         List<ProviderField> declaredPredecessors,
+                         final Optional<ProviderField> predecessor) {
+        super(publicName, internalName, owner, type, optionality, inherited);
 
         this.predecessor = predecessor;
+        this.declaredPredecessors = declaredPredecessors;
         this.successor = Optional.empty();
 
         predecessor.ifPresent(field -> field.setSuccessor(this));
@@ -68,6 +90,14 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     @Override
     public Optional<ProviderField> getSuccessor() {
         return this.successor;
+    }
+
+    /**
+     * Returns the predecessors declared on this field.
+     * @return see above
+     */
+    public List<ProviderField> getDeclaredPredecessors() {
+        return this.declaredPredecessors;
     }
 
     private void setSuccessor(final ProviderField successor) {

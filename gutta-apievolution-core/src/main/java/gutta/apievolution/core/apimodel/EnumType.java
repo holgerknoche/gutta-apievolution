@@ -35,10 +35,10 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
     }
 
     /**
-     * Returns the members of this enum type.
+     * Returns the declared members of this enum type.
      * @return see above
      */
-    public List<M> getMembers() {
+    public List<M> getDeclaredMembers() {
         return this.declaredMembers;
     }
 
@@ -47,6 +47,8 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
      * @param member The member to add
      */
     protected void addDeclaredMember(final M member) {
+        this.assertMutability();
+
         this.declaredMembers.add(member);
         this.publicNameLookup.put(member.getPublicName(), member);
         this.internalNameLookup.put(member.getInternalName(), member);
@@ -54,7 +56,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     @Override
     public Iterator<M> iterator() {
-        return this.getMembers().iterator();
+        return this.getDeclaredMembers().iterator();
     }
 
     /**

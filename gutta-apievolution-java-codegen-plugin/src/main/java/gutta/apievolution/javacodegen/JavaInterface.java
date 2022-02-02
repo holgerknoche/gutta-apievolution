@@ -16,6 +16,8 @@ public class JavaInterface extends JavaUserDefinedType {
 
     private final Set<String> fieldNames = new HashSet<>();
 
+    private JavaInterface superType;
+
     JavaInterface(String packageName, String name) {
         super(packageName, name);
     }
@@ -26,6 +28,18 @@ public class JavaInterface extends JavaUserDefinedType {
      */
     public List<JavaProperty> getProperties() {
         return this.properties;
+    }
+
+    /**
+     * Returns the supertype of this interface, if present.
+     * @return The supertype or {@code null}
+     */
+    public JavaInterface getSuperType() {
+        return this.superType;
+    }
+
+    void setSuperType(JavaInterface superType) {
+        this.superType = superType;
     }
 
     void addField(JavaProperty field) {

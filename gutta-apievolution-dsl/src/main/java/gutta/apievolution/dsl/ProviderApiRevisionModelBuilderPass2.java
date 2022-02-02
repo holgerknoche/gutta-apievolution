@@ -5,71 +5,21 @@ import gutta.apievolution.core.apimodel.provider.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Specific revision model builder for consumer API definitions.
  */
-class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderApiDefinition, ProviderRecordType,
-        ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService, ProviderServiceOperation> {
+class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ProviderApiDefinition,
+        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
+        ProviderServiceOperation> implements ProviderApiRevisionModelBuilderPass {
 
-    private int revision;
+    public void augmentProviderRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
+                                   ProviderApiDefinition apiDefinition,
+                                   final Optional<ProviderApiDefinition> optionalPredecessor) {
 
-    /**
-     * Builds a provider API definition from the given spec object.
-     * @param revision The revision number to assign to the API definition
-     * @param apiRevisionSpec The spec object to build the revision from
-     * @param optionalPredecessor An optional predecessor to resolve the new definition against
-     * @return The built and resolved definition
-     */
-    public ProviderApiDefinition buildProviderRevision(final int revision,
-                                                       final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                                       final Optional<ProviderApiDefinition> optionalPredecessor) {
-        this.revision = revision;
-
-        return this.buildRevision(apiRevisionSpec, optionalPredecessor);
-    }
-
-    @Override
-    protected ProviderApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
-                                                   final QualifiedName name, final Set<Annotation> annotations,
-                                                   final Optional<ProviderApiDefinition> predecessor) {
-        return new ProviderApiDefinition(name, annotations, this.revision, predecessor);
-    }
-
-    @Override
-    protected ProviderRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-                                                  final Optional<String> internalName, final int typeId,
-                                                  final ProviderApiDefinition currentRevision,
-                                                  final boolean abstractFlag,
-                                                  final Optional<ProviderRecordType> superType) {
-        // Resolve predecessor, if applicable
-        PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
-        Optional<ProviderRecordType> predecessor;
-        switch (predecessorType) {
-            case EXPLICIT:
-                // Resolve an explicit predecessor
-                String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorRecord(predecessorName, true,
-                        context.replaces.refToken, context.replaces.itemName.start);
-                break;
-
-            case IMPLICIT:
-                // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorRecord(name, false, context.refToken,
-                        context.name.start);
-                break;
-
-            case NONE:
-            default:
-                predecessor = Optional.empty();
-                break;
-        }
-
-        return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, superType,
-                predecessor);
+        this.augmentRevision(apiRevisionSpec, apiDefinition, optionalPredecessor);
     }
 
     @Override
@@ -78,29 +28,52 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
     }
 
     @Override
+    protected ProviderEnumType assertEnumType(final UserDefinedType<ProviderApiDefinition> type) {
+        return (type instanceof ProviderEnumType) ? (ProviderEnumType) type : null;
+    }
+
+    @Override
     protected ProviderField createField(final ApiRevisionParser.FieldContext context, final String name,
                                         final Optional<String> internalName, final Type type,
                                         final Optionality optionality, final ProviderRecordType owner) {
         // Resolve predecessor field, if present
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
+
         Optional<ProviderField> predecessor;
+        List<ProviderField> declaredPredecessors;
         switch (predecessorType) {
             case EXPLICIT:
-                // Resolve an explicit predecessor
-                FieldPredecessorSpec predecessorSpec = this.determinePredecessorSpec(context.replaces);
-                predecessor = this.resolvePredecessorField(predecessorSpec, true,
-                        context.replaces.refToken, context.replaces.qualifiedName.start);
+                // Resolve explicit predecessors
+                List<FieldPredecessorSpec> predecessorSpecs = this.determinePredecessorSpecs(context.replaces);
+                declaredPredecessors = this.resolvePredecessorFields(predecessorSpecs, context.replaces);
+
+                // Use the (first) predecessor owned by the current type as the
+                // actual predecessor. For inherited fields, there may be no matching
+                // predecessor
+                predecessor = declaredPredecessors.stream()
+                        .filter(field -> {
+                            Optional<ProviderRecordType> optionalPredecessor = owner.getPredecessor();
+
+                            if (optionalPredecessor.isPresent()) {
+                                return field.getOwner().equals(owner.getPredecessor().get());
+                            } else {
+                                return false;
+                            }
+                        })
+                        .findFirst();
                 break;
 
             case IMPLICIT:
                 // Perform implicit predecessor resolution
                 predecessor = this.resolvePredecessorField(new FieldPredecessorSpec(name), false,
                         context.name.start, context.name.start);
+                declaredPredecessors = Collections.emptyList();
                 break;
 
             case NONE:
             default:
                 predecessor = Optional.empty();
+                declaredPredecessors = Collections.emptyList();
                 break;
         }
 
@@ -115,21 +88,39 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
 
         if (typeChange) {
             // If a type change is detected, it is actually a new field (hence, no predecessor)
-            return new ProviderField(name, internalName, owner, type, optionality, Optional.empty());
+            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
+                    Optional.empty());
         } else {
-            return new ProviderField(name, internalName, owner, type, optionality, predecessor);
+            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
+                    predecessor);
         }
     }
 
-    private FieldPredecessorSpec determinePredecessorSpec(final ApiRevisionParser.FieldReplacesClauseContext context) {
-        List<ApiRevisionParser.QualifiedNameContext> itemNames = context.items;
+    private List<ProviderField> resolvePredecessorFields(List<FieldPredecessorSpec> specs,
+                                                         ApiRevisionParser.FieldReplacesClauseContext context) {
+        int specCount = specs.size();
+        Token refToken = context.refToken;
 
-        if (itemNames.size() > 1) {
-            // TODO Support multiple predecessors for pushing up fields
-            throw new APIParseException(context.refToken, "More than one predecessor is currently unsupported.");
+        List<ProviderField> predecessors = new ArrayList<>(specCount);
+        for (int index = 0; index < specCount; index++) {
+            FieldPredecessorSpec spec = specs.get(index);
+            Optional<ProviderField> predecessor = this.resolvePredecessorField(spec, true, refToken,
+                    context.qualifiedName(index).start);
+            predecessor.ifPresent(predecessors::add);
         }
 
-        List<String> itemNameParts = this.splitQualifiedName(itemNames.get(0));
+        return predecessors;
+    }
+
+    private List<FieldPredecessorSpec> determinePredecessorSpecs(
+            final ApiRevisionParser.FieldReplacesClauseContext context) {
+        return context.items.stream()
+                .map(this::createPredecessorSpec)
+                .collect(Collectors.toList());
+    }
+
+    private FieldPredecessorSpec createPredecessorSpec(ApiRevisionParser.QualifiedNameContext qualifiedNameContext) {
+        List<String> itemNameParts = this.splitQualifiedName(qualifiedNameContext);
         int itemPartCount = itemNameParts.size();
 
         if (itemPartCount == 1) {
@@ -137,14 +128,9 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
         } else if (itemPartCount == 2) {
             return new FieldPredecessorSpec(Optional.of(itemNameParts.get(0)), itemNameParts.get(1));
         } else {
-            throw new APIParseException(context.refToken, "Predecessor names may only consist of two parts.");
+            Token refToken = qualifiedNameContext.start;
+            throw new APIParseException(refToken, "Predecessor names may only consist of two parts.");
         }
-    }
-
-    private Optional<ProviderRecordType> resolvePredecessorRecord(final String name, final boolean explicitReference,
-                                                                  final Token refToken, final Token nameToken) {
-        return this.resolvePredecessorUDT(name, ProviderRecordType.class, explicitReference, refToken, nameToken,
-                "a record type");
     }
 
     private Optional<ProviderField> resolvePredecessorField(final FieldPredecessorSpec predecessorSpec,
@@ -153,11 +139,19 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
         ProviderRecordType predecessorRecordType;
 
         if (predecessorSpec.typeName.isPresent()) {
-            // TODO Allow specifying types in predecessors
-            throw new APIParseException(refToken, "Type specs in field predecessors are currently not supported.");
-        }
+            String predecessorTypeName = predecessorSpec.typeName.get();
+            ProviderApiDefinition previousRevision = this.currentRevision.getPredecessor().orElseThrow(
+                    () -> new APIResolutionException(refToken, "No predecessor revision available.")
+            );
 
-        if (explicitReference) {
+            UserDefinedType<ProviderApiDefinition> predecessorType =
+                    previousRevision.resolveUserDefinedType(predecessorTypeName).orElseThrow(
+                            () -> new APIResolutionException(refToken, "Predecessor type" + predecessorTypeName +
+                            "does not exist.")
+                    );
+
+            predecessorRecordType = this.assertRecordType(predecessorType);
+        } else if (explicitReference) {
             predecessorRecordType = this.currentRecordType.getPredecessor().orElseThrow(
                     () -> new APIResolutionException(refToken,
                             "Evolution clause specified, but no predecessor structure is available.")
@@ -179,84 +173,6 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
         }
 
         return predecessorField;
-    }
-
-    @Override
-    protected ProviderEnumType createEnumType(final ApiRevisionParser.EnumTypeContext context, final String name,
-                                              final Optional<String> internalName, final int typeId,
-                                              final ProviderApiDefinition owner) {
-        // Resolve predecessor, if applicable
-        PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
-        Optional<ProviderEnumType> predecessor;
-        switch (predecessorType) {
-            case EXPLICIT:
-                // Resolve an explicit predecessor
-                String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorEnum(predecessorName, true,
-                        context.replaces.refToken, context.replaces.itemName.start);
-                break;
-
-            case IMPLICIT:
-                // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorEnum(name, false, context.refToken,
-                        context.name.start);
-                break;
-
-            case NONE:
-            default:
-                predecessor = Optional.empty();
-                break;
-        }
-
-        return new ProviderEnumType(name, internalName, typeId, owner, predecessor);
-    }
-
-    private Optional<ProviderEnumType> resolvePredecessorEnum(final String name, final boolean explicitReference,
-                                                              final Token refToken, final Token nameToken) {
-        return this.resolvePredecessorUDT(name, ProviderEnumType.class, explicitReference, refToken, nameToken,
-                "an enum type");
-    }
-
-    @SuppressWarnings("unchecked")
-    private <U extends UserDefinedType<?>> Optional<U> resolvePredecessorUDT(final String name,
-                                                                             final Class<U> udtClass,
-                                                                             final boolean explicitReference,
-                                                                             final Token refToken,
-                                                                             final Token nameToken,
-                                                                             final String typeErrorMessage) {
-        ProviderApiDefinition predecessorRevision;
-
-        if (explicitReference) {
-            // If an explicit reference is made, a predecessor revision is required
-            predecessorRevision = this.previousRevision.orElseThrow(() -> new APIResolutionException(refToken,
-                    "Replaces clause specified, but no predecessor model is available."));
-        } else {
-            // If only an implicit reference is made, there may be no predecessor revision
-            if (this.previousRevision.isPresent()) {
-                predecessorRevision = this.previousRevision.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<UserDefinedType<ProviderApiDefinition>> optionalPredecessor =
-                predecessorRevision.resolveUserDefinedType(name);
-
-        if (!optionalPredecessor.isPresent()) {
-            if (explicitReference) {
-                throw new APIResolutionException(nameToken, "No predecessor element named '" + name + "'.");
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        UserDefinedType<?> predecessorType = optionalPredecessor.get();
-        if (udtClass.isAssignableFrom(predecessorType.getClass())) {
-            return Optional.of((U) predecessorType);
-        } else {
-            throw new APIResolutionException(nameToken, "Predecessor element '" + name + "' exists, but is not " +
-                    typeErrorMessage + ".");
-        }
     }
 
     @Override
@@ -436,38 +352,6 @@ class ProviderApiRevisionModelBuilder extends ApiRevisionModelBuilder<ProviderAp
         }
 
         return predecessorOperation;
-    }
-
-    private PredecessorType determinePredecessorType(final ApiRevisionParser.ReplacesClauseContext context) {
-        if (context == null) {
-            // If no replaces clause is given, we have an implicit predecessor
-            return PredecessorType.IMPLICIT;
-        } else if (context.nothing != null) {
-            // If "nothing" is specified, there is explicitly no predecessor
-            return PredecessorType.NONE;
-        } else {
-            // Otherwise, an explicit predecessor is given
-            return PredecessorType.EXPLICIT;
-        }
-    }
-
-    private PredecessorType determinePredecessorType(final ApiRevisionParser.FieldReplacesClauseContext context) {
-        if (context == null) {
-            // If no replaces clause is given, we have an implicit predecessor
-            return PredecessorType.IMPLICIT;
-        } else if (context.nothing != null) {
-            // If "nothing" is specified, there is explicitly no predecessor
-            return PredecessorType.NONE;
-        } else {
-            // Otherwise, an explicit predecessor is given
-            return PredecessorType.EXPLICIT;
-        }
-    }
-
-    private enum PredecessorType {
-        NONE,
-        IMPLICIT,
-        EXPLICIT
     }
 
     private static class FieldPredecessorSpec {

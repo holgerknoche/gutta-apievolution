@@ -38,7 +38,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 StringType.unbounded(),
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false);
 
         // Create the provider revision history
         ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
@@ -58,22 +59,19 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
                 Optional.empty(),
                 testTypeV1,
                 AtomicType.INT_32,
-                Optionality.OPT_IN,
-                Optional.empty());
+                Optionality.OPT_IN);
 
         ProviderField deletedFieldV1 = new ProviderField("deletedField",
                 Optional.empty(),
                 testTypeV1,
                 StringType.unbounded(),
-                Optionality.OPTIONAL,
-                Optional.empty());
+                Optionality.OPTIONAL);
 
         ProviderEnumType testEnumV1 = new ProviderEnumType("TestEnum",
                 Optional.empty(),
@@ -108,22 +106,22 @@ class DefinitionResolverTest {
                 Optional.of("newTypeChangeField"),
                 testTypeV2,
                 AtomicType.INT_64,
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderField unchangedFieldV2 = new ProviderField("unchangedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
                 Optionality.MANDATORY,
+                false,
+                Arrays.asList(unchangedFieldV1),
                 Optional.of(unchangedFieldV1));
 
         ProviderField addedFieldV2 = new ProviderField("addedField",
                 Optional.empty(),
                 testTypeV2,
                 StringType.unbounded(),
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         ProviderEnumType testEnumV2 = new ProviderEnumType("TestEnum",
                 Optional.empty(),
@@ -167,7 +165,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 AtomicType.INT_32,
-                Optionality.OPTIONAL);
+                Optionality.OPTIONAL,
+                false);
 
         // Define a provider API with a mandatory field
         ProviderApiDefinition revision = new ProviderApiDefinition(QualifiedName.of("test"),
@@ -187,15 +186,13 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 recordType,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         new ProviderField("optionalField",
                 Optional.empty(),
                 recordType,
                 AtomicType.INT_32,
-                Optionality.OPTIONAL,
-                Optional.empty());
+                Optionality.OPTIONAL);
 
         // Resolve the consumer definition against the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision);
@@ -230,8 +227,7 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 providerType,
                 AtomicType.INT_32,
-                Optionality.MANDATORY,
-                Optional.empty());
+                Optionality.MANDATORY);
 
         // Consumer definition
         ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"),
@@ -249,7 +245,8 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 consumerType,
                 AtomicType.INT_64,
-                Optionality.MANDATORY);
+                Optionality.MANDATORY,
+                false);
 
         //
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
