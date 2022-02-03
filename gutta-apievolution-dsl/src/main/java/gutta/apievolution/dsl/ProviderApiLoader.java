@@ -44,7 +44,27 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
                                                        final Optional<ProviderApiDefinition> optionalPredecessor)
             throws IOException {
         ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
+        return load(revision, specification, ignoreReplacements, optionalPredecessor);
+    }
 
+    /**
+     * Loads an API definition from the given string and resolves it against an optional predecessor.
+     * @param revision The revision number to assign to the definition
+     * @param input The input string to read the definition from
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
+     * @param optionalPredecessor An optional predecessor to resolve the loaded definition against
+     * @return The loaded and resolved definition
+     */
+    public static ProviderApiDefinition loadFromString(int revision, String input,
+                                                       boolean ignoreReplacements,
+                                                       Optional<ProviderApiDefinition> optionalPredecessor) {
+        ApiRevisionParser.ApiDefinitionContext specification = parseString(input);
+        return load(revision, specification, ignoreReplacements, optionalPredecessor);
+    }
+
+    private static ProviderApiDefinition load(int revision, ApiRevisionParser.ApiDefinitionContext specification,
+                                              boolean ignoreReplacements,
+                                              Optional<ProviderApiDefinition> optionalPredecessor) {
         ProviderApiRevisionModelBuilderPass1 pass1 = new ProviderApiRevisionModelBuilderPass1();
         ProviderApiRevisionModelBuilderPass2 pass2 = new ProviderApiRevisionModelBuilderPass2();
 
