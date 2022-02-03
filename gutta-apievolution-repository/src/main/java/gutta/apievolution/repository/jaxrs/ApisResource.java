@@ -1,12 +1,10 @@
 package gutta.apievolution.repository.jaxrs;
 
+import gutta.apievolution.repository.ApiProcessingException;
 import gutta.apievolution.repository.ApisService;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Path("apis")
@@ -15,13 +13,24 @@ public class ApisResource {
     @Inject
     ApisService apisService;
 
+    @Path("{historyName}/{revisionNumber}")
+    @GET
+    @Produces("text/plain")
+    public Response readApiRevision(@PathParam("historyName") String historyName, @PathParam("revisionNumber") int revisionNumber) {
+        String apiDefinition = this.apisService.readApiRevision(historyName, revisionNumber);
+        return Response.ok(apiDefinition).build();
+    }
+
     @Path("{historyName}")
     @POST
-    @Consumes("application/gutta-apidefinition")
+    @Consumes("text/plain")
     public Response saveApi(@PathParam("historyName") String historyName, String apiDefinition) {
-        this.apisService.saveApiRevision(historyName, apiDefinition);
-
-        return Response.ok().build();
+        try {
+            this.apisService.saveApiRevision(historyName, apiDefinition);
+            return Response.ok().build();
+        } catch (ApiProcessingException e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
     }
 
 }

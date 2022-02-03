@@ -1,9 +1,6 @@
 package gutta.apievolution.repository;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,6 +8,7 @@ import java.time.LocalDateTime;
 public class PersistentApiDefinition {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_apis")
     private Integer id;
 
     private LocalDateTime commitTime;
