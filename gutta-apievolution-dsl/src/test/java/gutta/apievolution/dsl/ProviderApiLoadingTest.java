@@ -2,6 +2,7 @@ package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.provider.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -9,8 +10,7 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProviderApiLoadingTest {
 
@@ -593,6 +593,26 @@ class ProviderApiLoadingTest {
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(definition);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void failOnEmptyString() {
+        APIParseException exception = assertThrows(APIParseException.class,
+                () -> ProviderApiLoader.loadFromString(0, "", false,
+                Optional.empty()));
+
+        assertTrue(exception.getMessage().contains("1:0: mismatched"));
+    }
+
+    @Test
+    void failOnParseError() {
+        // Missing delimiter in API definition
+        String input = "api test {";
+
+        APIParseException exception = assertThrows(APIParseException.class,
+                () -> ProviderApiLoader.loadFromString(0, input, false, Optional.empty()));
+
+        assertTrue(exception.getMessage().contains("1:10: mismatched"));
     }
 
 }
