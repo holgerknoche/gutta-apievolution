@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ApiDefinitions")
-public class PersistentApiDefinition {
+public class PersistentProviderApiDefinition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_apis")
