@@ -8,6 +8,16 @@ create table ProviderApiDefinitions (
     definitionText clob
 );
 
+create sequence seq_supported_revisions increment by 50;
+
+create table SupportedRevisions (
+    id integer primary key,
+    referencedRevision_id integer,
+    commitTime timestamp,
+    supportedFrom timestamp,
+    supportedUntil timestamp
+);
+
 create sequence seq_consumer_apis increment by 50;
 
 create table ConsumerApiDefinitions (
