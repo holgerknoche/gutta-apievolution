@@ -1,21 +1,22 @@
 package gutta.apievolution.repository;
 
+import org.hibernate.annotations.LazyToOne;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ProviderApiDefinitions")
-public class PersistentProviderApiDefinition {
+@Table(name = "ConsumerApiDefinitions")
+public class PersistentConsumerApiDefinition {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_provider_apis")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_consumer_apis")
     private Integer id;
 
     private LocalDateTime commitTime;
 
-    private String historyName;
-
-    private Integer revisionNumber;
+    @ManyToOne
+    private PersistentProviderApiDefinition referencedRevision;
 
     @Lob
     private String definitionText;
@@ -28,28 +29,20 @@ public class PersistentProviderApiDefinition {
         this.id = id;
     }
 
-    public String getHistoryName() {
-        return this.historyName;
-    }
-
-    public void setHistoryName(String historyName) {
-        this.historyName = historyName;
-    }
-
-    public Integer getRevisionNumber() {
-        return this.revisionNumber;
-    }
-
-    public void setRevisionNumber(Integer revisionNumber) {
-        this.revisionNumber = revisionNumber;
-    }
-
     public LocalDateTime getCommitTime() {
         return this.commitTime;
     }
 
     public void setCommitTime(LocalDateTime commitTime) {
         this.commitTime = commitTime;
+    }
+
+    public PersistentProviderApiDefinition getReferencedRevision() {
+        return this.referencedRevision;
+    }
+
+    public void setReferencedRevision(PersistentProviderApiDefinition referencedRevision) {
+        this.referencedRevision = referencedRevision;
     }
 
     public String getDefinitionText() {
