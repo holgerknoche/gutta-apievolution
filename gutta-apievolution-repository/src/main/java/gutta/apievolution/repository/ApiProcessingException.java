@@ -1,8 +1,11 @@
 package gutta.apievolution.repository;
 
+/**
+ * This exception denotes that an error has occurred while processing an API definition.
+ */
 public class ApiProcessingException extends RuntimeException {
 
-    public ApiProcessingException(String message, Throwable cause) {
+    ApiProcessingException(String message, Throwable cause) {
         super(message, cause);
     }
 

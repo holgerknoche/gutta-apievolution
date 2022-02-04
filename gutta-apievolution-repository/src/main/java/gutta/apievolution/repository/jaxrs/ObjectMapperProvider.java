@@ -9,6 +9,9 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+/**
+ * CDI provider for the simple object mapper for JSON processing.
+ */
 @ApplicationScoped
 public class ObjectMapperProvider {
 
@@ -26,6 +29,10 @@ public class ObjectMapperProvider {
         return objectMapper;
     }
 
+    /**
+     * CDI Producer method for creating a simple object mapper.
+     * @return An object mapper instance
+     */
     @Produces
     public SimpleObjectMapper getObjectMapper() {
         return new SimpleObjectMapper(OBJECT_MAPPER);

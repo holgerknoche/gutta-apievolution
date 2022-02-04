@@ -22,7 +22,7 @@ class SimpleObjectMapper {
 
     public byte[] toJsonBytes(Object object) {
         try {
-           return this.objectMapper.writeValueAsBytes(object);
+            return this.objectMapper.writeValueAsBytes(object);
         } catch (IOException e) {
             throw new JsonException(e);
         }
