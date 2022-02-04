@@ -1,19 +1,18 @@
 package gutta.apievolution.repository.jaxrs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gutta.apievolution.repository.ApiProcessingException;
 import gutta.apievolution.repository.PersistentProviderApiDefinition;
 import gutta.apievolution.repository.ProviderApisService;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
+/**
+ * JAX-RS resource for managing provider API definitions.
+ */
 @Path("apis/provider/")
 @ApplicationScoped
 public class ProviderApisResource {
@@ -24,6 +23,12 @@ public class ProviderApisResource {
     @Inject
     ProviderApisService apisService;
 
+    /**
+     * Reads a provider API definition given its history name and revision number.
+     * @param historyName The history name of the desired definition
+     * @param revisionNumber The revision number of the desired definition
+     * @return The HTTP response to the request
+     */
     @Path("{historyName}/{revisionNumber}")
     @GET
     @Produces("application/json")
@@ -50,6 +55,12 @@ public class ProviderApisResource {
         );
     }
 
+    /**
+     * Saves a given provider API definition in the given history.
+     * @param historyName The name of the revision history
+     * @param apiDefinition The API definition to save
+     * @return The HTTP response to the request
+     */
     @Path("{historyName}")
     @POST
     @Consumes("text/plain")

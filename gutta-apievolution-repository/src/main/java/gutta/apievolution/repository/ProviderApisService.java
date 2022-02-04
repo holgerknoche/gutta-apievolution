@@ -5,22 +5,36 @@ import gutta.apievolution.dsl.APIParseException;
 import gutta.apievolution.dsl.APIResolutionException;
 import gutta.apievolution.dsl.ProviderApiLoader;
 
+import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
 
+/**
+ * Service for accessing and managing provider API definitions.
+ */
 @ApplicationScoped
 public class ProviderApisService {
 
     @Inject
     ProviderApisRepository apisRepository;
 
+    /**
+     * Reads an API definition given its history name and revision number.
+     * @param historyName The history name of the desired definition
+     * @param revisionNumber The revision number of the desired definition
+     * @return The definition, if it exists
+     */
     public Optional<PersistentProviderApiDefinition> readApiRevision(String historyName, int revisionNumber) {
         return this.apisRepository.findByRevision(historyName, revisionNumber);
     }
 
+    /**
+     * Saves an API definition to the given history, appending it if the history already exists.
+     * @param historyName The name of the history to add this definition to
+     * @param apiDefinition The definition to save
+     */
     @Transactional
     public void saveApiRevision(String historyName, String apiDefinition) {
         List<PersistentProviderApiDefinition> existingDefinitions =
