@@ -17,15 +17,8 @@ public class ProviderApisService {
     @Inject
     ProviderApisRepository apisRepository;
 
-    public Optional<String> readApiRevision(String historyName, int revisionNumber) {
-        Optional<PersistentProviderApiDefinition> apiDefinition = this.apisRepository.findByRevision(historyName,
-                revisionNumber);
-
-        if (apiDefinition.isPresent()) {
-            return Optional.of(apiDefinition.get().getDefinitionText());
-        } else {
-            return Optional.empty();
-        }
+    public Optional<PersistentProviderApiDefinition> readApiRevision(String historyName, int revisionNumber) {
+        return this.apisRepository.findByRevision(historyName, revisionNumber);
     }
 
     @Transactional
