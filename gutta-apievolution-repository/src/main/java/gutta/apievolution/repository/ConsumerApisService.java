@@ -29,15 +29,25 @@ public class ConsumerApisService {
     ConsumerApisRepository apisRepository;
 
     /**
+     * Reads a consumer API definition by its ID.
+     * @param id The ID of the definition
+     * @return The definition, if it exists
+     */
+    public Optional<PersistentConsumerApiDefinition> readConsumerApi(Integer id) {
+        return this.apisRepository.findById(id);
+    }
+
+    /**
      * Saves the given consumer API definition provided that it is consistent.
      * @param referencedHistory The history name of the referenced provider definition
      * @param referencedRevisionNumber The revision number of the referenced provider definition
      * @param consumerName The name of the consumer
      * @param apiDefinition The API definition to save
+     * @return The persisted API definition
      */
     @Transactional
-    public void saveConsumerApi(String referencedHistory, int referencedRevisionNumber, String consumerName,
-                                String apiDefinition) {
+    public PersistentConsumerApiDefinition saveConsumerApi(String referencedHistory, int referencedRevisionNumber,
+                                                           String consumerName, String apiDefinition) {
         // Parse the given API definition
         ConsumerApiDefinition consumerDefinition;
         try {
@@ -75,6 +85,8 @@ public class ConsumerApisService {
         persistentConsumerDefinition.setDefinitionText(apiDefinition);
 
         this.apisRepository.saveConsumerApiDefinition(persistentConsumerDefinition);
+
+        return persistentConsumerDefinition;
     }
 
 }

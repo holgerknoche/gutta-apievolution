@@ -2,7 +2,7 @@ package gutta.apievolution.repository.jaxrs;
 
 import java.time.LocalDateTime;
 
-class ProviderApi {
+class ReadProviderApiResponse {
 
     public final String historyName;
 
@@ -12,7 +12,8 @@ class ProviderApi {
 
     public final String definition;
 
-    public ProviderApi(String historyName, int revisionNumber, LocalDateTime commitTime, String definition) {
+    public ReadProviderApiResponse(String historyName, int revisionNumber, LocalDateTime commitTime,
+                                   String definition) {
         this.historyName = historyName;
         this.revisionNumber = revisionNumber;
         this.commitTime = commitTime;
