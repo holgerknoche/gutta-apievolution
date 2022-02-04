@@ -12,6 +12,17 @@ import java.io.InputStream;
 public class ConsumerApiLoader extends ApiDefinitionLoader {
 
     /**
+     * Loads an API definition from the given string.
+     * @param input The string to read the definition from
+     * @param referencedRevision The revision number referenced in the provider history
+     * @return The loaded API definition
+     */
+    public static ConsumerApiDefinition loadFromString(String input, int referencedRevision) {
+        ApiRevisionParser.ApiDefinitionContext specification = parseString(input);
+        return buildDefinition(specification, referencedRevision);
+    }
+
+    /**
      * Loads an API definition from the given input stream.
      * @param inputStream The input stream to read the definition from
      * @param referencedRevision The revision number referenced in the provider history
@@ -20,19 +31,23 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
     public static ConsumerApiDefinition loadFromStream(InputStream inputStream, int referencedRevision) {
         try {
             ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
-
-            ConsumerApiRevisionModelBuilderPass1 pass1 = new ConsumerApiRevisionModelBuilderPass1();
-            ConsumerApiRevisionModelBuilderPass2 pass2 = new ConsumerApiRevisionModelBuilderPass2();
-
-            ConsumerApiDefinition apiDefinition = pass1.buildConsumerRevision(specification, referencedRevision);
-            pass2.augmentConsumerRevision(specification, apiDefinition);
-
-            apiDefinition.finalizeDefinition();
-
-            return apiDefinition;
+            return buildDefinition(specification, referencedRevision);
         } catch (IOException e) {
             throw new ApiLoadException("Error loading API definition.", e);
         }
+    }
+
+    private static ConsumerApiDefinition buildDefinition(ApiRevisionParser.ApiDefinitionContext specification,
+                                                         int referencedRevision) {
+        ConsumerApiRevisionModelBuilderPass1 pass1 = new ConsumerApiRevisionModelBuilderPass1();
+        ConsumerApiRevisionModelBuilderPass2 pass2 = new ConsumerApiRevisionModelBuilderPass2();
+
+        ConsumerApiDefinition apiDefinition = pass1.buildConsumerRevision(specification, referencedRevision);
+        pass2.augmentConsumerRevision(specification, apiDefinition);
+
+        apiDefinition.finalizeDefinition();
+
+        return apiDefinition;
     }
 
     /**

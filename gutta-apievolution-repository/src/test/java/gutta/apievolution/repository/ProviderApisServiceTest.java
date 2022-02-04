@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test cases for the provider API service.
+ */
 class ProviderApisServiceTest {
 
     @Test

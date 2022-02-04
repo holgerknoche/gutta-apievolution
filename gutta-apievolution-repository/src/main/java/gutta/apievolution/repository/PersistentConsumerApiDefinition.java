@@ -16,6 +16,8 @@ public class PersistentConsumerApiDefinition {
 
     private LocalDateTime commitTime;
 
+    private String consumerName;
+
     @ManyToOne
     private PersistentProviderApiDefinition referencedRevision;
 
@@ -44,6 +46,22 @@ public class PersistentConsumerApiDefinition {
      */
     public LocalDateTime getCommitTime() {
         return this.commitTime;
+    }
+
+    /**
+     * Returns the consumer name of this definition.
+     * @return see above
+     */
+    public String getConsumerName() {
+        return this.consumerName;
+    }
+
+    /**
+     * Sets the consumer name of this definition.
+     * @param consumerName The consumer name to set
+     */
+    public void setConsumerName(String consumerName) {
+        this.consumerName = consumerName;
     }
 
     /**

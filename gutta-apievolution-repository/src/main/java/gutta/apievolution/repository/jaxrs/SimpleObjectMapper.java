@@ -12,9 +12,9 @@ class SimpleObjectMapper {
         this.objectMapper = objectMapper;
     }
 
-    public String toJson(Object object) {
+    public <T> T fromJsonBytes(byte[] jsonBytes, Class<T> targetType) {
         try {
-            return this.objectMapper.writeValueAsString(object);
+            return this.objectMapper.readValue(jsonBytes, targetType);
         } catch (IOException e) {
             throw new JsonException(e);
         }
