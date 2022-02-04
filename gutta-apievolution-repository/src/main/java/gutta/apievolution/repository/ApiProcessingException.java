@@ -5,6 +5,10 @@ package gutta.apievolution.repository;
  */
 public class ApiProcessingException extends RuntimeException {
 
+    ApiProcessingException(String message) {
+        super(message);
+    }
+
     ApiProcessingException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -64,6 +64,7 @@ public class ProviderApisResource {
     @Path("{historyName}")
     @POST
     @Consumes("text/plain")
+    @Produces("application/json")
     public Response saveProviderApi(@PathParam("historyName") String historyName, String apiDefinition) {
         try {
             this.apisService.saveApiRevision(historyName, apiDefinition);
