@@ -1,7 +1,10 @@
 package gutta.apievolution.repository.jaxrs;
 
+import gutta.apievolution.repository.ApiProcessingException;
 import gutta.apievolution.repository.ConsumerApisService;
+import gutta.apievolution.repository.PersistentConsumerApiDefinition;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -29,7 +32,27 @@ public class ConsumerApisResource {
     @Path("{id}")
     @Produces("application/json")
     public Response readConsumerApi(@PathParam("id") int id) {
-        return Response.ok().build();
+        Optional<PersistentConsumerApiDefinition> optionalResult = this.apisService.readConsumerApi(id);
+        if (optionalResult.isPresent()) {
+            PersistentConsumerApiDefinition result = optionalResult.get();
+            ReadConsumerApiResponse response = this.createResponse(result);
+
+            byte[] jsonBytes = this.objectMapper.toJsonBytes(response);
+            return Response.ok(jsonBytes).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    private ReadConsumerApiResponse createResponse(PersistentConsumerApiDefinition definition) {
+        return new ReadConsumerApiResponse(
+                definition.getId(),
+                definition.getCommitTime(),
+                definition.getConsumerName(),
+                definition.getReferencedRevision().getHistoryName(),
+                definition.getReferencedRevision().getRevisionNumber(),
+                definition.getDefinitionText()
+        );
     }
 
     /**
@@ -41,15 +64,26 @@ public class ConsumerApisResource {
     @Consumes("application/json")
     @Produces("application/json")
     public Response saveConsumerApi(byte[] requestData) {
-        SaveConsumerApiRequest request = this.objectMapper.fromJsonBytes(requestData, SaveConsumerApiRequest.class);
-        this.apisService.saveConsumerApi(
-                request.referencedHistoryName,
-                request.referencedRevisionNumber,
-                request.consumerName,
-                request.definition
-        );
+        try {
+            SaveConsumerApiRequest request = this.objectMapper.fromJsonBytes(requestData, SaveConsumerApiRequest.class);
 
-        return Response.ok().build();
+            PersistentConsumerApiDefinition savedApi = this.apisService.saveConsumerApi(
+                    request.referencedHistoryName,
+                    request.referencedRevisionNumber,
+                    request.consumerName,
+                    request.definition
+            );
+
+            SaveConsumerApiResponse response = new SaveConsumerApiResponse(
+                    savedApi.getId(),
+                    savedApi.getCommitTime()
+            );
+
+            byte[] responseData = this.objectMapper.toJsonBytes(response);
+            return Response.ok(responseData).build();
+        } catch (JsonException | ApiProcessingException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
 }

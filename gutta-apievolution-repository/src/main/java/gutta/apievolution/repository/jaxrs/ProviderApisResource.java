@@ -38,7 +38,7 @@ public class ProviderApisResource {
                 revisionNumber);
 
         if (apiDefinition.isPresent()) {
-            ProviderApi result = this.convertProviderApi(apiDefinition.get());
+            ReadProviderApiResponse result = this.convertProviderApi(apiDefinition.get());
             byte[] resultJson = this.objectMapper.toJsonBytes(result);
             return Response.ok(resultJson).build();
         } else {
@@ -46,8 +46,8 @@ public class ProviderApisResource {
         }
     }
 
-    private ProviderApi convertProviderApi(PersistentProviderApiDefinition input) {
-        return new ProviderApi(
+    private ReadProviderApiResponse convertProviderApi(PersistentProviderApiDefinition input) {
+        return new ReadProviderApiResponse(
           input.getHistoryName(),
           input.getRevisionNumber(),
           input.getCommitTime(),
@@ -70,7 +70,7 @@ public class ProviderApisResource {
             this.apisService.saveApiRevision(historyName, apiDefinition);
             return Response.ok().build();
         } catch (ApiProcessingException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

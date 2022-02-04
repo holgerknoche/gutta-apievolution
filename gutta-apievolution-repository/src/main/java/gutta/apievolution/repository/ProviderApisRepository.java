@@ -79,8 +79,11 @@ public class ProviderApisRepository {
      */
     @Transactional
     public void saveDefinition(PersistentProviderApiDefinition definition) {
+        EntityManager em = this.entityManager;
+
         definition.setCommitTime(LocalDateTime.now());
-        this.entityManager.persist(definition);
+        em.persist(definition);
+        em.detach(definition);
     }
 
 }
