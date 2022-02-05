@@ -3,13 +3,11 @@ package gutta.apievolution.repository.jaxrs;
 import gutta.apievolution.repository.PersistentProviderApiDefinition;
 import gutta.apievolution.repository.ProviderApisService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import javax.ws.rs.core.Response;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import javax.ws.rs.core.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -36,6 +34,8 @@ class ProviderApisResourceTest {
         testDefinition.setHistoryName(testHistory);
         testDefinition.setRevisionNumber(testRevisionNumber);
         testDefinition.setCommitTime(testCommitTime);
+        testDefinition.setSupportedFrom(testCommitTime);
+        testDefinition.setSupportedUntil(LocalDateTime.MAX);
         testDefinition.setDefinitionText(testDefinitionText);
 
         ProviderApisService serviceMock = mock(ProviderApisService.class);
@@ -49,6 +49,7 @@ class ProviderApisResourceTest {
         Response response = resource.readProviderApiRevision(testHistory, testRevisionNumber);
 
         String expectedJson = "{\"historyName\":\"test\",\"revisionNumber\":0,\"commitTime\":[2022,1,1,0,0]," +
+                "\"supportedFrom\":[2022,1,1,0,0],\"supportedUntil\":[999999999,12,31,23,59,59,999999999]," +
                 "\"definition\":\"api test {}\"}";
 
         assertEquals(200, response.getStatus());
