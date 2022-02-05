@@ -77,7 +77,7 @@ public class ProviderApisResource {
      */
     @Path("{historyName}")
     @POST
-    @Consumes("text/plain")
+    @Consumes("application/json")
     @Produces("application/json")
     public Response saveProviderApi(@PathParam("historyName") String historyName, byte[] requestData) {
         try {
