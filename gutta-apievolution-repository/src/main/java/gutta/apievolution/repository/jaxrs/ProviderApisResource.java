@@ -51,25 +51,42 @@ public class ProviderApisResource {
           input.getHistoryName(),
           input.getRevisionNumber(),
           input.getCommitTime(),
+          input.getSupportedFrom(),
+          input.getSupportedUntil(),
           input.getDefinitionText()
         );
     }
 
     /**
+     * Reads the supported revisions for the given history.
+     * @param historyName The name of the history
+     * @return The response for the request
+     */
+    @Path("{historyName}/supportedRevisions")
+    @GET
+    @Produces("application/json")
+    public Response readSupportedRevisions(@PathParam("historyName") String historyName) {
+        return Response.ok().build();
+    }
+
+    /**
      * Saves a given provider API definition in the given history.
      * @param historyName The name of the revision history
-     * @param apiDefinition The API definition to save
+     * @param requestData The request data
      * @return The HTTP response to the request
      */
     @Path("{historyName}")
     @POST
     @Consumes("text/plain")
     @Produces("application/json")
-    public Response saveProviderApi(@PathParam("historyName") String historyName, String apiDefinition) {
+    public Response saveProviderApi(@PathParam("historyName") String historyName, byte[] requestData) {
         try {
-            this.apisService.saveApiRevision(historyName, apiDefinition);
+            SaveProviderApiRequest request = this.objectMapper.fromJsonBytes(requestData, SaveProviderApiRequest.class);
+
+            this.apisService.saveApiRevision(historyName, request.supportedFrom, request.supportedUntil,
+                    request.definition);
             return Response.ok().build();
-        } catch (ApiProcessingException e) {
+        } catch (JsonException | ApiProcessingException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }

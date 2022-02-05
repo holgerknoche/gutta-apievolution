@@ -20,6 +20,10 @@ public class PersistentProviderApiDefinition {
 
     private Integer revisionNumber;
 
+    private LocalDateTime supportedFrom;
+
+    private LocalDateTime supportedUntil;
+
     @Lob
     private String definitionText;
 
@@ -85,6 +89,38 @@ public class PersistentProviderApiDefinition {
      */
     public void setCommitTime(LocalDateTime commitTime) {
         this.commitTime = commitTime;
+    }
+
+    /**
+     * Returns the timestamp from which this revision is supported.
+     * @return see above
+     */
+    public LocalDateTime getSupportedFrom() {
+        return this.supportedFrom;
+    }
+
+    /**
+     * Sets the timestamp from which this revision is supported.
+     * @param supportedFrom The timestamp to set
+     */
+    public void setSupportedFrom(LocalDateTime supportedFrom) {
+        this.supportedFrom = supportedFrom;
+    }
+
+    /**
+     * Returns the timestamp until which this revision is supported.
+     * @return see above
+     */
+    public LocalDateTime getSupportedUntil() {
+        return this.supportedUntil;
+    }
+
+    /**
+     * Sets the timestamp until which this revision is supported.
+     * @param supportedUntil The timestamp to set
+     */
+    public void setSupportedUntil(LocalDateTime supportedUntil) {
+        this.supportedUntil = supportedUntil;
     }
 
     /**
