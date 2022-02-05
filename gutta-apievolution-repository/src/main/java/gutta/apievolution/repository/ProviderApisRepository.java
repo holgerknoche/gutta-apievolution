@@ -83,7 +83,6 @@ public class ProviderApisRepository {
 
         definition.setCommitTime(LocalDateTime.now());
         em.persist(definition);
-        em.detach(definition);
     }
 
 }
