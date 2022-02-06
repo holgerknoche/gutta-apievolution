@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 @ApplicationScoped
 public class ProviderApisService {
 
+    static final LocalDateTime MAX_DATE = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+
     @Inject
     ProviderApisRepository apisRepository;
 
@@ -100,12 +102,15 @@ public class ProviderApisService {
 
     private void saveRevision(String historyName, int revisionNumber, LocalDateTime supportedFrom,
                               LocalDateTime supportedUntil, String apiDefinition) {
-        LocalDateTime actualSupportedFrom = (supportedFrom == null) ? LocalDateTime.now() : supportedFrom;
-        LocalDateTime actualSupportedUntil = (supportedUntil == null) ? LocalDateTime.MAX : supportedUntil;
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        LocalDateTime actualSupportedFrom = (supportedFrom == null) ? currentTime : supportedFrom;
+        LocalDateTime actualSupportedUntil = (supportedUntil == null) ? MAX_DATE : supportedUntil;
 
         PersistentProviderApiDefinition definition = new PersistentProviderApiDefinition();
         definition.setHistoryName(historyName);
         definition.setRevisionNumber(revisionNumber);
+        definition.setCommitTime(currentTime);
         definition.setSupportedFrom(actualSupportedFrom);
         definition.setSupportedUntil(actualSupportedUntil);
         definition.setDefinitionText(apiDefinition);

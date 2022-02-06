@@ -81,7 +81,6 @@ public class ProviderApisRepository {
     public void saveDefinition(PersistentProviderApiDefinition definition) {
         EntityManager em = this.entityManager;
 
-        definition.setCommitTime(LocalDateTime.now());
         em.persist(definition);
     }
 

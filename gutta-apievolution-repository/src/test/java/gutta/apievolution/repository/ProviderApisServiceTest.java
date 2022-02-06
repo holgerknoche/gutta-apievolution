@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gutta.apievolution.repository.ProviderApisService.MAX_DATE;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -56,11 +57,11 @@ class ProviderApisServiceTest {
                 .orElseThrow(NoSuchElementException::new);
 
         assertNotNull(revision1.getSupportedFrom());
-        assertEquals(LocalDateTime.MAX, revision1.getSupportedUntil());
+        assertEquals(MAX_DATE, revision1.getSupportedUntil());
         assertEquals(testApiDefinition1, revision1.getDefinitionText());
 
         assertNotNull(revision2.getSupportedFrom());
-        assertEquals(LocalDateTime.MAX, revision2.getSupportedUntil());
+        assertEquals(MAX_DATE, revision2.getSupportedUntil());
         assertEquals(testApiDefinition2, revision2.getDefinitionText());
     }
 

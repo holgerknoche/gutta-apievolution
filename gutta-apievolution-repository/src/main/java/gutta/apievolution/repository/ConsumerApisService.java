@@ -9,6 +9,7 @@ import gutta.apievolution.dsl.APIParseException;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -70,8 +71,19 @@ public class ConsumerApisService {
         // Attempt to resolve the two revisions against each other
         try {
             RevisionHistory revisionHistory = new RevisionHistory(referencedRevision);
-            // TODO Actually load the supported revisions and deny APIs referencing unsupported definitions
-            Set<Integer> supportedRevisions = Collections.singleton(referencedRevision.getRevision());
+
+            // Check if the desired revision is currently supported
+            LocalDateTime currentTime = LocalDateTime.now();
+            Set<Integer> supportedRevisions;
+            if ((currentTime.compareTo(referencedDefinition.getSupportedFrom()) >= 0) &&
+                    currentTime.compareTo(referencedDefinition.getSupportedUntil()) < 0) {
+                // The revision is supported, mark it as such
+                supportedRevisions = Collections.singleton(referencedRevision.getRevision());
+            } else {
+                // The revision is not supported
+                supportedRevisions = Collections.emptySet();
+            }
+
             new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerDefinition);
         } catch (DefinitionResolutionException e) {
             throw new ApiProcessingException("The definition is incompatible to the referenced provider definition: " +

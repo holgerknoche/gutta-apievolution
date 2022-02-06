@@ -38,8 +38,8 @@ class ClientInteractionsTest {
                 .extract()
                 .response();
 
-        //String result = response.asString();
-        //System.out.println(result);
+        String result = response.asString();
+        System.out.println(result);
     }
 
 }
