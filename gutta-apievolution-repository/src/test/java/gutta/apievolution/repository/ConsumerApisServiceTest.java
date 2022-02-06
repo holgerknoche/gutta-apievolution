@@ -2,7 +2,10 @@ package gutta.apievolution.repository;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,6 +28,8 @@ class ConsumerApisServiceTest {
         PersistentProviderApiDefinition providerDefinition = new PersistentProviderApiDefinition();
         providerDefinition.setHistoryName(testHistoryName);
         providerDefinition.setRevisionNumber(testRevision);
+        providerDefinition.setSupportedFrom(LocalDateTime.now());
+        providerDefinition.setSupportedUntil(LocalDateTime.MAX);
         providerDefinition.setDefinitionText("api test { record A { string fieldA } }");
 
         ProviderApisService providerServiceMock = mock(ProviderApisService.class);
@@ -78,6 +83,8 @@ class ConsumerApisServiceTest {
         PersistentProviderApiDefinition providerDefinition = new PersistentProviderApiDefinition();
         providerDefinition.setHistoryName(testHistoryName);
         providerDefinition.setRevisionNumber(testRevision);
+        providerDefinition.setSupportedFrom(LocalDateTime.now());
+        providerDefinition.setSupportedUntil(LocalDateTime.MAX);
         providerDefinition.setDefinitionText("api test { record A { string fieldA } }");
 
         ProviderApisService providerServiceMock = mock(ProviderApisService.class);
@@ -92,6 +99,38 @@ class ConsumerApisServiceTest {
                 "api test { record B { string fieldB } }"));
 
         assertTrue(exception.getMessage().contains("definition is incompatible"));
+    }
+
+    @Test
+    void testWithUnsupportedProviderRevision() {
+        final String testHistoryName = "test";
+        final int testRevision = 0;
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // Create a definition that has already expired
+        PersistentProviderApiDefinition providerDefinition = new PersistentProviderApiDefinition();
+        providerDefinition.setHistoryName(testHistoryName);
+        providerDefinition.setRevisionNumber(testRevision);
+        providerDefinition.setSupportedFrom(currentTime.minusDays(2));
+        providerDefinition.setSupportedUntil(currentTime.minusDays(1));
+        providerDefinition.setDefinitionText("api test { record A { string fieldA } }");
+
+        ProviderApisService providerServiceMock = mock(ProviderApisService.class);
+        when(providerServiceMock.readApiRevision(testHistoryName, testRevision))
+                .thenReturn(Optional.of(providerDefinition));
+
+        ConsumerApisRepository repositoryMock = mock(ConsumerApisRepository.class);
+
+        ConsumerApisService service = new ConsumerApisService();
+        service.providerApisService = providerServiceMock;
+        service.apisRepository = repositoryMock;
+
+        ApiProcessingException exception = assertThrows(ApiProcessingException.class,
+                () -> service.saveConsumerApi(testHistoryName, testRevision, "testConsumer",
+                "api test { record A { string fieldA as fieldX } }"));
+
+        assertTrue(exception.getMessage().contains("is not supported"));
     }
 
 }
