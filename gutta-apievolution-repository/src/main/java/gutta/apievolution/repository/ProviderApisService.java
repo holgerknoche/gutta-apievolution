@@ -41,22 +41,24 @@ public class ProviderApisService {
      * @param supportedUntil The timestamp until which the revision is supported. If {@code null}, it will
      *                       be replaced by the max timestamp
      * @param apiDefinition The definition to save
+     * @return The revision number of the saved revision
      */
     @Transactional
-    public void saveApiRevision(String historyName, LocalDateTime supportedFrom, LocalDateTime supportedUntil,
+    public int saveApiRevision(String historyName, LocalDateTime supportedFrom, LocalDateTime supportedUntil,
                                 String apiDefinition) {
         List<PersistentProviderApiDefinition> existingDefinitions =
                 this.apisRepository.findApiDefinitionsInHistory(historyName);
 
         if (existingDefinitions.isEmpty()) {
-            this.createNewHistory(historyName, supportedFrom, supportedUntil, apiDefinition);
+            return this.createNewHistory(historyName, supportedFrom, supportedUntil, apiDefinition);
         } else {
             PersistentProviderApiDefinition previousRevision = existingDefinitions.get(existingDefinitions.size() - 1);
-            this.appendRevisionToHistory(historyName, previousRevision, supportedFrom, supportedUntil, apiDefinition);
+            return this.appendRevisionToHistory(historyName, previousRevision, supportedFrom, supportedUntil,
+                    apiDefinition);
         }
     }
 
-    private void createNewHistory(String historyName, LocalDateTime supportedFrom, LocalDateTime supportedUntil,
+    private int createNewHistory(String historyName, LocalDateTime supportedFrom, LocalDateTime supportedUntil,
                                   String apiDefinition) {
         int revisionNumber = 0;
 
@@ -69,9 +71,10 @@ public class ProviderApisService {
         }
 
         this.saveRevision(historyName, revisionNumber, supportedFrom, supportedUntil, apiDefinition);
+        return revisionNumber;
     }
 
-    private void appendRevisionToHistory(String historyName, PersistentProviderApiDefinition previousRevision,
+    private int appendRevisionToHistory(String historyName, PersistentProviderApiDefinition previousRevision,
                                          LocalDateTime supportedFrom, LocalDateTime supportedUntil,
                                          String apiDefinition) {
         int revisionNumber = previousRevision.getRevisionNumber() + 1;
@@ -98,6 +101,7 @@ public class ProviderApisService {
         }
 
         this.saveRevision(historyName, revisionNumber, supportedFrom, supportedUntil, apiDefinition);
+        return revisionNumber;
     }
 
     private void saveRevision(String historyName, int revisionNumber, LocalDateTime supportedFrom,

@@ -83,9 +83,12 @@ public class ProviderApisResource {
         try {
             SaveProviderApiRequest request = this.objectMapper.fromJsonBytes(requestData, SaveProviderApiRequest.class);
 
-            this.apisService.saveApiRevision(historyName, request.supportedFrom, request.supportedUntil,
-                    request.definition);
-            return Response.ok().build();
+            int revisionNumber = this.apisService.saveApiRevision(historyName, request.supportedFrom,
+                    request.supportedUntil, request.definition);
+
+            SaveProviderApiResponse result = new SaveProviderApiResponse(revisionNumber);
+            byte[] resultJson = this.objectMapper.toJsonBytes(result);
+            return Response.ok(resultJson).build();
         } catch (JsonException | ApiProcessingException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }

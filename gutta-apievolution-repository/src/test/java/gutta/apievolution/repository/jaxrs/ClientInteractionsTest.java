@@ -1,10 +1,13 @@
 package gutta.apievolution.repository.jaxrs;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for client interactions.
@@ -17,29 +20,60 @@ class ClientInteractionsTest {
      */
     @Test
     void publishProviderAndConsumerApi() {
+        final SimpleObjectMapper objectMapper = new ObjectMapperProvider().getObjectMapper();
+        final String historyName = "interactionTest";
+
         // Publish provider revision
         String publishProviderRequest = "{\"definition\": \"api test { record A { string fieldA } }\"}";
 
-        given()
+        Response publishResponse = given()
                 .when()
                 .contentType("application/json")
                 .body(publishProviderRequest)
-                .post("apis/provider/test")
-
-                .then()
-                .statusCode(200);
-
-        Response response = given()
-                .when()
-                .get("apis/provider/test/0")
+                .post("apis/provider/" + historyName)
 
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        String result = response.asString();
-        System.out.println(result);
+        byte[] publishResponseBytes = publishResponse.asByteArray();
+        ObjectNode publishResponseNode = (ObjectNode) objectMapper.treeFromBytes(publishResponseBytes);
+        int publishedRevision = publishResponseNode.get("revisionNumber").asInt();
+
+        // Read provider revision
+        Response readResponse = given()
+                .when()
+                .get("apis/provider/" + historyName + "/" + publishedRevision)
+
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        byte[] readResponseBytes = readResponse.asByteArray();
+        ObjectNode readResponseNode = (ObjectNode) objectMapper.treeFromBytes(readResponseBytes);
+
+        assertNotNull(readResponseNode.get("definition"));
+
+        // Publish consumer definition
+        String publishConsumerRequest = "{\"referencedHistoryName\": \"" + historyName + "\", \"referencedRevisionNumber\": " + publishedRevision + ", \"consumerName\": \"testConsumer\", \"definition\": \"api test { record A as B { string fieldA as fieldB } }\"}";
+        Response publishConsumerResponse = given()
+                .when()
+                .contentType("application/json")
+                .body(publishConsumerRequest)
+                .post("apis/consumer")
+
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        byte[] publishConsumerResponseBytes = publishConsumerResponse.asByteArray();
+        ObjectNode consumerResponseNode = (ObjectNode) objectMapper.treeFromBytes(publishConsumerResponseBytes);
+        int consumerRevisionId = consumerResponseNode.get("id").asInt();
+
+        assertTrue(consumerRevisionId > 0);
     }
 
 }
