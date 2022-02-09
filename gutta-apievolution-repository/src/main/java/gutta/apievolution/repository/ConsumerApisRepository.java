@@ -25,6 +25,8 @@ public class ConsumerApisRepository {
         EntityManager em = this.entityManager;
 
         PersistentConsumerApiDefinition definition = em.find(PersistentConsumerApiDefinition.class, id);
+        em.detach(definition);
+
         return Optional.ofNullable(definition);
     }
 
@@ -38,7 +40,6 @@ public class ConsumerApisRepository {
 
         definition.setCommitTime(LocalDateTime.now());
         em.persist(definition);
-        em.detach(definition);
     }
 
 }
