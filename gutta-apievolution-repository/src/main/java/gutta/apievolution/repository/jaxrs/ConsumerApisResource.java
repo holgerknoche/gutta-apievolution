@@ -1,5 +1,6 @@
 package gutta.apievolution.repository.jaxrs;
 
+import gutta.apievolution.repository.ApiMappingType;
 import gutta.apievolution.repository.ApiProcessingException;
 import gutta.apievolution.repository.ConsumerApisService;
 import gutta.apievolution.repository.PersistentConsumerApiDefinition;
@@ -53,6 +54,38 @@ public class ConsumerApisResource {
                 definition.getReferencedRevision().getRevisionNumber(),
                 definition.getDefinitionText()
         );
+    }
+
+    /**
+     * Creates a mapping for a consumer API definition.
+     * @param id The id of the consumer API definition to map
+     * @param type The type of the desired map
+     * @return The response for the request
+     */
+    @GET
+    @Path("{id}/map")
+    @Produces("application/json")
+    public Response mapConsumerApi(@PathParam("id") int id, @QueryParam("type") String type) {
+        ApiMappingType mappingType = this.convertMappingType(type);
+
+        byte[] mappingBytes = this.apisService.mapConsumerApi(id, "json", mappingType);
+        return Response.ok(mappingBytes).build();
+    }
+
+    private ApiMappingType convertMappingType(String type) {
+        String actualType = (type == null) ? "" : type.toLowerCase();
+
+        switch (actualType) {
+            case "consumer":
+            default:
+                return ApiMappingType.CONSUMER;
+
+            case "provider":
+                return ApiMappingType.PROVIDER;
+
+            case "full":
+                return ApiMappingType.FULL;
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package gutta.apievolution.repository;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolutionException;
 import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.APIParseException;
@@ -36,6 +37,61 @@ public class ConsumerApisService {
      */
     public Optional<PersistentConsumerApiDefinition> readConsumerApi(Integer id) {
         return this.apisRepository.findById(id);
+    }
+
+    /**
+     * Creates a mapping based on the given consumer API definition for the desired format and mode.
+     * @param id The id of the consumer API definition to use
+     * @param format The format for which the mapping should be created
+     * @param type The type of mapping to be created
+     * @return The mapping in the appropriate representation
+     */
+    public byte[] mapConsumerApi(Integer id, String format, ApiMappingType type) {
+        Optional<PersistentConsumerApiDefinition> optionalConsumerApi = this.readConsumerApi(id);
+        if (optionalConsumerApi.isEmpty()) {
+            throw new ApiProcessingException("The desired consumer API does not exist.");
+        }
+
+        PersistentConsumerApiDefinition persistentConsumerApi = optionalConsumerApi.get();
+        PersistentProviderApiDefinition persistentProviderApi = persistentConsumerApi.getReferencedRevision();
+
+        ConsumerApiDefinition consumerApiDefinition =
+                ConsumerApiLoader.loadFromString(persistentConsumerApi.getDefinitionText(),
+                        persistentProviderApi.getRevisionNumber());
+
+
+        String historyName = persistentProviderApi.getHistoryName();
+        RevisionHistory revisionHistory = this.providerApisService.readRevisionHistory(historyName);
+        Set<Integer> supportedRevisions = this.providerApisService.readSupportedRevisions(historyName);
+
+
+        DefinitionResolution definitionResolution = new DefinitionResolver()
+                .resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApiDefinition);
+
+        ApiMappingRepresentationCreator mappingCreator = this.getMappingCreatorFor(format)
+                .orElseThrow(() -> new ApiProcessingException("No mapping creator for format " + format + "."));
+
+        switch (type) {
+            case CONSUMER:
+                return mappingCreator.createConsumerSideMapping(definitionResolution);
+
+            case PROVIDER:
+                return mappingCreator.createProviderSideMapping(definitionResolution);
+
+            case FULL:
+                return mappingCreator.createFullMapping(definitionResolution);
+
+            default:
+                throw new ApiProcessingException("Unsupported mapping type " + type + ".");
+        }
+    }
+
+    private Optional<ApiMappingRepresentationCreator> getMappingCreatorFor(String format) {
+        if ("json".equals(format)) {
+            return Optional.of(new JsonMappingRepresentationCreator());
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

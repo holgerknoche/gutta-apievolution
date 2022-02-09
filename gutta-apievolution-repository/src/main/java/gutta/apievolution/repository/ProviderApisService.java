@@ -1,13 +1,16 @@
 package gutta.apievolution.repository;
 
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.APIParseException;
 import gutta.apievolution.dsl.APIResolutionException;
 import gutta.apievolution.dsl.ProviderApiLoader;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -31,6 +34,32 @@ public class ProviderApisService {
      */
     public Optional<PersistentProviderApiDefinition> readApiRevision(String historyName, int revisionNumber) {
         return this.apisRepository.findByRevision(historyName, revisionNumber);
+    }
+
+    RevisionHistory readRevisionHistory(String historyName) {
+        List<PersistentProviderApiDefinition> existingDefinitions =
+                this.apisRepository.findApiDefinitionsInHistory(historyName);
+
+        List<ProviderApiDefinition> definitions = new ArrayList<>(existingDefinitions.size());
+        Optional<ProviderApiDefinition> predecessor = Optional.empty();
+
+        for (PersistentProviderApiDefinition persistentDefinition : existingDefinitions) {
+            ProviderApiDefinition currentDefinition = ProviderApiLoader.loadFromString(
+                    persistentDefinition.getRevisionNumber(),
+                    persistentDefinition.getDefinitionText(),
+                    false,
+                    predecessor
+            );
+
+            definitions.add(currentDefinition);
+            predecessor = Optional.of(currentDefinition);
+        }
+
+        return new RevisionHistory(definitions);
+    }
+
+    Set<Integer> readSupportedRevisions(String historyName) {
+        return this.apisRepository.findSupportedRevisions(historyName, LocalDateTime.now());
     }
 
     /**

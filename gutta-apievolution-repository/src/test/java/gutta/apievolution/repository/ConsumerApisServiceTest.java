@@ -1,11 +1,14 @@
 package gutta.apievolution.repository;
 
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.dsl.ProviderApiLoader;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
+import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -131,6 +134,37 @@ class ConsumerApisServiceTest {
                 "api test { record A { string fieldA as fieldX } }"));
 
         assertTrue(exception.getMessage().contains("is not supported"));
+    }
+
+    @Test
+    void testClientMapping() {
+        PersistentProviderApiDefinition persistentProviderDefinition = new PersistentProviderApiDefinition();
+        persistentProviderDefinition.setHistoryName("testHistory");
+        persistentProviderDefinition.setRevisionNumber(0);
+        persistentProviderDefinition.setDefinitionText("api test { record A { string fieldA } }");
+
+        ProviderApiDefinition providerDefinition = ProviderApiLoader.loadFromString(0,
+                persistentProviderDefinition.getDefinitionText(), false, Optional.empty());
+
+        PersistentConsumerApiDefinition consumerDefinition = new PersistentConsumerApiDefinition();
+        consumerDefinition.setReferencedRevision(persistentProviderDefinition);
+        consumerDefinition.setDefinitionText("api test { record A as B { string fieldA as fieldB } }");
+
+        ConsumerApisRepository repositoryMock = mock(ConsumerApisRepository.class);
+        when(repositoryMock.findById(1)).thenReturn(Optional.of(consumerDefinition));
+
+        ProviderApisService providerServiceMock = mock(ProviderApisService.class);
+        when(providerServiceMock.readRevisionHistory("testHistory"))
+                .thenReturn(new RevisionHistory(providerDefinition));
+        when(providerServiceMock.readSupportedRevisions("testHistory"))
+                .thenReturn(Collections.singleton(0));
+
+        ConsumerApisService service = new ConsumerApisService();
+        service.apisRepository = repositoryMock;
+        service.providerApisService = providerServiceMock;
+
+        byte[] mappingBytes = service.mapConsumerApi(1, "json", ApiMappingType.CONSUMER);
+        System.out.println(new String(mappingBytes, StandardCharsets.UTF_8));
     }
 
 }

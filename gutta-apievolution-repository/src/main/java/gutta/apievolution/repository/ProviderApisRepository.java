@@ -5,6 +5,8 @@ import org.jboss.logging.Logger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -44,7 +46,6 @@ public class ProviderApisRepository {
         try {
             PersistentProviderApiDefinition definition = query.getSingleResult();
             em.detach(definition);
-
             return Optional.of(definition);
         } catch (NoResultException | NonUniqueResultException e) {
             this.logger.warnf("Error retrieving revision %d in history '%s'.", revisionNumber, historyName, e);
@@ -71,6 +72,29 @@ public class ProviderApisRepository {
         definitions.forEach(em::detach);
 
         return definitions;
+    }
+
+    /**
+     * Finds the revision numbers that were supported in the given history at the given time.
+     * @param historyName The name of the history
+     * @param atTime The time at which the supported revisions should be determined
+     * @return A set of the supported revision numbers
+     */
+    public Set<Integer> findSupportedRevisions(String historyName, LocalDateTime atTime) {
+        EntityManager em = this.entityManager;
+
+        TypedQuery<PersistentProviderApiDefinition> query = em.createQuery(
+                "select def from PersistentProviderApiDefinition def where def.historyName = :historyName " +
+                        "and def.supportedFrom <= :atTime and def.supportedUntil > :atTime " +
+                        "order by def.revisionNumber",
+                PersistentProviderApiDefinition.class);
+        query.setParameter("historyName", historyName);
+        query.setParameter("atTime", atTime);
+
+        List<PersistentProviderApiDefinition> definitions = query.getResultList();
+        return definitions.stream()
+                .map(PersistentProviderApiDefinition::getRevisionNumber)
+                .collect(Collectors.toSet());
     }
 
     /**
