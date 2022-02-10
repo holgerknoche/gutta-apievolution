@@ -28,17 +28,14 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
      */
     public static boolean isTypeChange(Type predecessorType, Type successorType) {
         if (successorType instanceof RevisionedElement) {
-            // If the current type is revisioned, we must compare the its predecessor to the predecessor
-            // field's type
-            Optional<?> optionalOwnTypePredecessor = ((RevisionedElement<?>) successorType).getPredecessor();
+            // If the current type is revisioned, we must see if there is a predecessor of the successor type
+            // matching the current type
+            Optional<?> matchingPredecessor = ((RevisionedElement<?>) successorType).findFirstPredecessorMatching(
+                    type -> type.equals(predecessorType)
+            );
 
-            if (optionalOwnTypePredecessor.isPresent()) {
-                Type ownTypePredecessor = (Type) optionalOwnTypePredecessor.get();
-                return !(ownTypePredecessor.equals(predecessorType));
-            } else {
-                // If no predecessor is present, we have a type change
-                return true;
-            }
+            // If no matching predecessor (or none at all) is present, we have a type change
+            return !(matchingPredecessor.isPresent());
         } else {
             // Otherwise, the types can be compared immediately
             return !(successorType.equals(predecessorType));

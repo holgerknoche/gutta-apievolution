@@ -315,26 +315,7 @@ public class ModelMerger {
             ProviderField mappedField;
             if (!optionalMappedSuccessor.isPresent() || typeChange) {
                 // If no predecessor exists or a type change has occurred, create a new field
-                Optional<String> internalName = (field.getPublicName().equals(field.getInternalName())) ?
-                        Optional.empty() : Optional.of(field.getInternalName());
-                Optionality optionality = this.determineOptionalityForField(field);
-                Type type = this.lookupType(field.getType());
-
-                // Ensure that the internal name is unique
-                MemberName memberName = new MemberName(field.getOwner().getInternalName(), field.getInternalName());
-                this.assertUniqueMemberName(memberName);
-
-                mappedField = new ProviderField(field.getPublicName(),
-                        internalName,
-                        this.currentRecordType,
-                        type,
-                        optionality,
-                        field.isInherited(),
-                        Collections.emptyList(),
-                        Optional.empty());
-
-                this.knownMemberNames.add(memberName);
-                this.mappedFields.put(field, mappedField);
+                mappedField = this.reuseOrCreateField(field);
             } else {
                 mappedField = this.mappedFields.get(optionalMappedSuccessor.get());
             }
@@ -342,6 +323,49 @@ public class ModelMerger {
             this.registerFieldMapping(field, mappedField);
 
             return null;
+        }
+
+        private ProviderField reuseOrCreateField(ProviderField originalField) {
+            Optional<String> internalName = (originalField.getPublicName().equals(originalField.getInternalName())) ?
+                    Optional.empty() : Optional.of(originalField.getInternalName());
+            Optionality optionality = this.determineOptionalityForField(originalField);
+            Type type = this.lookupType(originalField.getType());
+
+            // See if there is already a matching field in the merged type that can be reused
+            ProviderField potentialMatch =
+                    this.currentRecordType.resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
+            if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, optionality, type)) {
+                // If there is a matching type, reuse it
+                return potentialMatch;
+            }
+
+            // Ensure that the internal name is unique
+            MemberName memberName = new MemberName(originalField.getOwner().getInternalName(),
+                    originalField.getInternalName());
+            this.assertUniqueMemberName(memberName);
+
+            ProviderField newField = new ProviderField(originalField.getPublicName(),
+                    internalName,
+                    this.currentRecordType,
+                    type,
+                    optionality,
+                    originalField.isInherited(),
+                    Collections.emptyList(),
+                    Optional.empty());
+
+            this.knownMemberNames.add(memberName);
+            this.mappedFields.put(originalField, newField);
+
+            return newField;
+        }
+
+        private boolean fieldMatches(Field originalField, Field matchCandidate, Optionality optionality, Type type) {
+            // See if the candidate actually matches with respect to the relevant properties
+            return matchCandidate.getPublicName().equals(originalField.getPublicName()) &&
+                    matchCandidate.getInternalName().equals(originalField.getInternalName()) &&
+                    matchCandidate.getType().equals(type) &&
+                    matchCandidate.getOptionality().equals(optionality) &&
+                    matchCandidate.isInherited() == originalField.isInherited();
         }
 
         protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
