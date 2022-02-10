@@ -24,6 +24,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final Map<String, F> fieldLookup;
 
+    private final Map<String, F> internalNameLookup;
+
     private boolean subTypes;
 
     private Usage usage = Usage.NONE;
@@ -58,6 +60,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
         this.inheritedFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
         this.fieldLookup = new HashMap<>();
+        this.internalNameLookup = new HashMap<>();
 
         owner.addUserDefinedType(this);
 
@@ -109,6 +112,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
         this.declaredFields.add(field);
         this.fieldLookup.put(field.getPublicName(), field);
+        this.internalNameLookup.put(field.getInternalName(), field);
     }
 
     /**
@@ -120,6 +124,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
         this.inheritedFields.add(field);
         this.fieldLookup.put(field.getPublicName(), field);
+        this.internalNameLookup.put(field.getInternalName(), field);
     }
 
     /**
@@ -155,12 +160,23 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
-     * Resolves a field identified by its name within this record type.
-     * @param name The name of the desired field
+     * Resolves a field identified by its public name within this record type. Note that in merged definitions, this
+     * mapping does not need to be unique, and only one of the fields will be returned. In such definitions, use the
+     * internal name instead.
+     * @param name The public name of the desired field
      * @return The resolved field, if it exists
      */
     public Optional<F> resolveField(final String name) {
         return Optional.ofNullable(this.fieldLookup.get(name));
+    }
+
+    /**
+     * Resolves a field identified by its internal name within this record type.
+     * @param name The internal name of the desired field
+     * @return The resolved field, if it exists
+     */
+    public Optional<F> resolveFieldByInternalName(String name) {
+        return Optional.ofNullable(this.internalNameLookup.get(name));
     }
 
     void registerSubType(final R subType) {
