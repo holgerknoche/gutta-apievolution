@@ -5,10 +5,7 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The definition resolver resolves client API definitions against provider API revisions. The resulting resolution
@@ -72,7 +69,8 @@ public class DefinitionResolver {
     }
 
     private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
-        Map<Type, Type> consumerToProviderType = new HashMap<>();
+        // We use a linked hash map to ensure a deterministic iteration order for the tests
+        Map<Type, Type> consumerToProviderType = new LinkedHashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerType : consumerApi.getUserDefinedTypes()) {
             String publicTypeName = consumerType.getPublicName();

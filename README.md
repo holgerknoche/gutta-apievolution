@@ -11,4 +11,5 @@ This project currently consists of four components:
 1. The core library `gutta-apievolution-core`, which contains the basic elements and algorithms for API our evolution approach,
 2. the domain-specific language for specifying API definitions, contained in `gutta-apievolution-dsl`,
 3. a Maven plugin `gutta-apievolution-java-codegen-plugin`, which illustrates how code for the internal representation can be generated,
-4. and `gutta-apievolution-json`, which shows how the approach can be applied to JSON-based communication.
+4. `gutta-apievolution-json`, which shows how the approach can be applied to JSON-based communication,
+5. and `gutta-apievolution-repository`, a simple repository implementation built with Quarkus.

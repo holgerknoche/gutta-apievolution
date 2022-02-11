@@ -20,32 +20,57 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * Loads an API definition from the given input stream.
      * @param revision The revision number to assign to the definition
      * @param inputStream The input stream to read the definition from
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
      * @return The loaded definition
      * @throws IOException If an I/O error occurs while loading the definition
      */
-    public static ProviderApiDefinition loadFromStream(final int revision, final InputStream inputStream)
+    public static ProviderApiDefinition loadFromStream(final int revision, final InputStream inputStream,
+                                                       boolean ignoreReplacements)
             throws IOException {
-        return loadFromStream(revision, inputStream, Optional.empty());
+        return loadFromStream(revision, inputStream, ignoreReplacements, Optional.empty());
     }
 
     /**
      * Loads an API definition from the given input stream and resolves it against an optional predecessor.
      * @param revision The revision number to assign to the definition
      * @param inputStream The input stream to read the definition from
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
      * @param optionalPredecessor An optional predecessor to resolve the loaded definition against
      * @return The loaded and resolved definition
      * @throws IOException If an I/O error occurs while loading the definition
      */
     public static ProviderApiDefinition loadFromStream(final int revision, final InputStream inputStream,
+                                                       boolean ignoreReplacements,
                                                        final Optional<ProviderApiDefinition> optionalPredecessor)
             throws IOException {
         ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
+        return load(revision, specification, ignoreReplacements, optionalPredecessor);
+    }
 
+    /**
+     * Loads an API definition from the given string and resolves it against an optional predecessor.
+     * @param revision The revision number to assign to the definition
+     * @param input The input string to read the definition from
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
+     * @param optionalPredecessor An optional predecessor to resolve the loaded definition against
+     * @return The loaded and resolved definition
+     */
+    public static ProviderApiDefinition loadFromString(int revision, String input,
+                                                       boolean ignoreReplacements,
+                                                       Optional<ProviderApiDefinition> optionalPredecessor) {
+        ApiRevisionParser.ApiDefinitionContext specification = parseString(input);
+        return load(revision, specification, ignoreReplacements, optionalPredecessor);
+    }
+
+    private static ProviderApiDefinition load(int revision, ApiRevisionParser.ApiDefinitionContext specification,
+                                              boolean ignoreReplacements,
+                                              Optional<ProviderApiDefinition> optionalPredecessor) {
         ProviderApiRevisionModelBuilderPass1 pass1 = new ProviderApiRevisionModelBuilderPass1();
         ProviderApiRevisionModelBuilderPass2 pass2 = new ProviderApiRevisionModelBuilderPass2();
 
-        ProviderApiDefinition apiDefinition = pass1.buildProviderRevision(revision, specification, optionalPredecessor);
-        pass2.augmentProviderRevision(specification, apiDefinition, optionalPredecessor);
+        ProviderApiDefinition apiDefinition = pass1.buildProviderRevision(revision, specification, ignoreReplacements,
+                optionalPredecessor);
+        pass2.augmentProviderRevision(specification, apiDefinition, ignoreReplacements, optionalPredecessor);
 
         apiDefinition.finalizeDefinition();
 
@@ -55,10 +80,12 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
     /**
      * Loads a revision history from a collection of streams, drawing revision numbers from the given iterable.
      * @param revisionIds An iterable providing a sufficient number of revision numbers
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
      * @param streams The streams to load the definitions from
      * @return The loaded and resolved revision history
      */
     public static List<ProviderApiDefinition> loadHistoryFromStreams(final Iterable<Integer> revisionIds,
+                                                                     boolean ignoreReplacements,
                                                                      final Collection<? extends InputStream> streams) {
         if (streams.isEmpty()) {
             return Collections.emptyList();
@@ -73,7 +100,7 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
             // Convert the first stream (i.e. first revision in the history)
             ProviderApiDefinition currentRevision;
             try (InputStream stream = streamIterator.next()) {
-                currentRevision = loadFromStream(revisionsIdsIterator.next(), stream);
+                currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements);
                 revisions.add(currentRevision);
             }
 
@@ -81,7 +108,8 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
             while (streamIterator.hasNext()) {
                 try (InputStream stream = streamIterator.next()) {
                     Optional<ProviderApiDefinition> optionalPredecessor = Optional.of(currentRevision);
-                    currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, optionalPredecessor);
+                    currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements,
+                            optionalPredecessor);
                     revisions.add(currentRevision);
                 }
             }
@@ -98,13 +126,23 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * @return The loaded revision history
      */
     public static RevisionHistory loadHistoryFromClasspath(String... fileNames) {
+        return loadHistoryFromClasspath(false, fileNames);
+    }
+
+    /**
+     * Loads a revision history from the given files on the classpath.
+     * @param ignoreReplacements Flag whether to ignore replacement clauses in the definition
+     * @param fileNames The filenames on the classpath to load the revisions from
+     * @return The loaded revision history
+     */
+    public static RevisionHistory loadHistoryFromClasspath(boolean ignoreReplacements, String... fileNames) {
         ClassLoader classLoader = ProviderApiLoader.class.getClassLoader();
 
         List<InputStream> inputStreams = Stream.of(fileNames)
                 .map(classLoader::getResourceAsStream)
                 .collect(Collectors.toList());
 
-        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), inputStreams));
+        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
     }
 
 }

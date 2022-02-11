@@ -69,7 +69,7 @@ public class ProviderCodeGenerationMojo extends AbstractMojo {
                 .map(this::toInputStream)
                 .collect(Collectors.toList());
 
-        return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), streams);
+        return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
     }
 
     private FileInputStream toInputStream(File file) {

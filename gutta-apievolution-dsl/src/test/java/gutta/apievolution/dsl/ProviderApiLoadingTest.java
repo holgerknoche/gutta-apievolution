@@ -2,6 +2,7 @@ package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.provider.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -9,8 +10,7 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProviderApiLoadingTest {
 
@@ -568,6 +568,51 @@ class ProviderApiLoadingTest {
 
         assertEquals(predecessorField.getOwner(), predecessorType);
         assertTrue(predecessorField.isInherited());
+    }
+
+    /**
+     * Test case: Load an API revision without considering replacements.
+     */
+    @Test
+    void loadRevisionIgnoringReplacements() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(true,
+                "apis/push-down-attribute-2.api");
+        ProviderApiDefinition definition = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+
+        String expected = "api test [] {\n" +
+                " record SuperType(SuperType) {\n" +
+                " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType {\n" +
+                "  mandatory fieldA(fieldA):string\n" +
+                " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType {\n" +
+                "  mandatory fieldB(fieldB):string\n" +
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(definition);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void failOnEmptyString() {
+        APIParseException exception = assertThrows(APIParseException.class,
+                () -> ProviderApiLoader.loadFromString(0, "", false,
+                Optional.empty()));
+
+        assertTrue(exception.getMessage().contains("1:0: mismatched"));
+    }
+
+    @Test
+    void failOnParseError() {
+        // Missing delimiter in API definition
+        String input = "api test {";
+
+        APIParseException exception = assertThrows(APIParseException.class,
+                () -> ProviderApiLoader.loadFromString(0, input, false, Optional.empty()));
+
+        assertTrue(exception.getMessage().contains("1:10: mismatched"));
     }
 
 }

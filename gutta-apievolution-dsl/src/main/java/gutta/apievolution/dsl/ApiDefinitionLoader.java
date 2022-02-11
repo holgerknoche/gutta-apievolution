@@ -11,11 +11,21 @@ class ApiDefinitionLoader {
 
     protected static ApiRevisionParser.ApiDefinitionContext parseStream(InputStream inputStream) throws IOException {
         CharStream charStream = CharStreams.fromStream(inputStream);
-        ApiRevisionLexer lexer = new ApiRevisionLexer(charStream);
+        return parse(charStream);
+    }
+
+    protected static ApiRevisionParser.ApiDefinitionContext parseString(String input) {
+        CharStream charStream = CharStreams.fromString(input);
+        return parse(charStream);
+    }
+
+    private static ApiRevisionParser.ApiDefinitionContext parse(CharStream input) {
+        ApiRevisionLexer lexer = new ApiRevisionLexer(input);
         TokenStream tokenStream = new CommonTokenStream(lexer);
         ApiRevisionParser parser = new ApiRevisionParser(tokenStream);
 
-        //parser.setErrorHandler(new BailErrorStrategy());
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ThrowingErrorListener());
 
         return parser.apiDefinition();
     }

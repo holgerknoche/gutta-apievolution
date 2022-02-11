@@ -5,6 +5,7 @@ apiDefinition:
     refToken='api' name=qualifiedName replaces=apiReplacesClause? '{'
 	    elements+=userDefinedTypeOrService*
 	'}'
+	EOF
 ;
 
 apiReplacesClause:
