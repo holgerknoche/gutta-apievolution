@@ -1,0 +1,9 @@
+api test {
+    record A as AProvider {
+        string fieldA as fieldAProvider
+    }
+
+    enum E as EProvider {
+        MEMBER_1 as MEMBER_1_PROVIDER
+    }
+}

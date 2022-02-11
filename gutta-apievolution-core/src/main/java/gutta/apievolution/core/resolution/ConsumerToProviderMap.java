@@ -9,6 +9,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -103,7 +104,8 @@ class ConsumerToProviderMap {
     }
 
     private static <A, B> Map<B, A> invertMap(Map<A, B> map, Consumer<B> onConflict) {
-        Map<B, A> invertedMap = new HashMap<>(map.size());
+        // We use a linked hash map to ensure a deterministic iteration order for tests
+        Map<B, A> invertedMap = new LinkedHashMap<>(map.size());
 
         for (Map.Entry<A, B> entry : map.entrySet()) {
             A existingValue = invertedMap.put(entry.getValue(), entry.getKey());
@@ -122,6 +124,14 @@ class ConsumerToProviderMap {
 
     Type mapConsumerType(Type consumerType) {
         return this.consumerToProviderType.get(consumerType);
+    }
+
+    ProviderField mapConsumerField(ConsumerField consumerField) {
+        return this.consumerToProviderField.get(consumerField);
+    }
+
+    ProviderEnumMember mapConsumerMember(ConsumerEnumMember consumerEnumMember) {
+        return this.consumerToProviderMember.get(consumerEnumMember);
     }
 
     private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {

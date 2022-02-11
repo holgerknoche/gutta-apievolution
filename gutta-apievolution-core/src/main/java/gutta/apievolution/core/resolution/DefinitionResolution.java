@@ -2,7 +2,10 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 
 import java.util.Map;
@@ -99,6 +102,24 @@ public class DefinitionResolution {
      */
     public ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerMap.mapProviderField(providerField);
+    }
+
+    /**
+     * Maps a given consumer field to the corresponding provider field.
+     * @param consumerField The provider field to map
+     * @return The corresponding provider field, if it exists
+     */
+    public ProviderField mapConsumerField(ConsumerField consumerField) {
+        return this.consumerToProviderMap.mapConsumerField(consumerField);
+    }
+
+    /**
+     * Maps a given consumer enum member to the corresponding provider enum member.
+     * @param consumerEnumMember The provider enum member to map
+     * @return The corresponding provider enum member, if it exists
+     */
+    public ProviderEnumMember mapConsumerEnumMember(ConsumerEnumMember consumerEnumMember) {
+        return this.consumerToProviderMap.mapConsumerMember(consumerEnumMember);
     }
 
 }
