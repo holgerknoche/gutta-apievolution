@@ -5,9 +5,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test cases for client interactions.
@@ -74,6 +75,21 @@ class ClientInteractionsTest {
         int consumerRevisionId = consumerResponseNode.get("id").asInt();
 
         assertTrue(consumerRevisionId > 0);
+
+        // Request consumer-to-public mapping
+        Response consumerToPublicMappingResponse = given()
+                .when()
+                .get("apis/consumer/" + consumerRevisionId + "/map")
+
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String expectedMapping = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"B\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldB\"}]}]";
+        String actualMapping = new String(consumerToPublicMappingResponse.asByteArray(), StandardCharsets.UTF_8);
+
+        assertEquals(expectedMapping, actualMapping);
     }
 
 }
