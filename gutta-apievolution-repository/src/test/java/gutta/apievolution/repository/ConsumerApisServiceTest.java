@@ -1,5 +1,8 @@
 package gutta.apievolution.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ProviderApiLoader;
@@ -10,7 +13,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,6 +25,8 @@ import static org.mockito.Mockito.*;
  * Test cases for the consumer API service.
  */
 class ConsumerApisServiceTest {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * Test case: A consumer API is saved, and the referenced provider definition exists and matches.
@@ -177,6 +184,19 @@ class ConsumerApisServiceTest {
         return service.mapConsumerApi(1, "json", mappingType);
     }
 
+    private static Set<JsonNode> toJsonNodeSet(String json) {
+        ArrayNode arrayNode;
+        try {
+            arrayNode = OBJECT_MAPPER.readValue(json, ArrayNode.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
+        Set<JsonNode> nodeSet = new HashSet<>(arrayNode.size());
+        arrayNode.forEach(nodeSet::add);
+        return nodeSet;
+    }
+
     /**
      * Test case: Mapping of a consumer API against a provider revision in JSON for the consumer side.
      */
@@ -184,10 +204,14 @@ class ConsumerApisServiceTest {
     void testJSONClientMappingForConsumer() {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.CONSUMER);
 
-        String expected = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AConsumer\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EConsumer\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_CONSUMER\"}]}]";
-        String actual = new String(mappingBytes, StandardCharsets.UTF_8);
+        // The actual order is not deterministic, we therefore compare sets
+        String expectedJson = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AConsumer\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EConsumer\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_CONSUMER\"}]}]";
+        Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
-        assertEquals(expected,actual);
+        String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);
+        Set<JsonNode> actualNodeSet = toJsonNodeSet(actualJson);
+
+        assertEquals(expectedNodeSet, actualNodeSet);
     }
 
     /**
@@ -197,10 +221,14 @@ class ConsumerApisServiceTest {
     void testJSONClientMappingForProvider() {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.PROVIDER);
 
-        String expected = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AProvider\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAProvider\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EProvider\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_PROVIDER\"}]}]";
-        String actual = new String(mappingBytes, StandardCharsets.UTF_8);
+        // The actual order is not deterministic, we therefore compare sets
+        String expectedJson = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AProvider\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAProvider\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EProvider\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_PROVIDER\"}]}]";
+        Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
-        assertEquals(expected,actual);
+        String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);
+        Set<JsonNode> actualNodeSet = toJsonNodeSet(actualJson);
+
+        assertEquals(expectedNodeSet, actualNodeSet);
     }
 
     /**
@@ -211,10 +239,14 @@ class ConsumerApisServiceTest {
     void testFullJSONClientMapping() {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.FULL);
 
-        String expected = "[{\"$type\":\"record\",\"providerName\":\"AProvider\",\"consumerName\":\"AConsumer\",\"fields\":[{\"providerName\":\"fieldAProvider\",\"consumerName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"providerName\":\"EProvider\",\"consumerName\":\"EConsumer\",\"members\":[{\"providerName\":\"MEMBER_1_PROVIDER\",\"consumerName\":\"MEMBER_1_CONSUMER\"}]}]";
-        String actual = new String(mappingBytes, StandardCharsets.UTF_8);
+        // The actual order is not deterministic, we therefore compare sets
+        String expectedJson = "[{\"$type\":\"record\",\"providerName\":\"AProvider\",\"consumerName\":\"AConsumer\",\"fields\":[{\"providerName\":\"fieldAProvider\",\"consumerName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"providerName\":\"EProvider\",\"consumerName\":\"EConsumer\",\"members\":[{\"providerName\":\"MEMBER_1_PROVIDER\",\"consumerName\":\"MEMBER_1_CONSUMER\"}]}]";
+        Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
-        assertEquals(expected,actual);
+        String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);
+        Set<JsonNode> actualNodeSet = toJsonNodeSet(actualJson);
+
+        assertEquals(expectedNodeSet, actualNodeSet);
     }
 
 }
