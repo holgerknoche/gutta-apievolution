@@ -36,10 +36,10 @@ public class ModelMerger {
     public ToMergedModelMap createMergedDefinition(RevisionHistory revisionHistory,
                                                    ProviderApiDefinition referenceRevision) {
         ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
-        MergePass2Creator pass2Creator = (supportedRevisions, typeLookup) ->
-                new RevisionMergePass2.MappingRevisionMergePass2(supportedRevisions, typeLookup,
+        MergePass2Creator pass2Creator = (supportedRevisions, typeLookup, mergedDef) ->
+                new MappingRevisionMergePass2(supportedRevisions, typeLookup, mergedDef,
                         referenceRevision);
-        RevisionMergePass2.MappingRevisionMergePass2 pass2 = (RevisionMergePass2.MappingRevisionMergePass2)
+        MappingRevisionMergePass2 pass2 = (MappingRevisionMergePass2)
                 this.mergeElementsIntoRevision(revisionHistory, mergedDefinition, pass2Creator);
 
         return pass2.getToMergedModelMap();
@@ -105,7 +105,7 @@ public class ModelMerger {
         ProviderTypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
 
         // Then, convert the remaining elements using the previously created type lookup
-        RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup);
+        RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup, mergedDefinition);
 
         while (revisions.hasPrevious()) {
             ProviderApiDefinition currentRevision = revisions.previous();
@@ -212,7 +212,8 @@ public class ModelMerger {
     @FunctionalInterface
     private interface MergePass2Creator {
 
-        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup);
+        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+                                  ProviderApiDefinition mergedDefinition);
 
     }
 
@@ -227,20 +228,27 @@ public class ModelMerger {
 
         protected final ProviderTypeLookup typeLookup;
 
+        private final ProviderApiDefinition mergedDefinition;
+
         private final Set<MemberName> knownMemberNames = new HashSet<>();
 
         private final Map<ProviderField, ProviderField> mappedFields = new HashMap<>();
 
         private final Map<ProviderEnumMember, ProviderEnumMember> mappedMembers = new HashMap<>();
 
+        private final Map<ProviderService, ProviderService> mappedServices = new HashMap<>();
+
+        private final Map<ProviderServiceOperation, ProviderServiceOperation> mappedOperations = new HashMap<>();
+
         private ProviderRecordType currentRecordType;
 
         private ProviderEnumType currentEnumType;
 
         public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
-                                  ProviderTypeLookup typeLookup) {
+                                  ProviderTypeLookup typeLookup, ProviderApiDefinition mergedDefinition) {
             this.supportedRevisions = supportedRevisions;
             this.typeLookup = typeLookup;
+            this.mergedDefinition = mergedDefinition;
         }
 
         public void mergeRevision(ProviderApiDefinition definition) {
@@ -409,8 +417,7 @@ public class ModelMerger {
 
             ProviderEnumMember mappedMember;
             if (!optionalMappedPredecessor.isPresent()) {
-                Optional<String> internalName = (enumMember.getPublicName().equals(enumMember.getInternalName())) ?
-                        Optional.empty() : Optional.of(enumMember.getInternalName());
+                Optional<String> internalName = enumMember.getOptionalInternalName();
 
                 // Ensure that the internal name is unique
                 MemberName memberName = new MemberName(enumMember.getOwner().getInternalName(),
@@ -436,42 +443,43 @@ public class ModelMerger {
             // Do nothing as of now
         }
 
-        private static class MappingRevisionMergePass2 extends RevisionMergePass2 {
+        @Override
+        public Void handleProviderService(ProviderService service) {
+            Optional<ProviderService> optionalMappedPredecessor = service.findFirstSuccessorMatching(
+                    this.mappedServices::containsKey
+            );
 
-            private final ProviderApiDefinition referenceRevision;
+            ProviderService mappedService;
+            if (!optionalMappedPredecessor.isPresent()) {
+                mappedService = new ProviderService(service.getPublicName(),
+                        service.getOptionalInternalName(),
+                        this.mergedDefinition,
+                        Optional.empty());
 
-            private final Map<ProviderField, ProviderField> fieldMap = new HashMap<>();
-
-            private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap = new HashMap<>();
-
-            public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
-                                             ProviderTypeLookup typeLookup,
-                                             ProviderApiDefinition referenceRevision) {
-                super(supportedRevisions, typeLookup);
-
-                this.referenceRevision = referenceRevision;
+                this.mappedServices.put(service, mappedService);
+            } else {
+                mappedService = this.mappedServices.get(optionalMappedPredecessor.get());
             }
 
-            @Override
-            protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
-                if (originalField.getOwner().getOwner().equals(this.referenceRevision)) {
-                    this.fieldMap.put(originalField, mappedField);
-                }
+            this.registerServiceMapping(service, mappedService);
+
+            for (ProviderServiceOperation operation : service) {
+                operation.accept(this);
             }
 
-            @Override
-            protected void registerEnumMemberMapping(ProviderEnumMember originalMember,
-                                                     ProviderEnumMember mappedMember) {
-                if (originalMember.getOwner().getOwner().equals(this.referenceRevision)) {
-                    this.enumMemberMap.put(originalMember, mappedMember);
-                }
-            }
+            return null;
+        }
 
-            public ToMergedModelMap getToMergedModelMap() {
-                ProviderTypeLookup restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
-                return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap);
-            }
+        protected void registerServiceMapping(ProviderService originalService, ProviderService mappedService) {
+            // Do nothing as of now
+        }
 
+        @Override
+        public Void handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
+            // TODO Merge operations. Note that type changes can occur in two locations, and that exceptions must
+            // be joined
+
+            return null;
         }
 
         /**
@@ -534,6 +542,45 @@ public class ModelMerger {
                 return this.maxOptionality;
             }
 
+        }
+
+    }
+
+    private static class MappingRevisionMergePass2 extends RevisionMergePass2 {
+
+        private final ProviderApiDefinition referenceRevision;
+
+        private final Map<ProviderField, ProviderField> fieldMap = new HashMap<>();
+
+        private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap = new HashMap<>();
+
+        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
+                                         ProviderTypeLookup typeLookup,
+                                         ProviderApiDefinition mergedDefinition,
+                                         ProviderApiDefinition referenceRevision) {
+            super(supportedRevisions, typeLookup, mergedDefinition);
+
+            this.referenceRevision = referenceRevision;
+        }
+
+        @Override
+        protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
+            if (originalField.getOwner().getOwner().equals(this.referenceRevision)) {
+                this.fieldMap.put(originalField, mappedField);
+            }
+        }
+
+        @Override
+        protected void registerEnumMemberMapping(ProviderEnumMember originalMember,
+                                                 ProviderEnumMember mappedMember) {
+            if (originalMember.getOwner().getOwner().equals(this.referenceRevision)) {
+                this.enumMemberMap.put(originalMember, mappedMember);
+            }
+        }
+
+        public ToMergedModelMap getToMergedModelMap() {
+            ProviderTypeLookup restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
+            return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap);
         }
 
     }

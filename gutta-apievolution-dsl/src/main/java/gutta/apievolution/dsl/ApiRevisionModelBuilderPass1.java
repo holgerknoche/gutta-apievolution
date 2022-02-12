@@ -13,8 +13,8 @@ import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
 abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>>
-        extends ApiRevisionModelBuilderPass<A, R, F, E, M, S, O> {
+        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R, X>, X extends ExceptionType>
+        extends ApiRevisionModelBuilderPass<A, R, F, E, M, S, O, X> {
 
     private static final String MSG_ONLY_ONE_OPTIONALITY_MODIFIER = "Only one optionality modifier may be specified.";
 

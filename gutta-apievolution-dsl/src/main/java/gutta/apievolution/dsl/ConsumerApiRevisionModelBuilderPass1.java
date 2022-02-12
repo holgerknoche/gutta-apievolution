@@ -10,7 +10,7 @@ import java.util.Set;
 
 class ConsumerApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<ConsumerApiDefinition,
         ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
-        ConsumerServiceOperation> {
+        ConsumerServiceOperation, ConsumerExceptionType> {
 
     private int referencedRevision;
 

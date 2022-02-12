@@ -1,8 +1,10 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.ExceptionType;
 
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
@@ -51,8 +53,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append("]");
     }
 
-    @Override
-    public Void handleProviderRecordType(ProviderRecordType recordType) {
+    private Void handleRecordLikeType(ProviderRecordType recordType, String exactType) {
         StringBuilder builder = this.outputBuilder;
 
         builder.append(" ");
@@ -61,7 +62,8 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
             builder.append("abstract ");
         }
 
-        builder.append("record ");
+        builder.append(exactType);
+        builder.append(" ");
         builder.append(recordType.getPublicName());
         builder.append("(");
         builder.append(recordType.getInternalName());
@@ -82,6 +84,16 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(" }\n");
 
         return null;
+    }
+
+    @Override
+    public Void handleProviderRecordType(ProviderRecordType recordType) {
+        return this.handleRecordLikeType(recordType, "record");
+    }
+
+    @Override
+    public Void handleProviderExceptionType(ProviderExceptionType exceptionType) {
+        return this.handleRecordLikeType(exceptionType, "exception");
     }
 
     @Override
@@ -178,6 +190,13 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(serviceOperation.getParameterType());
         builder.append(") : ");
         builder.append(serviceOperation.getReturnType());
+
+        Set<ProviderExceptionType> thrownExceptions = serviceOperation.getThrownExceptions();
+        if (!thrownExceptions.isEmpty()) {
+            builder.append(" throws ");
+            builder.append(thrownExceptions);
+        }
+
         builder.append("\n");
 
         return null;

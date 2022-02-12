@@ -8,7 +8,7 @@ import java.util.Optional;
  * Consumer-specific implementation of a {@link ServiceOperation}.
  */
 public class ConsumerServiceOperation extends ServiceOperation<ConsumerService, ConsumerServiceOperation,
-        ConsumerRecordType> implements ConsumerApiDefinitionElement {
+        ConsumerRecordType, ConsumerExceptionType> implements ConsumerApiDefinitionElement {
 
     /**
      * Creates a new service operation from the given data.

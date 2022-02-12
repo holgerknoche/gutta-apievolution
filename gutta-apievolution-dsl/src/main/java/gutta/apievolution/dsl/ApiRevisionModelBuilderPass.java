@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 
 abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>> extends ApiRevisionBaseVisitor<Void> {
+        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R, X>, X extends ExceptionType>
+        extends ApiRevisionBaseVisitor<Void> {
 
     private static String unquote(final String input) {
         int endIndex = (input.length() - 2);

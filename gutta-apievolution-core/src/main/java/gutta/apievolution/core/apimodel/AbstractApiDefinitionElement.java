@@ -38,6 +38,15 @@ abstract class AbstractApiDefinitionElement {
         return this.internalName;
     }
 
+    /**
+     * Returns the internal name as an optional, which is only present if the internal name differs from the public
+     * name.
+     * @return see above
+     */
+    public Optional<String> getOptionalInternalName() {
+        return (this.publicName.equals(this.internalName)) ? Optional.empty() : Optional.of(this.internalName);
+    }
+
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return Objects.hash(this.publicName, this.internalName);

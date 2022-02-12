@@ -43,6 +43,15 @@ public interface ProviderApiDefinitionElementVisitor<T> {
     }
 
     /**
+     * Performs the visitor operation for an exception type.
+     * @param exceptionType The record type to operate on
+     * @return The result of the operation
+     */
+    default T handleProviderExceptionType(ProviderExceptionType exceptionType) {
+        return null;
+    }
+
+    /**
      * Performs the visitor operation for a service.
      * @param service The service to operate on
      * @return The result of the operation

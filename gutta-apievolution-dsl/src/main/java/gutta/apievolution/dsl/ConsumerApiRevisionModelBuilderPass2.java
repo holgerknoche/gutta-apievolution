@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition,
         ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
-        ConsumerServiceOperation> {
+        ConsumerServiceOperation, ConsumerExceptionType> {
 
     public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                         ConsumerApiDefinition apiDefinition) {

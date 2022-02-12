@@ -777,4 +777,169 @@ class ModelMergerTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Test case: Merge a model with service operations and exceptions.
+     */
+    @Test
+    void mergeModelWithServices() {
+        // Revision 1
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType recordTypeV1 = new ProviderRecordType("RecordType",
+                Optional.empty(),
+                0,
+                revision1,
+                false,
+                Optional.empty());
+
+        ProviderExceptionType exceptionType1V1 = new ProviderExceptionType("E1",
+                Optional.empty(),
+                1,
+                revision1,
+                false,
+                Optional.empty());
+
+        ProviderField exceptionField1V1 = new ProviderField("e1",
+                Optional.empty(),
+                exceptionType1V1,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        ProviderService serviceV1 = new ProviderService("TestService",
+                Optional.empty(),
+                revision1,
+                Optional.empty());
+
+        ProviderServiceOperation operation1V1 = new ProviderServiceOperation("method1",
+                Optional.empty(),
+                serviceV1,
+                recordTypeV1,
+                recordTypeV1,
+                Optional.empty());
+
+        operation1V1.addThrownException(exceptionType1V1);
+
+        new ProviderServiceOperation("method2",
+                Optional.empty(),
+                serviceV1,
+                recordTypeV1,
+                recordTypeV1,
+                Optional.empty());
+
+        revision1.finalizeDefinition();
+
+        // Revision 2: Remove method2, add method3 and replace an exception on method 1
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                1,
+                Optional.of(revision1));
+
+        ProviderRecordType recordTypeV2 = new ProviderRecordType("RecordType",
+                Optional.empty(),
+                0,
+                revision2,
+                false,
+                Optional.of(recordTypeV1));
+
+        ProviderExceptionType exceptionType2V2 = new ProviderExceptionType("E2",
+                Optional.empty(),
+                2,
+                revision2,
+                false,
+                Optional.empty());
+
+        ProviderField exceptionField2V2 = new ProviderField("e2",
+                Optional.empty(),
+                exceptionType2V2,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        ProviderService serviceV2 = new ProviderService("TestService",
+                Optional.empty(),
+                revision2,
+                Optional.of(serviceV1));
+
+        ProviderServiceOperation operation1V2 = new ProviderServiceOperation("method1",
+                Optional.empty(),
+                serviceV2,
+                recordTypeV2,
+                recordTypeV2,
+                Optional.of(operation1V1));
+
+        operation1V2.addThrownException(exceptionType2V2);
+
+        ProviderServiceOperation operation3V2 = new ProviderServiceOperation("method3",
+                Optional.empty(),
+                serviceV2,
+                recordTypeV2,
+                recordTypeV2,
+                Optional.empty());
+
+        revision2.finalizeDefinition();
+
+        // Revision 3: Add an exception to method 3, exists mainly to detect errors with respect to indirect
+        // predecessors (which do not exist in revision history of length 2)
+        ProviderApiDefinition revision3 = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                2,
+                Optional.empty());
+
+        ProviderRecordType recordTypeV3 = new ProviderRecordType("RecordType",
+                Optional.empty(),
+                0,
+                revision3,
+                false,
+                Optional.of(recordTypeV2));
+
+        ProviderExceptionType exceptionType2V3 = new ProviderExceptionType("E2",
+                Optional.empty(),
+                2,
+                revision3,
+                false,
+                Optional.empty());
+
+        new ProviderField("e2",
+                Optional.empty(),
+                exceptionType2V3,
+                StringType.unbounded(),
+                Optionality.MANDATORY,
+                false,
+                Collections.emptyList(),
+                Optional.of(exceptionField2V2));
+
+        ProviderService serviceV3 = new ProviderService("TestService",
+                Optional.empty(),
+                revision3,
+                Optional.of(serviceV2));
+
+        ProviderServiceOperation operation1V3 = new ProviderServiceOperation("method1",
+                Optional.empty(),
+                serviceV3,
+                recordTypeV3,
+                recordTypeV3,
+                Optional.of(operation1V2));
+
+        operation1V3.addThrownException(exceptionType2V3);
+
+        ProviderServiceOperation operation3V3 = new ProviderServiceOperation("method3",
+                Optional.empty(),
+                serviceV3,
+                recordTypeV3,
+                recordTypeV3,
+                Optional.empty());
+
+        operation3V3.addThrownException(exceptionType2V3);
+
+        revision3.finalizeDefinition();
+
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2, revision3);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        System.out.println(new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition));
+    }
+
 }
