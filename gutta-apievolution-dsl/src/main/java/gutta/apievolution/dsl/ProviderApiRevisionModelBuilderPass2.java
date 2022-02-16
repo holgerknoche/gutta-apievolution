@@ -87,7 +87,7 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
             ProviderField predecessorField = predecessor.get();
             Type predecessorFieldType = predecessorField.getType();
 
-            typeChange = ProviderField.isTypeChange(predecessorFieldType, type);
+            typeChange = ProviderTypeTools.isTypeChange(predecessorFieldType, type);
         }
 
         if (typeChange) {
