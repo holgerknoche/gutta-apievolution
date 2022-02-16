@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Annotation;
-import gutta.apievolution.core.apimodel.ExceptionType;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -53,7 +52,8 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append("]");
     }
 
-    private Void handleRecordLikeType(ProviderRecordType recordType, String exactType) {
+    @Override
+    public Void handleProviderRecordType(ProviderRecordType recordType) {
         StringBuilder builder = this.outputBuilder;
 
         builder.append(" ");
@@ -61,6 +61,8 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         if (recordType.isAbstract()) {
             builder.append("abstract ");
         }
+
+        String exactType = recordType.isException() ? "exception" : "record";
 
         builder.append(exactType);
         builder.append(" ");
@@ -84,16 +86,6 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(" }\n");
 
         return null;
-    }
-
-    @Override
-    public Void handleProviderRecordType(ProviderRecordType recordType) {
-        return this.handleRecordLikeType(recordType, "record");
-    }
-
-    @Override
-    public Void handleProviderExceptionType(ProviderExceptionType exceptionType) {
-        return this.handleRecordLikeType(exceptionType, "exception");
     }
 
     @Override
@@ -191,7 +183,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(") : ");
         builder.append(serviceOperation.getReturnType());
 
-        Set<ProviderExceptionType> thrownExceptions = serviceOperation.getThrownExceptions();
+        Set<ProviderRecordType> thrownExceptions = serviceOperation.getThrownExceptions();
         if (!thrownExceptions.isEmpty()) {
             builder.append(" throws ");
             builder.append(thrownExceptions);

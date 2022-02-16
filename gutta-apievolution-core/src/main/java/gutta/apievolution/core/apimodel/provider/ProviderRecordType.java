@@ -27,7 +27,7 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
     public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
                               final ProviderApiDefinition owner, final boolean abstractFlag,
                               final Optional<ProviderRecordType> predecessor) {
-        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty(), predecessor);
+        this(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty(), predecessor);
     }
 
     /**
@@ -44,7 +44,26 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
                               final ProviderApiDefinition owner, final boolean abstractFlag,
                               final Optional<ProviderRecordType> superType,
                               final Optional<ProviderRecordType> predecessor) {
-        super(publicName, internalName, typeId, owner, abstractFlag, superType);
+        this(publicName, internalName, typeId, owner, abstractFlag, false, superType, predecessor);
+    }
+
+
+    /**
+         * Creates a new record type from the given data.
+         * @param publicName The record type's public name
+         * @param internalName The record type's internal name, if any. Otherwise, the public name is assumed
+         * @param typeId The record type's type id
+         * @param owner The API definition that owns this record type
+         * @param abstractFlag Denotes whether this type is abstract
+         * @param exception Denotes whether this type is an exception
+         * @param superType This type's supertype, if any
+         * @param predecessor The type's predecessor, if any
+         */
+    public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
+                              final ProviderApiDefinition owner, final boolean abstractFlag, boolean exception,
+                              final Optional<ProviderRecordType> superType,
+                              final Optional<ProviderRecordType> predecessor) {
+        super(publicName, internalName, typeId, owner, abstractFlag, exception, superType);
 
         this.predecessor = predecessor;
         this.successor = Optional.empty();

@@ -795,11 +795,13 @@ class ModelMergerTest {
                 false,
                 Optional.empty());
 
-        ProviderExceptionType exceptionType1V1 = new ProviderExceptionType("E1",
+        ProviderRecordType exceptionType1V1 = new ProviderRecordType("E1",
                 Optional.empty(),
                 1,
                 revision1,
                 false,
+                true,
+                Optional.empty(),
                 Optional.empty());
 
         ProviderField exceptionField1V1 = new ProviderField("e1",
@@ -844,11 +846,13 @@ class ModelMergerTest {
                 false,
                 Optional.of(recordTypeV1));
 
-        ProviderExceptionType exceptionType2V2 = new ProviderExceptionType("E2",
+        ProviderRecordType exceptionType2V2 = new ProviderRecordType("E2",
                 Optional.empty(),
                 2,
                 revision2,
                 false,
+                true,
+                Optional.empty(),
                 Optional.empty());
 
         ProviderField exceptionField2V2 = new ProviderField("e2",
@@ -894,12 +898,14 @@ class ModelMergerTest {
                 false,
                 Optional.of(recordTypeV2));
 
-        ProviderExceptionType exceptionType2V3 = new ProviderExceptionType("E2",
+        ProviderRecordType exceptionType2V3 = new ProviderRecordType("E2",
                 Optional.empty(),
                 2,
                 revision3,
                 false,
-                Optional.empty());
+                true,
+                Optional.empty(),
+                Optional.of(exceptionType2V2));
 
         new ProviderField("e2",
                 Optional.empty(),

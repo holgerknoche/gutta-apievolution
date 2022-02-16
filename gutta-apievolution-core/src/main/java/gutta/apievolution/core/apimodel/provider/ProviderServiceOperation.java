@@ -8,8 +8,7 @@ import java.util.Optional;
  * Provider-specific implementation of a {@link ServiceOperation}.
  */
 public class ProviderServiceOperation extends ServiceOperation<ProviderService, ProviderServiceOperation,
-        ProviderRecordType, ProviderExceptionType> implements RevisionedElement<ProviderServiceOperation>,
-        ProviderApiDefinitionElement {
+        ProviderRecordType> implements RevisionedElement<ProviderServiceOperation>, ProviderApiDefinitionElement {
 
     private final Optional<ProviderServiceOperation> predecessor;
 

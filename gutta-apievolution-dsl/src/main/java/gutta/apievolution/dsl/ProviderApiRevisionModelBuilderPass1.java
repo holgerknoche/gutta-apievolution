@@ -12,7 +12,7 @@ import java.util.Set;
 
 class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<ProviderApiDefinition,
         ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
-        ProviderServiceOperation, ProviderExceptionType> implements ProviderApiRevisionModelBuilderPass {
+        ProviderServiceOperation> implements ProviderApiRevisionModelBuilderPass {
 
     private int revision;
 

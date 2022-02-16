@@ -191,6 +191,8 @@ public class ModelMerger {
                     inType.getTypeId(),
                     this.mergedDefinition,
                     inType.isAbstract(),
+                    inType.isException(),
+                    Optional.empty(),
                     Optional.empty());
         }
 

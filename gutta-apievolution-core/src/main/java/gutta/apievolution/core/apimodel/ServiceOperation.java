@@ -8,10 +8,9 @@ import java.util.*;
  *
  * @param <S> The concrete service type (e.g., provider or consumer) used by the operation type
  * @param <O> The concrete service operation type (e.g., provider or consumer)
- * @param <X> The concrete exception type (e.g., provider or consumer)
  */
-public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends ServiceOperation<S, O, R, X>,
-        R extends RecordType<?, R, ?>, X extends ExceptionType> extends AbstractApiDefinitionElement {
+public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends ServiceOperation<S, O, R>,
+        R extends RecordType<?, R, ?>> extends AbstractApiDefinitionElement {
 
     private final R returnType;
 
@@ -19,7 +18,7 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
 
     private final S owner;
 
-    private final Set<X> thrownExceptions = new LinkedHashSet<>();
+    private final Set<R> thrownExceptions = new LinkedHashSet<>();
 
     /**
      * Creates a new service operation from the given data.
@@ -71,7 +70,7 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
      * Returns the exceptions thrown by this operation.
      * @return see above
      */
-    public Set<X> getThrownExceptions() {
+    public Set<R> getThrownExceptions() {
         return this.thrownExceptions;
     }
 
@@ -79,8 +78,12 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
      * Adds a thrown exception to this service operation.
      * @param exceptionType The exception type to add
      */
-    public void addThrownException(X exceptionType) {
+    public void addThrownException(R exceptionType) {
         this.assertMutability();
+
+        if (!exceptionType.isException()) {
+            throw new InvalidApiDefinitionException(exceptionType + " is no exception type.");
+        }
 
         this.thrownExceptions.add(exceptionType);
     }
@@ -100,7 +103,7 @@ public abstract class ServiceOperation<S extends Service<?, S, O, R>, O extends 
      * @param that The service operation to compare against
      * @return Whether the states are equal
      */
-    protected boolean stateEquals(ServiceOperation<S, O, R, X> that) {
+    protected boolean stateEquals(ServiceOperation<S, O, R> that) {
         // No owner as to avoid cycles
         return super.stateEquals(that) &&
                 this.parameterType.equals(that.parameterType) &&

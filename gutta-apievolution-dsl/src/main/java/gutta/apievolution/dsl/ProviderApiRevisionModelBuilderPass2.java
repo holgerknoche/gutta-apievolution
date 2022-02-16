@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ProviderApiDefinition,
         ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
-        ProviderServiceOperation, ProviderExceptionType> implements ProviderApiRevisionModelBuilderPass {
+        ProviderServiceOperation> implements ProviderApiRevisionModelBuilderPass {
 
     private boolean ignoreReplacements;
 

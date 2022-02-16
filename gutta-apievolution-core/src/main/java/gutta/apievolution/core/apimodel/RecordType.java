@@ -16,6 +16,8 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     private final boolean abstractFlag;
 
+    private final boolean exception;
+
     private Optional<R> superType = Optional.empty();
 
     private final List<F> declaredFields;
@@ -40,7 +42,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      */
     protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
                          final boolean abstractFlag) {
-        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty());
+        this(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty());
     }
 
     /**
@@ -50,15 +52,17 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      * @param typeId The type id of this record type
      * @param owner The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
+     * @param exception A flag denoting whether this record type is an exception
      * @param superType An optional supertype for this record type
      */
     protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
-                      final boolean abstractFlag, final Optional<R> superType) {
+                      final boolean abstractFlag, boolean exception, final Optional<R> superType) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
         this.inheritedFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
+        this.exception = exception;
         this.fieldLookup = new HashMap<>();
         this.internalNameLookup = new HashMap<>();
 
@@ -98,6 +102,10 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
         if (this.superType.isPresent()) {
             throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
         }
+        if (this.isException() != superType.isException()) {
+            throw new InvalidApiDefinitionException("The super type " + superType + " of " + this +
+                    " must be an exception.");
+        }
 
         this.superType = Optional.of(superType);
         superType.registerSubType((R) this);
@@ -133,6 +141,14 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
      */
     public boolean isAbstract() {
         return this.abstractFlag;
+    }
+
+    /**
+     * Returns whether this record type is an exception.
+     * @return see above
+     */
+    public boolean isException() {
+        return this.exception;
     }
 
     /**
