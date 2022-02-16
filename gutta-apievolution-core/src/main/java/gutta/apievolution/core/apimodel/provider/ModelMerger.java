@@ -319,7 +319,7 @@ public class ModelMerger {
                 Type currentFieldType = field.getType();
                 Type successorType = optionalMappedSuccessor.get().getType();
 
-                typeChange = ProviderField.isTypeChange(currentFieldType, successorType);
+                typeChange = ProviderTypeTools.isTypeChange(currentFieldType, successorType);
             }
 
             ProviderField mappedField;
