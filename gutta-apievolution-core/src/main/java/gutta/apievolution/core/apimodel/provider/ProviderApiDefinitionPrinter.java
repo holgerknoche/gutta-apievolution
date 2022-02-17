@@ -2,8 +2,7 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Annotation;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
@@ -186,7 +185,10 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         Set<ProviderRecordType> thrownExceptions = serviceOperation.getThrownExceptions();
         if (!thrownExceptions.isEmpty()) {
             builder.append(" throws ");
-            builder.append(thrownExceptions);
+
+            List<ProviderRecordType> sortedExceptions = new ArrayList<>(thrownExceptions);
+            Collections.sort(sortedExceptions, Comparator.comparing(exception -> exception.getInternalName()));
+            builder.append(sortedExceptions);
         }
 
         builder.append("\n");

@@ -935,7 +935,7 @@ class ModelMergerTest {
                 serviceV3,
                 recordTypeV3,
                 recordTypeV3,
-                Optional.empty());
+                Optional.of(operation3V2));
 
         operation3V3.addThrownException(exceptionType2V3);
 
@@ -945,7 +945,24 @@ class ModelMergerTest {
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2, revision3);
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
-        System.out.println(new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition));
+        String expected = "api test [] {\n" +
+                " record RecordType(RecordType) {\n" +
+                " }\n" +
+                " exception E2(E2) {\n" +
+                "  optin e2(e2):string\n" +
+                " }\n" +
+                " exception E1(E1) {\n" +
+                "  optin e1(e1):string\n" +
+                " }\n" +
+                " service TestService(TestService) {\n" +
+                "  method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                "  method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
+                "  method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" +
+                " }\n" +
+                "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
     }
 
 }

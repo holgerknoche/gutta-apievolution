@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import static gutta.apievolution.core.apimodel.provider.ProviderTypeTools.isTypeChange;
+
 /**
  * The model merger builds a merged definition from a history of definitions. This merged definition is the basis for
  * internal provider representations, as it is essentially the union of the definition history.
@@ -246,6 +248,8 @@ public class ModelMerger {
 
         private ProviderEnumType currentEnumType;
 
+        private ProviderService currentService;
+
         public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
                                   ProviderTypeLookup typeLookup, ProviderApiDefinition mergedDefinition) {
             this.supportedRevisions = supportedRevisions;
@@ -319,7 +323,7 @@ public class ModelMerger {
                 Type currentFieldType = field.getType();
                 Type successorType = optionalMappedSuccessor.get().getType();
 
-                typeChange = ProviderTypeTools.isTypeChange(currentFieldType, successorType);
+                typeChange = isTypeChange(currentFieldType, successorType);
             }
 
             ProviderField mappedField;
@@ -465,9 +469,11 @@ public class ModelMerger {
 
             this.registerServiceMapping(service, mappedService);
 
+            this.currentService = mappedService;
             for (ProviderServiceOperation operation : service) {
                 operation.accept(this);
             }
+            this.currentService = null;
 
             return null;
         }
@@ -478,10 +484,60 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
-            // TODO Merge operations. Note that type changes can occur in two locations, and that exceptions must
-            // be joined
+            Optional<ProviderServiceOperation> optionalMappedPredecessor = serviceOperation.findFirstSuccessorMatching(
+                    this.mappedOperations::containsKey
+            );
+
+            boolean typeChange = false;
+            if (optionalMappedPredecessor.isPresent()) {
+                Type returnType = serviceOperation.getReturnType();
+                Type successorReturnType = optionalMappedPredecessor.get().getReturnType();
+
+                Type parameterType = serviceOperation.getParameterType();
+                Type successorParameterType = optionalMappedPredecessor.get().getReturnType();
+
+                typeChange = isTypeChange(returnType, successorReturnType) ||
+                        isTypeChange(parameterType, successorParameterType);
+            }
+
+            ProviderServiceOperation mappedOperation;
+            if (!optionalMappedPredecessor.isPresent() || typeChange) {
+                ProviderRecordType mappedReturnType = this.lookupType(serviceOperation.getReturnType());
+                ProviderRecordType mappedParameterType = this.lookupType(serviceOperation.getParameterType());
+
+                mappedOperation = new ProviderServiceOperation(
+                        serviceOperation.getPublicName(),
+                        serviceOperation.getOptionalInternalName(),
+                        this.currentService,
+                        mappedReturnType,
+                        mappedParameterType,
+                        Optional.empty()
+                );
+
+                // Add exceptions to the operation
+                serviceOperation.getThrownExceptions().forEach(
+                        exception -> mappedOperation.addThrownException(this.lookupType(exception))
+                );
+
+                this.mappedOperations.put(serviceOperation, mappedOperation);
+            } else {
+                mappedOperation = this.mappedOperations.get(optionalMappedPredecessor.get());
+
+                // Merge exceptions
+                for (ProviderRecordType exceptionType : serviceOperation.getThrownExceptions()) {
+                    ProviderRecordType mappedExceptionType = this.lookupType(exceptionType);
+                    mappedOperation.addThrownException(mappedExceptionType);
+                }
+            }
+
+            this.registerServiceOperationMapping(serviceOperation, mappedOperation);
 
             return null;
+        }
+
+        protected void registerServiceOperationMapping(ProviderServiceOperation originalOperation,
+                                                       ProviderServiceOperation mappedOperation) {
+            // Do nothing as of now
         }
 
         /**
