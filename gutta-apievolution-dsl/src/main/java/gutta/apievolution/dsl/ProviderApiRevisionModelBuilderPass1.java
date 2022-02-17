@@ -1,6 +1,7 @@
 package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.InvalidApiDefinitionException;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.provider.*;
@@ -47,7 +48,7 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
     protected ProviderRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
                                                   final Optional<String> internalName, final int typeId,
                                                   final ProviderApiDefinition currentRevision,
-                                                  final boolean abstractFlag) {
+                                                  final boolean abstractFlag, boolean exception) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderRecordType> predecessor;
@@ -71,7 +72,15 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
                 break;
         }
 
-        return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, predecessor);
+        predecessor.ifPresent(record -> {
+            if (record.isException() != exception) {
+                throw new APIResolutionException(context.refToken,
+                        "The predecessor of an exception may not be a record (or vice versa).");
+            }
+        });
+
+        return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
+                Optional.empty(), predecessor);
     }
 
     private Optional<ProviderRecordType> resolvePredecessorRecord(final String name, final boolean explicitReference,

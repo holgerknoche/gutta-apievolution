@@ -191,6 +191,11 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
             builder.append(sortedExceptions);
         }
 
+        serviceOperation.getPredecessor().ifPresent(pred -> {
+            builder.append(" <- ");
+            builder.append(pred.getPublicName());
+        });
+
         builder.append("\n");
 
         return null;

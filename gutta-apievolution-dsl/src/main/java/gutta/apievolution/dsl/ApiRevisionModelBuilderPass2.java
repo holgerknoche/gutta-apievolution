@@ -231,6 +231,11 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
                 parameterType);
         this.registerNewServiceOperation(operation);
 
+        // Add exceptions
+        for (ApiRevisionParser.UserDefinedTypeReferenceContext exceptionCtx : ctx.exceptions) {
+            operation.addThrownException((R) this.resolveType(exceptionCtx));
+        }
+
         return null;
     }
 

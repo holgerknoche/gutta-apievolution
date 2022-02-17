@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.util.IntegerRange;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -143,6 +144,19 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
                 .collect(Collectors.toList());
 
         return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
+    }
+
+    /**
+     * Loads a revision history from the given strings.
+     * @param apis The API definition strings to load the revisions from
+     * @return The loaded revision history
+     */
+    public static RevisionHistory loadHistoryFromStrings(String... apis) {
+        List<InputStream> inputStreams = Stream.of(apis)
+                .map(in -> new ByteArrayInputStream(in.getBytes()))
+                .collect(Collectors.toList());
+
+        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), false, inputStreams));
     }
 
 }

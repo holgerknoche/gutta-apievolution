@@ -1,6 +1,7 @@
 package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.dsl.parser.ApiRevisionLexer;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
@@ -115,8 +116,11 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A>, R extend
         // Handle modifiers, if any
         RecordTypeModifiers modifiers = this.determineModifiers(ctx);
 
+        // Determine whether we have an exception or a record
+        boolean exception = (ApiRevisionLexer.K_EXCEPTION == ctx.refToken.getType());
+
         R recordType = this.createRecordType(ctx, name, internalName, this.getNextTypeId(), this.currentRevision,
-                modifiers.isAbstract());
+                modifiers.isAbstract(), exception);
 
         this.registerNewRecordType(recordType);
 
@@ -125,7 +129,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A>, R extend
 
     protected abstract R createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
                                           final Optional<String> internalName, int typeId, final A currentRevision,
-                                          final boolean abstractFlag);
+                                          final boolean abstractFlag, boolean exception);
 
     @Override
     public Void visitEnumType(ApiRevisionParser.EnumTypeContext ctx) {

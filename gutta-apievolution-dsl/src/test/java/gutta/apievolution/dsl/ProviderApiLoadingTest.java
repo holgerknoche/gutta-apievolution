@@ -615,4 +615,70 @@ class ProviderApiLoadingTest {
         assertTrue(exception.getMessage().contains("1:10: mismatched"));
     }
 
+    /**
+     * Test case: API with exceptions.
+     */
+    @Test
+    void apiWithExceptions() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
+                "apis/revision-with-exceptions-1.api", "apis/revision-with-exceptions-2.api");
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
+                .orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
+                .orElseThrow(NoSuchElementException::new);
+
+        String expected1 = "api test [] {\n" +
+                " record Record(Record) {\n" +
+                " }\n" +
+                " exception E1(E1) {\n" +
+                "  mandatory e1(e1):string\n" +
+                " }\n" +
+                " exception E2(E2) {\n" +
+                "  mandatory e2(e2):string\n" +
+                " }\n" +
+                " service Service(Service) {\n" +
+                "  op1(op1) (Record@revision 0) : Record@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                " }\n" +
+                "}\n";
+        String actual1 = new ProviderApiDefinitionPrinter().printApiDefinition(revision1);
+        assertEquals(expected1, actual1);
+
+        String expected2 = "api test [] {\n" +
+                " record Record(Record) <- Record {\n" +
+                " }\n" +
+                " exception E1(E1) <- E1 {\n" +
+                "  mandatory e1(e1):string <- e1\n" +
+                "  mandatory e12(e12):string\n" +
+                " }\n" +
+                " exception E2(E2) <- E2 {\n" +
+                "  mandatory e2(e2):string <- e2\n" +
+                "  mandatory e12(e12):string\n" +
+                " }\n" +
+                " service Service(Service) {\n" +
+                "  op1(op1) (Record@revision 1) : Record@revision 1 throws [E1@revision 1, E2@revision 1] <- op1\n" +
+                " }\n" +
+                "}\n";
+        String actual2 = new ProviderApiDefinitionPrinter().printApiDefinition(revision2);
+        assertEquals(expected2, actual2);
+    }
+
+    /**
+     * Test case: Exceptions cannot be predecessors for records and vice versa.
+     */
+    @Test
+    void failOnExecutionRecordPredecessor() {
+        String revision1Def = "api test { exception Test {} }";
+        String revision2Def = "api test { record Test {} }";
+
+        // exception -> record
+        APIResolutionException exception1 = assertThrows(APIResolutionException.class,
+                () -> ProviderApiLoader.loadHistoryFromStrings(revision1Def, revision2Def));
+        assertTrue(exception1.getMessage().contains("may not be a record"));
+
+        // record -> exception
+        APIResolutionException exception2 = assertThrows(APIResolutionException.class,
+                () -> ProviderApiLoader.loadHistoryFromStrings(revision2Def, revision1Def));
+        assertTrue(exception2.getMessage().contains("may not be a record"));
+    }
+
 }

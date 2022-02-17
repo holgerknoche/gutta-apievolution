@@ -19,8 +19,7 @@ annotation:
 userDefinedTypeOrService:
 	enumType |
 	recordType |
-	service |
-	exceptionType
+	service
 ;
 
 replacesClause:
@@ -43,7 +42,7 @@ enumMember:
 
 recordType:
 	annotations+=annotation*
-    modifiers+=recordModifier* refToken='record' name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
+    modifiers+=recordModifier* refToken=(K_RECORD | K_EXCEPTION) name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
         fields+=field*
     '}'
 ;
@@ -99,13 +98,6 @@ serviceOperation:
    resultType=userDefinedTypeReference name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
 ;
 
-exceptionType:
-	annotations+=annotation*
-    modifier='abstract'? refToken='exception' name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
-        fields+=field*
-    '}'
-;
-
 qualifiedName:
 	parts+=identifier ('.' parts+=identifier)*
 ;
@@ -120,6 +112,10 @@ K_ABSTRACT:
     'abstract'
 ;
 
+K_EXCEPTION:
+    'exception'
+;
+
 K_INT32:
     'int32'
 ;
@@ -130,6 +126,10 @@ K_INT64:
 
 K_MANDATORY:
     'mandatory'
+;
+
+K_RECORD:
+    'record'
 ;
 
 K_OPTIN:

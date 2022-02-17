@@ -31,8 +31,9 @@ class ConsumerApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
     protected ConsumerRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
                                                   final Optional<String> internalName, final int typeId,
                                                   final ConsumerApiDefinition currentRevision,
-                                                  final boolean abstractFlag) {
-        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag);
+                                                  final boolean abstractFlag, boolean exception) {
+        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
+                Optional.empty());
     }
 
     @Override
