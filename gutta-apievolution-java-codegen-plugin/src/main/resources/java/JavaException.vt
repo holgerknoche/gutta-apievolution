@@ -1,9 +1,9 @@
 package ${type.packageName};
 
 /**
- * Interface for the API type ${type.name}.
+ * API exception type ${type.name}.
  */
-public interface ${type.name}#if (${type.superType}) extends ${type.superType.name} #end{
+public class ${type.name}#if (${type.superType}) extends ${type.superType.name} #else extends Exception #end{
 #foreach ($property in ${type.properties})
     /**
      * Returns the value of property ${property.name}.

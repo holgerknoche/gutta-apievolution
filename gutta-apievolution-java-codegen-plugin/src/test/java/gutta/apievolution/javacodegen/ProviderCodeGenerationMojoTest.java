@@ -6,6 +6,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.MojoRule;
@@ -109,6 +110,26 @@ public class ProviderCodeGenerationMojoTest {
                 "setPostalCode(java.math.BigDecimal):void",
                 "setStreet(String):void");
         assertEquals(expectedAddressMethods, actualAddressMethods);
+
+        ClassOrInterfaceDeclaration exception = compilationUnits.get("FormattingException")
+                .getClassByName("FormattingException").get();
+        List<String> actualExceptionMethods = listMethods(exception);
+
+        List<String> expectedExceptionMethods = Arrays.asList(
+                "getErrorCode():Integer",
+                "setErrorCode(Integer):void"
+        );
+        assertEquals(expectedExceptionMethods, actualExceptionMethods);
+
+        ClassOrInterfaceDeclaration serviceInterface = compilationUnits.get("CustomerService")
+                .getInterfaceByName("CustomerService").get();
+        List<String> actualServiceMethods = listMethods(serviceInterface);
+
+        List<String> expectedServiceMethods = Arrays.asList(
+                "formatAddress(test.customer.Address):test.customer.FormattedAddress throws test.customer.FormattingException",
+                "save(test.customer.Customer):test.customer.Customer"
+        );
+        assertEquals(expectedServiceMethods, actualServiceMethods);
     }
 
     private static List<String> listMethods(ClassOrInterfaceDeclaration declaration) {
@@ -139,6 +160,19 @@ public class ProviderCodeGenerationMojoTest {
 
         builder.append("):");
         builder.append(method.getType());
+
+        if (method.getThrownExceptions().isNonEmpty()) {
+            builder.append(" throws ");
+
+            Iterator<ReferenceType> exceptions = method.getThrownExceptions().iterator();
+            while (exceptions.hasNext()) {
+                ReferenceType exceptionType = exceptions.next();
+                builder.append(exceptionType.getElementType());
+                if (exceptions.hasNext()) {
+                    builder.append(',');
+                }
+            }
+        }
 
         return builder.toString();
     }

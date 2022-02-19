@@ -35,4 +35,9 @@ public class JavaEnum extends JavaUserDefinedType {
         }
     }
 
+    @Override
+    <R> R accept(JavaUserDefinedTypeVisitor<R> visitor) {
+        return visitor.handleJavaEnum(this);
+    }
+
 }

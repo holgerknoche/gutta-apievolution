@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A Service represents a group of coherent service operations.
@@ -46,6 +47,14 @@ public abstract class Service<A extends ApiDefinition<A>, S extends Service<A, S
     @Override
     public Iterator<O> iterator() {
         return this.declaredOperations.iterator();
+    }
+
+    /**
+     * Returns a stream of this service's operations.
+     * @return see above
+     */
+    public Stream<O> getOperations() {
+        return this.declaredOperations.stream();
     }
 
     void assertMutability() {

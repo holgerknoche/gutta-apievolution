@@ -20,6 +20,10 @@ api test.customer {
 		Address address
 	}
 
+	exception FormattingException {
+	    int32 errorCode
+	}
+
     record FormattedAddress {
         string address
     }
@@ -29,7 +33,7 @@ api test.customer {
 		Customer save(Customer)
 
 		// Format address
-		FormattedAddress formatAddress(Address)
+		FormattedAddress formatAddress(Address) throws FormattingException
 	}
 
 }

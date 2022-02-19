@@ -1,23 +1,24 @@
 package gutta.apievolution.javacodegen;
 
-import gutta.apievolution.core.apimodel.NumericType;
-import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.TypeVisitor;
-import gutta.apievolution.core.apimodel.UnboundedStringType;
+import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class JavaModelBuilder {
 
-    public Collection<JavaUserDefinedType> buildModelForApi(ProviderApiDefinition apiDefinition) {
+    public JavaModel buildModelForApi(ProviderApiDefinition apiDefinition) {
         ModelBuildingPass1 pass1 = new ModelBuildingPass1();
         Map<Type, JavaUserDefinedType> initialTypeMap = pass1.createRecordTypes(apiDefinition);
 
         ModelBuildingPass2 pass2 = new ModelBuildingPass2(initialTypeMap);
-        return pass2.buildModel(apiDefinition);
+        Collection<JavaUserDefinedType> udts =  pass2.buildModel(apiDefinition);
+
+        ModelBuildingPass3 pass3 = new ModelBuildingPass3(initialTypeMap);
+        List<JavaService> services = pass3.buildServices(apiDefinition);
+
+        return new JavaModel(udts, services);
     }
 
     private static class ModelBuildingPass1 implements ProviderApiDefinitionElementVisitor<Void> {
@@ -32,7 +33,14 @@ class JavaModelBuilder {
         @Override
         public Void handleProviderRecordType(ProviderRecordType recordType) {
             String packageName = recordType.getOwner().getName().toString();
-            JavaInterface targetClass = new JavaInterface(packageName, recordType.getInternalName());
+
+            JavaRecordLikeType targetClass;
+            if (recordType.isException()) {
+                targetClass = new JavaException(packageName, recordType.getInternalName());
+            } else {
+                targetClass = new JavaInterface(packageName, recordType.getInternalName());
+            }
+
             this.recordTypes.put(recordType, targetClass);
 
             return null;
@@ -64,6 +72,20 @@ class JavaModelBuilder {
         }
 
         @Override
+        public JavaType handleAtomicType(AtomicType atomicType) {
+            switch (atomicType) {
+                case INT_32:
+                    return JavaStandardTypes.INT_TYPE;
+
+                case INT_64:
+                    return JavaStandardTypes.LONG_TYPE;
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
         public JavaType handleNumericType(NumericType numericType) {
             return JavaStandardTypes.NUMERIC_TYPE;
         }
@@ -75,11 +97,16 @@ class JavaModelBuilder {
 
         @Override
         public JavaType handleProviderRecordType(ProviderRecordType recordType) {
-            JavaInterface targetClass = (JavaInterface) this.knownClasses.get(recordType);
+            JavaRecordLikeType targetClass = (JavaRecordLikeType) this.knownClasses.get(recordType);
 
             recordType.getSuperType().ifPresent(superType -> {
-                JavaInterface superInterface = (JavaInterface) this.knownClasses.get(superType);
-                targetClass.setSuperType(superInterface);
+                if (recordType.isException()) {
+                    JavaException superException = (JavaException) this.knownClasses.get(superType);
+                    ((JavaException) targetClass).setSuperType(superException);
+                } else {
+                    JavaInterface superInterface = (JavaInterface) this.knownClasses.get(superType);
+                    ((JavaInterface) targetClass).setSuperType(superInterface);
+                }
             });
 
             for (ProviderField field : recordType.getDeclaredFields()) {
@@ -105,6 +132,51 @@ class JavaModelBuilder {
 
             return targetClass;
         }
+    }
+
+    private static class ModelBuildingPass3 implements ProviderApiDefinitionElementVisitor<Void> {
+
+        private final Map<Type, JavaUserDefinedType> knownClasses;
+
+        private List<JavaService> services;
+
+        public ModelBuildingPass3(Map<Type, JavaUserDefinedType> knownClasses) {
+            this.knownClasses = knownClasses;
+        }
+
+        public List<JavaService> buildServices(ProviderApiDefinition apiDefinition) {
+            this.services = new ArrayList<>();
+            apiDefinition.forEach(element -> element.accept(this));
+            return this.services;
+        }
+
+        @Override
+        public Void handleProviderService(ProviderService service) {
+            String packageName = service.getOwner().getName().toString();
+            String name = service.getInternalName();
+
+            List<JavaServiceOperation> serviceOperations = service.getOperations()
+                    .map(this::convertServiceOperation)
+                    .collect(Collectors.toList());
+
+            JavaService javaService = new JavaService(packageName, name, serviceOperations);
+            this.services.add(javaService);
+
+            return null;
+        }
+
+        private JavaServiceOperation convertServiceOperation(ProviderServiceOperation operation) {
+            String name = operation.getInternalName();
+            JavaInterface resultType = (JavaInterface) this.knownClasses.get(operation.getReturnType());
+            JavaInterface parameterType = (JavaInterface) this.knownClasses.get(operation.getParameterType());
+
+            List<JavaException> thrownExceptions = operation.getThrownExceptions().stream()
+                    .map(exception -> (JavaException) this.knownClasses.get(exception))
+                    .collect(Collectors.toList());
+
+            return new JavaServiceOperation(name, resultType, parameterType, thrownExceptions);
+        }
+
     }
 
 }
