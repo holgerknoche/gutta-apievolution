@@ -1,148 +1,155 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.AtomicType;
-import gutta.apievolution.core.apimodel.Optionality;
-import gutta.apievolution.core.apimodel.QualifiedName;
-import gutta.apievolution.core.apimodel.StringType;
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.core.apimodel.provider.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test cases for definition resolution.
  */
 class DefinitionResolverTest {
 
+    /**
+     * Test case: Mapping on matching basic type fields.
+     */
     @Test
-    void testSimpleResolution() {
-        // Create the consumer revision
-        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("some.test"),
+    void matchingBasicTypeFields() {
+        // Consumer API definition
+        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"),
                 Collections.emptySet(),
-                1);
+                0);
 
-        ConsumerRecordType consumerType = new ConsumerRecordType("Test",
+        ConsumerRecordType consumerType = new ConsumerRecordType("TestType",
                 Optional.empty(),
                 0,
                 consumerApi,
                 false,
                 Optional.empty());
 
-        ConsumerField unchangedFieldConsumer = new ConsumerField("unchangedField",
+        new ConsumerField("int32Field",
                 Optional.empty(),
                 consumerType,
-                StringType.unbounded(),
-                Optionality.MANDATORY,
-                false);
-
-        // Create the provider revision history
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(),
-                1,
-                Optional.empty());
-
-        ProviderRecordType testTypeV1 = new ProviderRecordType("Test",
-                Optional.empty(),
-                0,
-                revision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
-
-        ProviderField unchangedFieldV1 = new ProviderField("unchangedField",
-                Optional.empty(),
-                testTypeV1,
-                StringType.unbounded(),
+                AtomicType.INT_32,
                 Optionality.MANDATORY);
 
-        ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField",
+        new ConsumerField("int64Field",
                 Optional.empty(),
-                testTypeV1,
-                AtomicType.INT_32,
-                Optionality.OPT_IN);
-
-        ProviderField deletedFieldV1 = new ProviderField("deletedField",
-                Optional.empty(),
-                testTypeV1,
-                StringType.unbounded(),
-                Optionality.OPTIONAL);
-
-        ProviderEnumType testEnumV1 = new ProviderEnumType("TestEnum",
-                Optional.empty(),
-                0,
-                revision1,
-                Optional.empty());
-
-        ProviderEnumMember unchangedMemberV1 = new ProviderEnumMember("UNCHANGED",
-                Optional.empty(),
-                testEnumV1,
-                Optional.empty());
-
-        ProviderEnumMember deletedMemberV1 = new ProviderEnumMember("DELETED",
-                Optional.empty(),
-                testEnumV1,
-                Optional.empty());
-
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(),
-                2,
-                Optional.empty());
-
-        ProviderRecordType testTypeV2 = new ProviderRecordType("Test",
-                Optional.of("TestInternal"),
-                0,
-                revision2,
-                false,
-                Optional.empty(),
-                Optional.of(testTypeV1));
-
-        ProviderField typeChangeFieldV2 = new ProviderField("typeChangeField",
-                Optional.of("newTypeChangeField"),
-                testTypeV2,
+                consumerType,
                 AtomicType.INT_64,
                 Optionality.MANDATORY);
 
-        ProviderField unchangedFieldV2 = new ProviderField("unchangedField",
+        new ConsumerField("unboundedStringField",
                 Optional.empty(),
-                testTypeV2,
-                StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(unchangedFieldV1),
-                Optional.of(unchangedFieldV1));
-
-        ProviderField addedFieldV2 = new ProviderField("addedField",
-                Optional.empty(),
-                testTypeV2,
+                consumerType,
                 StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderEnumType testEnumV2 = new ProviderEnumType("TestEnum",
+        new ConsumerField("boundedStringField",
                 Optional.empty(),
+                consumerType,
+                StringType.bounded(10),
+                Optionality.MANDATORY);
+
+        new ConsumerField("unboundedListField",
+                Optional.empty(),
+                consumerType,
+                ListType.unbounded(StringType.unbounded()),
+                Optionality.MANDATORY);
+
+        new ConsumerField("boundedListField",
+                Optional.empty(),
+                consumerType,
+                ListType.bounded(StringType.unbounded(), 10),
+                Optionality.MANDATORY);
+
+        new ConsumerField("numericField",
+                Optional.empty(),
+                consumerType,
+                NumericType.bounded(5, 0),
+                Optionality.MANDATORY);
+
+        consumerApi.finalizeDefinition();
+
+        // Provider API definition
+        ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
                 0,
-                revision2,
-                Optional.of(testEnumV1));
-
-        ProviderEnumMember unchangedMemberV2 = new ProviderEnumMember("UNCHANGED",
-                Optional.empty(),
-                testEnumV2,
-                Optional.of(unchangedMemberV1));
-
-        ProviderEnumMember addedMemberV2 = new ProviderEnumMember("ADDED",
-                Optional.empty(),
-                testEnumV2,
                 Optional.empty());
 
-        // Resolve the consumer API against the revision history
-        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
-        Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
-        new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
+        ProviderRecordType providerType = new ProviderRecordType("TestType",
+                Optional.empty(),
+                0,
+                providerApi,
+                false,
+                Optional.empty());
+
+        new ProviderField("int32Field",
+                Optional.empty(),
+                providerType,
+                AtomicType.INT_32,
+                Optionality.MANDATORY);
+
+        new ProviderField("int64Field",
+                Optional.empty(),
+                providerType,
+                AtomicType.INT_64,
+                Optionality.MANDATORY);
+
+        new ProviderField("unboundedStringField",
+                Optional.empty(),
+                providerType,
+                StringType.unbounded(),
+                Optionality.MANDATORY);
+
+        new ProviderField("boundedStringField",
+                Optional.empty(),
+                providerType,
+                StringType.bounded(10),
+                Optionality.MANDATORY);
+
+        new ProviderField("unboundedListField",
+                Optional.empty(),
+                providerType,
+                ListType.unbounded(StringType.unbounded()),
+                Optionality.MANDATORY);
+
+        new ProviderField("boundedListField",
+                Optional.empty(),
+                providerType,
+                ListType.bounded(StringType.unbounded(), 10),
+                Optionality.MANDATORY);
+
+        new ProviderField("numericField",
+                Optional.empty(),
+                providerType,
+                NumericType.bounded(5, 0),
+                Optionality.MANDATORY);
+
+        providerApi.finalizeDefinition();
+
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
+                supportedRevisions, consumerApi);
+
+        String expected = "TestType -> TestType@revision 0\n" +
+                " int32Field -> int32Field@TestType@revision 0\n" +
+                " int64Field -> int64Field@TestType@revision 0\n" +
+                " unboundedStringField -> unboundedStringField@TestType@revision 0\n" +
+                " boundedStringField -> boundedStringField@TestType@revision 0\n" +
+                " unboundedListField -> unboundedListField@TestType@revision 0\n" +
+                " boundedListField -> boundedListField@TestType@revision 0\n" +
+                " numericField -> numericField@TestType@revision 0\n";
+
+        String actual = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
+
+        assertEquals(expected, actual);
     }
 
     /**
@@ -257,6 +264,148 @@ class DefinitionResolverTest {
                 () -> resolver.resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi));
 
         assertTrue(exception.getMessage().contains("do not match"));
+    }
+
+    @Test
+    void mapEnumMembers() {
+        // Consumer API definition
+        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0);
+
+        ConsumerEnumType consumerEnum = new ConsumerEnumType("TestEnum",
+                Optional.empty(),
+                0,
+                consumerApi);
+
+        new ConsumerEnumMember("MEMBER_A",
+                Optional.empty(),
+                consumerEnum);
+
+        new ConsumerEnumMember("MEMBER_B",
+                Optional.empty(),
+                consumerEnum);
+
+        consumerApi.finalizeDefinition();
+
+        // Provider API definition
+        ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderEnumType providerEnum = new ProviderEnumType("TestEnum",
+                Optional.empty(),
+                0,
+                providerApi,
+                Optional.empty());
+
+        new ProviderEnumMember("MEMBER_A",
+                Optional.empty(),
+                providerEnum,
+                Optional.empty());
+
+        new ProviderEnumMember("MEMBER_B",
+                Optional.empty(),
+                providerEnum,
+                Optional.empty());
+
+        providerApi.finalizeDefinition();
+
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
+                supportedRevisions, consumerApi);
+
+        String expected = "TestEnum -> TestEnum\n" +
+                " MEMBER_A -> MEMBER_A\n" +
+                " MEMBER_B -> MEMBER_B\n";
+
+        String actual = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test case: Map services and operations.
+     */
+    @Test
+    void mapServicesAndOperations() {
+        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0);
+
+        ConsumerRecordType consumerRecord = new ConsumerRecordType("RecordType",
+                Optional.of("ConsumerRecordType"),
+                0,
+                consumerApi,
+                false);
+
+        ConsumerRecordType consumerException = new ConsumerRecordType("ExceptionType",
+                Optional.of("ConsumerExceptionType"),
+                1,
+                consumerApi,
+                false,
+                true,
+                Optional.empty());
+
+        ConsumerService consumerService = new ConsumerService("Service",
+                Optional.of("ConsumerService"),
+                consumerApi);
+
+        ConsumerServiceOperation consumerOperation = new ConsumerServiceOperation("operation",
+                Optional.of("consumerOperation"),
+                consumerService,
+                consumerRecord,
+                consumerRecord);
+
+        consumerOperation.addThrownException(consumerException);
+        consumerApi.finalizeDefinition();
+
+        ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"),
+                Collections.emptySet(),
+                0,
+                Optional.empty());
+
+        ProviderRecordType providerRecord = new ProviderRecordType("RecordType",
+                Optional.of("ProviderRecordType"),
+                0,
+                providerApi,
+                false,
+                Optional.empty());
+
+        ProviderRecordType providerException = new ProviderRecordType("ExceptionType",
+                Optional.of("ProviderExceptionType"),
+                1,
+                providerApi,
+                false,
+                true,
+                Optional.empty(),
+                Optional.empty());
+
+        ProviderService providerService = new ProviderService("Service",
+                Optional.of("ProviderService"),
+                providerApi,
+                Optional.empty());
+
+        ProviderServiceOperation providerOperation = new ProviderServiceOperation("operation",
+                Optional.of("providerOperation"),
+                providerService,
+                providerRecord,
+                providerRecord,
+                Optional.empty());
+
+        providerOperation.addThrownException(providerException);
+        providerApi.finalizeDefinition();
+
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
+                supportedRevisions, consumerApi);
+
+        // TODO Add assertions
     }
 
 }
