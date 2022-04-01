@@ -135,14 +135,14 @@ class ProviderApiLoadingTest {
                 expectedDefinition,
                 Optional.empty());
 
-        new ProviderServiceOperation("save",
+        new ProviderOperation("save",
                 Optional.empty(),
                 customerService,
                 customerType,
                 customerType,
                 Optional.empty());
 
-        new ProviderServiceOperation("formatAddress",
+        new ProviderOperation("formatAddress",
                 Optional.empty(),
                 customerService,
                 formattedAddressType,

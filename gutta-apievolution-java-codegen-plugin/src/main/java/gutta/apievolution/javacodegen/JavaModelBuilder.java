@@ -165,7 +165,7 @@ class JavaModelBuilder {
             return null;
         }
 
-        private JavaServiceOperation convertServiceOperation(ProviderServiceOperation operation) {
+        private JavaServiceOperation convertServiceOperation(ProviderOperation operation) {
             String name = operation.getInternalName();
             JavaInterface resultType = (JavaInterface) this.knownClasses.get(operation.getReturnType());
             JavaInterface parameterType = (JavaInterface) this.knownClasses.get(operation.getParameterType());

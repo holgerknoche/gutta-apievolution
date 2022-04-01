@@ -43,20 +43,11 @@ public interface ConsumerApiDefinitionElementVisitor<T> {
     }
 
     /**
-     * Performs the visitor operation for a service.
-     * @param service The service to operate on
+     * Performs the visitor operation for an operation.
+     * @param operation The service operation to operate on
      * @return The result of the operation
      */
-    default T handleConsumerService(ConsumerService service) {
-        return null;
-    }
-
-    /**
-     * Performs the visitor operation for a service operation.
-     * @param serviceOperation The service operation to operate on
-     * @return The result of the operation
-     */
-    default T handleConsumerServiceOperation(ConsumerServiceOperation serviceOperation) {
+    default T handleConsumerOperation(ConsumerOperation operation) {
         return null;
     }
 

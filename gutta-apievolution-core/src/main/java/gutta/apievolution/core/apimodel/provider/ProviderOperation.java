@@ -1,18 +1,18 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.ServiceOperation;
+import gutta.apievolution.core.apimodel.Operation;
 
 import java.util.Optional;
 
 /**
- * Provider-specific implementation of a {@link ServiceOperation}.
+ * Provider-specific implementation of an {@link Operation}.
  */
-public class ProviderServiceOperation extends ServiceOperation<ProviderService, ProviderServiceOperation,
-        ProviderRecordType> implements RevisionedElement<ProviderServiceOperation>, ProviderApiDefinitionElement {
+public class ProviderOperation extends Operation<ProviderApiDefinition, ProviderOperation,
+        ProviderRecordType> implements RevisionedElement<ProviderOperation>, ProviderApiDefinitionElement {
 
-    private final Optional<ProviderServiceOperation> predecessor;
+    private final Optional<ProviderOperation> predecessor;
 
-    private Optional<ProviderServiceOperation> successor;
+    private Optional<ProviderOperation> successor;
 
     /**
      * Creates a new service operation from the given data.
@@ -23,10 +23,10 @@ public class ProviderServiceOperation extends ServiceOperation<ProviderService, 
      * @param parameterType The operation's parameter type
      * @param predecessor The operation's predecessor, if any
      */
-    public ProviderServiceOperation(final String publicName, final Optional<String> internalName,
-                                    final ProviderService owner, final ProviderRecordType returnType,
+    public ProviderOperation(final String publicName, final Optional<String> internalName,
+                                    final ProviderApiDefinition owner, final ProviderRecordType returnType,
                                     final ProviderRecordType parameterType,
-                                    final Optional<ProviderServiceOperation> predecessor) {
+                                    final Optional<ProviderOperation> predecessor) {
         super(publicName, internalName, owner, returnType, parameterType);
 
         this.predecessor = predecessor;
@@ -36,22 +36,22 @@ public class ProviderServiceOperation extends ServiceOperation<ProviderService, 
     }
 
     @Override
-    public Optional<ProviderServiceOperation> getPredecessor() {
+    public Optional<ProviderOperation> getPredecessor() {
         return this.predecessor;
     }
 
     @Override
-    public Optional<ProviderServiceOperation> getSuccessor() {
+    public Optional<ProviderOperation> getSuccessor() {
         return this.successor;
     }
 
-    private void setSuccessor(final ProviderServiceOperation successor) {
+    private void setSuccessor(final ProviderOperation successor) {
         this.successor = Optional.of(successor);
     }
 
     @Override
     public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
-        return visitor.handleProviderServiceOperation(this);
+        return visitor.handleProviderOperation(this);
     }
 
     @Override
@@ -64,14 +64,14 @@ public class ProviderServiceOperation extends ServiceOperation<ProviderService, 
     public boolean equals(Object that) {
         if (this == that) {
             return true;
-        } else if (that instanceof ProviderServiceOperation) {
-            return this.stateEquals((ProviderServiceOperation) that);
+        } else if (that instanceof ProviderOperation) {
+            return this.stateEquals((ProviderOperation) that);
         } else {
             return false;
         }
     }
 
-    boolean stateEquals(ProviderServiceOperation that) {
+    boolean stateEquals(ProviderOperation that) {
         // No predecessors or successors to avoid cycles
         return super.stateEquals(that);
     }

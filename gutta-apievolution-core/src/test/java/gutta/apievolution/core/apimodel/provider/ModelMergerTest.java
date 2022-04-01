@@ -810,23 +810,18 @@ class ModelMergerTest {
                 StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderService serviceV1 = new ProviderService("TestService",
+        ProviderOperation operation1V1 = new ProviderOperation("method1",
                 Optional.empty(),
                 revision1,
-                Optional.empty());
-
-        ProviderServiceOperation operation1V1 = new ProviderServiceOperation("method1",
-                Optional.empty(),
-                serviceV1,
                 recordTypeV1,
                 recordTypeV1,
                 Optional.empty());
 
         operation1V1.addThrownException(exceptionType1V1);
 
-        new ProviderServiceOperation("method2",
+        new ProviderOperation("method2",
                 Optional.empty(),
-                serviceV1,
+                revision1,
                 recordTypeV1,
                 recordTypeV1,
                 Optional.empty());
@@ -861,23 +856,18 @@ class ModelMergerTest {
                 StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderService serviceV2 = new ProviderService("TestService",
+        ProviderOperation operation1V2 = new ProviderOperation("method1",
                 Optional.empty(),
                 revision2,
-                Optional.of(serviceV1));
-
-        ProviderServiceOperation operation1V2 = new ProviderServiceOperation("method1",
-                Optional.empty(),
-                serviceV2,
                 recordTypeV2,
                 recordTypeV2,
                 Optional.of(operation1V1));
 
         operation1V2.addThrownException(exceptionType2V2);
 
-        ProviderServiceOperation operation3V2 = new ProviderServiceOperation("method3",
+        ProviderOperation operation3V2 = new ProviderOperation("method3",
                 Optional.empty(),
-                serviceV2,
+                revision2,
                 recordTypeV2,
                 recordTypeV2,
                 Optional.empty());
@@ -916,23 +906,18 @@ class ModelMergerTest {
                 Collections.emptyList(),
                 Optional.of(exceptionField2V2));
 
-        ProviderService serviceV3 = new ProviderService("TestService",
+        ProviderOperation operation1V3 = new ProviderOperation("method1",
                 Optional.empty(),
                 revision3,
-                Optional.of(serviceV2));
-
-        ProviderServiceOperation operation1V3 = new ProviderServiceOperation("method1",
-                Optional.empty(),
-                serviceV3,
                 recordTypeV3,
                 recordTypeV3,
                 Optional.of(operation1V2));
 
         operation1V3.addThrownException(exceptionType2V3);
 
-        ProviderServiceOperation operation3V3 = new ProviderServiceOperation("method3",
+        ProviderOperation operation3V3 = new ProviderOperation("method3",
                 Optional.empty(),
-                serviceV3,
+                revision3,
                 recordTypeV3,
                 recordTypeV3,
                 Optional.of(operation3V2));
@@ -954,11 +939,9 @@ class ModelMergerTest {
                 " exception E1(E1) {\n" +
                 "  optin e1(e1):string\n" +
                 " }\n" +
-                " service TestService(TestService) {\n" +
-                "  method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
-                "  method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
-                "  method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" +
-                " }\n" +
+                "operation method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                "operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
+                "operation method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" +
                 "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);

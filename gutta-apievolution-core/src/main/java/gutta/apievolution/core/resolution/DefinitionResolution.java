@@ -5,7 +5,6 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 
 import java.util.Map;

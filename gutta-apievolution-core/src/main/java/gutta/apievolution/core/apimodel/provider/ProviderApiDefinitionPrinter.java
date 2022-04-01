@@ -152,37 +152,21 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
     }
 
     @Override
-    public Void handleProviderService(ProviderService service) {
+    public Void handleProviderOperation(ProviderOperation operation) {
         StringBuilder builder = this.outputBuilder;
 
-        builder.append(" service ");
-        builder.append(service.getPublicName());
+        builder.append("operation ");
+        builder.append(operation.getPublicName());
         builder.append("(");
-        builder.append(service.getInternalName());
-        builder.append(") {\n");
-
-        service.forEach(operation -> operation.accept(this));
-
-        builder.append(" }\n");
-        return null;
-    }
-
-    @Override
-    public Void handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
-        StringBuilder builder = this.outputBuilder;
-
-        builder.append("  ");
-        builder.append(serviceOperation.getPublicName());
-        builder.append("(");
-        builder.append(serviceOperation.getInternalName());
+        builder.append(operation.getInternalName());
         builder.append(")");
 
         builder.append(" (");
-        builder.append(serviceOperation.getParameterType());
+        builder.append(operation.getParameterType());
         builder.append(") : ");
-        builder.append(serviceOperation.getReturnType());
+        builder.append(operation.getReturnType());
 
-        Set<ProviderRecordType> thrownExceptions = serviceOperation.getThrownExceptions();
+        Set<ProviderRecordType> thrownExceptions = operation.getThrownExceptions();
         if (!thrownExceptions.isEmpty()) {
             builder.append(" throws ");
 
@@ -191,7 +175,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
             builder.append(sortedExceptions);
         }
 
-        serviceOperation.getPredecessor().ifPresent(pred -> {
+        operation.getPredecessor().ifPresent(pred -> {
             builder.append(" <- ");
             builder.append(pred.getPublicName());
         });

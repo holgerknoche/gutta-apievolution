@@ -28,9 +28,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     private final Map<String, UserDefinedType<A>> udtInternalNameLookup;
 
-    private final List<Service<A, ?, ?, ?>> services;
+    private final List<Operation<A, ?, ?>> operations;
 
-    private final Map<String, Service<A, ?, ?, ?>> serviceLookup;
+    private final Map<String, Operation<A, ?, ?>> operationLookup;
 
     /**
      * Creates a new API definition from the given data.
@@ -43,8 +43,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
         this.userDefinedTypes = new ArrayList<>();
         this.udtPublicNameLookup = new HashMap<>();
         this.udtInternalNameLookup = new HashMap<>();
-        this.services = new ArrayList<>();
-        this.serviceLookup = new HashMap<>();
+        this.operations = new ArrayList<>();
+        this.operationLookup = new HashMap<>();
     }
 
     /**
@@ -85,14 +85,14 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
-     * Adds the given service to this API definition. Note that no service may be part of two different API definitions.
-     * @param service The service to add
+     * Adds the given operation to this API definition.
+     * @param operation The operation to add
      */
-    protected void addService(final Service<A, ?, ?, ?> service) {
+    protected void addOperation(final Operation<A, ?, ?> operation) {
         this.assertMutability();
 
-        this.services.add(service);
-        this.serviceLookup.put(service.getPublicName(), service);
+        this.operations.add(operation);
+        this.operationLookup.put(operation.getPublicName(), operation);
     }
 
     /**
@@ -104,11 +104,11 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
-     * Returns the services provided by this API definition.
+     * Returns the operations provided by this API definition.
      * @return see above
      */
-    protected List<Service<A, ?, ?, ?>> getServices() {
-        return this.services;
+    protected List<Operation<A, ?, ?>> getOperations() {
+        return this.operations;
     }
 
     /**
@@ -134,14 +134,14 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
     }
 
     /**
-     * Resolves a name to a service provided by this API definition.
-     * @param <S> The expected type of the service
-     * @param name The name of the service to resolve
-     * @return The resolved service, if it exists
+     * Resolves a name to an operation provided by this API definition.
+     * @param <O> The expected type of the operation
+     * @param name The name of the operation to resolve
+     * @return The resolved operation, if it exists
      */
     @SuppressWarnings("unchecked")
-    public <S extends Service<A, ?, ?, ?>> Optional<S> resolveService(final String name) {
-        return (Optional<S>) Optional.ofNullable(this.serviceLookup.get(name));
+    public <O extends Operation<A, ?, ?>> Optional<O> resolveOperation(final String name) {
+        return (Optional<O>) Optional.ofNullable(this.operationLookup.get(name));
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
-        return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.services);
+        return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.operations);
     }
 
     /**
@@ -187,7 +187,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
                 this.name.equals(that.name) &&
                 this.annotations.equals(that.annotations) &&
                 this.userDefinedTypes.equals(that.userDefinedTypes) &&
-                this.services.equals(that.services);
+                this.operations.equals(that.operations);
     }
 
 }

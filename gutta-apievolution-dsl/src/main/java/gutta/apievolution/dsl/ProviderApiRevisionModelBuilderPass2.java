@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ProviderApiDefinition,
         ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
-        ProviderServiceOperation> implements ProviderApiRevisionModelBuilderPass {
+        ProviderOperation> implements ProviderApiRevisionModelBuilderPass {
 
     private boolean ignoreReplacements;
 
@@ -318,14 +318,14 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     }
 
     @Override
-    protected ProviderServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+    protected ProviderOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
                                                               final String name, final Optional<String> internalName,
                                                               final ProviderService owner,
                                                               final ProviderRecordType returnType,
                                                               final ProviderRecordType parameterType) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
-        Optional<ProviderServiceOperation> predecessor;
+        Optional<ProviderOperation> predecessor;
         switch (predecessorType) {
             case EXPLICIT:
                 // Resolve an explicit predecessor
@@ -346,10 +346,10 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                 break;
         }
 
-        return new ProviderServiceOperation(name, internalName, owner, returnType, parameterType, predecessor);
+        return new ProviderOperation(name, internalName, owner, returnType, parameterType, predecessor);
     }
 
-    private Optional<ProviderServiceOperation> resolvePredecessorServiceOperation(final String name,
+    private Optional<ProviderOperation> resolvePredecessorServiceOperation(final String name,
                                                                                   final boolean explicitReference,
                                                                                   final Token refToken,
                                                                                   final Token nameToken) {
@@ -374,7 +374,7 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
             }
         }
 
-        Optional<ProviderServiceOperation> predecessorOperation = predecessorService.resolveServiceOperation(name);
+        Optional<ProviderOperation> predecessorOperation = predecessorService.resolveServiceOperation(name);
 
         if (explicitReference && !predecessorOperation.isPresent()) {
             throw new APIResolutionException(nameToken, "No predecessor operation named '" + name + "'.");

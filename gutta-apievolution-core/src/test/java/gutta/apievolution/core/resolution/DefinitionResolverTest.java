@@ -350,13 +350,9 @@ class DefinitionResolverTest {
                 true,
                 Optional.empty());
 
-        ConsumerService consumerService = new ConsumerService("Service",
-                Optional.of("ConsumerService"),
-                consumerApi);
-
-        ConsumerServiceOperation consumerOperation = new ConsumerServiceOperation("operation",
+        ConsumerOperation consumerOperation = new ConsumerOperation("operation",
                 Optional.of("consumerOperation"),
-                consumerService,
+                consumerApi,
                 consumerRecord,
                 consumerRecord);
 
@@ -384,27 +380,26 @@ class DefinitionResolverTest {
                 Optional.empty(),
                 Optional.empty());
 
-        ProviderService providerService = new ProviderService("Service",
-                Optional.of("ProviderService"),
-                providerApi,
-                Optional.empty());
-
-        ProviderServiceOperation providerOperation = new ProviderServiceOperation("operation",
+        ProviderOperation providerOperation = new ProviderOperation("operation",
                 Optional.of("providerOperation"),
-                providerService,
+                providerApi,
                 providerRecord,
                 providerRecord,
                 Optional.empty());
 
         providerOperation.addThrownException(providerException);
         providerApi.finalizeDefinition();
+        
+        System.out.println(new ProviderApiDefinitionPrinter().printApiDefinition(providerApi));
 
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
                 supportedRevisions, consumerApi);
-
+        
+        System.out.println(new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
+        
         // TODO Add assertions
     }
 

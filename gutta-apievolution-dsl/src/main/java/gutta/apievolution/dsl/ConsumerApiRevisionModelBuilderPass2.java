@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition,
         ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
-        ConsumerServiceOperation> {
+        ConsumerOperation> {
 
     public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                         ConsumerApiDefinition apiDefinition) {
@@ -40,12 +40,12 @@ class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     }
 
     @Override
-    protected ConsumerServiceOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+    protected ConsumerOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
                                                               final String name, final Optional<String> internalName,
                                                               final ConsumerService owner,
                                                               ConsumerRecordType returnType,
                                                               ConsumerRecordType parameterType) {
-        return new ConsumerServiceOperation(name, internalName, owner, returnType, parameterType);
+        return new ConsumerOperation(name, internalName, owner, returnType, parameterType);
     }
 
     @Override

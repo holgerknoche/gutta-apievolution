@@ -1,15 +1,15 @@
 package gutta.apievolution.core.apimodel;
 
-import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
-import gutta.apievolution.core.apimodel.provider.ProviderService;
-import gutta.apievolution.core.apimodel.provider.ProviderServiceOperation;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 
 /**
  * Test cases for API model creation.
@@ -60,21 +60,16 @@ class ModelCreationTest {
                 Optional.empty(),
                 Optional.empty());
 
-        ProviderService service = new ProviderService("TestService",
+        new ProviderOperation("op1",
                 Optional.empty(),
                 apiDefinition,
-                Optional.empty());
-
-        new ProviderServiceOperation("op1",
-                Optional.empty(),
-                service,
                 returnType,
                 parameterType,
                 Optional.empty());
 
-        new ProviderServiceOperation("op2",
+        new ProviderOperation("op2",
                 Optional.empty(),
-                service,
+                apiDefinition,
                 inoutType,
                 inoutType,
                 Optional.empty());

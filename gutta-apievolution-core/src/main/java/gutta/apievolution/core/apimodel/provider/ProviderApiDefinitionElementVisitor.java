@@ -43,20 +43,11 @@ public interface ProviderApiDefinitionElementVisitor<T> {
     }
 
     /**
-     * Performs the visitor operation for a service.
-     * @param service The service to operate on
+     * Performs the visitor operation for an operation.
+     * @param operation The operation to operate on
      * @return The result of the operation
      */
-    default T handleProviderService(ProviderService service) {
-        return null;
-    }
-
-    /**
-     * Performs the visitor operation for a service operation.
-     * @param serviceOperation The service operation to operate on
-     * @return The result of the operation
-     */
-    default T handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
+    default T handleProviderOperation(ProviderOperation operation) {
         return null;
     }
 
