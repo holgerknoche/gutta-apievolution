@@ -155,7 +155,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
     public Void handleProviderOperation(ProviderOperation operation) {
         StringBuilder builder = this.outputBuilder;
 
-        builder.append("operation ");
+        builder.append(" operation ");
         builder.append(operation.getPublicName());
         builder.append("(");
         builder.append(operation.getInternalName());

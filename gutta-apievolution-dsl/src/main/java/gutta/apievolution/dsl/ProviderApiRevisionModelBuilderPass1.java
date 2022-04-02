@@ -1,10 +1,14 @@
 package gutta.apievolution.dsl;
 
 import gutta.apievolution.core.apimodel.Annotation;
-import gutta.apievolution.core.apimodel.InvalidApiDefinitionException;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
@@ -12,8 +16,8 @@ import java.util.Optional;
 import java.util.Set;
 
 class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<ProviderApiDefinition,
-        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
-        ProviderOperation> implements ProviderApiRevisionModelBuilderPass {
+        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderOperation> 
+        implements ProviderApiRevisionModelBuilderPass {
 
     private int revision;
 

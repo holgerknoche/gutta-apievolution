@@ -939,9 +939,9 @@ class ModelMergerTest {
                 " exception E1(E1) {\n" +
                 "  optin e1(e1):string\n" +
                 " }\n" +
-                "operation method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
-                "operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
-                "operation method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" +
+                " operation method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                " operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
+                " operation method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" +
                 "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);

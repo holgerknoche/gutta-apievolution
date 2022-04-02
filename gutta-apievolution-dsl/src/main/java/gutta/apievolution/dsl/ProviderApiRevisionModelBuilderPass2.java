@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
  * Specific revision model builder for consumer API definitions.
  */
 class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ProviderApiDefinition,
-        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderService,
-        ProviderOperation> implements ProviderApiRevisionModelBuilderPass {
+        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderOperation>
+        implements ProviderApiRevisionModelBuilderPass {
 
     private boolean ignoreReplacements;
 
@@ -252,75 +252,9 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     }
 
     @Override
-    protected ProviderService createService(final ApiRevisionParser.ServiceContext context, final String name,
-                                            final Optional<String> internalName, final ProviderApiDefinition owner) {
-        // Resolve predecessor, if applicable
-        PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
-        Optional<ProviderService> predecessor;
-        switch (predecessorType) {
-            case EXPLICIT:
-                // Resolve an explicit predecessor
-                String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorService(predecessorName, true,
-                        context.replaces.refToken, context.replaces.itemName.start);
-                break;
-
-            case IMPLICIT:
-                // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorService(name, false, context.refToken, context.name.start);
-                break;
-
-            case NONE:
-            default:
-                predecessor = Optional.empty();
-                break;
-        }
-
-        return new ProviderService(name, internalName, owner, predecessor);
-    }
-
-    private Optional<ProviderService> resolvePredecessorService(final String name, final boolean explicitReference,
-                                                                final Token refToken, final Token nameToken) {
-        // If replacements are ignored, just return "no predecessor"
-        if (this.ignoreReplacements) {
-            return Optional.empty();
-        }
-
-        ProviderApiDefinition predecessorRevision;
-
-        if (explicitReference) {
-            // If an explicit reference is made, a predecessor revision is required
-            predecessorRevision = this.previousRevision.orElseThrow(() -> new APIResolutionException(refToken,
-                    "Replaces clause specified, but no predecessor model is available."));
-        } else {
-            // If only an implicit reference is made, there may be no predecessor revision
-            if (this.previousRevision.isPresent()) {
-                predecessorRevision = this.previousRevision.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<Service<ProviderApiDefinition, ?, ?, ?>> optionalPredecessor =
-                predecessorRevision.resolveService(name);
-
-        if (!optionalPredecessor.isPresent()) {
-            throw new APIResolutionException(nameToken, "No predecessor element named '" + name + "'.");
-        }
-
-        Service<ProviderApiDefinition, ?, ?, ?> predecessorType = optionalPredecessor.get();
-        if (predecessorType instanceof ProviderService) {
-            return Optional.of((ProviderService) predecessorType);
-        } else {
-            throw new APIResolutionException(nameToken, "Predecessor element '" + name +
-                    "' exists, but is not a service.");
-        }
-    }
-
-    @Override
-    protected ProviderOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+    protected ProviderOperation createOperation(final ApiRevisionParser.OperationContext context,
                                                               final String name, final Optional<String> internalName,
-                                                              final ProviderService owner,
+                                                              final ProviderApiDefinition owner,
                                                               final ProviderRecordType returnType,
                                                               final ProviderRecordType parameterType) {
         // Resolve predecessor, if applicable
@@ -330,13 +264,13 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
             case EXPLICIT:
                 // Resolve an explicit predecessor
                 String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorServiceOperation(predecessorName, true,
+                predecessor = this.resolvePredecessorOperation(predecessorName, true,
                         context.replaces.refToken, context.replaces.itemName.start);
                 break;
 
             case IMPLICIT:
                 // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorServiceOperation(name, false, context.name.start,
+                predecessor = this.resolvePredecessorOperation(name, false, context.name.start,
                         context.name.start);
                 break;
 
@@ -346,35 +280,23 @@ class ProviderApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
                 break;
         }
 
-        return new ProviderOperation(name, internalName, owner, returnType, parameterType, predecessor);
+        return new ProviderOperation(this.handleAnnotations(context.annotations), name, internalName, owner, 
+                returnType, parameterType, predecessor);
     }
 
-    private Optional<ProviderOperation> resolvePredecessorServiceOperation(final String name,
-                                                                                  final boolean explicitReference,
-                                                                                  final Token refToken,
-                                                                                  final Token nameToken) {
+    private Optional<ProviderOperation> resolvePredecessorOperation(final String name,
+                                                                    final boolean explicitReference,
+                                                                    final Token refToken,
+                                                                    final Token nameToken) {
         // If replacements are ignored, just return "no predecessor"
         if (this.ignoreReplacements) {
             return Optional.empty();
         }
 
-        ProviderService predecessorService;
-
-        if (explicitReference) {
-            predecessorService = this.currentService.getPredecessor().orElseThrow(
-                    () -> new APIResolutionException(refToken,
-                            "Replaces clause specified, but no predecessor service is available.")
-            );
-        } else {
-            Optional<ProviderService> optionalPredecessor = this.currentService.getPredecessor();
-            if (optionalPredecessor.isPresent()) {
-                predecessorService = optionalPredecessor.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<ProviderOperation> predecessorOperation = predecessorService.resolveServiceOperation(name);
+        Optional<ProviderOperation> predecessorOperation = (this.previousRevision.isPresent()) ?
+                this.previousRevision.get().resolveOperation(name) :
+                Optional.empty();
+                
 
         if (explicitReference && !predecessorOperation.isPresent()) {
             throw new APIResolutionException(nameToken, "No predecessor operation named '" + name + "'.");

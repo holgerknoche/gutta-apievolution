@@ -17,13 +17,12 @@ import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
  * @param <F> The concrete field type
  * @param <E> The concrete enumeration type
  * @param <M> The concrete enumeration member type
- * @param <S> The concrete service type
  * @param <O> The concrete service operation type
  */
 abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>>
-        extends ApiRevisionModelBuilderPass<A, R, F, E, M, S, O> {
+        O extends Operation<A, O, R>>
+        extends ApiRevisionModelBuilderPass<A, R, F, E, M, O> {
 
     protected A currentRevision;
 
@@ -32,8 +31,6 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
     protected R currentRecordType;
 
     protected E currentEnumType;
-
-    protected S currentService;
 
     protected void augmentRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                    A apiDefinition,
@@ -196,28 +193,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
                                           Optional<String> internalName, E owner);
 
     @Override
-    public final Void visitService(final ApiRevisionParser.ServiceContext ctx) {
-        String name = identifierAsText(ctx.name);
-
-        // Determine internal name
-        Optional<String> internalName = determineInternalName(ctx.as);
-
-        S service = this.createService(ctx, name, internalName, this.currentRevision);
-        this.registerNewService(service);
-
-        this.currentService = service;
-        ctx.operations.forEach(this::visitServiceOperation);
-        this.currentService = null;
-
-        return null;
-    }
-
-    protected abstract S createService(ApiRevisionParser.ServiceContext context, String name,
-                                       Optional<String> internalName, A owner);
-
-    @Override
     @SuppressWarnings("unchecked")
-    public Void visitServiceOperation(final ApiRevisionParser.ServiceOperationContext ctx) {
+    public Void visitOperation(final ApiRevisionParser.OperationContext ctx) {
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
@@ -227,9 +204,9 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         R returnType = (R) this.resolveType(ctx.resultType);
         R parameterType = (R) this.resolveType(ctx.parameterType);
 
-        O operation = this.createServiceOperation(ctx, name, internalName, this.currentService, returnType,
+        O operation = this.createOperation(ctx, name, internalName, this.currentRevision, returnType,
                 parameterType);
-        this.registerNewServiceOperation(operation);
+        this.registerNewOperation(operation);
 
         // Add exceptions
         for (ApiRevisionParser.UserDefinedTypeReferenceContext exceptionCtx : ctx.exceptions) {
@@ -239,8 +216,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         return null;
     }
 
-    protected abstract O createServiceOperation(ApiRevisionParser.ServiceOperationContext context, String name,
-                                                Optional<String> internalName, S owner, R returnType, R parameterType);
+    protected abstract O createOperation(ApiRevisionParser.OperationContext context, String name,
+                                                Optional<String> internalName, A owner, R returnType, R parameterType);
 
     private Type resolveType(final ApiRevisionParser.TypeReferenceContext context) {
         return new TypeResolver().visit(context);

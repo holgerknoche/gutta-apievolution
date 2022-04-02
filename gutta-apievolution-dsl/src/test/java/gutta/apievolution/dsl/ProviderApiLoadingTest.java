@@ -1,16 +1,28 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.provider.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.NumericType;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.StringType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinitionPrinter;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProviderApiLoadingTest {
 
@@ -130,21 +142,16 @@ class ProviderApiLoadingTest {
                 Optionality.MANDATORY);
 
         // Customer service
-        ProviderService customerService = new ProviderService("CustomerService",
-                Optional.empty(),
-                expectedDefinition,
-                Optional.empty());
-
         new ProviderOperation("save",
                 Optional.empty(),
-                customerService,
+                expectedDefinition,
                 customerType,
                 customerType,
                 Optional.empty());
 
         new ProviderOperation("formatAddress",
                 Optional.empty(),
-                customerService,
+                expectedDefinition,
                 formattedAddressType,
                 addressType,
                 Optional.empty());
@@ -636,9 +643,7 @@ class ProviderApiLoadingTest {
                 " exception E2(E2) {\n" +
                 "  mandatory e2(e2):string\n" +
                 " }\n" +
-                " service Service(Service) {\n" +
-                "  op1(op1) (Record@revision 0) : Record@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
-                " }\n" +
+                " operation op1(op1) (Record@revision 0) : Record@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
                 "}\n";
         String actual1 = new ProviderApiDefinitionPrinter().printApiDefinition(revision1);
         assertEquals(expected1, actual1);
@@ -654,9 +659,7 @@ class ProviderApiLoadingTest {
                 "  mandatory e2(e2):string <- e2\n" +
                 "  mandatory e12(e12):string\n" +
                 " }\n" +
-                " service Service(Service) {\n" +
-                "  op1(op1) (Record@revision 1) : Record@revision 1 throws [E1@revision 1, E2@revision 1] <- op1\n" +
-                " }\n" +
+                " operation op1(op1) (Record@revision 1) : Record@revision 1 throws [E1@revision 1, E2@revision 1] <- op1\n" +
                 "}\n";
         String actual2 = new ProviderApiDefinitionPrinter().printApiDefinition(revision2);
         assertEquals(expected2, actual2);

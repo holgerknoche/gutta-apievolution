@@ -12,8 +12,6 @@ api test {
         string e12
     }
 
-    service Service {
-        Record op1(Record) throws E1, E2
-    }
+    operation op1(Record) : Record throws E1, E2
 
 }

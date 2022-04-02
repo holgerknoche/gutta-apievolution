@@ -3,7 +3,7 @@ grammar ApiRevision;
 apiDefinition:
 	annotations+=annotation*
     refToken='api' name=qualifiedName replaces=apiReplacesClause? '{'
-	    elements+=userDefinedTypeOrService*
+	    elements+=userDefinedTypeOrOperation*
 	'}'
 	EOF
 ;
@@ -16,10 +16,10 @@ annotation:
 	typeToken=ANNOTATION_NAME '(' value=STRING_LITERAL ')'
 ;
 	
-userDefinedTypeOrService:
+userDefinedTypeOrOperation:
 	enumType |
 	recordType |
-	service
+	operation
 ;
 
 replacesClause:
@@ -87,15 +87,9 @@ userDefinedTypeReference:
     typeName=identifier
 ;
 
-service:
-	annotations+=annotation*
-    refToken='service' name=identifier replaces=replacesClause? as=asClause? '{'
-        operations+=serviceOperation*
-    '}'
-;
-
-serviceOperation:
-   resultType=userDefinedTypeReference name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
+operation:
+    annotations+=annotation*
+    refToken='operation' name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ':' resultType=userDefinedTypeReference ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
 ;
 
 qualifiedName:

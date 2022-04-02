@@ -12,8 +12,7 @@ import java.util.Optional;
  * Specific revision model builder for consumer API definitions.
  */
 class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition,
-        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
-        ConsumerOperation> {
+        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerOperation> {
 
     public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
                                         ConsumerApiDefinition apiDefinition) {
@@ -34,15 +33,9 @@ class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<
     }
 
     @Override
-    protected ConsumerService createService(final ApiRevisionParser.ServiceContext context, final String name,
-                                            final Optional<String> internalName, final ConsumerApiDefinition owner) {
-        return new ConsumerService(name, internalName, owner);
-    }
-
-    @Override
-    protected ConsumerOperation createServiceOperation(final ApiRevisionParser.ServiceOperationContext context,
+    protected ConsumerOperation createOperation(final ApiRevisionParser.OperationContext context,
                                                               final String name, final Optional<String> internalName,
-                                                              final ConsumerService owner,
+                                                              final ConsumerApiDefinition owner,
                                                               ConsumerRecordType returnType,
                                                               ConsumerRecordType parameterType) {
         return new ConsumerOperation(name, internalName, owner, returnType, parameterType);

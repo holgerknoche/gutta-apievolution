@@ -25,16 +25,31 @@ public abstract class Operation<A extends ApiDefinition<A>, O extends Operation<
     /**
      * Creates a new service operation from the given data.
      * 
-     * @param publicName   The public name of the service operation
-     * @param internalName The internal name of the service operation, if
+     * @param publicName   The public name of the operation
+     * @param internalName The internal name of the operation, if
+     *                     applicable. If no internal name is given, the public name
+     *                     is assumed
+     * @param owner        The API definition that owns this operation
+     */
+    protected Operation(final String publicName, final Optional<String> internalName, final A owner, R returnType,
+            R parameterType) {
+        this(Collections.emptySet(), publicName, internalName, owner, returnType, parameterType);
+    }
+    
+    /**
+     * Creates a new service operation from the given data.
+     * 
+     * @param annotations  The annotations on this operation
+     * @param publicName   The public name of the operation
+     * @param internalName The internal name of the operation, if
      *                     applicable. If no internal name is given, the public name
      *                     is assumed
      * @param owner        The API definition that owns this operation
      */
     @SuppressWarnings("unchecked")
-    protected Operation(final String publicName, final Optional<String> internalName, final A owner, R returnType,
-            R parameterType) {
-        super(publicName, internalName);
+    protected Operation(Set<Annotation> annotations, final String publicName, final Optional<String> internalName, 
+            final A owner, R returnType, R parameterType) {
+        super(annotations, publicName, internalName);
 
         this.owner = owner;
         this.returnType = returnType;

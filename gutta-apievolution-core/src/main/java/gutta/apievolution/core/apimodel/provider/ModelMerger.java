@@ -453,8 +453,9 @@ public class ModelMerger {
                 ProviderRecordType mappedReturnType = this.lookupType(operation.getReturnType());
                 ProviderRecordType mappedParameterType = this.lookupType(operation.getParameterType());
 
-                mappedOperation = new ProviderOperation(operation.getPublicName(), operation.getOptionalInternalName(),
-                        this.mergedDefinition, mappedReturnType, mappedParameterType, Optional.empty());
+                mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(), 
+                        operation.getOptionalInternalName(), this.mergedDefinition, mappedReturnType, 
+                        mappedParameterType, Optional.empty());
 
                 // Add exceptions to the operation
                 operation.getThrownExceptions()
@@ -464,6 +465,8 @@ public class ModelMerger {
             } else {
                 mappedOperation = this.mappedOperations.get(optionalMappedPredecessor.get());
 
+                // TODO Merge annotations
+                
                 // Merge exceptions
                 for (ProviderRecordType exceptionType : operation.getThrownExceptions()) {
                     ProviderRecordType mappedExceptionType = this.lookupType(exceptionType);

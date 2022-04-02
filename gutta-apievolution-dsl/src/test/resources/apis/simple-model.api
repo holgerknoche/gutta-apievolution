@@ -24,12 +24,10 @@ api test.customer {
         string address
     }
 
-	service CustomerService {
-		// Save customer to database
-		Customer save(Customer)
+	// Save customer to database
+	operation save(Customer) : Customer
 
-		// Format address
-		FormattedAddress formatAddress(Address)
-	}
+	// Format address
+	operation formatAddress(Address) : FormattedAddress
 
 }

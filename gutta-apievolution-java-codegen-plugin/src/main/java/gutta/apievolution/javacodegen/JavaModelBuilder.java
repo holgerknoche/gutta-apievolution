@@ -136,36 +136,30 @@ class JavaModelBuilder {
 
     private static class ModelBuildingPass3 implements ProviderApiDefinitionElementVisitor<Void> {
 
+        private static final String DEFAULT_SERVICE_NAME = "Api";
+        
+        private static final String SERVICE_NAME_ANNOTATION = "ServiceName";
+        
         private final Map<Type, JavaUserDefinedType> knownClasses;
 
-        private List<JavaService> services;
+        private Map<String, JavaService> services;
 
+        private String packageName;
+        
         public ModelBuildingPass3(Map<Type, JavaUserDefinedType> knownClasses) {
             this.knownClasses = knownClasses;
         }
 
         public List<JavaService> buildServices(ProviderApiDefinition apiDefinition) {
-            this.services = new ArrayList<>();
+            this.services = new HashMap<>();
+            this.packageName = apiDefinition.getName().toString();
+            
             apiDefinition.forEach(element -> element.accept(this));
-            return this.services;
+            return new ArrayList<>(this.services.values());
         }
 
         @Override
-        public Void handleProviderService(ProviderService service) {
-            String packageName = service.getOwner().getName().toString();
-            String name = service.getInternalName();
-
-            List<JavaServiceOperation> serviceOperations = service.getOperations()
-                    .map(this::convertServiceOperation)
-                    .collect(Collectors.toList());
-
-            JavaService javaService = new JavaService(packageName, name, serviceOperations);
-            this.services.add(javaService);
-
-            return null;
-        }
-
-        private JavaServiceOperation convertServiceOperation(ProviderOperation operation) {
+        public Void handleProviderOperation(ProviderOperation operation) {
             String name = operation.getInternalName();
             JavaInterface resultType = (JavaInterface) this.knownClasses.get(operation.getReturnType());
             JavaInterface parameterType = (JavaInterface) this.knownClasses.get(operation.getParameterType());
@@ -174,7 +168,19 @@ class JavaModelBuilder {
                     .map(exception -> (JavaException) this.knownClasses.get(exception))
                     .collect(Collectors.toList());
 
-            return new JavaServiceOperation(name, resultType, parameterType, thrownExceptions);
+            Optional<Annotation> serviceAnnotation = operation.getAnnotation(SERVICE_NAME_ANNOTATION);
+            String serviceName = (serviceAnnotation.isPresent()) ?
+                    serviceAnnotation.get().getValue() :
+                    DEFAULT_SERVICE_NAME;
+            
+            JavaService javaService = this.services.computeIfAbsent(serviceName, 
+                    svcName -> new JavaService(this.packageName, svcName));
+            JavaServiceOperation javaOperation = new JavaServiceOperation(name, resultType, parameterType, 
+                    thrownExceptions);
+            
+            javaService.addOperation(javaOperation);
+            
+            return null;
         }
 
     }

@@ -9,8 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 class ConsumerApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<ConsumerApiDefinition,
-        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerService,
-        ConsumerOperation> {
+        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerOperation> {
 
     private int referencedRevision;
 

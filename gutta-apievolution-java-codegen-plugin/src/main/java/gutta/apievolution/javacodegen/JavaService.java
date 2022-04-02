@@ -1,5 +1,6 @@
 package gutta.apievolution.javacodegen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,11 +8,15 @@ import java.util.List;
  */
 public class JavaService extends JavaModelElement {
 
-    private List<JavaServiceOperation> operations;
+    private final List<JavaServiceOperation> operations;
 
-    JavaService(String packageName, String name, List<JavaServiceOperation> operations) {
+    JavaService(String packageName, String name) {
         super(packageName, name);
-        this.operations = operations;
+        this.operations = new ArrayList<>();
+    }
+    
+    void addOperation(JavaServiceOperation operation) {
+        this.operations.add(operation);
     }
 
     /**
