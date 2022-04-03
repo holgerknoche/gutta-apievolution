@@ -151,7 +151,7 @@ public class ModelMerger {
 
         @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
         private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType> 
-                Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
+            Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
 
             // Check if a successor of this type is already part of the merged model
             Optional<T> optionalMappedSuccessor = inType.findFirstSuccessorMatching(this.udtLookup::containsKey);
@@ -329,7 +329,8 @@ public class ModelMerger {
 
         private ProviderField reuseOrCreateField(ProviderField originalField) {
             Optional<String> internalName = (originalField.getPublicName().equals(originalField.getInternalName())) ?
-                    Optional.empty() : Optional.of(originalField.getInternalName());
+                    Optional.empty() :
+                    Optional.of(originalField.getInternalName());
             Optionality optionality = this.determineOptionalityForField(originalField);
             Type type = this.lookupType(originalField.getType());
 
@@ -453,8 +454,8 @@ public class ModelMerger {
                 ProviderRecordType mappedReturnType = this.lookupType(operation.getReturnType());
                 ProviderRecordType mappedParameterType = this.lookupType(operation.getParameterType());
 
-                mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(), 
-                        operation.getOptionalInternalName(), this.mergedDefinition, mappedReturnType, 
+                mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(),
+                        operation.getOptionalInternalName(), this.mergedDefinition, mappedReturnType,
                         mappedParameterType, Optional.empty());
 
                 // Add exceptions to the operation
@@ -465,8 +466,14 @@ public class ModelMerger {
             } else {
                 mappedOperation = this.mappedOperations.get(optionalMappedPredecessor.get());
 
-                // TODO Merge annotations
-                
+                // Merge annotations; the newest annotation of a type is kept
+                for (Annotation annotation : operation.getAnnotations()) {
+                    Optional<Annotation> existingAnnotation = mappedOperation.getAnnotation(annotation.getName());
+                    if (!existingAnnotation.isPresent()) {
+                        mappedOperation.addAnnotation(annotation);
+                    }
+                }
+
                 // Merge exceptions
                 for (ProviderRecordType exceptionType : operation.getThrownExceptions()) {
                     ProviderRecordType mappedExceptionType = this.lookupType(exceptionType);

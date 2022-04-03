@@ -202,7 +202,6 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<F> iterator() {
         return new ConcatenatedIterator<>(this.inheritedFields, this.declaredFields);
     }

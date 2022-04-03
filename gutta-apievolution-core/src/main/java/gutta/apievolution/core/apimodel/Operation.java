@@ -112,7 +112,10 @@ public abstract class Operation<A extends ApiDefinition<A>, O extends Operation<
         this.thrownExceptions.add(exceptionType);
     }
 
-    void assertMutability() {
+    /**
+     * Asserts that this operation is mutable, and throws an exception otherwise.
+     */
+    protected void assertMutability() {
         this.getOwner().assertMutability();
     }
 
