@@ -1,10 +1,17 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +47,15 @@ class DefinitionResolutionPrinter implements TypeVisitor<Void> {
             consumerType.accept(this);
         }
 
+        resolution.consumerOperations().forEach(consumerOperation -> {
+            ProviderOperation providerOperation = resolution.mapConsumerOperation(consumerOperation);
+            
+            builder.append(consumerOperation);
+            builder.append(" -> ");
+            builder.append(providerOperation);
+            builder.append("\n");
+        });
+        
         return builder.toString();
     }
 

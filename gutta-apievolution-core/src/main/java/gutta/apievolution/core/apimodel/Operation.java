@@ -11,7 +11,7 @@ import java.util.*;
  * @param <O> The concrete operation type (e.g., provider or consumer)
  * @param <R> The concrete record type
  */
-public abstract class Operation<A extends ApiDefinition<A>, O extends Operation<A, O, R>, 
+public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operation<A, O, R>, 
         R extends RecordType<A, R, ?>> extends AbstractApiDefinitionElement {
 
     private final A owner;

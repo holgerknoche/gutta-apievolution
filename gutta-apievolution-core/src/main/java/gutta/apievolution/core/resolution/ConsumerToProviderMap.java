@@ -3,9 +3,11 @@ package gutta.apievolution.core.resolution;
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
 import java.util.HashMap;
@@ -25,13 +27,17 @@ class ConsumerToProviderMap {
     private final Map<ConsumerField, ProviderField> consumerToProviderField;
 
     private final Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember;
+    
+    private final Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation;
 
     public ConsumerToProviderMap(Map<Type, Type> consumerToProviderType,
                                  Map<ConsumerField, ProviderField> consumerToProviderField,
-                                 Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember) {
+                                 Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
+                                 Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
         this.consumerToProviderType = consumerToProviderType;
         this.consumerToProviderField = consumerToProviderField;
         this.consumerToProviderMember = consumerToProviderMember;
+        this.consumerToProviderOperation = consumerToProviderOperation;
     }
 
     /**
@@ -47,8 +53,10 @@ class ConsumerToProviderMap {
                 field -> toMergedModelMap.mapField(field).orElse(null));
         Map<ConsumerEnumMember, ProviderEnumMember> composedMemberMap = composeMaps(this.consumerToProviderMember,
                 member -> toMergedModelMap.mapEnumMember(member).orElse(null));
+        Map<ConsumerOperation, ProviderOperation> composedOperationMap = composeMaps(this.consumerToProviderOperation,
+                operation -> toMergedModelMap.mapOperation(operation).orElse(null));
 
-        return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap);
+        return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap, composedOperationMap);
     }
 
     /**
@@ -119,6 +127,10 @@ class ConsumerToProviderMap {
     Stream<Type> consumerTypes() {
         return this.consumerToProviderType.keySet().stream();
     }
+    
+    Stream<ConsumerOperation> consumerOperations() {
+        return this.consumerToProviderOperation.keySet().stream();
+    }
 
     Type mapConsumerType(Type consumerType) {
         return this.consumerToProviderType.get(consumerType);
@@ -130,6 +142,10 @@ class ConsumerToProviderMap {
 
     ProviderEnumMember mapConsumerMember(ConsumerEnumMember consumerEnumMember) {
         return this.consumerToProviderMember.get(consumerEnumMember);
+    }
+    
+    ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
+        return this.consumerToProviderOperation.get(consumerOperation);
     }
 
     private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {

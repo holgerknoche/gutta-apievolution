@@ -15,12 +15,16 @@ public class ToMergedModelMap {
     private final Map<ProviderField, ProviderField> fieldMap;
 
     private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap;
+    
+    private final Map<ProviderOperation, ProviderOperation> operationMap;
 
     ToMergedModelMap(ProviderTypeLookup typeLookup, Map<ProviderField, ProviderField> fieldMap,
-                     Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap) {
+                     Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap,
+                     Map<ProviderOperation, ProviderOperation> operationMap) {
         this.typeLookup = typeLookup;
         this.fieldMap = fieldMap;
         this.enumMemberMap = enumMemberMap;
+        this.operationMap = operationMap;
     }
 
     /**
@@ -50,6 +54,15 @@ public class ToMergedModelMap {
      */
     public Optional<ProviderEnumMember> mapEnumMember(ProviderEnumMember member) {
         return Optional.ofNullable(this.enumMemberMap.get(member));
+    }
+    
+    /**
+     * Maps the given operation to its equivalent in the merged model.
+     * @param operation The operation to map
+     * @return The resulting operation, if it exists
+     */
+    public Optional<ProviderOperation> mapOperation(ProviderOperation operation) {
+        return Optional.ofNullable(this.operationMap.get(operation));
     }
 
 }

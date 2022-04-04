@@ -4,8 +4,10 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -48,6 +50,14 @@ public class DefinitionResolution {
      */
     public Stream<Type> consumerTypes() {
         return this.consumerToProviderMap.consumerTypes();
+    }
+    
+    /**
+     * Returns a stream of all mapped consumer operations.
+     * @return see above
+     */
+    public Stream<ConsumerOperation> consumerOperations() {
+        return this.consumerToProviderMap.consumerOperations();
     }
 
     /**
@@ -119,6 +129,15 @@ public class DefinitionResolution {
      */
     public ProviderEnumMember mapConsumerEnumMember(ConsumerEnumMember consumerEnumMember) {
         return this.consumerToProviderMap.mapConsumerMember(consumerEnumMember);
+    }
+    
+    /**
+     * Maps a given consumer operation to the corresponding provider operation.
+     * @param consumerOperation The provider operation to map
+     * @return The corresponding operation, if it exists
+     */
+    public ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
+        return this.consumerToProviderMap.mapConsumerOperation(consumerOperation);
     }
 
 }

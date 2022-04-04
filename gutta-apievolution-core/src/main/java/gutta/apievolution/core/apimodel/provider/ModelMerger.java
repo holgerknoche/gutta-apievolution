@@ -561,6 +561,8 @@ public class ModelMerger {
         private final Map<ProviderField, ProviderField> fieldMap = new HashMap<>();
 
         private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap = new HashMap<>();
+        
+        private final Map<ProviderOperation, ProviderOperation> operationMap = new HashMap<>();
 
         public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
                 ProviderApiDefinition mergedDefinition, ProviderApiDefinition referenceRevision) {
@@ -582,10 +584,18 @@ public class ModelMerger {
                 this.enumMemberMap.put(originalMember, mappedMember);
             }
         }
+        
+        @Override
+        protected void registerOperationMapping(ProviderOperation originalOperation, 
+                ProviderOperation mappedOperation) {
+            if (originalOperation.getOwner().equals(this.referenceRevision)) {
+                this.operationMap.put(originalOperation, mappedOperation);
+            }
+        }
 
         public ToMergedModelMap getToMergedModelMap() {
             ProviderTypeLookup restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
-            return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap);
+            return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap, this.operationMap);
         }
 
     }

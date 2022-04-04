@@ -390,17 +390,17 @@ class DefinitionResolverTest {
         providerOperation.addThrownException(providerException);
         providerApi.finalizeDefinition();
         
-        System.out.println(new ProviderApiDefinitionPrinter().printApiDefinition(providerApi));
-
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
                 supportedRevisions, consumerApi);
         
-        System.out.println(new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
+        String expectedResolution = "ExceptionType(ConsumerExceptionType) -> ProviderExceptionType@revision 0\n"
+                + "RecordType(ConsumerRecordType) -> ProviderRecordType@revision 0\n"
+                + "operation(consumerOperation) -> operation(providerOperation)\n";
         
-        // TODO Add assertions
+        assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
     }
 
 }

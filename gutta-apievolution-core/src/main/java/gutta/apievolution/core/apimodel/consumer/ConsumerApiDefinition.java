@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
  */
-public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition> {
+public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, ConsumerOperation> {
 
     private final int referencedRevision;
 
@@ -35,7 +35,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition> 
     public int getReferencedRevision() {
         return this.referencedRevision;
     }
-
+    
     @Override
     public int hashCode() {
         return super.hashCode() + this.referencedRevision;

@@ -13,8 +13,9 @@ import java.util.*;
  * which are set appropriately in the respective subtypes.<p/>
  *
  * @param <A> The concrete API definition type (e.g., provider or consumer).
+ * @param <O> The concrete operation type
  */
-public abstract class ApiDefinition<A extends ApiDefinition<A>> {
+public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Operation<A, O, ?>> {
 
     private ApiDefinitionState state = ApiDefinitionState.UNDER_CONSTRUCTION;
 
@@ -28,9 +29,9 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     private final Map<String, UserDefinedType<A>> udtInternalNameLookup;
 
-    private final List<Operation<A, ?, ?>> operations;
+    private final List<O> operations;
 
-    private final Map<String, Operation<A, ?, ?>> operationLookup;
+    private final Map<String, O> operationLookup;
 
     /**
      * Creates a new API definition from the given data.
@@ -88,7 +89,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * Adds the given operation to this API definition.
      * @param operation The operation to add
      */
-    protected void addOperation(final Operation<A, ?, ?> operation) {
+    protected void addOperation(final O operation) {
         this.assertMutability();
 
         this.operations.add(operation);
@@ -107,7 +108,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * Returns the operations provided by this API definition.
      * @return see above
      */
-    protected List<Operation<A, ?, ?>> getOperations() {
+    public List<O> getOperations() {
         return this.operations;
     }
 
@@ -135,13 +136,11 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
 
     /**
      * Resolves a name to an operation provided by this API definition.
-     * @param <O> The expected type of the operation
      * @param name The name of the operation to resolve
      * @return The resolved operation, if it exists
      */
-    @SuppressWarnings("unchecked")
-    public <O extends Operation<A, ?, ?>> Optional<O> resolveOperation(final String name) {
-        return (Optional<O>) Optional.ofNullable(this.operationLookup.get(name));
+    public Optional<O> resolveOperation(final String name) {
+        return Optional.ofNullable(this.operationLookup.get(name));
     }
 
     /**
@@ -182,7 +181,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A>> {
      * @param that The object to compare against
      * @return {@code True}, if the state matches, {@code false} otherwise
      */
-    protected boolean stateEquals(ApiDefinition<A> that) {
+    protected boolean stateEquals(ApiDefinition<A, O> that) {
         return (this.state == that.state) &&
                 this.name.equals(that.name) &&
                 this.annotations.equals(that.annotations) &&

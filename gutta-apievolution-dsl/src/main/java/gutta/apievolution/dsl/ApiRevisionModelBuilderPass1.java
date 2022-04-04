@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
-abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
+abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
         O extends Operation<A, O, R>>
         extends ApiRevisionModelBuilderPass<A, R, F, E, M, O> {

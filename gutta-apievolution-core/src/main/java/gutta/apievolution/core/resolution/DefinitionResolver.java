@@ -67,8 +67,11 @@ public class DefinitionResolver {
                 consumerToProviderType);
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = this.createMemberMapping(consumerApi,
                 consumerToProviderType);
+        Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = this.createOperationMapping(
+                consumerApi, providerApi);
 
-        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
+        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember,
+                consumerToProviderOperation);
     }
 
     private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
@@ -145,6 +148,23 @@ public class DefinitionResolver {
         }
 
         return consumerToProviderMember;
+    }
+    
+    private Map<ConsumerOperation, ProviderOperation> createOperationMapping(ConsumerApiDefinition consumerApi,
+            ProviderApiDefinition providerApi) {
+        Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = new HashMap<>();
+        
+        for (ConsumerOperation consumerOperation : consumerApi.getOperations()) {
+            String operationName = consumerOperation.getPublicName();
+            ProviderOperation providerOperation = providerApi.resolveOperation(operationName).orElseThrow(
+                    () -> new DefinitionResolutionException("Missing operation " + operationName + 
+                            " in provider API.")
+            );
+            
+            consumerToProviderOperation.put(consumerOperation, providerOperation);
+        }
+        
+        return consumerToProviderOperation;
     }
 
 }

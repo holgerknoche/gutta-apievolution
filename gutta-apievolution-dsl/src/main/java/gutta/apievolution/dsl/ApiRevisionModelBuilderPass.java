@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
+abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
         O extends Operation<A, O, R>>
         extends ApiRevisionBaseVisitor<Void> {

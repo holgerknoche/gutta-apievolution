@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
  */
-public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
+public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, ProviderOperation>
         implements RevisionedElement<ProviderApiDefinition> {
 
     private final int revision;

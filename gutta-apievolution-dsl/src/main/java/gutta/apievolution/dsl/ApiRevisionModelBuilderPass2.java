@@ -19,7 +19,7 @@ import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
  * @param <M> The concrete enumeration member type
  * @param <O> The concrete service operation type
  */
-abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
+abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
         O extends Operation<A, O, R>>
         extends ApiRevisionModelBuilderPass<A, R, F, E, M, O> {
