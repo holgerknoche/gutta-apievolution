@@ -118,11 +118,16 @@ public class DefinitionResolver {
                                 providerType)
                 );
 
+                this.assertMatchingFields(consumerField, providerField);
                 consumerToProviderField.put(consumerField, providerField);
             }
         }
 
         return consumerToProviderField;
+    }
+    
+    private void assertMatchingFields(ConsumerField consumerField, ProviderField providerField) {
+        // TODO
     }
 
     private Map<ConsumerEnumMember, ProviderEnumMember> createMemberMapping(ConsumerApiDefinition consumerApi,
@@ -143,11 +148,16 @@ public class DefinitionResolver {
                                 providerType)
                 );
 
+                this.assertMatchingMembers(consumerMember, providerMember);
                 consumerToProviderMember.put(consumerMember, providerMember);
             }
         }
 
         return consumerToProviderMember;
+    }
+    
+    private void assertMatchingMembers(ConsumerEnumMember consumerMember, ProviderEnumMember providerMember) {
+        // TODO
     }
     
     private Map<ConsumerOperation, ProviderOperation> createOperationMapping(ConsumerApiDefinition consumerApi,
@@ -161,10 +171,15 @@ public class DefinitionResolver {
                             " in provider API.")
             );
             
+            this.assertMatchingOperations(consumerOperation, providerOperation);
             consumerToProviderOperation.put(consumerOperation, providerOperation);
         }
         
         return consumerToProviderOperation;
+    }
+    
+    private void assertMatchingOperations(ConsumerOperation consumerOperation, ProviderOperation providerOperation) {
+        // TODO
     }
 
 }
