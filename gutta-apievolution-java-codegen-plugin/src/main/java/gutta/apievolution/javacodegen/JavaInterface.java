@@ -3,9 +3,11 @@ package gutta.apievolution.javacodegen;
 /**
  * Representation of a Java interface for code generation.
  *
- * <p/> <b>Note:</b> This class must be public for Velocity code generation to work.
+ * <p/>
+ * <b>Note:</b> This class must be public for Velocity code generation to work.
  */
-public class JavaInterface extends JavaRecordLikeType {
+public class JavaInterface
+        extends JavaRecordLikeType {
 
     private JavaInterface superType;
 
@@ -15,6 +17,7 @@ public class JavaInterface extends JavaRecordLikeType {
 
     /**
      * Returns the supertype of this interface, if present.
+     * 
      * @return The supertype or {@code null}
      */
     public JavaInterface getSuperType() {

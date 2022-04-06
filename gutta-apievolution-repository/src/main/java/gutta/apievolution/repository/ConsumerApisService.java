@@ -32,6 +32,7 @@ public class ConsumerApisService {
 
     /**
      * Reads a consumer API definition by its ID.
+     * 
      * @param id The ID of the definition
      * @return The definition, if it exists
      */
@@ -40,10 +41,12 @@ public class ConsumerApisService {
     }
 
     /**
-     * Creates a mapping based on the given consumer API definition for the desired format and mode.
-     * @param id The id of the consumer API definition to use
+     * Creates a mapping based on the given consumer API definition for the desired
+     * format and mode.
+     * 
+     * @param id     The id of the consumer API definition to use
      * @param format The format for which the mapping should be created
-     * @param type The type of mapping to be created
+     * @param type   The type of mapping to be created
      * @return The mapping in the appropriate representation
      */
     public byte[] mapConsumerApi(Integer id, String format, ApiMappingType type) {
@@ -55,34 +58,31 @@ public class ConsumerApisService {
         PersistentConsumerApiDefinition persistentConsumerApi = optionalConsumerApi.get();
         PersistentProviderApiDefinition persistentProviderApi = persistentConsumerApi.getReferencedRevision();
 
-        ConsumerApiDefinition consumerApiDefinition =
-                ConsumerApiLoader.loadFromString(persistentConsumerApi.getDefinitionText(),
-                        persistentProviderApi.getRevisionNumber());
-
+        ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader
+                .loadFromString(persistentConsumerApi.getDefinitionText(), persistentProviderApi.getRevisionNumber());
 
         String historyName = persistentProviderApi.getHistoryName();
         RevisionHistory revisionHistory = this.providerApisService.readRevisionHistory(historyName);
         Set<Integer> supportedRevisions = this.providerApisService.readSupportedRevisions(historyName);
 
-
-        DefinitionResolution definitionResolution = new DefinitionResolver()
-                .resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApiDefinition);
+        DefinitionResolution definitionResolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
+                supportedRevisions, consumerApiDefinition);
 
         ApiMappingRepresentationCreator mappingCreator = this.getMappingCreatorFor(format)
                 .orElseThrow(() -> new ApiProcessingException("No mapping creator for format " + format + "."));
 
         switch (type) {
-            case CONSUMER:
-                return mappingCreator.createConsumerSideMapping(definitionResolution);
+        case CONSUMER:
+            return mappingCreator.createConsumerSideMapping(definitionResolution);
 
-            case PROVIDER:
-                return mappingCreator.createProviderSideMapping(definitionResolution);
+        case PROVIDER:
+            return mappingCreator.createProviderSideMapping(definitionResolution);
 
-            case FULL:
-                return mappingCreator.createFullMapping(definitionResolution);
+        case FULL:
+            return mappingCreator.createFullMapping(definitionResolution);
 
-            default:
-                throw new ApiProcessingException("Unsupported mapping type " + type + ".");
+        default:
+            throw new ApiProcessingException("Unsupported mapping type " + type + ".");
         }
     }
 
@@ -96,15 +96,18 @@ public class ConsumerApisService {
 
     /**
      * Saves the given consumer API definition provided that it is consistent.
-     * @param referencedHistory The history name of the referenced provider definition
-     * @param referencedRevisionNumber The revision number of the referenced provider definition
-     * @param consumerName The name of the consumer
-     * @param apiDefinition The API definition to save
+     * 
+     * @param referencedHistory        The history name of the referenced provider
+     *                                 definition
+     * @param referencedRevisionNumber The revision number of the referenced
+     *                                 provider definition
+     * @param consumerName             The name of the consumer
+     * @param apiDefinition            The API definition to save
      * @return The persisted API definition
      */
     @Transactional
     public PersistentConsumerApiDefinition saveConsumerApi(String referencedHistory, int referencedRevisionNumber,
-                                                           String consumerName, String apiDefinition) {
+            String consumerName, String apiDefinition) {
         // Parse the given API definition
         ConsumerApiDefinition consumerDefinition;
         try {
@@ -114,14 +117,12 @@ public class ConsumerApisService {
         }
 
         // Try to load the referenced provider API definition
-        PersistentProviderApiDefinition referencedDefinition =
-                this.providerApisService.readApiRevision(referencedHistory, referencedRevisionNumber)
-                        .orElseThrow(() -> new ApiProcessingException("The referenced revision does not exist."));
+        PersistentProviderApiDefinition referencedDefinition = this.providerApisService
+                .readApiRevision(referencedHistory, referencedRevisionNumber)
+                .orElseThrow(() -> new ApiProcessingException("The referenced revision does not exist."));
 
         ProviderApiDefinition referencedRevision = ProviderApiLoader.loadFromString(
-                referencedDefinition.getRevisionNumber(),
-                referencedDefinition.getDefinitionText(),
-                true,
+                referencedDefinition.getRevisionNumber(), referencedDefinition.getDefinitionText(), true,
                 Optional.empty());
 
         // Attempt to resolve the two revisions against each other
@@ -142,8 +143,8 @@ public class ConsumerApisService {
 
             new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerDefinition);
         } catch (DefinitionResolutionException e) {
-            throw new ApiProcessingException("The definition is incompatible to the referenced provider definition: " +
-                    e.getMessage(), e);
+            throw new ApiProcessingException(
+                    "The definition is incompatible to the referenced provider definition: " + e.getMessage(), e);
         }
 
         // If no errors occur, the consumer definition can be saved

@@ -17,7 +17,7 @@ class ReadConsumerApiResponse {
     public final String definition;
 
     public ReadConsumerApiResponse(Integer id, LocalDateTime commitTime, String consumerName,
-                                   String referencedHistoryName, int referencedRevisionNumber, String definition) {
+            String referencedHistoryName, int referencedRevisionNumber, String definition) {
         this.id = id;
         this.commitTime = commitTime;
         this.consumerName = consumerName;

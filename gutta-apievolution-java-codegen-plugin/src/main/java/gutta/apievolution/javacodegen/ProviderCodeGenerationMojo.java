@@ -20,7 +20,8 @@ import java.util.stream.Stream;
  * Mojo for generating provider code from a revision of API definitions.
  */
 @Mojo(name = "generate-provider-code")
-public class ProviderCodeGenerationMojo extends AbstractMojo {
+public class ProviderCodeGenerationMojo
+        extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", readonly = true)
     MavenProject project;
@@ -65,9 +66,7 @@ public class ProviderCodeGenerationMojo extends AbstractMojo {
             this.getLog().debug("- " + file.getName());
         }
 
-        List<FileInputStream> streams = Stream.of(revisionFiles)
-                .map(this::toInputStream)
-                .collect(Collectors.toList());
+        List<FileInputStream> streams = Stream.of(revisionFiles).map(this::toInputStream).collect(Collectors.toList());
 
         return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
     }

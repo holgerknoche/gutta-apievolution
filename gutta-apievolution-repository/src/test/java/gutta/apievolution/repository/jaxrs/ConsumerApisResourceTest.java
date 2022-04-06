@@ -73,10 +73,8 @@ class ConsumerApisResourceTest {
 
     @Test
     void saveDefinitionSuccessfully() {
-        String requestJson = "{\"referencedHistoryName\": \"test\"," +
-                "\"referencedRevisionNumber\": 1," +
-                "\"consumerName\": \"testConsumer\"," +
-                "\"definition\": \"api test {}\"}";
+        String requestJson = "{\"referencedHistoryName\": \"test\"," + "\"referencedRevisionNumber\": 1," +
+                "\"consumerName\": \"testConsumer\"," + "\"definition\": \"api test {}\"}";
 
         final LocalDateTime testCommitTime = LocalDateTime.of(2022, 1, 1, 0, 0, 0, 0);
 

@@ -18,14 +18,12 @@ class TestApiDefinitionLoader {
 
     public static RevisionHistory loadRevisionHistory(String... fileNames) {
         ClassLoader classLoader = TestApiDefinitionLoader.class.getClassLoader();
-        List<InputStream> streams = Stream.of(fileNames)
-                .map(classLoader::getResourceAsStream)
-                .filter(Objects::nonNull)
+        List<InputStream> streams = Stream.of(fileNames).map(classLoader::getResourceAsStream).filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         try {
-            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader.loadHistoryFromStreams(
-                    IntegerRange.unbounded(), false, streams);
+            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader
+                    .loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
             RevisionHistory revisionHistory = new RevisionHistory(apiDefinitions);
 
             for (InputStream stream : streams) {
@@ -46,7 +44,8 @@ class TestApiDefinitionLoader {
         }
     }
 
-    private static class ApiLoadFailedException extends RuntimeException {
+    private static class ApiLoadFailedException
+            extends RuntimeException {
 
         public ApiLoadFailedException(Throwable cause) {
             super(cause);

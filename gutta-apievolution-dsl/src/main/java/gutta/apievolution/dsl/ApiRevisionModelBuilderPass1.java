@@ -13,8 +13,7 @@ import java.util.function.Supplier;
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
 abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
-        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        O extends Operation<A, O, R>>
+        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
         extends ApiRevisionModelBuilderPass<A, R, F, E, M, O> {
 
     private static final String MSG_ONLY_ONE_OPTIONALITY_MODIFIER = "Only one optionality modifier may be specified.";
@@ -26,7 +25,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     protected Optional<A> previousRevision;
 
     protected A buildApiDefinition(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                    final Optional<A> optionalPredecessor) {
+            final Optional<A> optionalPredecessor) {
         this.previousRevision = optionalPredecessor;
         apiRevisionSpec.accept(this);
 
@@ -38,7 +37,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     private static <T> Optional<T> setOnce(final Optional<T> currentValue, final T newValue, final Token referenceToken,
-                                           final Supplier<String> errorMessageSupplier) {
+            final Supplier<String> errorMessageSupplier) {
         if (currentValue.isPresent()) {
             throw new APIParseException(referenceToken, errorMessageSupplier.get());
         } else {
@@ -65,8 +64,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract A createRevision(ApiRevisionParser.ApiDefinitionContext context, QualifiedName name,
-                                        Set<Annotation> annotations, Optional<A> predecessor);
-
+            Set<Annotation> annotations, Optional<A> predecessor);
 
     private RecordTypeModifiers determineModifiers(final ApiRevisionParser.RecordTypeContext context) {
         Optional<Boolean> abstractFlag = Optional.empty();
@@ -77,28 +75,28 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
             Token modifierToken = modifierContext.start;
 
             switch (modifierToken.getType()) {
-                case K_ABSTRACT:
-                    abstractFlag = setOnce(abstractFlag, Boolean.TRUE, modifierToken,
-                            () -> "Abstract modifier may only be specified once.");
-                    break;
+            case K_ABSTRACT:
+                abstractFlag = setOnce(abstractFlag, Boolean.TRUE, modifierToken,
+                        () -> "Abstract modifier may only be specified once.");
+                break;
 
-                case K_OPTIONAL:
-                    optionality = setOnce(optionality, Optionality.OPTIONAL, modifierToken,
-                            () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
-                    break;
+            case K_OPTIONAL:
+                optionality = setOnce(optionality, Optionality.OPTIONAL, modifierToken,
+                        () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
+                break;
 
-                case K_OPTIN:
-                    optionality = setOnce(optionality, Optionality.OPT_IN, modifierToken,
-                            () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
-                    break;
+            case K_OPTIN:
+                optionality = setOnce(optionality, Optionality.OPT_IN, modifierToken,
+                        () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
+                break;
 
-                case K_MANDATORY:
-                    optionality = setOnce(optionality, Optionality.MANDATORY, modifierToken,
-                            () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
-                    break;
+            case K_MANDATORY:
+                optionality = setOnce(optionality, Optionality.MANDATORY, modifierToken,
+                        () -> MSG_ONLY_ONE_OPTIONALITY_MODIFIER);
+                break;
 
-                default:
-                    throw new IllegalArgumentException("Unsupported modifier type: " + modifierToken.getText());
+            default:
+                throw new IllegalArgumentException("Unsupported modifier type: " + modifierToken.getText());
             }
         }
 
@@ -128,8 +126,8 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract R createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-                                          final Optional<String> internalName, int typeId, final A currentRevision,
-                                          final boolean abstractFlag, boolean exception);
+            final Optional<String> internalName, int typeId, final A currentRevision, final boolean abstractFlag,
+            boolean exception);
 
     @Override
     public Void visitEnumType(ApiRevisionParser.EnumTypeContext ctx) {
@@ -145,7 +143,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract E createEnumType(ApiRevisionParser.EnumTypeContext context, String name,
-                                        Optional<String> internalName, int typeId, A owner);
+            Optional<String> internalName, int typeId, A owner);
 
     private static class RecordTypeModifiers {
 

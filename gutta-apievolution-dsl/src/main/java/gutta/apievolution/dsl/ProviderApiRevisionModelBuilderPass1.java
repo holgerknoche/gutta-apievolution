@@ -15,8 +15,10 @@ import org.antlr.v4.runtime.Token;
 import java.util.Optional;
 import java.util.Set;
 
-class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<ProviderApiDefinition,
-        ProviderRecordType, ProviderField, ProviderEnumType, ProviderEnumMember, ProviderOperation> 
+class ProviderApiRevisionModelBuilderPass1
+        extends
+        ApiRevisionModelBuilderPass1<ProviderApiDefinition, ProviderRecordType, ProviderField, ProviderEnumType,
+                ProviderEnumMember, ProviderOperation>
         implements ProviderApiRevisionModelBuilderPass {
 
     private int revision;
@@ -25,16 +27,18 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
 
     /**
      * Builds a provider API definition from the given spec object.
-     * @param revision The revision number to assign to the API definition
-     * @param apiRevisionSpec The spec object to build the revision from
-     * @param ignoreReplacements Flag whether to ignore replacement clauses
-     * @param optionalPredecessor An optional predecessor to resolve the new definition against
+     *
+     * @param revision            The revision number to assign to the API
+     *                            definition
+     * @param apiRevisionSpec     The spec object to build the revision from
+     * @param ignoreReplacements  Flag whether to ignore replacement clauses
+     * @param optionalPredecessor An optional predecessor to resolve the new
+     *                            definition against
      * @return The built and resolved definition
      */
     public ProviderApiDefinition buildProviderRevision(final int revision,
-                                                       final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                                       boolean ignoreReplacements,
-                                                       final Optional<ProviderApiDefinition> optionalPredecessor) {
+            final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec, boolean ignoreReplacements,
+            final Optional<ProviderApiDefinition> optionalPredecessor) {
         this.revision = revision;
         this.ignoreReplacements = ignoreReplacements;
 
@@ -43,37 +47,35 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
 
     @Override
     protected ProviderApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
-                                                   final QualifiedName name, final Set<Annotation> annotations,
-                                                   final Optional<ProviderApiDefinition> predecessor) {
+            final QualifiedName name, final Set<Annotation> annotations,
+            final Optional<ProviderApiDefinition> predecessor) {
         return new ProviderApiDefinition(name, annotations, this.revision, predecessor);
     }
 
     @Override
     protected ProviderRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-                                                  final Optional<String> internalName, final int typeId,
-                                                  final ProviderApiDefinition currentRevision,
-                                                  final boolean abstractFlag, boolean exception) {
+            final Optional<String> internalName, final int typeId, final ProviderApiDefinition currentRevision,
+            final boolean abstractFlag, boolean exception) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderRecordType> predecessor;
         switch (predecessorType) {
-            case EXPLICIT:
-                // Resolve an explicit predecessor
-                String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorRecord(predecessorName, true,
-                        context.replaces.refToken, context.replaces.itemName.start);
-                break;
+        case EXPLICIT:
+            // Resolve an explicit predecessor
+            String predecessorName = this.identifierAsText(context.replaces.itemName);
+            predecessor = this.resolvePredecessorRecord(predecessorName, true, context.replaces.refToken,
+                    context.replaces.itemName.start);
+            break;
 
-            case IMPLICIT:
-                // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorRecord(name, false, context.refToken,
-                        context.name.start);
-                break;
+        case IMPLICIT:
+            // Perform implicit predecessor resolution
+            predecessor = this.resolvePredecessorRecord(name, false, context.refToken, context.name.start);
+            break;
 
-            case NONE:
-            default:
-                predecessor = Optional.empty();
-                break;
+        case NONE:
+        default:
+            predecessor = Optional.empty();
+            break;
         }
 
         predecessor.ifPresent(record -> {
@@ -88,54 +90,49 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
     }
 
     private Optional<ProviderRecordType> resolvePredecessorRecord(final String name, final boolean explicitReference,
-                                                                  final Token refToken, final Token nameToken) {
+            final Token refToken, final Token nameToken) {
         return this.resolvePredecessorUDT(name, ProviderRecordType.class, explicitReference, refToken, nameToken,
                 "a record type");
     }
 
     @Override
     protected ProviderEnumType createEnumType(final ApiRevisionParser.EnumTypeContext context, final String name,
-                                              final Optional<String> internalName, final int typeId,
-                                              final ProviderApiDefinition owner) {
+            final Optional<String> internalName, final int typeId, final ProviderApiDefinition owner) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderEnumType> predecessor;
         switch (predecessorType) {
-            case EXPLICIT:
-                // Resolve an explicit predecessor
-                String predecessorName = this.identifierAsText(context.replaces.itemName);
-                predecessor = this.resolvePredecessorEnum(predecessorName, true,
-                        context.replaces.refToken, context.replaces.itemName.start);
-                break;
+        case EXPLICIT:
+            // Resolve an explicit predecessor
+            String predecessorName = this.identifierAsText(context.replaces.itemName);
+            predecessor = this.resolvePredecessorEnum(predecessorName, true, context.replaces.refToken,
+                    context.replaces.itemName.start);
+            break;
 
-            case IMPLICIT:
-                // Perform implicit predecessor resolution
-                predecessor = this.resolvePredecessorEnum(name, false, context.refToken,
-                        context.name.start);
-                break;
+        case IMPLICIT:
+            // Perform implicit predecessor resolution
+            predecessor = this.resolvePredecessorEnum(name, false, context.refToken, context.name.start);
+            break;
 
-            case NONE:
-            default:
-                predecessor = Optional.empty();
-                break;
+        case NONE:
+        default:
+            predecessor = Optional.empty();
+            break;
         }
 
         return new ProviderEnumType(name, internalName, typeId, owner, predecessor);
     }
 
     private Optional<ProviderEnumType> resolvePredecessorEnum(final String name, final boolean explicitReference,
-                                                              final Token refToken, final Token nameToken) {
+            final Token refToken, final Token nameToken) {
         return this.resolvePredecessorUDT(name, ProviderEnumType.class, explicitReference, refToken, nameToken,
                 "an enum type");
     }
 
     @SuppressWarnings("unchecked")
-    private <U extends UserDefinedType<?>> Optional<U> resolvePredecessorUDT(final String name,
-                                                                             final Class<U> udtClass,
-                                                                             final boolean explicitReference,
-                                                                             final Token refToken,
-                                                                             final Token nameToken,
-                                                                             final String typeErrorMessage) {
+    private <U extends UserDefinedType<?>> Optional<U> resolvePredecessorUDT(final String name, final Class<U> udtClass,
+            final boolean explicitReference, final Token refToken, final Token nameToken,
+            final String typeErrorMessage) {
         // If replacements are ignored, just return "no predecessor"
         if (this.ignoreReplacements) {
             return Optional.empty();
@@ -156,8 +153,8 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
             }
         }
 
-        Optional<UserDefinedType<ProviderApiDefinition>> optionalPredecessor =
-                predecessorRevision.resolveUserDefinedType(name);
+        Optional<UserDefinedType<ProviderApiDefinition>> optionalPredecessor = predecessorRevision
+                .resolveUserDefinedType(name);
 
         if (!optionalPredecessor.isPresent()) {
             if (explicitReference) {
@@ -171,8 +168,8 @@ class ProviderApiRevisionModelBuilderPass1 extends ApiRevisionModelBuilderPass1<
         if (udtClass.isAssignableFrom(predecessorType.getClass())) {
             return Optional.of((U) predecessorType);
         } else {
-            throw new APIResolutionException(nameToken, "Predecessor element '" + name + "' exists, but is not " +
-                    typeErrorMessage + ".");
+            throw new APIResolutionException(nameToken,
+                    "Predecessor element '" + name + "' exists, but is not " + typeErrorMessage + ".");
         }
     }
 

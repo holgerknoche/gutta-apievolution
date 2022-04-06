@@ -16,7 +16,7 @@ public class JavaServiceOperation {
     private final List<JavaException> thrownExceptions;
 
     JavaServiceOperation(String name, JavaInterface resultType, JavaInterface parameterType,
-                         List<JavaException> thrownExceptions) {
+            List<JavaException> thrownExceptions) {
         this.name = name;
         this.resultType = resultType;
         this.parameterType = parameterType;
@@ -25,6 +25,7 @@ public class JavaServiceOperation {
 
     /**
      * Returns this operation's name.
+     * 
      * @return see above
      */
     public String getName() {
@@ -33,6 +34,7 @@ public class JavaServiceOperation {
 
     /**
      * Returns this operation's result type.
+     * 
      * @return see above
      */
     public JavaInterface getResultType() {
@@ -41,6 +43,7 @@ public class JavaServiceOperation {
 
     /**
      * Returns this operation's parameter type.
+     * 
      * @return see above
      */
     public JavaInterface getParameterType() {
@@ -49,6 +52,7 @@ public class JavaServiceOperation {
 
     /**
      * Returns the exceptions thrown by this operation.
+     * 
      * @return see above
      */
     public List<JavaException> getThrownExceptions() {

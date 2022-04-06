@@ -11,33 +11,32 @@ import java.util.Optional;
 /**
  * Specific revision model builder for consumer API definitions.
  */
-class ConsumerApiRevisionModelBuilderPass2 extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition,
-        ConsumerRecordType, ConsumerField, ConsumerEnumType, ConsumerEnumMember, ConsumerOperation> {
+class ConsumerApiRevisionModelBuilderPass2
+        extends ApiRevisionModelBuilderPass2<ConsumerApiDefinition, ConsumerRecordType, ConsumerField, ConsumerEnumType,
+                ConsumerEnumMember, ConsumerOperation> {
 
     public void augmentConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                        ConsumerApiDefinition apiDefinition) {
+            ConsumerApiDefinition apiDefinition) {
         this.augmentRevision(apiRevisionSpec, apiDefinition, Optional.empty());
     }
 
     @Override
     protected ConsumerField createField(final ApiRevisionParser.FieldContext context, final String name,
-                                        final Optional<String> internalName, final Type type,
-                                        final Optionality optionality, final ConsumerRecordType owner) {
+            final Optional<String> internalName, final Type type, final Optionality optionality,
+            final ConsumerRecordType owner) {
         return new ConsumerField(name, internalName, owner, type, optionality, false);
     }
 
     @Override
     protected ConsumerEnumMember createEnumMember(final ApiRevisionParser.EnumMemberContext context, final String name,
-                                                  final Optional<String> internalName, final ConsumerEnumType owner) {
+            final Optional<String> internalName, final ConsumerEnumType owner) {
         return new ConsumerEnumMember(name, internalName, owner);
     }
 
     @Override
-    protected ConsumerOperation createOperation(final ApiRevisionParser.OperationContext context,
-                                                              final String name, final Optional<String> internalName,
-                                                              final ConsumerApiDefinition owner,
-                                                              ConsumerRecordType returnType,
-                                                              ConsumerRecordType parameterType) {
+    protected ConsumerOperation createOperation(final ApiRevisionParser.OperationContext context, final String name,
+            final Optional<String> internalName, final ConsumerApiDefinition owner, ConsumerRecordType returnType,
+            ConsumerRecordType parameterType) {
         return new ConsumerOperation(name, internalName, owner, returnType, parameterType);
     }
 

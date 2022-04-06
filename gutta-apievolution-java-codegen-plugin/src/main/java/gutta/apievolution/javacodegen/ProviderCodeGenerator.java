@@ -18,20 +18,23 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * This class derives the actual code model and generates the provider Java code.
+ * This class derives the actual code model and generates the provider Java
+ * code.
  */
 class ProviderCodeGenerator {
 
     /**
-     * Generates the provider code for the given definitions into the given output directory.
-     * @param supportedDefinitions The definitions to generate the sources for. It is expected that this
-     *                             list is ordered with respect to revisions, esp. that the latest revision
-     *                             is the last element of the list
-     * @param outputDirectory The directory to generate the sources into
+     * Generates the provider code for the given definitions into the given output
+     * directory.
+     * 
+     * @param supportedDefinitions The definitions to generate the sources for. It
+     *                             is expected that this list is ordered with
+     *                             respect to revisions, esp. that the latest
+     *                             revision is the last element of the list
+     * @param outputDirectory      The directory to generate the sources into
      */
     public void generateCode(List<ProviderApiDefinition> supportedDefinitions, File outputDirectory) {
-        JavaModel model = this.createCodeModel(
-                new RevisionHistory(supportedDefinitions));
+        JavaModel model = this.createCodeModel(new RevisionHistory(supportedDefinitions));
         this.generateSources(model, outputDirectory);
     }
 
@@ -63,7 +66,7 @@ class ProviderCodeGenerator {
     }
 
     private void generateCodeFor(JavaModelElement element, VelocityEngine engine, File outputDirectory,
-                                 CodeGenerator codeGenerator) {
+            CodeGenerator codeGenerator) {
 
         String packagePath = element.packageName.replace('.', '/');
         File packageDirectory = new File(outputDirectory, packagePath);

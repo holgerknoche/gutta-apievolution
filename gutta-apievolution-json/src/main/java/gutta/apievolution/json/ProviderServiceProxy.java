@@ -18,10 +18,12 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * A consumer invocation proxy transparently handles revisioned communication on the provider side, i.e. it transforms
- * the request to the internal representation and the response to the public representation.
+ * A consumer invocation proxy transparently handles revisioned communication on
+ * the provider side, i.e. it transforms the request to the internal
+ * representation and the response to the public representation.
  */
-public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy {
+public abstract class ProviderServiceProxy<P, R>
+        extends AbstractInvocationProxy {
 
     private final String serviceName;
 
@@ -37,15 +39,16 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
 
     /**
      * Creates a new proxy using the given data.
-     * @param serviceName The name of the proxied service
-     * @param revisionHistory The revision history to use
+     * 
+     * @param serviceName        The name of the proxied service
+     * @param revisionHistory    The revision history to use
      * @param supportedRevisions The set of supported revisions from the history
-     * @param parameterTypeName The internal name of the parameter type
-     * @param resultTypeName The internal name of the result type
-     * @param parameterType The actual parameter type for request handling
+     * @param parameterTypeName  The internal name of the parameter type
+     * @param resultTypeName     The internal name of the result type
+     * @param parameterType      The actual parameter type for request handling
      */
     public ProviderServiceProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
-                                String parameterTypeName, String resultTypeName, Class<P> parameterType) {
+            String parameterTypeName, String resultTypeName, Class<P> parameterType) {
         this.serviceName = serviceName;
         this.revisionHistory = revisionHistory;
         this.supportedRevisions = supportedRevisions;
@@ -56,6 +59,7 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
 
     /**
      * Returns the name of the proxied service.
+     * 
      * @return see above
      */
     public String getServiceName() {
@@ -63,15 +67,17 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
     }
 
     private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution,
-                                                     JsonNode representation) {
+            JsonNode representation) {
         return new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
     }
 
     /**
      * Invokes the underlying service method using the given data.
-     * @param consumerApiId The consumer API ID that was used for the request
-     * @param referencedRevision The provider revision referenced by the consumer API
-     * @param requestJson The request in JSON format
+     * 
+     * @param consumerApiId      The consumer API ID that was used for the request
+     * @param referencedRevision The provider revision referenced by the consumer
+     *                           API
+     * @param requestJson        The request in JSON format
      * @return The response in JSON format
      */
     public String invokeService(String consumerApiId, int referencedRevision, String requestJson) {
@@ -102,15 +108,18 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
 
     /**
      * Invokes the actual service method with the given parameter.
+     * 
      * @param parameter The parameter to pass to the service method
      * @return The result of the service method
      */
     protected abstract R invokeService(P parameter);
 
     /**
-     * Specific visitor for rewriting a public to a provider-internal representation.
+     * Specific visitor for rewriting a public to a provider-internal
+     * representation.
      */
-    private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
+    private static class PublicToInternalRewriter
+            extends AbstractPublicToInternalRewriter {
 
         private final DefinitionResolution definitionResolution;
 
@@ -136,8 +145,8 @@ public abstract class ProviderServiceProxy<P, R> extends AbstractInvocationProxy
                 JsonNode value = objectNode.remove(consumerField.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(),
-                            value));
+                    objectNode.set(field.getInternalName(),
+                            this.fork().rewritePublicToInternal(field.getType(), value));
                 }
             }
 

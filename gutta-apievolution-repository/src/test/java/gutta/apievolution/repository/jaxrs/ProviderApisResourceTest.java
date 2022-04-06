@@ -39,8 +39,7 @@ class ProviderApisResourceTest {
         testDefinition.setDefinitionText(testDefinitionText);
 
         ProviderApisService serviceMock = mock(ProviderApisService.class);
-        when(serviceMock.readApiRevision(testHistory, testRevisionNumber))
-                .thenReturn(Optional.of(testDefinition));
+        when(serviceMock.readApiRevision(testHistory, testRevisionNumber)).thenReturn(Optional.of(testDefinition));
 
         ProviderApisResource resource = new ProviderApisResource();
         resource.objectMapper = new ObjectMapperProvider().getObjectMapper();

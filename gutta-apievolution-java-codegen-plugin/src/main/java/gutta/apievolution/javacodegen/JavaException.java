@@ -3,7 +3,8 @@ package gutta.apievolution.javacodegen;
 /**
  * Representation of a Java exception for code generation.
  */
-public class JavaException extends JavaRecordLikeType {
+public class JavaException
+        extends JavaRecordLikeType {
 
     private JavaException superType;
 
@@ -13,6 +14,7 @@ public class JavaException extends JavaRecordLikeType {
 
     /**
      * Returns the supertype of this interface, if present.
+     * 
      * @return The supertype or {@code null}
      */
     public JavaException getSuperType() {

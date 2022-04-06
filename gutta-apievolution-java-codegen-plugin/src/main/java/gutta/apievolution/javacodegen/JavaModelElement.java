@@ -13,6 +13,7 @@ abstract class JavaModelElement {
 
     /**
      * Returns this type's package name.
+     * 
      * @return see above
      */
     public String getPackageName() {
@@ -21,6 +22,7 @@ abstract class JavaModelElement {
 
     /**
      * Returns this type's name.
+     * 
      * @return see above
      */
     public String getName() {

@@ -29,7 +29,8 @@ public class ProviderApisRepository {
 
     /**
      * Finds a provider API revision by its history name and revision number.
-     * @param historyName The desired revision's history name
+     * 
+     * @param historyName    The desired revision's history name
      * @param revisionNumber The desired revision's revision number
      * @return The definition, if it exists
      */
@@ -38,7 +39,7 @@ public class ProviderApisRepository {
 
         TypedQuery<PersistentProviderApiDefinition> query = em.createQuery(
                 "select def from PersistentProviderApiDefinition def " +
-                "where def.historyName = :historyName and def.revisionNumber = :revisionNumber",
+                        "where def.historyName = :historyName and def.revisionNumber = :revisionNumber",
                 PersistentProviderApiDefinition.class);
         query.setParameter("historyName", historyName);
         query.setParameter("revisionNumber", revisionNumber);
@@ -55,9 +56,10 @@ public class ProviderApisRepository {
 
     /**
      * Returns all revisions in the given history.
+     * 
      * @param historyName The name of the history
-     * @return The revisions in the history, ordered by revision number. If the history does not exist, an empty list
-     *         is returned
+     * @return The revisions in the history, ordered by revision number. If the
+     *         history does not exist, an empty list is returned
      */
     public List<PersistentProviderApiDefinition> findApiDefinitionsInHistory(String historyName) {
         EntityManager em = this.entityManager;
@@ -75,9 +77,12 @@ public class ProviderApisRepository {
     }
 
     /**
-     * Finds the revision numbers that were supported in the given history at the given time.
+     * Finds the revision numbers that were supported in the given history at the
+     * given time.
+     * 
      * @param historyName The name of the history
-     * @param atTime The time at which the supported revisions should be determined
+     * @param atTime      The time at which the supported revisions should be
+     *                    determined
      * @return A set of the supported revision numbers
      */
     public Set<Integer> findSupportedRevisions(String historyName, LocalDateTime atTime) {
@@ -92,13 +97,13 @@ public class ProviderApisRepository {
         query.setParameter("atTime", atTime);
 
         List<PersistentProviderApiDefinition> definitions = query.getResultList();
-        return definitions.stream()
-                .map(PersistentProviderApiDefinition::getRevisionNumber)
-                .collect(Collectors.toSet());
+        return definitions.stream().map(PersistentProviderApiDefinition::getRevisionNumber).collect(Collectors.toSet());
     }
 
     /**
-     * Saves the given definition to the repository. As part of this process, the commit timestamp is set.
+     * Saves the given definition to the repository. As part of this process, the
+     * commit timestamp is set.
+     * 
      * @param definition The definition to save
      */
     @Transactional

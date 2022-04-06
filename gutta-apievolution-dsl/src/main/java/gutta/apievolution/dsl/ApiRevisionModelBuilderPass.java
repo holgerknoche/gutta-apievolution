@@ -11,8 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
-        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        O extends Operation<A, O, R>>
+        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
         extends ApiRevisionBaseVisitor<Void> {
 
     private static String unquote(final String input) {
@@ -46,9 +45,7 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R exte
     }
 
     protected List<String> splitQualifiedName(final ApiRevisionParser.QualifiedNameContext context) {
-        return context.parts.stream()
-                .map(this::identifierAsText)
-                .collect(Collectors.toList());
+        return context.parts.stream().map(this::identifierAsText).collect(Collectors.toList());
     }
 
     protected Set<Annotation> handleAnnotations(final List<ApiRevisionParser.AnnotationContext> annotationContexts) {
@@ -66,7 +63,7 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R exte
 
         return annotations;
     }
-    
+
     protected void registerNewRecordType(final R recordType) {
         // Do nothing by default
     }

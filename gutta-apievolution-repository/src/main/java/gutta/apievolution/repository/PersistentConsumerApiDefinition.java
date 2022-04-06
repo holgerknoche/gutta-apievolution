@@ -26,6 +26,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Returns this definition's ID.
+     * 
      * @return see above
      */
     public Integer getId() {
@@ -34,6 +35,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Sets this definition's ID.
+     * 
      * @param id The ID to set
      */
     public void setId(Integer id) {
@@ -42,6 +44,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Returns the timestamp at which this definition was committed.
+     * 
      * @return see above
      */
     public LocalDateTime getCommitTime() {
@@ -50,6 +53,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Returns the consumer name of this definition.
+     * 
      * @return see above
      */
     public String getConsumerName() {
@@ -58,6 +62,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Sets the consumer name of this definition.
+     * 
      * @param consumerName The consumer name to set
      */
     public void setConsumerName(String consumerName) {
@@ -66,6 +71,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Sets the timestamp at which this definition was committed.
+     * 
      * @param commitTime The timestamp to set
      */
     public void setCommitTime(LocalDateTime commitTime) {
@@ -74,6 +80,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Returns the provider API revision referenced by this consumer definition.
+     * 
      * @return see above
      */
     public PersistentProviderApiDefinition getReferencedRevision() {
@@ -82,6 +89,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Sets the provider API revision referenced by this consumer definition.
+     * 
      * @param referencedRevision see above
      */
     public void setReferencedRevision(PersistentProviderApiDefinition referencedRevision) {
@@ -90,6 +98,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Returns the definition text of this consumer API definition.
+     * 
      * @return see above
      */
     public String getDefinitionText() {
@@ -98,6 +107,7 @@ public class PersistentConsumerApiDefinition {
 
     /**
      * Sets the definition text of this consumer API definition.
+     * 
      * @param definitionText The definition text to set
      */
     public void setDefinitionText(String definitionText) {

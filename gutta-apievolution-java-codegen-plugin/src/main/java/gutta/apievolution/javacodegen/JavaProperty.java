@@ -3,7 +3,8 @@ package gutta.apievolution.javacodegen;
 /**
  * Representation of a Java property for code generation.
  *
- * <p/> <b>Note:</b> This class must be public for Velocity code generation to work.
+ * <p/>
+ * <b>Note:</b> This class must be public for Velocity code generation to work.
  */
 public class JavaProperty {
 
@@ -18,6 +19,7 @@ public class JavaProperty {
 
     /**
      * Returns this property's name.
+     * 
      * @return see above
      */
     public String getName() {
@@ -26,6 +28,7 @@ public class JavaProperty {
 
     /**
      * Returns this property's name with capitalized first letter.
+     * 
      * @return see above
      */
     public String getCapitalizedName() {
@@ -34,6 +37,7 @@ public class JavaProperty {
 
     /**
      * Returns this property's type.
+     * 
      * @return see above
      */
     public JavaType getType() {

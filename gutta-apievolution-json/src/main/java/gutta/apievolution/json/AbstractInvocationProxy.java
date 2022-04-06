@@ -51,8 +51,8 @@ abstract class AbstractInvocationProxy {
             TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
-            EnumMember<?, ?> enumMember = enumType.findMemberByInternalName(value)
-                    .orElseThrow(NoSuchElementException::new);
+            EnumMember<?,
+                    ?> enumMember = enumType.findMemberByInternalName(value).orElseThrow(NoSuchElementException::new);
 
             return new TextNode(enumMember.getPublicName());
         }
@@ -121,8 +121,7 @@ abstract class AbstractInvocationProxy {
             TextNode textNode = (TextNode) representation;
             String value = textNode.asText();
 
-            EnumMember<?, ?> enumMember = enumType.resolveMember(value)
-                    .orElseThrow(NoSuchElementException::new);
+            EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElseThrow(NoSuchElementException::new);
 
             return new TextNode(enumMember.getInternalName());
         }

@@ -29,7 +29,8 @@ class ConsumerApisServiceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
-     * Test case: A consumer API is saved, and the referenced provider definition exists and matches.
+     * Test case: A consumer API is saved, and the referenced provider definition
+     * exists and matches.
      */
     @Test
     void saveWithMatchingProviderRevision() {
@@ -57,12 +58,12 @@ class ConsumerApisServiceTest {
                 "api test { record A { string fieldA as fieldX } }");
 
         // Assert that the persist method is actually invoked
-        verify(repositoryMock, times(1))
-                .saveConsumerApiDefinition(any(PersistentConsumerApiDefinition.class));
+        verify(repositoryMock, times(1)).saveConsumerApiDefinition(any(PersistentConsumerApiDefinition.class));
     }
 
     /**
-     * Test case: A consumer API shall be saved, but the referenced provider definition does not exist.
+     * Test case: A consumer API shall be saved, but the referenced provider
+     * definition does not exist.
      */
     @Test
     void saveWithMissingProviderRevision() {
@@ -70,21 +71,21 @@ class ConsumerApisServiceTest {
         final int testRevision = 0;
 
         ProviderApisService providerServiceMock = mock(ProviderApisService.class);
-        when(providerServiceMock.readApiRevision(any(String.class), any(int.class)))
-                .thenReturn(Optional.empty());
+        when(providerServiceMock.readApiRevision(any(String.class), any(int.class))).thenReturn(Optional.empty());
 
         ConsumerApisService service = new ConsumerApisService();
         service.providerApisService = providerServiceMock;
 
         ApiProcessingException exception = assertThrows(ApiProcessingException.class,
                 () -> service.saveConsumerApi(testHistoryName, testRevision, "testConsumer",
-                "api test { record A { string fieldA as fieldX } }"));
+                        "api test { record A { string fieldA as fieldX } }"));
 
         assertTrue(exception.getMessage().contains("revision does not exist"));
     }
 
     /**
-     * Test case: A consumer API shall be saved, but the referenced provider definition is incompatible.
+     * Test case: A consumer API shall be saved, but the referenced provider
+     * definition is incompatible.
      */
     @Test
     void saveWithIncompatibleProviderRevision() {
@@ -107,7 +108,7 @@ class ConsumerApisServiceTest {
 
         ApiProcessingException exception = assertThrows(ApiProcessingException.class,
                 () -> service.saveConsumerApi(testHistoryName, testRevision, "testConsumer",
-                "api test { record B { string fieldB } }"));
+                        "api test { record B { string fieldB } }"));
 
         assertTrue(exception.getMessage().contains("definition is incompatible"));
     }
@@ -139,7 +140,7 @@ class ConsumerApisServiceTest {
 
         ApiProcessingException exception = assertThrows(ApiProcessingException.class,
                 () -> service.saveConsumerApi(testHistoryName, testRevision, "testConsumer",
-                "api test { record A { string fieldA as fieldX } }"));
+                        "api test { record A { string fieldA as fieldX } }"));
 
         assertTrue(exception.getMessage().contains("is not supported"));
     }
@@ -174,8 +175,7 @@ class ConsumerApisServiceTest {
         ProviderApisService providerServiceMock = mock(ProviderApisService.class);
         when(providerServiceMock.readRevisionHistory("testHistory"))
                 .thenReturn(new RevisionHistory(providerDefinition));
-        when(providerServiceMock.readSupportedRevisions("testHistory"))
-                .thenReturn(Collections.singleton(0));
+        when(providerServiceMock.readSupportedRevisions("testHistory")).thenReturn(Collections.singleton(0));
 
         ConsumerApisService service = new ConsumerApisService();
         service.apisRepository = repositoryMock;
@@ -198,7 +198,8 @@ class ConsumerApisServiceTest {
     }
 
     /**
-     * Test case: Mapping of a consumer API against a provider revision in JSON for the consumer side.
+     * Test case: Mapping of a consumer API against a provider revision in JSON for
+     * the consumer side.
      */
     @Test
     void testJSONClientMappingForConsumer() {
@@ -215,7 +216,8 @@ class ConsumerApisServiceTest {
     }
 
     /**
-     * Test case: Mapping of a consumer API against a provider revision in JSON for the provider side.
+     * Test case: Mapping of a consumer API against a provider revision in JSON for
+     * the provider side.
      */
     @Test
     void testJSONClientMappingForProvider() {
@@ -232,8 +234,8 @@ class ConsumerApisServiceTest {
     }
 
     /**
-     * Test case: Full mapping (consumer-internal to provider-internal) of a consumer API against a provider revision
-     * in JSON.
+     * Test case: Full mapping (consumer-internal to provider-internal) of a
+     * consumer API against a provider revision in JSON.
      */
     @Test
     void testFullJSONClientMapping() {

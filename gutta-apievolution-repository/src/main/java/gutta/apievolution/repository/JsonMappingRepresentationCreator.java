@@ -122,8 +122,8 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
 
         @Override
         public ObjectNode handleRecordType(RecordType<?, ?, ?> consumerRecordType) {
-            RecordType<?, ?, ?> providerRecordType =
-                    (RecordType<?, ?, ?>) this.resolution.mapConsumerType(consumerRecordType);
+            RecordType<?, ?,
+                    ?> providerRecordType = (RecordType<?, ?, ?>) this.resolution.mapConsumerType(consumerRecordType);
 
             ObjectNode node = OBJECT_MAPPER.createObjectNode();
 
@@ -160,8 +160,8 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
             ArrayNode membersNode = OBJECT_MAPPER.createArrayNode();
             consumerEnumType.getDeclaredMembers().forEach(consumerMember -> {
                 ObjectNode memberNode = OBJECT_MAPPER.createObjectNode();
-                ProviderEnumMember providerMember = this.resolution.mapConsumerEnumMember(
-                        (ConsumerEnumMember) consumerMember);
+                ProviderEnumMember providerMember = this.resolution
+                        .mapConsumerEnumMember((ConsumerEnumMember) consumerMember);
 
                 memberNode.put("providerName", providerMember.getInternalName());
                 memberNode.put("consumerName", consumerMember.getInternalName());

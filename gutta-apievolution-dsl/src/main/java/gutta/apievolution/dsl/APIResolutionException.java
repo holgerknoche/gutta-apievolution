@@ -3,9 +3,11 @@ package gutta.apievolution.dsl;
 import org.antlr.v4.runtime.Token;
 
 /**
- * This exception denotes that an error has occurred during the resolution of an API definition.
+ * This exception denotes that an error has occurred during the resolution of an
+ * API definition.
  */
-public class APIResolutionException extends RuntimeException {
+public class APIResolutionException
+        extends RuntimeException {
 
     private static final long serialVersionUID = -2560140692689234150L;
 
@@ -13,7 +15,8 @@ public class APIResolutionException extends RuntimeException {
 
     /**
      * Creates a new exception from the given data.
-     * @param token The token at which the error occurred
+     *
+     * @param token   The token at which the error occurred
      * @param message The error message
      */
     public APIResolutionException(final Token token, final String message) {
@@ -24,9 +27,10 @@ public class APIResolutionException extends RuntimeException {
 
     /**
      * Creates a new message from the given data.
-     * @param token The token at which the error occurred
+     *
+     * @param token   The token at which the error occurred
      * @param message The error message
-     * @param cause The underlying cause for this exception
+     * @param cause   The underlying cause for this exception
      */
     public APIResolutionException(final Token token, final String message, final Throwable cause) {
         super(message, cause);
@@ -36,8 +40,10 @@ public class APIResolutionException extends RuntimeException {
 
     /**
      * Checks whether this exception has occurred at the given position.
-     * @param line The line to check this exception against
-     * @param positionInLine The position in the line to check this exception against
+     *
+     * @param line           The line to check this exception against
+     * @param positionInLine The position in the line to check this exception
+     *                       against
      * @return {@code True}, iff this exception occurred at the given position
      */
     public boolean isAtPosition(final int line, final int positionInLine) {

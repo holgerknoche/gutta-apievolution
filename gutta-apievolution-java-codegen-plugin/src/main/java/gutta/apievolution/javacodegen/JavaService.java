@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Representation of a Java service.
  */
-public class JavaService extends JavaModelElement {
+public class JavaService
+        extends JavaModelElement {
 
     private final List<JavaServiceOperation> operations;
 
@@ -14,13 +15,14 @@ public class JavaService extends JavaModelElement {
         super(packageName, name);
         this.operations = new ArrayList<>();
     }
-    
+
     void addOperation(JavaServiceOperation operation) {
         this.operations.add(operation);
     }
 
     /**
      * Returns this service's operations.
+     * 
      * @return see above
      */
     public List<JavaServiceOperation> getOperations() {

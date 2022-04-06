@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-abstract class JavaRecordLikeType extends JavaUserDefinedType {
+abstract class JavaRecordLikeType
+        extends JavaUserDefinedType {
 
     private final List<JavaProperty> properties = new ArrayList<>();
 
@@ -17,6 +18,7 @@ abstract class JavaRecordLikeType extends JavaUserDefinedType {
 
     /**
      * Returns the properties for which accessors are required in this interface.
+     * 
      * @return see above
      */
     public List<JavaProperty> getProperties() {

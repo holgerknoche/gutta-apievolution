@@ -33,334 +33,151 @@ class ProviderApiLoadingTest {
     void testSimpleAPIDefinition() {
         // Build the expected API definition with all expected elements
         ProviderApiDefinition expectedDefinition = new ProviderApiDefinition(QualifiedName.of("test.customer"),
-                Collections.emptySet(),
-                0,
-                Optional.empty());
-
+                Collections.emptySet(), 0, Optional.empty());
 
         // Address type
-        ProviderRecordType addressType = new ProviderRecordType("Address",
-                Optional.empty(),
-                0,
-                expectedDefinition,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType addressType = new ProviderRecordType("Address", Optional.empty(), 0, expectedDefinition,
+                false, Optional.empty(), Optional.empty());
 
-        new ProviderField("street",
-                Optional.empty(),
-                addressType,
-                StringType.unbounded(),
+        new ProviderField("street", Optional.empty(), addressType, StringType.unbounded(), Optionality.MANDATORY);
+
+        new ProviderField("number", Optional.empty(), addressType, StringType.unbounded(), Optionality.MANDATORY);
+
+        new ProviderField("postalCode", Optional.empty(), addressType, NumericType.bounded(5, 0),
                 Optionality.MANDATORY);
 
-        new ProviderField("number",
-                Optional.empty(),
-                addressType,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
-
-        new ProviderField("postalCode",
-                Optional.empty(),
-                addressType,
-                NumericType.bounded(5,0),
-                Optionality.MANDATORY);
-
-        new ProviderField("city",
-                Optional.empty(),
-                addressType,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("city", Optional.empty(), addressType, StringType.unbounded(), Optionality.MANDATORY);
 
         // Gender enum
-        ProviderEnumType genderEnum = new ProviderEnumType("Gender",
-                Optional.empty(),
-                1,
-                expectedDefinition,
+        ProviderEnumType genderEnum = new ProviderEnumType("Gender", Optional.empty(), 1, expectedDefinition,
                 Optional.empty());
 
-        new ProviderEnumMember("MALE",
-                Optional.empty(),
-                genderEnum,
-                Optional.empty());
+        new ProviderEnumMember("MALE", Optional.empty(), genderEnum, Optional.empty());
 
-        new ProviderEnumMember("FEMALE",
-                Optional.empty(),
-                genderEnum,
-                Optional.empty());
+        new ProviderEnumMember("FEMALE", Optional.empty(), genderEnum, Optional.empty());
 
-        new ProviderEnumMember("THIRD",
-                Optional.empty(),
-                genderEnum,
-                Optional.empty());
+        new ProviderEnumMember("THIRD", Optional.empty(), genderEnum, Optional.empty());
 
         // Customer type
-        ProviderRecordType customerType = new ProviderRecordType("Customer",
-                Optional.empty(),
-                2,
-                expectedDefinition,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType customerType = new ProviderRecordType("Customer", Optional.empty(), 2, expectedDefinition,
+                false, Optional.empty(), Optional.empty());
 
-        new ProviderField("firstName",
-                Optional.empty(),
-                customerType,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("firstName", Optional.empty(), customerType, StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("lastName",
-                Optional.empty(),
-                customerType,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("lastName", Optional.empty(), customerType, StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("gender",
-                Optional.empty(),
-                customerType,
-                genderEnum,
-                Optionality.MANDATORY);
+        new ProviderField("gender", Optional.empty(), customerType, genderEnum, Optionality.MANDATORY);
 
-        new ProviderField("address",
-                Optional.empty(),
-                customerType,
-                addressType,
-                Optionality.MANDATORY);
+        new ProviderField("address", Optional.empty(), customerType, addressType, Optionality.MANDATORY);
 
         // Formatted address type
-        ProviderRecordType formattedAddressType = new ProviderRecordType("FormattedAddress",
-                Optional.empty(),
-                3,
-                expectedDefinition,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType formattedAddressType = new ProviderRecordType("FormattedAddress", Optional.empty(), 3,
+                expectedDefinition, false, Optional.empty(), Optional.empty());
 
-        new ProviderField("address",
-                Optional.empty(),
-                formattedAddressType,
-                StringType.unbounded(),
+        new ProviderField("address", Optional.empty(), formattedAddressType, StringType.unbounded(),
                 Optionality.MANDATORY);
 
         // Customer service
-        new ProviderOperation("save",
-                Optional.empty(),
-                expectedDefinition,
-                customerType,
-                customerType,
+        new ProviderOperation("save", Optional.empty(), expectedDefinition, customerType, customerType,
                 Optional.empty());
 
-        new ProviderOperation("formatAddress",
-                Optional.empty(),
-                expectedDefinition,
-                formattedAddressType,
-                addressType,
+        new ProviderOperation("formatAddress", Optional.empty(), expectedDefinition, formattedAddressType, addressType,
                 Optional.empty());
 
         expectedDefinition.finalizeDefinition();
 
         // Load the API definition from a file
-        ProviderApiDefinition loadedDefinition = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/simple-model.api").getRevision(0).orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition loadedDefinition = ProviderApiLoader.loadHistoryFromClasspath("apis/simple-model.api")
+                .getRevision(0).orElseThrow(NoSuchElementException::new);
 
         // Compare the expected and loaded definition
         assertEquals(expectedDefinition, loadedDefinition);
     }
 
     /**
-     * Test whether building a revision history works as expected, and if predecessors are assigned correctly.
+     * Test whether building a revision history works as expected, and if
+     * predecessors are assigned correctly.
      */
     @Test
     void testRevisionHistoryBuilding() {
         // Define the first expected revision programmatically
         ProviderApiDefinition expectedRevision1 = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(),
-                0,
-                Optional.empty());
+                Collections.emptySet(), 0, Optional.empty());
 
-        ProviderRecordType unchangedTypeV1 = new ProviderRecordType("UnchangedType",
-                Optional.empty(),
-                0,
-                expectedRevision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType unchangedTypeV1 = new ProviderRecordType("UnchangedType", Optional.empty(), 0,
+                expectedRevision1, false, Optional.empty(), Optional.empty());
 
-        ProviderField unchangedTypeFieldV1 = new ProviderField("field",
-                Optional.empty(),
-                unchangedTypeV1,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderField unchangedTypeFieldV1 = new ProviderField("field", Optional.empty(), unchangedTypeV1,
+                StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType changedTypeV1 = new ProviderRecordType("ChangedType",
-                Optional.empty(),
-                1,
-                expectedRevision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType changedTypeV1 = new ProviderRecordType("ChangedType", Optional.empty(), 1, expectedRevision1,
+                false, Optional.empty(), Optional.empty());
 
-        ProviderField changedTypeFieldV1 = new ProviderField("field",
-                Optional.empty(),
-                changedTypeV1,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderField changedTypeFieldV1 = new ProviderField("field", Optional.empty(), changedTypeV1,
+                StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType deletedType = new ProviderRecordType("DeletedType",
-                Optional.empty(),
-                2,
-                expectedRevision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType deletedType = new ProviderRecordType("DeletedType", Optional.empty(), 2, expectedRevision1,
+                false, Optional.empty(), Optional.empty());
 
-        new ProviderField("field",
-                Optional.empty(),
-                deletedType,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("field", Optional.empty(), deletedType, StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType testTypeV1 = new ProviderRecordType("TestType",
-                Optional.empty(),
-                3,
-                expectedRevision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType testTypeV1 = new ProviderRecordType("TestType", Optional.empty(), 3, expectedRevision1,
+                false, Optional.empty(), Optional.empty());
 
-        ProviderField toRecordFieldV1 = new ProviderField("toRecord",
-                Optional.empty(),
-                testTypeV1,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderField toRecordFieldV1 = new ProviderField("toRecord", Optional.empty(), testTypeV1,
+                StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("toSimple",
-                Optional.empty(),
-                testTypeV1,
-                deletedType,
-                Optionality.MANDATORY);
+        new ProviderField("toSimple", Optional.empty(), testTypeV1, deletedType, Optionality.MANDATORY);
 
-        ProviderField changedTypeTestFieldV1 = new ProviderField("changedType",
-                Optional.empty(),
-                testTypeV1,
-                changedTypeV1,
-                Optionality.MANDATORY);
+        ProviderField changedTypeTestFieldV1 = new ProviderField("changedType", Optional.empty(), testTypeV1,
+                changedTypeV1, Optionality.MANDATORY);
 
-        ProviderField unchangedTypeTestFieldV1 = new ProviderField("unchanged",
-                Optional.empty(),
-                testTypeV1,
-                unchangedTypeV1,
-                Optionality.MANDATORY);
+        ProviderField unchangedTypeTestFieldV1 = new ProviderField("unchanged", Optional.empty(), testTypeV1,
+                unchangedTypeV1, Optionality.MANDATORY);
 
-        new ProviderField("basicField",
-                Optional.empty(),
-                testTypeV1,
-                AtomicType.INT_32,
-                Optionality.MANDATORY);
+        new ProviderField("basicField", Optional.empty(), testTypeV1, AtomicType.INT_32, Optionality.MANDATORY);
 
         expectedRevision1.finalizeDefinition();
 
         // Define the second expected revision programmatically
         ProviderApiDefinition expectedRevision2 = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(),
-                1,
-                Optional.of(expectedRevision1));
+                Collections.emptySet(), 1, Optional.of(expectedRevision1));
 
-        ProviderRecordType unchangedTypeV2 = new ProviderRecordType("UnchangedType",
-                Optional.empty(),
-                0,
-                expectedRevision2,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType unchangedTypeV2 = new ProviderRecordType("UnchangedType", Optional.empty(), 0,
+                expectedRevision2, false, Optional.empty(), Optional.empty());
 
-        ProviderField unchangedTypeFieldV2 = new ProviderField("field",
-                Optional.empty(),
-                unchangedTypeV2,
-                StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(unchangedTypeFieldV1),
+        ProviderField unchangedTypeFieldV2 = new ProviderField("field", Optional.empty(), unchangedTypeV2,
+                StringType.unbounded(), Optionality.MANDATORY, false, Arrays.asList(unchangedTypeFieldV1),
                 Optional.of(unchangedTypeFieldV1));
 
-        ProviderRecordType changedTypeV2 = new ProviderRecordType("ChangedType",
-                Optional.empty(),
-                1,
-                expectedRevision2,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType changedTypeV2 = new ProviderRecordType("ChangedType", Optional.empty(), 1, expectedRevision2,
+                false, Optional.empty(), Optional.empty());
 
-        new ProviderField("field",
-                Optional.empty(),
-                changedTypeV2,
-                StringType.unbounded(),
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(changedTypeFieldV1),
-                Optional.of(changedTypeFieldV1));
+        new ProviderField("field", Optional.empty(), changedTypeV2, StringType.unbounded(), Optionality.MANDATORY,
+                false, Arrays.asList(changedTypeFieldV1), Optional.of(changedTypeFieldV1));
 
-        new ProviderField("field2",
-                Optional.empty(),
-                changedTypeV2,
-                StringType.unbounded(),
+        new ProviderField("field2", Optional.empty(), changedTypeV2, StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType addedTypeV2 = new ProviderRecordType("AddedType", Optional.empty(), 2, expectedRevision2,
+                false, Optional.empty(), Optional.empty());
+
+        new ProviderField("field", Optional.empty(), addedTypeV2, StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType testTypeV2 = new ProviderRecordType("TestType", Optional.empty(), 3, expectedRevision2,
+                false, Optional.empty(), Optional.empty());
+
+        new ProviderField("toRecord", Optional.of("toRecord2"), testTypeV2, addedTypeV2, Optionality.MANDATORY);
+
+        new ProviderField("toSimple", Optional.of("toSimple2"), testTypeV2, StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderRecordType addedTypeV2 = new ProviderRecordType("AddedType",
-                Optional.empty(),
-                2,
-                expectedRevision2,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        new ProviderField("changedType", Optional.empty(), testTypeV2, changedTypeV2, Optionality.MANDATORY, false,
+                Arrays.asList(changedTypeTestFieldV1), Optional.of(changedTypeTestFieldV1));
 
-        new ProviderField("field",
-                Optional.empty(),
-                addedTypeV2,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("unchanged", Optional.empty(), testTypeV2, unchangedTypeV2, Optionality.MANDATORY, false,
+                Arrays.asList(unchangedTypeTestFieldV1), Optional.of(unchangedTypeTestFieldV1));
 
-        ProviderRecordType testTypeV2 = new ProviderRecordType("TestType",
-                Optional.empty(),
-                3,
-                expectedRevision2,
-                false,
-                Optional.empty(),
-                Optional.empty());
-
-        new ProviderField("toRecord",
-                Optional.of("toRecord2"),
-                testTypeV2,
-                addedTypeV2,
-                Optionality.MANDATORY);
-
-        new ProviderField("toSimple",
-                Optional.of("toSimple2"),
-                testTypeV2,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
-
-        new ProviderField("changedType",
-                Optional.empty(),
-                testTypeV2,
-                changedTypeV2,
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(changedTypeTestFieldV1),
-                Optional.of(changedTypeTestFieldV1));
-
-        new ProviderField("unchanged",
-                Optional.empty(),
-                testTypeV2,
-                unchangedTypeV2,
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(unchangedTypeTestFieldV1),
-                Optional.of(unchangedTypeTestFieldV1));
-
-        new ProviderField("basicField",
-                Optional.of("basicFieldChanged"),
-                testTypeV2,
-                AtomicType.INT_64,
+        new ProviderField("basicField", Optional.of("basicFieldChanged"), testTypeV2, AtomicType.INT_64,
                 Optionality.MANDATORY);
 
         expectedRevision2.finalizeDefinition();
@@ -385,21 +202,13 @@ class ProviderApiLoadingTest {
      */
     @Test
     void apiDefinitionWithForwardReferences() {
-        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/revision-with-forward-reference.api");
-        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
+        RevisionHistory revisionHistory = ProviderApiLoader
+                .loadHistoryFromClasspath("apis/revision-with-forward-reference.api");
+        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
 
-        String expected = "api test [] {\n" +
-                " record TypeA(TypeA) extends TypeB {\n" +
-                "  mandatory field(field):TypeC\n" +
-                " }\n" +
-                " record TypeB(TypeB) {\n" +
-                " }\n" +
-                " enum TypeC(TypeC) {\n" +
-                "  MEMBER(MEMBER)\n" +
-                " }\n" +
-                "}\n";
+        String expected = "api test [] {\n" + " record TypeA(TypeA) extends TypeB {\n" +
+                "  mandatory field(field):TypeC\n" + " }\n" + " record TypeB(TypeB) {\n" + " }\n" +
+                " enum TypeC(TypeC) {\n" + "  MEMBER(MEMBER)\n" + " }\n" + "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(apiDefinition);
         assertEquals(expected, actual);
@@ -411,102 +220,55 @@ class ProviderApiLoadingTest {
     @Test
     void apiDefinitionWithSupertypes() {
         ProviderApiDefinition expectedDefinition = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(),
-                0,
+                Collections.emptySet(), 0, Optional.empty());
+
+        ProviderRecordType typeA = new ProviderRecordType("TypeA", Optional.empty(), 0, expectedDefinition, true,
                 Optional.empty());
 
-        ProviderRecordType typeA = new ProviderRecordType("TypeA",
-                Optional.empty(),
-                0,
-                expectedDefinition,
-                true,
-                Optional.empty());
+        new ProviderField("fieldA", Optional.empty(), typeA, StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("fieldA",
-                Optional.empty(),
-                typeA,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderRecordType typeB = new ProviderRecordType("TypeB", Optional.empty(), 1, expectedDefinition, false,
+                Optional.of(typeA), Optional.empty());
 
-        ProviderRecordType typeB = new ProviderRecordType("TypeB",
-                Optional.empty(),
-                1,
-                expectedDefinition,
-                false,
-                Optional.of(typeA),
-                Optional.empty());
+        new ProviderField("fieldB", Optional.empty(), typeB, StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("fieldB",
-                Optional.empty(),
-                typeB,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderRecordType typeC = new ProviderRecordType("TypeC", Optional.empty(), 2, expectedDefinition, false,
+                Optional.of(typeB), Optional.empty());
 
-        ProviderRecordType typeC = new ProviderRecordType("TypeC",
-                Optional.empty(),
-                2,
-                expectedDefinition,
-                false,
-                Optional.of(typeB),
-                Optional.empty());
-
-        new ProviderField("fieldC",
-                Optional.empty(),
-                typeC,
-                StringType.unbounded(),
-                Optionality.MANDATORY);
+        new ProviderField("fieldC", Optional.empty(), typeC, StringType.unbounded(), Optionality.MANDATORY);
 
         expectedDefinition.finalizeDefinition();
 
-        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/revision-with-supertypes.api");
-        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
+        RevisionHistory revisionHistory = ProviderApiLoader
+                .loadHistoryFromClasspath("apis/revision-with-supertypes.api");
+        ProviderApiDefinition apiDefinition = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
 
         assertEquals(expectedDefinition, apiDefinition);
     }
 
     /**
-     * Test case: Fields are pulled up along the inheritance hierarchy in a revision history.
+     * Test case: Fields are pulled up along the inheritance hierarchy in a revision
+     * history.
      */
     @Test
     void pullUpAttribute() {
-        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/pull-up-attribute-1.api",
-                "apis/pull-up-attribute-2.api"
-        );
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath("apis/pull-up-attribute-1.api",
+                "apis/pull-up-attribute-2.api");
 
-        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
-        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
-                .orElseThrow(NoSuchElementException::new);;
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1).orElseThrow(NoSuchElementException::new);
+        ;
 
-        String expected1 = "api test [] {\n" +
-                " record TypeA(TypeA) {\n" +
-                "  mandatory fieldA(fieldA):string\n" +
-                " }\n" +
-                " record TypeB(TypeB) {\n" +
-                "  mandatory fieldB(fieldB):string\n" +
-                " }\n" +
-                " record TypeC(TypeC) {\n" +
-                "  mandatory fieldC(fieldC):string\n" +
-                " }\n" +
-                "}\n";
+        String expected1 = "api test [] {\n" + " record TypeA(TypeA) {\n" + "  mandatory fieldA(fieldA):string\n" +
+                " }\n" + " record TypeB(TypeB) {\n" + "  mandatory fieldB(fieldB):string\n" + " }\n" +
+                " record TypeC(TypeC) {\n" + "  mandatory fieldC(fieldC):string\n" + " }\n" + "}\n";
 
-        String expected2 = "api test [] {\n" +
-                " record SuperType(SuperType) {\n" +
-                "  mandatory field(field):string\n" +
-                " }\n" +
-                " record TypeA(TypeA) extends SuperType <- TypeA {\n" +
-                "  inherited mandatory field(field):string <- fieldA\n" +
-                " }\n" +
+        String expected2 = "api test [] {\n" + " record SuperType(SuperType) {\n" +
+                "  mandatory field(field):string\n" + " }\n" + " record TypeA(TypeA) extends SuperType <- TypeA {\n" +
+                "  inherited mandatory field(field):string <- fieldA\n" + " }\n" +
                 " record TypeB(TypeB) extends SuperType <- TypeB {\n" +
-                "  inherited mandatory field(field):string <- fieldB\n" +
-                " }\n" +
-                " record TypeC(TypeC) <- TypeC {\n" +
-                "  mandatory fieldC(fieldC):string <- fieldC\n" +
-                " }\n" +
-                "}\n";
+                "  inherited mandatory field(field):string <- fieldB\n" + " }\n" + " record TypeC(TypeC) <- TypeC {\n" +
+                "  mandatory fieldC(fieldC):string <- fieldC\n" + " }\n" + "}\n";
 
         ProviderApiDefinitionPrinter printer = new ProviderApiDefinitionPrinter();
 
@@ -518,42 +280,28 @@ class ProviderApiLoadingTest {
     }
 
     /**
-     * Test case: A field is pushed down along the inheritance hierarchy in a revision history.
+     * Test case: A field is pushed down along the inheritance hierarchy in a
+     * revision history.
      */
     @Test
     void pushDownAttribute() {
-        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/push-down-attribute-1.api",
-                "apis/push-down-attribute-2.api"
-        );
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath("apis/push-down-attribute-1.api",
+                "apis/push-down-attribute-2.api");
 
-        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
-        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
-                .orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1).orElseThrow(NoSuchElementException::new);
 
-        String expected1 = "api test [] {\n" +
-                " record SuperType(SuperType) {\n" +
-                "  mandatory fieldA(fieldA):string\n" +
-                " }\n" +
-                " record SubTypeA(SubTypeA) extends SuperType {\n" +
-                "  inherited mandatory fieldA(fieldA):string\n" +
-                " }\n" +
-                " record SubTypeB(SubTypeB) extends SuperType {\n" +
-                "  inherited mandatory fieldA(fieldA):string\n" +
-                " }\n" +
-                "}\n";
+        String expected1 = "api test [] {\n" + " record SuperType(SuperType) {\n" +
+                "  mandatory fieldA(fieldA):string\n" + " }\n" + " record SubTypeA(SubTypeA) extends SuperType {\n" +
+                "  inherited mandatory fieldA(fieldA):string\n" + " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType {\n" + "  inherited mandatory fieldA(fieldA):string\n" +
+                " }\n" + "}\n";
 
-        String expected2 = "api test [] {\n" +
-                " record SuperType(SuperType) <- SuperType {\n" +
-                " }\n" +
+        String expected2 = "api test [] {\n" + " record SuperType(SuperType) <- SuperType {\n" + " }\n" +
                 " record SubTypeA(SubTypeA) extends SuperType <- SubTypeA {\n" +
-                "  mandatory fieldA(fieldA):string <- fieldA\n" +
-                " }\n" +
+                "  mandatory fieldA(fieldA):string <- fieldA\n" + " }\n" +
                 " record SubTypeB(SubTypeB) extends SuperType <- SubTypeB {\n" +
-                "  mandatory fieldB(fieldB):string <- fieldA\n" +
-                " }\n" +
-                "}\n";
+                "  mandatory fieldB(fieldB):string <- fieldA\n" + " }\n" + "}\n";
 
         ProviderApiDefinitionPrinter printer = new ProviderApiDefinitionPrinter();
 
@@ -563,7 +311,8 @@ class ProviderApiLoadingTest {
         assertEquals(expected1, actual1);
         assertEquals(expected2, actual2);
 
-        // Assert that the predecessor of the field in type B is actually the inherited field
+        // Assert that the predecessor of the field in type B is actually the inherited
+        // field
         // from the first revision. This is checked explicitly as it is not shown in the
         // string representation
         ProviderRecordType recordType = (ProviderRecordType) revision2.resolveUserDefinedType("SubTypeB")
@@ -584,18 +333,11 @@ class ProviderApiLoadingTest {
     void loadRevisionIgnoringReplacements() {
         RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(true,
                 "apis/push-down-attribute-2.api");
-        ProviderApiDefinition definition = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition definition = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
 
-        String expected = "api test [] {\n" +
-                " record SuperType(SuperType) {\n" +
-                " }\n" +
-                " record SubTypeA(SubTypeA) extends SuperType {\n" +
-                "  mandatory fieldA(fieldA):string\n" +
-                " }\n" +
-                " record SubTypeB(SubTypeB) extends SuperType {\n" +
-                "  mandatory fieldB(fieldB):string\n" +
-                " }\n" +
+        String expected = "api test [] {\n" + " record SuperType(SuperType) {\n" + " }\n" +
+                " record SubTypeA(SubTypeA) extends SuperType {\n" + "  mandatory fieldA(fieldA):string\n" + " }\n" +
+                " record SubTypeB(SubTypeB) extends SuperType {\n" + "  mandatory fieldB(fieldB):string\n" + " }\n" +
                 "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(definition);
@@ -605,8 +347,7 @@ class ProviderApiLoadingTest {
     @Test
     void failOnEmptyString() {
         APIParseException exception = assertThrows(APIParseException.class,
-                () -> ProviderApiLoader.loadFromString(0, "", false,
-                Optional.empty()));
+                () -> ProviderApiLoader.loadFromString(0, "", false, Optional.empty()));
 
         assertTrue(exception.getMessage().contains("1:0: mismatched"));
     }
@@ -627,38 +368,23 @@ class ProviderApiLoadingTest {
      */
     @Test
     void apiWithExceptions() {
-        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath(
-                "apis/revision-with-exceptions-1.api", "apis/revision-with-exceptions-2.api");
-        ProviderApiDefinition revision1 = revisionHistory.getRevision(0)
-                .orElseThrow(NoSuchElementException::new);
-        ProviderApiDefinition revision2 = revisionHistory.getRevision(1)
-                .orElseThrow(NoSuchElementException::new);
+        RevisionHistory revisionHistory = ProviderApiLoader
+                .loadHistoryFromClasspath("apis/revision-with-exceptions-1.api", "apis/revision-with-exceptions-2.api");
+        ProviderApiDefinition revision1 = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
+        ProviderApiDefinition revision2 = revisionHistory.getRevision(1).orElseThrow(NoSuchElementException::new);
 
-        String expected1 = "api test [] {\n" +
-                " record Record(Record) {\n" +
-                " }\n" +
-                " exception E1(E1) {\n" +
-                "  mandatory e1(e1):string\n" +
-                " }\n" +
-                " exception E2(E2) {\n" +
-                "  mandatory e2(e2):string\n" +
+        String expected1 = "api test [] {\n" + " record Record(Record) {\n" + " }\n" + " exception E1(E1) {\n" +
+                "  mandatory e1(e1):string\n" + " }\n" + " exception E2(E2) {\n" + "  mandatory e2(e2):string\n" +
                 " }\n" +
                 " operation op1(op1) (Record@revision 0) : Record@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
                 "}\n";
         String actual1 = new ProviderApiDefinitionPrinter().printApiDefinition(revision1);
         assertEquals(expected1, actual1);
 
-        String expected2 = "api test [] {\n" +
-                " record Record(Record) <- Record {\n" +
-                " }\n" +
-                " exception E1(E1) <- E1 {\n" +
-                "  mandatory e1(e1):string <- e1\n" +
-                "  mandatory e12(e12):string\n" +
-                " }\n" +
-                " exception E2(E2) <- E2 {\n" +
-                "  mandatory e2(e2):string <- e2\n" +
-                "  mandatory e12(e12):string\n" +
-                " }\n" +
+        String expected2 = "api test [] {\n" + " record Record(Record) <- Record {\n" + " }\n" +
+                " exception E1(E1) <- E1 {\n" + "  mandatory e1(e1):string <- e1\n" + "  mandatory e12(e12):string\n" +
+                " }\n" + " exception E2(E2) <- E2 {\n" + "  mandatory e2(e2):string <- e2\n" +
+                "  mandatory e12(e12):string\n" + " }\n" +
                 " operation op1(op1) (Record@revision 1) : Record@revision 1 throws [E1@revision 1, E2@revision 1] <- op1\n" +
                 "}\n";
         String actual2 = new ProviderApiDefinitionPrinter().printApiDefinition(revision2);

@@ -11,7 +11,7 @@ class SaveConsumerApiRequest {
     public final String definition;
 
     public SaveConsumerApiRequest(String referencedHistoryName, int referencedRevisionNumber, String consumerName,
-                                  String definition) {
+            String definition) {
         this.referencedHistoryName = referencedHistoryName;
         this.referencedRevisionNumber = referencedRevisionNumber;
         this.consumerName = consumerName;

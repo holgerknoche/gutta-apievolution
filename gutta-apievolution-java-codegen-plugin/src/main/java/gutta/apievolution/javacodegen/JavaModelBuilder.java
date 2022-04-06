@@ -13,7 +13,7 @@ class JavaModelBuilder {
         Map<Type, JavaUserDefinedType> initialTypeMap = pass1.createRecordTypes(apiDefinition);
 
         ModelBuildingPass2 pass2 = new ModelBuildingPass2(initialTypeMap);
-        Collection<JavaUserDefinedType> udts =  pass2.buildModel(apiDefinition);
+        Collection<JavaUserDefinedType> udts = pass2.buildModel(apiDefinition);
 
         ModelBuildingPass3 pass3 = new ModelBuildingPass3(initialTypeMap);
         List<JavaService> services = pass3.buildServices(apiDefinition);
@@ -48,8 +48,8 @@ class JavaModelBuilder {
 
     }
 
-    private static class ModelBuildingPass2 implements ProviderApiDefinitionElementVisitor<JavaType>,
-            TypeVisitor<JavaType> {
+    private static class ModelBuildingPass2
+            implements ProviderApiDefinitionElementVisitor<JavaType>, TypeVisitor<JavaType> {
 
         private final Map<Type, JavaUserDefinedType> knownClasses;
 
@@ -74,14 +74,14 @@ class JavaModelBuilder {
         @Override
         public JavaType handleAtomicType(AtomicType atomicType) {
             switch (atomicType) {
-                case INT_32:
-                    return JavaStandardTypes.INT_TYPE;
+            case INT_32:
+                return JavaStandardTypes.INT_TYPE;
 
-                case INT_64:
-                    return JavaStandardTypes.LONG_TYPE;
+            case INT_64:
+                return JavaStandardTypes.LONG_TYPE;
 
-                default:
-                    throw new IllegalArgumentException();
+            default:
+                throw new IllegalArgumentException();
             }
         }
 
@@ -137,15 +137,15 @@ class JavaModelBuilder {
     private static class ModelBuildingPass3 implements ProviderApiDefinitionElementVisitor<Void> {
 
         private static final String DEFAULT_SERVICE_NAME = "Api";
-        
+
         private static final String SERVICE_NAME_ANNOTATION = "ServiceName";
-        
+
         private final Map<Type, JavaUserDefinedType> knownClasses;
 
         private Map<String, JavaService> services;
 
         private String packageName;
-        
+
         public ModelBuildingPass3(Map<Type, JavaUserDefinedType> knownClasses) {
             this.knownClasses = knownClasses;
         }
@@ -153,7 +153,7 @@ class JavaModelBuilder {
         public List<JavaService> buildServices(ProviderApiDefinition apiDefinition) {
             this.services = new HashMap<>();
             this.packageName = apiDefinition.getName().toString();
-            
+
             apiDefinition.forEach(element -> element.accept(this));
             return new ArrayList<>(this.services.values());
         }
@@ -165,21 +165,19 @@ class JavaModelBuilder {
             JavaInterface parameterType = (JavaInterface) this.knownClasses.get(operation.getParameterType());
 
             List<JavaException> thrownExceptions = operation.getThrownExceptions().stream()
-                    .map(exception -> (JavaException) this.knownClasses.get(exception))
-                    .collect(Collectors.toList());
+                    .map(exception -> (JavaException) this.knownClasses.get(exception)).collect(Collectors.toList());
 
             Optional<Annotation> serviceAnnotation = operation.getAnnotation(SERVICE_NAME_ANNOTATION);
-            String serviceName = (serviceAnnotation.isPresent()) ?
-                    serviceAnnotation.get().getValue() :
+            String serviceName = (serviceAnnotation.isPresent()) ? serviceAnnotation.get().getValue() :
                     DEFAULT_SERVICE_NAME;
-            
-            JavaService javaService = this.services.computeIfAbsent(serviceName, 
+
+            JavaService javaService = this.services.computeIfAbsent(serviceName,
                     svcName -> new JavaService(this.packageName, svcName));
-            JavaServiceOperation javaOperation = new JavaServiceOperation(name, resultType, parameterType, 
+            JavaServiceOperation javaOperation = new JavaServiceOperation(name, resultType, parameterType,
                     thrownExceptions);
-            
+
             javaService.addOperation(javaOperation);
-            
+
             return null;
         }
 

@@ -29,6 +29,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns this definition's ID.
+     * 
      * @return see above
      */
     public Integer getId() {
@@ -37,6 +38,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets this definition's ID.
+     * 
      * @param id The ID to set
      */
     public void setId(Integer id) {
@@ -45,6 +47,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the name of the revision history to which this definition belongs.
+     * 
      * @return see above
      */
     public String getHistoryName() {
@@ -53,6 +56,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the name of the revision history to which this definition belongs.
+     * 
      * @param historyName The history name to set
      */
     public void setHistoryName(String historyName) {
@@ -61,6 +65,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the revision number of this definition within the history.
+     * 
      * @return see above
      */
     public Integer getRevisionNumber() {
@@ -69,6 +74,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the revision number of this definition within the history.
+     * 
      * @param revisionNumber The revision number to set
      */
     public void setRevisionNumber(Integer revisionNumber) {
@@ -77,6 +83,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the timestamp at which this definition was committed.
+     * 
      * @return see above
      */
     public LocalDateTime getCommitTime() {
@@ -85,6 +92,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the timestamp at which this definition was committed.
+     * 
      * @param commitTime The commit timestamp to set
      */
     public void setCommitTime(LocalDateTime commitTime) {
@@ -93,6 +101,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the timestamp from which this revision is supported.
+     * 
      * @return see above
      */
     public LocalDateTime getSupportedFrom() {
@@ -101,6 +110,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the timestamp from which this revision is supported.
+     * 
      * @param supportedFrom The timestamp to set
      */
     public void setSupportedFrom(LocalDateTime supportedFrom) {
@@ -109,6 +119,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the timestamp until which this revision is supported.
+     * 
      * @return see above
      */
     public LocalDateTime getSupportedUntil() {
@@ -117,6 +128,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the timestamp until which this revision is supported.
+     * 
      * @param supportedUntil The timestamp to set
      */
     public void setSupportedUntil(LocalDateTime supportedUntil) {
@@ -125,6 +137,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Returns the definition text of this provider API definition.
+     * 
      * @return see above
      */
     public String getDefinitionText() {
@@ -133,6 +146,7 @@ public class PersistentProviderApiDefinition {
 
     /**
      * Sets the definition text of this provider API definition.
+     * 
      * @param definitionText The definition text to set
      */
     public void setDefinitionText(String definitionText) {
