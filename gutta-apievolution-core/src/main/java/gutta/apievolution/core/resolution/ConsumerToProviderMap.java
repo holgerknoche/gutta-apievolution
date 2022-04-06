@@ -17,8 +17,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * This class represents a map from a consumer revision to a specific provider revision. It is complemented with
- * a mapping from the provider revision to the current provider's internal representation.
+ * This class represents a map from a consumer revision to a specific provider
+ * revision. It is complemented with a mapping from the provider revision to the
+ * current provider's internal representation.
  */
 class ConsumerToProviderMap {
 
@@ -27,13 +28,13 @@ class ConsumerToProviderMap {
     private final Map<ConsumerField, ProviderField> consumerToProviderField;
 
     private final Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember;
-    
+
     private final Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation;
 
     public ConsumerToProviderMap(Map<Type, Type> consumerToProviderType,
-                                 Map<ConsumerField, ProviderField> consumerToProviderField,
-                                 Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
-                                 Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
+            Map<ConsumerField, ProviderField> consumerToProviderField,
+            Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
+            Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
         this.consumerToProviderType = consumerToProviderType;
         this.consumerToProviderField = consumerToProviderField;
         this.consumerToProviderMember = consumerToProviderMember;
@@ -41,9 +42,12 @@ class ConsumerToProviderMap {
     }
 
     /**
-     * Composes this map with the given map to a provider's merged definition, resulting in a map from the consumer
-     * definition of this map to the merged definition.
-     * @param toMergedModelMap The map from the provider definition to the merged definition
+     * Composes this map with the given map to a provider's merged definition,
+     * resulting in a map from the consumer definition of this map to the merged
+     * definition.
+     *
+     * @param toMergedModelMap The map from the provider definition to the merged
+     *                         definition
      * @return A composed map of this and the given map
      */
     public ConsumerToProviderMap compose(ToMergedModelMap toMergedModelMap) {
@@ -60,7 +64,9 @@ class ConsumerToProviderMap {
     }
 
     /**
-     * Inverts this map to produce a map from the provider's definition to the consumer's definition.
+     * Inverts this map to produce a map from the provider's definition to the
+     * consumer's definition.
+     *
      * @return see above
      */
     public ProviderToConsumerMap invert() {
@@ -90,7 +96,7 @@ class ConsumerToProviderMap {
     }
 
     private void checkTypeAssociation(Map<Type, Type> consumerToProviderType,
-                                      Map<ConsumerField, ProviderField> consumerToProviderField) {
+            Map<ConsumerField, ProviderField> consumerToProviderField) {
         ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker();
 
         consumerToProviderType.forEach(checker::checkConsistency);
@@ -127,7 +133,7 @@ class ConsumerToProviderMap {
     Stream<Type> consumerTypes() {
         return this.consumerToProviderType.keySet().stream();
     }
-    
+
     Stream<ConsumerOperation> consumerOperations() {
         return this.consumerToProviderOperation.keySet().stream();
     }
@@ -143,7 +149,7 @@ class ConsumerToProviderMap {
     ProviderEnumMember mapConsumerMember(ConsumerEnumMember consumerEnumMember) {
         return this.consumerToProviderMember.get(consumerEnumMember);
     }
-    
+
     ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
         return this.consumerToProviderOperation.get(consumerOperation);
     }
@@ -198,8 +204,8 @@ class ConsumerToProviderMap {
             Optionality providerOptionality = foreignField.getOptionality();
 
             if (consumerOptionality != providerOptionality) {
-                throw new DefinitionResolutionException("Optionalities of " + ownField + " and " + foreignField +
-                        " are not compatible.");
+                throw new DefinitionResolutionException(
+                        "Optionalities of " + ownField + " and " + foreignField + " are not compatible.");
             }
 
             // Make sure that the types match

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 /**
  * An enum member represents a particular value of an {@link EnumType}.
- * 
+ *
  * @param <E> The concrete type of the enum type
  * @param <M> The concrete type of enum member type (e.g., provider or consumer)
  */
@@ -15,7 +15,7 @@ public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMemb
 
     /**
      * Creates a new enum member from the given data.
-     * 
+     *
      * @param publicName   The public name of the enum member
      * @param internalName The internal name of the enum member, if applicable.
      *                     Otherwise, the public name is assumed
@@ -31,7 +31,7 @@ public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMemb
 
     /**
      * Returns the enum type that owns this member.
-     * 
+     *
      * @return see above
      */
     public E getOwner() {
@@ -51,7 +51,7 @@ public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMemb
 
     /**
      * Compares this enum member's state against the state of the given member.
-     * 
+     *
      * @param that The enum member to compare against
      * @return Whether the states are equal
      */

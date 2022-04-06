@@ -31,10 +31,9 @@ class DefinitionResolutionPrinter implements TypeVisitor<Void> {
         StringBuilder builder = this.stringBuilder = new StringBuilder();
         this.definitionResolution = resolution;
 
-        List<UserDefinedType> consumerTypes = resolution.consumerTypes()
-                .filter(UserDefinedType.class::isInstance)
-                .map(UserDefinedType.class::cast)
-                .sorted(Comparator.comparing(type -> type.getInternalName())).collect(Collectors.toList());
+        List<UserDefinedType> consumerTypes = resolution.consumerTypes().filter(UserDefinedType.class::isInstance)
+                .map(UserDefinedType.class::cast).sorted(Comparator.comparing(type -> type.getInternalName()))
+                .collect(Collectors.toList());
 
         for (UserDefinedType consumerType : consumerTypes) {
             Type providerType = resolution.mapConsumerType(consumerType);
@@ -49,13 +48,13 @@ class DefinitionResolutionPrinter implements TypeVisitor<Void> {
 
         resolution.consumerOperations().forEach(consumerOperation -> {
             ProviderOperation providerOperation = resolution.mapConsumerOperation(consumerOperation);
-            
+
             builder.append(consumerOperation);
             builder.append(" -> ");
             builder.append(providerOperation);
             builder.append("\n");
         });
-        
+
         return builder.toString();
     }
 

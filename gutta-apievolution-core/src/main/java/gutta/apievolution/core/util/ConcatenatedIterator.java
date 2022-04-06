@@ -4,7 +4,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Iterator implementation that concatenates several existing iterators into a consecutive sequence.
+ * Iterator implementation that concatenates several existing iterators into a
+ * consecutive sequence.
+ *
  * @param <T> The type of the elements of the iterators
  */
 public class ConcatenatedIterator<T> implements Iterator<T> {
@@ -17,6 +19,7 @@ public class ConcatenatedIterator<T> implements Iterator<T> {
 
     /**
      * Creates a new concatenated iterators of the given iterables.
+     *
      * @param iterables The iterables to build a concatenated iterator of
      */
     @SafeVarargs
@@ -35,6 +38,7 @@ public class ConcatenatedIterator<T> implements Iterator<T> {
 
     /**
      * Creates a new concatenated iterator from the given iterators.
+     *
      * @param iterators The iterators to concatenate
      */
     @SafeVarargs

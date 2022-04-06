@@ -2,12 +2,14 @@ package gutta.apievolution.core.apimodel;
 
 /**
  * Visitor interface for visiting the types of an API model.
+ *
  * @param <T> The result type of the visitor's operation
  */
 public interface TypeVisitor<T> {
 
     /**
      * Handles an atomic type.
+     *
      * @param atomicType The atomic type to handle
      * @return The visitor operation's result
      */
@@ -17,6 +19,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles a bounded list type.
+     *
      * @param boundedListType The bounded list type to handle
      * @return The visitor operation's result
      */
@@ -26,6 +29,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles a bounded string type.
+     *
      * @param boundedStringType The bounded string type to handle
      * @return The visitor operation's result
      */
@@ -35,6 +39,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles an enumeration type.
+     *
      * @param enumType The enumeration type to handle
      * @return The visitor operation's result
      */
@@ -44,6 +49,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles a numeric type.
+     *
      * @param numericType The numeric type to handle
      * @return The visitor operation's result
      */
@@ -53,6 +59,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles a record type.
+     *
      * @param recordType The record type to handle
      * @return The visitor operation's result
      */
@@ -62,6 +69,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles an unbounded list type.
+     *
      * @param unboundedListType The unbounded list type to handle
      * @return The visitor operation's result
      */
@@ -71,6 +79,7 @@ public interface TypeVisitor<T> {
 
     /**
      * Handles an unbounded string type.
+     *
      * @param unboundedStringType The unbounded string type to handle
      * @return The visitor operation's result
      */

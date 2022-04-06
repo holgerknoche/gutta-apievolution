@@ -17,14 +17,16 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
 
     /**
      * Creates a new enum type from the given data.
-     * @param publicName The enum type's public name
-     * @param internalName The enum type's internal name, if any. Otherwise, the public name is assumed
-     * @param typeId The enum type's type id
-     * @param owner The API definition that owns this enum type
-     * @param predecessor The enum type's predecessor, if any
+     *
+     * @param publicName   The enum type's public name
+     * @param internalName The enum type's internal name, if any. Otherwise, the
+     *                     public name is assumed
+     * @param typeId       The enum type's type id
+     * @param owner        The API definition that owns this enum type
+     * @param predecessor  The enum type's predecessor, if any
      */
     public ProviderEnumType(final String publicName, final Optional<String> internalName, final int typeId,
-                            final ProviderApiDefinition owner, final Optional<ProviderEnumType> predecessor) {
+            final ProviderApiDefinition owner, final Optional<ProviderEnumType> predecessor) {
         super(publicName, internalName, typeId, owner);
 
         this.predecessor = predecessor;

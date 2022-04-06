@@ -17,7 +17,7 @@ public class ModelMerger {
 
     /**
      * Creates a merged API definition from a given revision history.
-     * 
+     *
      * @param revisionHistory A non-empty revision history to merge
      * @return A merged API definition that represents the union of the definition
      *         history
@@ -35,7 +35,7 @@ public class ModelMerger {
      * Creates a merged API definition from a given revision history and provides a
      * mapping of the elements of the given revision (which needs to be part of the
      * revision history) to the elements of the merged revision.
-     * 
+     *
      * @param revisionHistory   A non-empty revision history to merge
      * @param referenceRevision A specific revision for whose elements a mapping is
      *                          created
@@ -175,8 +175,8 @@ public class ModelMerger {
         }
 
         private Optional<String> determineInternalName(UserDefinedType<ProviderApiDefinition> inType) {
-            return (inType.getPublicName().equals(inType.getInternalName())) ? Optional.empty()
-                    : Optional.of(inType.getInternalName());
+            return (inType.getPublicName().equals(inType.getInternalName())) ? Optional.empty() :
+                    Optional.of(inType.getInternalName());
         }
 
         private void assertUniqueInternalName(UserDefinedType<ProviderApiDefinition> type) {
@@ -554,14 +554,15 @@ public class ModelMerger {
 
     }
 
-    private static class MappingRevisionMergePass2 extends RevisionMergePass2 {
+    private static class MappingRevisionMergePass2
+            extends RevisionMergePass2 {
 
         private final ProviderApiDefinition referenceRevision;
 
         private final Map<ProviderField, ProviderField> fieldMap = new HashMap<>();
 
         private final Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap = new HashMap<>();
-        
+
         private final Map<ProviderOperation, ProviderOperation> operationMap = new HashMap<>();
 
         public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
@@ -584,9 +585,9 @@ public class ModelMerger {
                 this.enumMemberMap.put(originalMember, mappedMember);
             }
         }
-        
+
         @Override
-        protected void registerOperationMapping(ProviderOperation originalOperation, 
+        protected void registerOperationMapping(ProviderOperation originalOperation,
                 ProviderOperation mappedOperation) {
             if (originalOperation.getOwner().equals(this.referenceRevision)) {
                 this.operationMap.put(originalOperation, mappedOperation);

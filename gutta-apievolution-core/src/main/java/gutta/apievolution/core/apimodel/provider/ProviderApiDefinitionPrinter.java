@@ -5,7 +5,8 @@ import gutta.apievolution.core.apimodel.Annotation;
 import java.util.*;
 
 /**
- * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
+ * Helper class to create a textual representation of an API definition. This is
+ * used to facilitate tests.
  */
 public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisitor<Void> {
 
@@ -13,6 +14,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
 
     /**
      * Prints a given API definition into a string.
+     *
      * @param definition The definition to print
      * @return The string representation of the definition
      */

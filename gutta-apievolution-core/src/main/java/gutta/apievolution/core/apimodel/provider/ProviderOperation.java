@@ -19,7 +19,7 @@ public class ProviderOperation extends Operation<ProviderApiDefinition, Provider
 
     /**
      * Creates a new service operation from the given data.
-     * 
+     *
      * @param publicName    The operation's public name
      * @param internalName  The operation's internal name, if any. Otherwise, the
      *                      public name is assumed
@@ -36,7 +36,7 @@ public class ProviderOperation extends Operation<ProviderApiDefinition, Provider
 
     /**
      * Creates a new service operation from the given data.
-     * 
+     *
      * @param annotations   The annotations on this operation
      * @param publicName    The operation's public name
      * @param internalName  The operation's internal name, if any. Otherwise, the

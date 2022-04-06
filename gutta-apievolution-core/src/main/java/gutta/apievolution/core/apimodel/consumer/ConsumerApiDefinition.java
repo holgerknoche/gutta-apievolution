@@ -17,12 +17,13 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
     /**
      * Creates an API definition from the given data.
-     * @param name The API definition's name
-     * @param annotations The annotations on this API definition, if any
+     *
+     * @param name               The API definition's name
+     * @param annotations        The annotations on this API definition, if any
      * @param referencedRevision The referenced revision number
      */
     public ConsumerApiDefinition(final QualifiedName name, final Set<Annotation> annotations,
-                                 final int referencedRevision) {
+            final int referencedRevision) {
         super(name, annotations);
 
         this.referencedRevision = referencedRevision;
@@ -30,12 +31,13 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
     /**
      * Returns the referenced revision number.
+     *
      * @return see above
      */
     public int getReferencedRevision() {
         return this.referencedRevision;
     }
-    
+
     @Override
     public int hashCode() {
         return super.hashCode() + this.referencedRevision;
@@ -53,15 +55,13 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
     }
 
     boolean stateEquals(ConsumerApiDefinition that) {
-        return super.stateEquals(that) &&
-                this.referencedRevision == that.referencedRevision;
+        return super.stateEquals(that) && this.referencedRevision == that.referencedRevision;
     }
 
     @Override
     protected void propagateInheritedFields() {
         List<ConsumerRecordType> recordTypes = this.getUserDefinedTypes().stream()
-                .filter(ConsumerRecordType.class::isInstance)
-                .map(ConsumerRecordType.class::cast)
+                .filter(ConsumerRecordType.class::isInstance).map(ConsumerRecordType.class::cast)
                 .collect(Collectors.toList());
 
         ConsumerInheritedFieldPropagator propagator = new ConsumerInheritedFieldPropagator();

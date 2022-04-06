@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * This class represents a map from a provider's internal representation to a consumer revision.
+ * This class represents a map from a provider's internal representation to a
+ * consumer revision.
  */
 class ProviderToConsumerMap {
 
@@ -21,8 +22,8 @@ class ProviderToConsumerMap {
     private final Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember;
 
     public ProviderToConsumerMap(Map<Type, Type> providerToConsumerType,
-                                 Map<ProviderField, ConsumerField> providerToConsumerField,
-                                 Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember) {
+            Map<ProviderField, ConsumerField> providerToConsumerField,
+            Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember) {
         this.providerToConsumerType = providerToConsumerType;
         this.providerToConsumerField = providerToConsumerField;
         this.providerToConsumerMember = providerToConsumerMember;
@@ -79,11 +80,11 @@ class ProviderToConsumerMap {
             RecordType<?, ?, ?> foreignRecordType = (RecordType<?, ?, ?>) this.foreignType;
 
             if (recordType.getSuperType().isPresent()) {
-                // When the current record has a supertype, ensure that it is mapped in a compatible way
+                // When the current record has a supertype, ensure that it is mapped in a
+                // compatible way
                 RecordType<?, ?, ?> ownSuperType = recordType.getSuperType().get(); // NOSONAR IsPresent is called
                 RecordType<?, ?, ?> foreignSuperType = foreignRecordType.getSuperType().orElseThrow(
-                        () -> new DefinitionResolutionException("Missing supertype on " + foreignRecordType + ".")
-                );
+                        () -> new DefinitionResolutionException("Missing supertype on " + foreignRecordType + "."));
 
                 Type mappedForeignSupertype = this.resolveForeignType(ownSuperType);
                 if (!foreignSuperType.equals(mappedForeignSupertype)) {
@@ -116,8 +117,8 @@ class ProviderToConsumerMap {
 
             Optionality foreignOptionality = foreignField.getOptionality();
             if (ownOptionality.isMorePermissiveThan(foreignOptionality)) {
-                throw new DefinitionResolutionException("Consumer optionality on field " + foreignField +
-                        " is too restrictive.");
+                throw new DefinitionResolutionException(
+                        "Consumer optionality on field " + foreignField + " is too restrictive.");
             }
         }
 

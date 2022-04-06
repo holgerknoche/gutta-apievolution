@@ -7,6 +7,7 @@ public interface BasicType extends Type {
 
     /**
      * Returns whether this type is a basic type.
+     *
      * @return see above
      */
     default boolean isBasicType() {
@@ -15,6 +16,7 @@ public interface BasicType extends Type {
 
     /**
      * Returns whether this type is an atomic type.
+     *
      * @return see above
      */
     default boolean isAtomicType() {
@@ -23,6 +25,7 @@ public interface BasicType extends Type {
 
     /**
      * Returns whether this type is a bounded type.
+     *
      * @return see above.
      */
     default boolean isBoundedType() {

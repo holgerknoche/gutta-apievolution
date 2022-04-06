@@ -7,7 +7,8 @@ public interface Type {
 
     /**
      * Accepts the given type visitor.
-     * @param <R> The visitor operation's return type
+     *
+     * @param <R>     The visitor operation's return type
      * @param visitor The visitor to accept
      * @return The visitor operation's result
      */

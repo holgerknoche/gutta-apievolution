@@ -11,8 +11,9 @@ import java.util.*;
  * @param <O> The concrete operation type (e.g., provider or consumer)
  * @param <R> The concrete record type
  */
-public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operation<A, O, R>, 
-        R extends RecordType<A, R, ?>> extends AbstractApiDefinitionElement {
+public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operation<A, O, R>,
+        R extends RecordType<A, R, ?>>
+        extends AbstractApiDefinitionElement {
 
     private final A owner;
 
@@ -24,30 +25,28 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Creates a new service operation from the given data.
-     * 
+     *
      * @param publicName   The public name of the operation
-     * @param internalName The internal name of the operation, if
-     *                     applicable. If no internal name is given, the public name
-     *                     is assumed
+     * @param internalName The internal name of the operation, if applicable. If no
+     *                     internal name is given, the public name is assumed
      * @param owner        The API definition that owns this operation
      */
     protected Operation(final String publicName, final Optional<String> internalName, final A owner, R returnType,
             R parameterType) {
         this(Collections.emptySet(), publicName, internalName, owner, returnType, parameterType);
     }
-    
+
     /**
      * Creates a new service operation from the given data.
-     * 
+     *
      * @param annotations  The annotations on this operation
      * @param publicName   The public name of the operation
-     * @param internalName The internal name of the operation, if
-     *                     applicable. If no internal name is given, the public name
-     *                     is assumed
+     * @param internalName The internal name of the operation, if applicable. If no
+     *                     internal name is given, the public name is assumed
      * @param owner        The API definition that owns this operation
      */
     @SuppressWarnings("unchecked")
-    protected Operation(Set<Annotation> annotations, final String publicName, final Optional<String> internalName, 
+    protected Operation(Set<Annotation> annotations, final String publicName, final Optional<String> internalName,
             final A owner, R returnType, R parameterType) {
         super(annotations, publicName, internalName);
 
@@ -63,7 +62,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Returns the service that owns this service operation.
-     * 
+     *
      * @return see above
      */
     public A getOwner() {
@@ -72,7 +71,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Returns the operation's parameter type.
-     * 
+     *
      * @return see above
      */
     public R getParameterType() {
@@ -81,7 +80,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Returns the operation's return type.
-     * 
+     *
      * @return see above
      */
     public R getReturnType() {
@@ -90,7 +89,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Returns the exceptions thrown by this operation.
-     * 
+     *
      * @return see above
      */
     public Set<R> getThrownExceptions() {
@@ -99,7 +98,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
 
     /**
      * Adds a thrown exception to this service operation.
-     * 
+     *
      * @param exceptionType The exception type to add
      */
     public void addThrownException(R exceptionType) {
@@ -128,7 +127,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
     /**
      * Compares this service operation's state against the state of the given
      * member.
-     * 
+     *
      * @param that The service operation to compare against
      * @return Whether the states are equal
      */

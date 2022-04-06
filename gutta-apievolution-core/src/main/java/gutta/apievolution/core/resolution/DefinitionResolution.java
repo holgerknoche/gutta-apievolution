@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A definition resolution represents the result of the resolution of a client API definition against
- * a provider's revision history, or more precisely, against the internal representation resulting
- * from the revision history.
+ * A definition resolution represents the result of the resolution of a client
+ * API definition against a provider's revision history, or more precisely,
+ * against the internal representation resulting from the revision history.
  */
 public class DefinitionResolution {
 
@@ -29,8 +29,7 @@ public class DefinitionResolution {
 
     private final Map<String, Type> providerTypeMap;
 
-    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap,
-                         ProviderToConsumerMap providerToConsumerMap) {
+    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap) {
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
 
@@ -39,21 +38,22 @@ public class DefinitionResolution {
     }
 
     private static Map<String, Type> createTypeMap(Stream<Type> types) {
-        return types.filter(UserDefinedType.class::isInstance)
-                .map(type -> (UserDefinedType<?>) type)
+        return types.filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
                 .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));
     }
 
     /**
      * Returns a stream of all mapped consumer types.
+     *
      * @return see above
      */
     public Stream<Type> consumerTypes() {
         return this.consumerToProviderMap.consumerTypes();
     }
-    
+
     /**
      * Returns a stream of all mapped consumer operations.
+     *
      * @return see above
      */
     public Stream<ConsumerOperation> consumerOperations() {
@@ -62,6 +62,7 @@ public class DefinitionResolution {
 
     /**
      * Resolves the given internal name into a consumer type.
+     *
      * @param internalName The internal name of the desired type
      * @return The consumer type, if it exists
      */
@@ -71,6 +72,7 @@ public class DefinitionResolution {
 
     /**
      * Returns a stream of all mapped provider types.
+     *
      * @return see above
      */
     public Stream<Type> providerTypes() {
@@ -79,6 +81,7 @@ public class DefinitionResolution {
 
     /**
      * Resolves the given internal name into a provider type.
+     *
      * @param internalName The internal name of the desired type
      * @return The consumer type, if it exists
      */
@@ -88,6 +91,7 @@ public class DefinitionResolution {
 
     /**
      * Maps a given consumer type to the corresponding provider type.
+     *
      * @param consumerType The consumer type to map
      * @return The provider type, if it exists
      */
@@ -97,6 +101,7 @@ public class DefinitionResolution {
 
     /**
      * Maps a given provider type to the corresponding consumer type.
+     *
      * @param providerType The provider type to map
      * @return The consumer type, if it exists
      */
@@ -106,6 +111,7 @@ public class DefinitionResolution {
 
     /**
      * Maps a given provider field to the corresponding consumer field.
+     *
      * @param providerField The provider field to map
      * @return The corresponding consumer field, if it exists
      */
@@ -115,6 +121,7 @@ public class DefinitionResolution {
 
     /**
      * Maps a given consumer field to the corresponding provider field.
+     *
      * @param consumerField The provider field to map
      * @return The corresponding provider field, if it exists
      */
@@ -124,15 +131,17 @@ public class DefinitionResolution {
 
     /**
      * Maps a given consumer enum member to the corresponding provider enum member.
+     *
      * @param consumerEnumMember The provider enum member to map
      * @return The corresponding provider enum member, if it exists
      */
     public ProviderEnumMember mapConsumerEnumMember(ConsumerEnumMember consumerEnumMember) {
         return this.consumerToProviderMap.mapConsumerMember(consumerEnumMember);
     }
-    
+
     /**
      * Maps a given consumer operation to the corresponding provider operation.
+     *
      * @param consumerOperation The provider operation to map
      * @return The corresponding operation, if it exists
      */

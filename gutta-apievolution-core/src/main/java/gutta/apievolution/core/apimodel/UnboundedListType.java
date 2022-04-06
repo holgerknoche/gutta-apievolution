@@ -13,7 +13,7 @@ public class UnboundedListType extends ListType {
     public boolean isBounded() {
         return false;
     }
-    
+
     @Override
     public int getBound() {
         throw new UnsupportedOperationException();

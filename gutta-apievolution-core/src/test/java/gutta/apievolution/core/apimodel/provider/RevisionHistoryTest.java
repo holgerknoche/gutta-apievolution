@@ -22,14 +22,10 @@ class RevisionHistoryTest {
      */
     @Test
     void testInconsistentNames() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                0,
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"), Collections.emptySet(), 0,
                 Optional.empty());
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("b.c"),
-                Collections.emptySet(),
-                1,
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("b.c"), Collections.emptySet(), 1,
                 Optional.empty());
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -44,14 +40,10 @@ class RevisionHistoryTest {
      */
     @Test
     void testNonMonotonicRevisionNumbers() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                1,
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"), Collections.emptySet(), 1,
                 Optional.empty());
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                0,
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"), Collections.emptySet(), 0,
                 Optional.empty());
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -67,46 +59,23 @@ class RevisionHistoryTest {
     @Test
     void testIllegalFieldTypeChange() {
 
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                0,
+        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"), Collections.emptySet(), 0,
                 Optional.empty());
 
-        ProviderRecordType recordTypeV1 = new ProviderRecordType("Test",
-                Optional.empty(),
-                0,
-                revision1,
-                false,
-                Optional.empty(),
-                Optional.empty());
+        ProviderRecordType recordTypeV1 = new ProviderRecordType("Test", Optional.empty(), 0, revision1, false,
+                Optional.empty(), Optional.empty());
 
-        ProviderField fieldV1 = new ProviderField("test",
-                Optional.empty(),
-                recordTypeV1,
-                AtomicType.INT_32,
+        ProviderField fieldV1 = new ProviderField("test", Optional.empty(), recordTypeV1, AtomicType.INT_32,
                 Optionality.MANDATORY);
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                Collections.emptySet(),
-                1,
+        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"), Collections.emptySet(), 1,
                 Optional.empty());
 
-        ProviderRecordType recordTypeV2 = new ProviderRecordType("Test",
-                Optional.empty(),
-                0,
-                revision2,
-                false,
-                Optional.empty(),
-                Optional.of(recordTypeV1));
+        ProviderRecordType recordTypeV2 = new ProviderRecordType("Test", Optional.empty(), 0, revision2, false,
+                Optional.empty(), Optional.of(recordTypeV1));
 
-        new ProviderField("test",
-                Optional.empty(),
-                recordTypeV2,
-                AtomicType.INT_64,
-                Optionality.MANDATORY,
-                false,
-                Arrays.asList(fieldV1),
-                Optional.of(fieldV1));
+        new ProviderField("test", Optional.empty(), recordTypeV2, AtomicType.INT_64, Optionality.MANDATORY, false,
+                Arrays.asList(fieldV1), Optional.of(fieldV1));
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,

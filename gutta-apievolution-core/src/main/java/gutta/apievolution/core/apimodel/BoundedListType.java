@@ -17,7 +17,7 @@ public class BoundedListType extends ListType {
     public boolean isBounded() {
         return true;
     }
-    
+
     @Override
     public int getBound() {
         return this.bound;
@@ -40,8 +40,7 @@ public class BoundedListType extends ListType {
     }
 
     boolean stateEquals(BoundedListType that) {
-        return super.stateEquals(that) &&
-                this.bound == that.bound;
+        return super.stateEquals(that) && this.bound == that.bound;
     }
 
     @Override

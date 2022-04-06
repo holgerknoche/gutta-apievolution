@@ -13,28 +13,32 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> impl
 
     /**
      * Creates a new field from the given data.
-     * @param publicName The field's public name
-     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
-     * @param owner The record type that owns this field
-     * @param type The type of this field
-     * @param optionality The field's optionality
+     *
+     * @param publicName   The field's public name
+     * @param internalName The field's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param owner        The record type that owns this field
+     * @param type         The type of this field
+     * @param optionality  The field's optionality
      */
     public ConsumerField(final String publicName, final Optional<String> internalName, final ConsumerRecordType owner,
-                         final Type type, Optionality optionality) {
+            final Type type, Optionality optionality) {
         this(publicName, internalName, owner, type, optionality, false);
     }
 
     /**
      * Creates a new field from the given data.
-     * @param publicName The field's public name
-     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
-     * @param owner The record type that owns this field
-     * @param type The type of this field
-     * @param optionality The field's optionality
-     * @param inherited Denotes whether this field is inherited
+     *
+     * @param publicName   The field's public name
+     * @param internalName The field's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param owner        The record type that owns this field
+     * @param type         The type of this field
+     * @param optionality  The field's optionality
+     * @param inherited    Denotes whether this field is inherited
      */
     public ConsumerField(final String publicName, final Optional<String> internalName, final ConsumerRecordType owner,
-                         final Type type, Optionality optionality, boolean inherited) {
+            final Type type, Optionality optionality, boolean inherited) {
         super(publicName, internalName, owner, type, optionality, inherited);
     }
 

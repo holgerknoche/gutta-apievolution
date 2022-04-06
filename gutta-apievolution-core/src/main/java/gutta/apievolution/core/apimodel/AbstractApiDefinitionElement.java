@@ -24,7 +24,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Creates a new API definition element from the given data.
-     * 
+     *
      * @param publicName   The element's public name
      * @param internalName The element's internal name, if any. Otherwise, the
      *                     public name is assumed
@@ -35,7 +35,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Creates a new API definition element from the given data.
-     * 
+     *
      * @param annotations  The annotations on the element
      * @param publicName   The element's public name
      * @param internalName The element's internal name, if any. Otherwise, the
@@ -52,7 +52,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Returns this element's public name.
-     * 
+     *
      * @return see above
      */
     public String getPublicName() {
@@ -61,7 +61,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Returns this element's internal name.
-     * 
+     *
      * @return see above
      */
     public String getInternalName() {
@@ -71,7 +71,7 @@ abstract class AbstractApiDefinitionElement {
     /**
      * Returns the internal name as an optional, which is only present if the
      * internal name differs from the public name.
-     * 
+     *
      * @return see above
      */
     public Optional<String> getOptionalInternalName() {
@@ -80,7 +80,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Returns the annotations on this element.
-     * 
+     *
      * @return see above
      */
     public Set<Annotation> getAnnotations() {
@@ -89,7 +89,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Returns the annotation of the given type, if it exists.
-     * 
+     *
      * @param type The type of the desired annotation
      * @return The optional annotation
      */
@@ -99,7 +99,7 @@ abstract class AbstractApiDefinitionElement {
 
     /**
      * Adds an annotation to this element, provided that it is mutable.
-     * 
+     *
      * @param annotation The annotation to add
      */
     protected void addAnnotation(Annotation annotation) {

@@ -23,6 +23,7 @@ public enum Usage {
 
     /**
      * Denotes whether this usage type includes the given one.
+     *
      * @param usage The usage type to compare against
      * @return {@code True} iff this type includes the given one
      */
@@ -32,40 +33,41 @@ public enum Usage {
         }
 
         switch (this) {
-            case NONE:
-                return false;
+        case NONE:
+            return false;
 
-            case INPUT:
-            case OUTPUT:
-                return (usage == IN_OUT);
+        case INPUT:
+        case OUTPUT:
+            return (usage == IN_OUT);
 
-            case IN_OUT:
-                return true;
+        case IN_OUT:
+            return true;
 
-            default:
-                throw new IllegalArgumentException("Values " + this + " and " + usage + " are not comparable.");
+        default:
+            throw new IllegalArgumentException("Values " + this + " and " + usage + " are not comparable.");
         }
     }
 
     /**
      * Computes the least upper bound of this usage and the given one.
+     *
      * @param usage The usage type to compare against
      * @return see above
      */
     public Usage lubOfThisAnd(Usage usage) {
         switch (this) {
-            case NONE:
-                return usage;
+        case NONE:
+            return usage;
 
-            case INPUT:
-            case OUTPUT:
-                return (usage == NONE) ? this : IN_OUT;
+        case INPUT:
+        case OUTPUT:
+            return (usage == NONE) ? this : IN_OUT;
 
-            case IN_OUT:
-                return this;
+        case IN_OUT:
+            return this;
 
-            default:
-                throw new IllegalArgumentException("No valid upper bound of " + this + " and " + usage + ".");
+        default:
+            throw new IllegalArgumentException("No valid upper bound of " + this + " and " + usage + ".");
         }
     }
 
