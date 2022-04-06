@@ -17,7 +17,7 @@ class ReadProviderApiResponse {
     public final String definition;
 
     public ReadProviderApiResponse(String historyName, int revisionNumber, LocalDateTime commitTime,
-                                   LocalDateTime supportedFrom, LocalDateTime supportedUntil, String definition) {
+            LocalDateTime supportedFrom, LocalDateTime supportedUntil, String definition) {
         this.historyName = historyName;
         this.revisionNumber = revisionNumber;
         this.commitTime = commitTime;

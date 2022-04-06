@@ -13,30 +13,52 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
 
     /**
      * Creates a new record type from the given data.
-     * @param publicName The type's public name
-     * @param internalName The type's internal name, if any. Otherwise, the public name is assumed
-     * @param typeId The type's type id
-     * @param owner The API definition that owns this type
+     *
+     * @param publicName   The type's public name
+     * @param internalName The type's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param typeId       The type's type id
+     * @param owner        The API definition that owns this type
      * @param abstractFlag Denotes whether this type is abstract
      */
     public ConsumerRecordType(final String publicName, final Optional<String> internalName, final int typeId,
-                              final ConsumerApiDefinition owner, final boolean abstractFlag) {
-        super(publicName, internalName, typeId, owner, abstractFlag, Optional.empty());
+            final ConsumerApiDefinition owner, final boolean abstractFlag) {
+        super(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty());
     }
 
     /**
      * Creates a new record type from the given data.
-     * @param publicName The type's public name
-     * @param internalName The type's internal name, if any. Otherwise, the public name is assumed
-     * @param typeId The type's type id
-     * @param owner The API definition that owns this type
+     *
+     * @param publicName   The type's public name
+     * @param internalName The type's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param typeId       The type's type id
+     * @param owner        The API definition that owns this type
      * @param abstractFlag Denotes whether this type is abstract
-     * @param superType The type's supertype, if any
+     * @param superType    The type's supertype, if any
      */
     public ConsumerRecordType(final String publicName, final Optional<String> internalName, final int typeId,
-                              final ConsumerApiDefinition owner, final boolean abstractFlag,
-                              final Optional<ConsumerRecordType> superType) {
-        super(publicName, internalName, typeId, owner, abstractFlag, superType);
+            final ConsumerApiDefinition owner, final boolean abstractFlag,
+            final Optional<ConsumerRecordType> superType) {
+        super(publicName, internalName, typeId, owner, abstractFlag, false, superType);
+    }
+
+    /**
+     * Creates a new record type from the given data.
+     *
+     * @param publicName   The type's public name
+     * @param internalName The type's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param typeId       The type's type id
+     * @param owner        The API definition that owns this type
+     * @param abstractFlag Denotes whether this type is abstract
+     * @param exception    Denotes whether this type is an exception
+     * @param superType    The type's supertype, if any
+     */
+    public ConsumerRecordType(final String publicName, final Optional<String> internalName, final int typeId,
+            final ConsumerApiDefinition owner, final boolean abstractFlag, boolean exception,
+            final Optional<ConsumerRecordType> superType) {
+        super(publicName, internalName, typeId, owner, abstractFlag, exception, superType);
     }
 
     @Override

@@ -4,11 +4,13 @@ import java.util.*;
 
 /**
  * An enum type consists of a number of user-provided static values.
- * @param <A> The concrete type of the API definition that contains this enum type
+ *
+ * @param <A> The concrete type of the API definition that contains this enum
+ *            type
  * @param <E> The concrete type of the enum type (e.g., provider or consumer)
  * @param <M> The concrete type of the enum members
  */
-public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>>
+public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>>
         extends UserDefinedType<A> implements Iterable<M> {
 
     private final List<M> declaredMembers;
@@ -19,10 +21,12 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Creates a new enum type from the given data.
-     * @param publicName The public name of the enum type
-     * @param internalName The internal name of the enum type, if applicable. Otherwise, the public name is assumed
-     * @param typeId The enum type's type id
-     * @param owner The API definition that owns this enum type
+     *
+     * @param publicName   The public name of the enum type
+     * @param internalName The internal name of the enum type, if applicable.
+     *                     Otherwise, the public name is assumed
+     * @param typeId       The enum type's type id
+     * @param owner        The API definition that owns this enum type
      */
     protected EnumType(final String publicName, final Optional<String> internalName, final int typeId, final A owner) {
         super(publicName, internalName, typeId, owner);
@@ -36,6 +40,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Returns the declared members of this enum type.
+     *
      * @return see above
      */
     public List<M> getDeclaredMembers() {
@@ -44,6 +49,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Adds a member to this enum type.
+     *
      * @param member The member to add
      */
     protected void addDeclaredMember(final M member) {
@@ -61,6 +67,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Resolves the member based on its public name.
+     *
      * @param name The public name of the desired member
      * @return The resolved member, if it exists
      */
@@ -70,6 +77,7 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Finds a member based on its internal name.
+     *
      * @param internalName The internal name of the desired member
      * @return The member, if it exists
      */
@@ -84,12 +92,12 @@ public abstract class EnumType<A extends ApiDefinition<A>, E extends EnumType<A,
 
     /**
      * Compares this enum type's state against the state of the given member.
+     *
      * @param that The enum type to compare against
      * @return Whether the states are equal
      */
     protected boolean stateEquals(EnumType<A, E, M> that) {
-        return super.stateEquals(that) &&
-                this.declaredMembers.equals(that.declaredMembers);
+        return super.stateEquals(that) && this.declaredMembers.equals(that.declaredMembers);
     }
 
 }

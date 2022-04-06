@@ -1,13 +1,11 @@
 package gutta.apievolution.javacodegen;
 
 /**
- * Enumeration of Java standard types (i.e., Integer, Long, ...) for code generation.
+ * Enumeration of Java standard types (i.e., Integer, Long, ...) for code
+ * generation.
  */
 public enum JavaStandardTypes implements JavaType {
-    INT_TYPE("Integer"),
-    NUMERIC_TYPE("java.math.BigDecimal"),
-    LONG_TYPE("Long"),
-    STRING_TYPE("String");
+    INT_TYPE("Integer"), NUMERIC_TYPE("java.math.BigDecimal"), LONG_TYPE("Long"), STRING_TYPE("String");
 
     private final String fullyQualifiedName;
 

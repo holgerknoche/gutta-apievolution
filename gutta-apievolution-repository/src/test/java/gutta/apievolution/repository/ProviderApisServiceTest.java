@@ -85,9 +85,11 @@ class ProviderApisServiceTest {
     }
 
     /**
-     * A simple repository mocks for up to 10 definitions per history (due to the naming scheme).
+     * A simple repository mocks for up to 10 definitions per history (due to the
+     * naming scheme).
      */
-    private static class SimpleApisRepositoryMock extends ProviderApisRepository {
+    private static class SimpleApisRepositoryMock
+            extends ProviderApisRepository {
 
         private final Map<String, PersistentProviderApiDefinition> definitionMap = new HashMap<>();
 
@@ -95,14 +97,10 @@ class ProviderApisServiceTest {
         public List<PersistentProviderApiDefinition> findApiDefinitionsInHistory(String historyName) {
             String keyPrefix = historyName + "_";
 
-            List<String> keys = this.definitionMap.keySet().stream()
-                    .filter(name -> name.startsWith(keyPrefix))
-                    .sorted()
+            List<String> keys = this.definitionMap.keySet().stream().filter(name -> name.startsWith(keyPrefix)).sorted()
                     .collect(Collectors.toList());
 
-            return keys.stream()
-                    .map(this.definitionMap::get)
-                    .collect(Collectors.toList());
+            return keys.stream().map(this.definitionMap::get).collect(Collectors.toList());
         }
 
         @Override

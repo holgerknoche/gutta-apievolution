@@ -10,6 +10,7 @@ public abstract class IntegerRange implements Iterable<Integer> { // NOSONAR Thi
 
     /**
      * Creates a new unbounded integer range.
+     *
      * @return see above
      */
     public static IntegerRange unbounded() {

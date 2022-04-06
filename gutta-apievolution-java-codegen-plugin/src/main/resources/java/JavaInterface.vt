@@ -12,8 +12,8 @@ public interface ${type.name}#if (${type.superType}) extends ${type.superType.na
     ${property.type.fullyQualifiedName} get${property.capitalizedName}();
 
     /**
-     * Sets the value of property ${$property.name}.
-     * @param ${$property.name} The value to set
+     * Sets the value of property ${property.name}.
+     * @param ${property.name} The value to set
      */
     void set${property.capitalizedName}(${property.type.fullyQualifiedName} ${property.name});
 

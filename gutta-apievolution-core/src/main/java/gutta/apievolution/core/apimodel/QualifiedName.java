@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Qualified names consist of (potentially) multiple parts. Syntactically, these parts are separated by dots, for
- * instance, "a.b.c".
+ * Qualified names consist of (potentially) multiple parts. Syntactically, these
+ * parts are separated by dots, for instance, "a.b.c".
  */
 public class QualifiedName {
 
@@ -14,6 +14,7 @@ public class QualifiedName {
 
     /**
      * Creates a new qualified name from its syntactical representation.
+     *
      * @param name The name string to create an object from
      * @return The qualified name object
      */
@@ -27,6 +28,7 @@ public class QualifiedName {
 
     /**
      * Creates a qualified name from the given list of parts.
+     *
      * @param parts The parts of the qualified name
      */
     public QualifiedName(final List<String> parts) {

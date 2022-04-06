@@ -9,14 +9,11 @@ class ConsumerInheritedFieldPropagator extends InheritedFieldPropagator<Consumer
     @Override
     protected ConsumerField createInheritedField(ConsumerField originalField, ConsumerRecordType targetType) {
         Optional<String> internalName = (originalField.getPublicName().equals(originalField.getInternalName())) ?
-                Optional.empty() : Optional.of(originalField.getInternalName());
+                Optional.empty() :
+                Optional.of(originalField.getInternalName());
 
-        return new ConsumerField(originalField.getPublicName(),
-                internalName,
-                targetType,
-                originalField.getType(),
-                originalField.getOptionality(),
-                true);
+        return new ConsumerField(originalField.getPublicName(), internalName, targetType, originalField.getType(),
+                originalField.getOptionality(), true);
     }
 
 }

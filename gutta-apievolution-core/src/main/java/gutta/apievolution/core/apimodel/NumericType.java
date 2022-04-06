@@ -1,7 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
 /**
- * A numeric type represents a fixed-length decimal with integer and fractional places.
+ * A numeric type represents a fixed-length decimal with integer and fractional
+ * places.
  */
 public class NumericType implements BoundedType {
 
@@ -11,7 +12,8 @@ public class NumericType implements BoundedType {
 
     /**
      * Creates a new bounded numeric type.
-     * @param integerPlaces The type's number of integer places
+     *
+     * @param integerPlaces    The type's number of integer places
      * @param fractionalPlaces The type's number of fractional places
      * @return The numeric type
      */
@@ -26,6 +28,7 @@ public class NumericType implements BoundedType {
 
     /**
      * Returns this type's number of integer places.
+     *
      * @return see above
      */
     public int getIntegerPlaces() {
@@ -34,6 +37,7 @@ public class NumericType implements BoundedType {
 
     /**
      * Returns this type's number of fractional places.
+     *
      * @return see above
      */
     public int getFractionalPlaces() {
@@ -57,8 +61,7 @@ public class NumericType implements BoundedType {
     }
 
     boolean stateEquals(NumericType that) {
-        return this.integerPlaces == that.integerPlaces &&
-                this.fractionalPlaces == that.fractionalPlaces;
+        return this.integerPlaces == that.integerPlaces && this.fractionalPlaces == that.fractionalPlaces;
     }
 
     @Override

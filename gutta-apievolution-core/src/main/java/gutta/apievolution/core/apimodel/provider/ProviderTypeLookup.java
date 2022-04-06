@@ -19,15 +19,16 @@ class ProviderTypeLookup extends MapBackedTypeLookup<ProviderUserDefinedType, Pr
     }
 
     /**
-     * Returns a restriction of this type lookup to the given provider API definition.
+     * Returns a restriction of this type lookup to the given provider API
+     * definition.
+     *
      * @param definition The definition to restrict the type lookup to
      * @return The restricted type lookup
      */
     @SuppressWarnings("unchecked")
     public ProviderTypeLookup restrictTo(ProviderApiDefinition definition) {
-        Map<ProviderUserDefinedType, ProviderUserDefinedType> restrictedUdtLookup = this.udtLookupStream()
-                .filter(entry ->
-                        ((UserDefinedType<ProviderApiDefinition>) entry.getKey()).getOwner().equals(definition))
+        Map<ProviderUserDefinedType, ProviderUserDefinedType> restrictedUdtLookup = this.udtLookupStream().filter(
+                entry -> ((UserDefinedType<ProviderApiDefinition>) entry.getKey()).getOwner().equals(definition))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return new ProviderTypeLookup(restrictedUdtLookup);

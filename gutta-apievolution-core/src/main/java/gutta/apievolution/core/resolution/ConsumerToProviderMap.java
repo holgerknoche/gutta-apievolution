@@ -3,9 +3,11 @@ package gutta.apievolution.core.resolution;
 import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
 import java.util.HashMap;
@@ -15,8 +17,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * This class represents a map from a consumer revision to a specific provider revision. It is complemented with
- * a mapping from the provider revision to the current provider's internal representation.
+ * This class represents a map from a consumer revision to a specific provider
+ * revision. It is complemented with a mapping from the provider revision to the
+ * current provider's internal representation.
  */
 class ConsumerToProviderMap {
 
@@ -26,18 +29,25 @@ class ConsumerToProviderMap {
 
     private final Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember;
 
+    private final Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation;
+
     public ConsumerToProviderMap(Map<Type, Type> consumerToProviderType,
-                                 Map<ConsumerField, ProviderField> consumerToProviderField,
-                                 Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember) {
+            Map<ConsumerField, ProviderField> consumerToProviderField,
+            Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
+            Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
         this.consumerToProviderType = consumerToProviderType;
         this.consumerToProviderField = consumerToProviderField;
         this.consumerToProviderMember = consumerToProviderMember;
+        this.consumerToProviderOperation = consumerToProviderOperation;
     }
 
     /**
-     * Composes this map with the given map to a provider's merged definition, resulting in a map from the consumer
-     * definition of this map to the merged definition.
-     * @param toMergedModelMap The map from the provider definition to the merged definition
+     * Composes this map with the given map to a provider's merged definition,
+     * resulting in a map from the consumer definition of this map to the merged
+     * definition.
+     *
+     * @param toMergedModelMap The map from the provider definition to the merged
+     *                         definition
      * @return A composed map of this and the given map
      */
     public ConsumerToProviderMap compose(ToMergedModelMap toMergedModelMap) {
@@ -47,12 +57,16 @@ class ConsumerToProviderMap {
                 field -> toMergedModelMap.mapField(field).orElse(null));
         Map<ConsumerEnumMember, ProviderEnumMember> composedMemberMap = composeMaps(this.consumerToProviderMember,
                 member -> toMergedModelMap.mapEnumMember(member).orElse(null));
+        Map<ConsumerOperation, ProviderOperation> composedOperationMap = composeMaps(this.consumerToProviderOperation,
+                operation -> toMergedModelMap.mapOperation(operation).orElse(null));
 
-        return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap);
+        return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap, composedOperationMap);
     }
 
     /**
-     * Inverts this map to produce a map from the provider's definition to the consumer's definition.
+     * Inverts this map to produce a map from the provider's definition to the
+     * consumer's definition.
+     *
      * @return see above
      */
     public ProviderToConsumerMap invert() {
@@ -82,7 +96,7 @@ class ConsumerToProviderMap {
     }
 
     private void checkTypeAssociation(Map<Type, Type> consumerToProviderType,
-                                      Map<ConsumerField, ProviderField> consumerToProviderField) {
+            Map<ConsumerField, ProviderField> consumerToProviderField) {
         ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker();
 
         consumerToProviderType.forEach(checker::checkConsistency);
@@ -120,6 +134,10 @@ class ConsumerToProviderMap {
         return this.consumerToProviderType.keySet().stream();
     }
 
+    Stream<ConsumerOperation> consumerOperations() {
+        return this.consumerToProviderOperation.keySet().stream();
+    }
+
     Type mapConsumerType(Type consumerType) {
         return this.consumerToProviderType.get(consumerType);
     }
@@ -130,6 +148,10 @@ class ConsumerToProviderMap {
 
     ProviderEnumMember mapConsumerMember(ConsumerEnumMember consumerEnumMember) {
         return this.consumerToProviderMember.get(consumerEnumMember);
+    }
+
+    ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
+        return this.consumerToProviderOperation.get(consumerOperation);
     }
 
     private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
@@ -182,8 +204,8 @@ class ConsumerToProviderMap {
             Optionality providerOptionality = foreignField.getOptionality();
 
             if (consumerOptionality != providerOptionality) {
-                throw new DefinitionResolutionException("Optionalities of " + ownField + " and " + foreignField +
-                        " are not compatible.");
+                throw new DefinitionResolutionException(
+                        "Optionalities of " + ownField + " and " + foreignField + " are not compatible.");
             }
 
             // Make sure that the types match

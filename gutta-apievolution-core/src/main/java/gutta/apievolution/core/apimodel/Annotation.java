@@ -3,8 +3,9 @@ package gutta.apievolution.core.apimodel;
 import java.util.Objects;
 
 /**
- * Annotations allow to embed additional information within an API model, such as, for instance, specific names of types
- * for particular programming languages.
+ * Annotations allow to embed additional information within an API model, such
+ * as, for instance, specific names of types for particular programming
+ * languages.
  */
 public class Annotation {
 
@@ -15,7 +16,7 @@ public class Annotation {
     /**
      * Creates a new annotation with the given annotation type name.
      *
-     * @param name The annotation's name
+     * @param name  The annotation's name
      * @param value The annotation's value
      */
     public Annotation(final String name, final String value) {
@@ -34,7 +35,7 @@ public class Annotation {
 
     /**
      * Returns the value of this annotation.
-     * 
+     *
      * @return see above
      */
     public String getValue() {
@@ -58,8 +59,7 @@ public class Annotation {
     }
 
     boolean stateEquals(Annotation that) {
-        return this.name.equals(that.name) &&
-                this.value.equals(that.value);
+        return this.name.equals(that.name) && this.value.equals(that.value);
     }
 
 }

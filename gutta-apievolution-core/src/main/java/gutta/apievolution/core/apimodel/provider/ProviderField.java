@@ -21,55 +21,36 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     private Optional<ProviderField> successor;
 
     /**
-     * Determines whether the types of two successive fields represent a type change.
-     * @param predecessorType The type of the predecessor field
-     * @param successorType The type of the successor field
-     * @return {@code True}, if the types are considered different, {@code false} otherwise
-     */
-    public static boolean isTypeChange(Type predecessorType, Type successorType) {
-        if (successorType instanceof RevisionedElement) {
-            // If the current type is revisioned, we must see if there is a predecessor of the successor type
-            // matching the current type
-            Optional<?> matchingPredecessor = ((RevisionedElement<?>) successorType).findFirstPredecessorMatching(
-                    type -> type.equals(predecessorType)
-            );
-
-            // If no matching predecessor (or none at all) is present, we have a type change
-            return !(matchingPredecessor.isPresent());
-        } else {
-            // Otherwise, the types can be compared immediately
-            return !(successorType.equals(predecessorType));
-        }
-    }
-
-    /**
      * Creates a new field from the given data.
-     * @param publicName The field's public name
-     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
-     * @param owner The record type that owns this field
-     * @param type The field's type
-     * @param optionality The field's optionality
+     *
+     * @param publicName   The field's public name
+     * @param internalName The field's internal name, if any. Otherwise, the public
+     *                     name is assumed
+     * @param owner        The record type that owns this field
+     * @param type         The field's type
+     * @param optionality  The field's optionality
      */
     public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
-                         final Type type, Optionality optionality) {
+            final Type type, Optionality optionality) {
         this(publicName, internalName, owner, type, optionality, false, Collections.emptyList(), Optional.empty());
     }
 
     /**
      * Creates a new field from the given data.
-     * @param publicName The field's public name
-     * @param internalName The field's internal name, if any. Otherwise, the public name is assumed
-     * @param owner The record type that owns this field
-     * @param type The field's type
-     * @param optionality The field's optionality
-     * @param inherited Denotes whether this field is inherited
+     *
+     * @param publicName           The field's public name
+     * @param internalName         The field's internal name, if any. Otherwise, the
+     *                             public name is assumed
+     * @param owner                The record type that owns this field
+     * @param type                 The field's type
+     * @param optionality          The field's optionality
+     * @param inherited            Denotes whether this field is inherited
      * @param declaredPredecessors The declared predecessors, if any
-     * @param predecessor The field's predecessor, if any
+     * @param predecessor          The field's predecessor, if any
      */
     public ProviderField(final String publicName, final Optional<String> internalName, final ProviderRecordType owner,
-                         final Type type, Optionality optionality, boolean inherited,
-                         List<ProviderField> declaredPredecessors,
-                         final Optional<ProviderField> predecessor) {
+            final Type type, Optionality optionality, boolean inherited, List<ProviderField> declaredPredecessors,
+            final Optional<ProviderField> predecessor) {
         super(publicName, internalName, owner, type, optionality, inherited);
 
         this.predecessor = predecessor;
@@ -91,6 +72,7 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
 
     /**
      * Returns the predecessors declared on this field.
+     *
      * @return see above
      */
     public List<ProviderField> getDeclaredPredecessors() {

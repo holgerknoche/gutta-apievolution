@@ -9,7 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A revision history embodies an ordered sequence of dependent provider API definitions.
+ * A revision history embodies an ordered sequence of dependent provider API
+ * definitions.
  */
 public class RevisionHistory {
 
@@ -19,6 +20,7 @@ public class RevisionHistory {
 
     /**
      * Creates a new revision history from the given revisions.
+     *
      * @param revisions The revisions that make up the history
      */
     public RevisionHistory(ProviderApiDefinition... revisions) {
@@ -27,6 +29,7 @@ public class RevisionHistory {
 
     /**
      * Creates a new revision history from the given revisions.
+     *
      * @param revisions The revisions that make up the history
      */
     public RevisionHistory(List<ProviderApiDefinition> revisions) {
@@ -38,6 +41,7 @@ public class RevisionHistory {
 
     /**
      * Returns whether this history contains no elements.
+     *
      * @return see above
      */
     public boolean isEmpty() {
@@ -46,6 +50,7 @@ public class RevisionHistory {
 
     /**
      * Retrieves a revision within this history by its revision number.
+     *
      * @param revisionNo The desired revision's revision number
      * @return The desired revision, if it exists
      */
@@ -54,7 +59,9 @@ public class RevisionHistory {
     }
 
     /**
-     * Returns a {@link ListIterator} that is positioned after the last element of the history.
+     * Returns a {@link ListIterator} that is positioned after the last element of
+     * the history.
+     *
      * @return see above
      */
     public ListIterator<ProviderApiDefinition> reverseIterator() {
@@ -63,6 +70,7 @@ public class RevisionHistory {
 
     /**
      * Returns the API definitions contained in this history as a set.
+     *
      * @return see above
      */
     public Set<ProviderApiDefinition> revisionSet() {
@@ -78,13 +86,11 @@ public class RevisionHistory {
         }
 
         // Instantiate the relevant checks
-        List<RevisionCheck> checks = Arrays.asList(
-            new SameAPINameCheck(),
-            new DescendingRevisionsCheck(),
-            new NoTypeChangesForFieldsCheck()
-        );
+        List<RevisionCheck> checks = Arrays.asList(new SameAPINameCheck(), new DescendingRevisionsCheck(),
+                new NoTypeChangesForFieldsCheck());
 
-        // Iterate over the revisions in reverse order and invoke the checks on each revision
+        // Iterate over the revisions in reverse order and invoke the checks on each
+        // revision
         ListIterator<ProviderApiDefinition> revisionsToCheck = this.reverseIterator();
         while (revisionsToCheck.hasPrevious()) {
             ProviderApiDefinition revisionToCheck = revisionsToCheck.previous();
@@ -102,11 +108,13 @@ public class RevisionHistory {
 
         void checkRevision(ProviderApiDefinition revision);
 
-        default void atEnd() {}
+        default void atEnd() {
+        }
     }
 
     /**
-     * Check implementation to ensure that all revisions in the history have the same name.
+     * Check implementation to ensure that all revisions in the history have the
+     * same name.
      */
     private static class SameAPINameCheck implements RevisionCheck {
 
@@ -126,7 +134,8 @@ public class RevisionHistory {
     }
 
     /**
-     * Check implementation to ensure that revisions in the history have descending revision numbers.
+     * Check implementation to ensure that revisions in the history have descending
+     * revision numbers.
      */
     private static class DescendingRevisionsCheck implements RevisionCheck {
 
@@ -143,7 +152,8 @@ public class RevisionHistory {
     }
 
     /**
-     * Check implementation to ensure that no type changes occur for fields in record types.
+     * Check implementation to ensure that no type changes occur for fields in
+     * record types.
      */
     private static class NoTypeChangesForFieldsCheck implements RevisionCheck {
 
@@ -163,9 +173,7 @@ public class RevisionHistory {
         }
 
         private void checkField(ProviderField field) {
-            Optional<ProviderField> optionalSuccessor = field.findFirstSuccessorMatching(
-                    this.lastTypes::containsKey
-            );
+            Optional<ProviderField> optionalSuccessor = field.findFirstSuccessorMatching(this.lastTypes::containsKey);
 
             if (!optionalSuccessor.isPresent()) {
                 // No type associated yet to any successor, therefore, no check necessary
@@ -179,8 +187,8 @@ public class RevisionHistory {
             Type expectedType = this.determineEquivalentInRevision(successorType, currentRevision);
 
             if (expectedType == null) {
-                throw new InconsistentHistoryException("No equivalent type for " + successorType + " in revision " +
-                        currentRevision + ".");
+                throw new InconsistentHistoryException(
+                        "No equivalent type for " + successorType + " in revision " + currentRevision + ".");
             } else if (!expectedType.equals(field.getType())) {
                 throw new InconsistentHistoryException("Illegal type change for field " + field + ".");
             }
@@ -188,18 +196,19 @@ public class RevisionHistory {
 
         private Type determineEquivalentInRevision(Type type, ProviderApiDefinition revision) {
             if (type instanceof ProviderRecordType) {
-                // If the type is a record type, we need to find the predecessor of the respective type in
+                // If the type is a record type, we need to find the predecessor of the
+                // respective type in
                 // the current revision
                 ProviderRecordType recordType = (ProviderRecordType) type;
-                Optional<ProviderRecordType> equivalentType =
-                        recordType.findFirstPredecessorMatching(pred -> revision.equals(pred.getOwner()));
+                Optional<ProviderRecordType> equivalentType = recordType
+                        .findFirstPredecessorMatching(pred -> revision.equals(pred.getOwner()));
 
                 return equivalentType.orElse(null);
             } else if (type instanceof ProviderEnumType) {
                 // Same for enum types
                 ProviderEnumType recordType = (ProviderEnumType) type;
-                Optional<ProviderEnumType> equivalentType =
-                        recordType.findFirstPredecessorMatching(pred -> revision.equals(pred.getOwner()));
+                Optional<ProviderEnumType> equivalentType = recordType
+                        .findFirstPredecessorMatching(pred -> revision.equals(pred.getOwner()));
 
                 return equivalentType.orElse(null);
             } else if (type instanceof ListType) {
@@ -207,8 +216,8 @@ public class RevisionHistory {
                 ListType listType = (ListType) type;
                 Type elementType = this.determineEquivalentInRevision(listType.getElementType(), revision);
 
-                return (listType.isBounded()) ? ListType.bounded(elementType, listType.getBound()) :
-                        ListType.unbounded(elementType);
+                return (listType.isBounded()) ? ListType.bounded(elementType, listType.getBound())
+                        : ListType.unbounded(elementType);
             } else {
                 // If the type is a basic type, it is the same in all revisions
                 return type;

@@ -7,6 +7,7 @@ import java.util.*;
 
 /**
  * Abstract supertype for the provider and consumer inherited field propagation.
+ *
  * @param <R> The concrete record type to use
  * @param <F> The concrete field type to use
  */
@@ -16,15 +17,14 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
 
     /**
      * Propagates inherited fields for the given record types.
+     *
      * @param recordTypes The record types to operate on
      */
     public void propagateFieldsFor(Collection<R> recordTypes) {
         this.processedTypes = new HashSet<>();
 
         // Iterate over "leaf types" with super types
-        recordTypes.stream()
-                .filter(type -> !type.hasSubTypes())
-                .filter(RecordType::hasSuperType)
+        recordTypes.stream().filter(type -> !type.hasSubTypes()).filter(RecordType::hasSuperType)
                 .forEach(this::propagateFields);
     }
 
@@ -39,7 +39,8 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
             this.propagateFields(superType, inheritedFields);
         });
 
-        // If the current type has not yet been processed, add the inherited types to the
+        // If the current type has not yet been processed, add the inherited types to
+        // the
         // current type
         if (!this.processedTypes.contains(targetType)) {
             for (F inheritedField : inheritedFields) {
@@ -53,9 +54,11 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
     }
 
     /**
-     * Creates an inherited field based on the given original field for the given target type.
+     * Creates an inherited field based on the given original field for the given
+     * target type.
+     *
      * @param originalField The original field that is inherited to the given type
-     * @param targetType The receiving type of the field
+     * @param targetType    The receiving type of the field
      * @return The created field
      */
     protected abstract F createInheritedField(F originalField, R targetType);

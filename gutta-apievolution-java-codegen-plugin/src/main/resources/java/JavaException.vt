@@ -1,0 +1,21 @@
+package ${type.packageName};
+
+/**
+ * API exception type ${type.name}.
+ */
+public class ${type.name}#if (${type.superType}) extends ${type.superType.name} #else extends Exception #end{
+#foreach ($property in ${type.properties})
+    /**
+     * Returns the value of property ${property.name}.
+     * @return see above
+    */
+    ${property.type.fullyQualifiedName} get${property.capitalizedName}();
+
+    /**
+     * Sets the value of property ${property.name}.
+     * @param ${property.name} The value to set
+     */
+    void set${property.capitalizedName}(${property.type.fullyQualifiedName} ${property.name});
+
+#end
+}

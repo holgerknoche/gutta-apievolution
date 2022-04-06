@@ -2,10 +2,11 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Annotation;
 
-import java.util.Iterator;
+import java.util.*;
 
 /**
- * Helper class to create a textual representation of an API definition. This is used to facilitate tests.
+ * Helper class to create a textual representation of an API definition. This is
+ * used to facilitate tests.
  */
 public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElementVisitor<Void> {
 
@@ -13,6 +14,7 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
 
     /**
      * Prints a given API definition into a string.
+     *
      * @param definition The definition to print
      * @return The string representation of the definition
      */
@@ -61,7 +63,10 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
             builder.append("abstract ");
         }
 
-        builder.append("record ");
+        String exactType = recordType.isException() ? "exception" : "record";
+
+        builder.append(exactType);
+        builder.append(" ");
         builder.append(recordType.getPublicName());
         builder.append("(");
         builder.append(recordType.getInternalName());
@@ -149,35 +154,34 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
     }
 
     @Override
-    public Void handleProviderService(ProviderService service) {
+    public Void handleProviderOperation(ProviderOperation operation) {
         StringBuilder builder = this.outputBuilder;
 
-        builder.append(" service ");
-        builder.append(service.getPublicName());
+        builder.append(" operation ");
+        builder.append(operation.getPublicName());
         builder.append("(");
-        builder.append(service.getInternalName());
-        builder.append(") {\n");
-
-        service.forEach(operation -> operation.accept(this));
-
-        builder.append(" }\n");
-        return null;
-    }
-
-    @Override
-    public Void handleProviderServiceOperation(ProviderServiceOperation serviceOperation) {
-        StringBuilder builder = this.outputBuilder;
-
-        builder.append("  ");
-        builder.append(serviceOperation.getPublicName());
-        builder.append("(");
-        builder.append(serviceOperation.getInternalName());
+        builder.append(operation.getInternalName());
         builder.append(")");
 
         builder.append(" (");
-        builder.append(serviceOperation.getParameterType());
+        builder.append(operation.getParameterType());
         builder.append(") : ");
-        builder.append(serviceOperation.getReturnType());
+        builder.append(operation.getReturnType());
+
+        Set<ProviderRecordType> thrownExceptions = operation.getThrownExceptions();
+        if (!thrownExceptions.isEmpty()) {
+            builder.append(" throws ");
+
+            List<ProviderRecordType> sortedExceptions = new ArrayList<>(thrownExceptions);
+            Collections.sort(sortedExceptions, Comparator.comparing(exception -> exception.getInternalName()));
+            builder.append(sortedExceptions);
+        }
+
+        operation.getPredecessor().ifPresent(pred -> {
+            builder.append(" <- ");
+            builder.append(pred.getPublicName());
+        });
+
         builder.append("\n");
 
         return null;

@@ -1,0 +1,19 @@
+package ${service.packageName};
+
+/**
+ * Interface for the API service ${service.name}.
+ */
+public interface ${service.name} {
+#foreach ($operation in ${service.operations})
+    /**
+     * Service operation ${operation.name}.
+     * @param parameter The operation parameter
+     * @returns The operation result
+#foreach ($exception in ${operation.thrownExceptions})
+     * @throws ${exception.fullyQualifiedName} If the appropriate condition occurs
+#end
+     */
+     ${operation.resultType.fullyQualifiedName} ${operation.name}(${operation.parameterType.fullyQualifiedName} parameter)#if (!${operation.thrownExceptions.isEmpty()}) throws#foreach($exception in ${operation.thrownExceptions}) ${exception.fullyQualifiedName}#if ($foreach.hasNext), #end#end#end;
+
+#end
+}

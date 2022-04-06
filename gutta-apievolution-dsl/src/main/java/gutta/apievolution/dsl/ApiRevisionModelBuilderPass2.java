@@ -11,19 +11,19 @@ import java.util.function.Supplier;
 import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
 
 /**
- * Abstract superclass for both consumer and provider API revision model builders.
+ * Abstract superclass for both consumer and provider API revision model
+ * builders.
+ *
  * @param <A> The concrete API definition type
  * @param <R> The concrete record type
  * @param <F> The concrete field type
  * @param <E> The concrete enumeration type
  * @param <M> The concrete enumeration member type
- * @param <S> The concrete service type
  * @param <O> The concrete service operation type
  */
-abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
-        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>>
-        extends ApiRevisionModelBuilderPass<A, R, F, E, M, S, O> {
+abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
+        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
+        extends ApiRevisionModelBuilderPass<A, R, F, E, M, O> {
 
     protected A currentRevision;
 
@@ -33,11 +33,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
 
     protected E currentEnumType;
 
-    protected S currentService;
-
-    protected void augmentRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-                                   A apiDefinition,
-                                   final Optional<A> optionalPredecessor) {
+    protected void augmentRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec, A apiDefinition,
+            final Optional<A> optionalPredecessor) {
         this.currentRevision = apiDefinition;
         this.currentRecordType = null;
         this.previousRevision = optionalPredecessor;
@@ -103,8 +100,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         if (type != null) {
             return Optional.of(type);
         } else {
-            throw new APIResolutionException(nameToken.get(), "User-defined type '" + name.get() +
-                    "' is not a record type.");
+            throw new APIResolutionException(nameToken.get(),
+                    "User-defined type '" + name.get() + "' is not a record type.");
         }
     }
 
@@ -125,8 +122,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
     }
 
     protected abstract F createField(final ApiRevisionParser.FieldContext context, final String name,
-                                     final Optional<String> internalName, Type type, Optionality optionality,
-                                     final R owner);
+            final Optional<String> internalName, Type type, Optionality optionality, final R owner);
 
     private Optionality determineFieldModifiers(final ApiRevisionParser.FieldModifierContext context) {
         if (context == null) {
@@ -136,15 +132,15 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         Token modifierToken = context.start;
 
         switch (modifierToken.getType()) {
-            case K_OPTIONAL:
-                return Optionality.OPTIONAL;
+        case K_OPTIONAL:
+            return Optionality.OPTIONAL;
 
-            case K_OPTIN:
-                return Optionality.OPT_IN;
+        case K_OPTIN:
+            return Optionality.OPT_IN;
 
-            case K_MANDATORY:
-            default:
-                return Optionality.MANDATORY;
+        case K_MANDATORY:
+        default:
+            return Optionality.MANDATORY;
         }
     }
 
@@ -172,8 +168,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         E type = this.assertEnumType(optionalType.get());
 
         if (type == null) {
-            throw new APIResolutionException(nameToken, "User-defined type '" + name +
-                    "' is not a enum type.");
+            throw new APIResolutionException(nameToken, "User-defined type '" + name + "' is not a enum type.");
         }
 
         return type;
@@ -193,31 +188,11 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
     }
 
     protected abstract M createEnumMember(ApiRevisionParser.EnumMemberContext context, String name,
-                                          Optional<String> internalName, E owner);
-
-    @Override
-    public final Void visitService(final ApiRevisionParser.ServiceContext ctx) {
-        String name = identifierAsText(ctx.name);
-
-        // Determine internal name
-        Optional<String> internalName = determineInternalName(ctx.as);
-
-        S service = this.createService(ctx, name, internalName, this.currentRevision);
-        this.registerNewService(service);
-
-        this.currentService = service;
-        ctx.operations.forEach(this::visitServiceOperation);
-        this.currentService = null;
-
-        return null;
-    }
-
-    protected abstract S createService(ApiRevisionParser.ServiceContext context, String name,
-                                       Optional<String> internalName, A owner);
+            Optional<String> internalName, E owner);
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void visitServiceOperation(final ApiRevisionParser.ServiceOperationContext ctx) {
+    public Void visitOperation(final ApiRevisionParser.OperationContext ctx) {
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
@@ -227,15 +202,19 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         R returnType = (R) this.resolveType(ctx.resultType);
         R parameterType = (R) this.resolveType(ctx.parameterType);
 
-        O operation = this.createServiceOperation(ctx, name, internalName, this.currentService, returnType,
-                parameterType);
-        this.registerNewServiceOperation(operation);
+        O operation = this.createOperation(ctx, name, internalName, this.currentRevision, returnType, parameterType);
+        this.registerNewOperation(operation);
+
+        // Add exceptions
+        for (ApiRevisionParser.UserDefinedTypeReferenceContext exceptionCtx : ctx.exceptions) {
+            operation.addThrownException((R) this.resolveType(exceptionCtx));
+        }
 
         return null;
     }
 
-    protected abstract O createServiceOperation(ApiRevisionParser.ServiceOperationContext context, String name,
-                                                Optional<String> internalName, S owner, R returnType, R parameterType);
+    protected abstract O createOperation(ApiRevisionParser.OperationContext context, String name,
+            Optional<String> internalName, A owner, R returnType, R parameterType);
 
     private Type resolveType(final ApiRevisionParser.TypeReferenceContext context) {
         return new TypeResolver().visit(context);
@@ -249,21 +228,22 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
 
     protected abstract E assertEnumType(UserDefinedType<A> type);
 
-    private class TypeResolver extends ApiRevisionBaseVisitor<Type> {
+    private class TypeResolver
+            extends ApiRevisionBaseVisitor<Type> {
 
         @Override
         public Type visitAtomicType(final ApiRevisionParser.AtomicTypeContext ctx) {
             String typeName = ctx.start.getText();
 
             switch (typeName) {
-                case "int32":
-                    return AtomicType.INT_32;
+            case "int32":
+                return AtomicType.INT_32;
 
-                case "int64":
-                    return AtomicType.INT_64;
+            case "int64":
+                return AtomicType.INT_64;
 
-                default:
-                    throw new APIParseException(ctx.start, "Unknown atomic type " + typeName + ".");
+            default:
+                throw new APIParseException(ctx.start, "Unknown atomic type " + typeName + ".");
             }
         }
 
@@ -272,14 +252,14 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
             String typeName = ctx.type.getText();
 
             switch (typeName) {
-                case "string":
-                    return this.handleStringType(ctx);
+            case "string":
+                return this.handleStringType(ctx);
 
-                case "numeric":
-                    return this.handleNumericType(ctx);
+            case "numeric":
+                return this.handleNumericType(ctx);
 
-                default:
-                    throw new APIParseException(ctx.type, "Unknown type " + typeName + ".");
+            default:
+                throw new APIParseException(ctx.type, "Unknown type " + typeName + ".");
             }
         }
 
@@ -306,8 +286,8 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A>, R extend
         @Override
         public Type visitUserDefinedTypeReference(final ApiRevisionParser.UserDefinedTypeReferenceContext ctx) {
             String typeName = ApiRevisionModelBuilderPass2.this.identifierAsText(ctx.typeName);
-            Optional<UserDefinedType<A>> optionalType =
-                    ApiRevisionModelBuilderPass2.this.currentRevision.resolveUserDefinedType(typeName);
+            Optional<UserDefinedType<A>> optionalType = ApiRevisionModelBuilderPass2.this.currentRevision
+                    .resolveUserDefinedType(typeName);
 
             if (optionalType.isPresent()) {
                 return optionalType.get();

@@ -1,0 +1,17 @@
+api test {
+
+    record Record {}
+
+    exception E1 {
+        string e1
+        string e12
+    }
+
+    exception E2 {
+        string e2
+        string e12
+    }
+
+    operation op1(Record) : Record throws E1, E2
+
+}

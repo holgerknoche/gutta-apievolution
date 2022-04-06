@@ -3,10 +3,10 @@ package gutta.apievolution.javacodegen;
 import gutta.apievolution.core.apimodel.provider.ModelMerger;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.util.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,26 +18,29 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * This class derives the actual code model and generates the provider Java code.
+ * This class derives the actual code model and generates the provider Java
+ * code.
  */
 class ProviderCodeGenerator {
 
     /**
-     * Generates the provider code for the given definitions into the given output directory.
-     * @param supportedDefinitions The definitions to generate the sources for. It is expected that this
-     *                             list is ordered with respect to revisions, esp. that the latest revision
-     *                             is the last element of the list
-     * @param outputDirectory The directory to generate the sources into
+     * Generates the provider code for the given definitions into the given output
+     * directory.
+     * 
+     * @param supportedDefinitions The definitions to generate the sources for. It
+     *                             is expected that this list is ordered with
+     *                             respect to revisions, esp. that the latest
+     *                             revision is the last element of the list
+     * @param outputDirectory      The directory to generate the sources into
      */
     public void generateCode(List<ProviderApiDefinition> supportedDefinitions, File outputDirectory) {
-        Collection<JavaUserDefinedType> classesToGenerate = this.createCodeModel(
-                new RevisionHistory(supportedDefinitions));
-        this.generateSources(classesToGenerate, outputDirectory);
+        JavaModel model = this.createCodeModel(new RevisionHistory(supportedDefinitions));
+        this.generateSources(model, outputDirectory);
     }
 
-    Collection<JavaUserDefinedType> createCodeModel(RevisionHistory revisionHistory) {
+    JavaModel createCodeModel(RevisionHistory revisionHistory) {
         if (revisionHistory.isEmpty()) {
-            return Collections.emptyList();
+            return new JavaModel(Collections.emptyList(), Collections.emptyList());
         }
 
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
@@ -45,7 +48,7 @@ class ProviderCodeGenerator {
         return javaModelBuilder.buildModelForApi(mergedDefinition);
     }
 
-    void generateSources(Collection<JavaUserDefinedType> classesToGenerate, File outputDirectory) {
+    void generateSources(JavaModel model, File outputDirectory) {
         Properties properties = new Properties();
         properties.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         properties.setProperty("classpath.resource.loader.class",
@@ -54,13 +57,18 @@ class ProviderCodeGenerator {
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.init(properties);
 
-        for (JavaUserDefinedType classToGenerate : classesToGenerate) {
-            this.generateCodeFor(classToGenerate, velocityEngine, outputDirectory);
+        for (JavaUserDefinedType classToGenerate : model.userDefinedTypes) {
+            this.generateCodeFor(classToGenerate, velocityEngine, outputDirectory, this::generateCodeForUDT);
+        }
+        for (JavaService serviceToGenerate : model.services) {
+            this.generateCodeFor(serviceToGenerate, velocityEngine, outputDirectory, this::generateCodeForService);
         }
     }
 
-    private void generateCodeFor(JavaUserDefinedType classToGenerate, VelocityEngine engine, File outputDirectory) {
-        String packagePath = classToGenerate.packageName.replace('.', '/');
+    private void generateCodeFor(JavaModelElement element, VelocityEngine engine, File outputDirectory,
+            CodeGenerator codeGenerator) {
+
+        String packagePath = element.packageName.replace('.', '/');
         File packageDirectory = new File(outputDirectory, packagePath);
         if (!packageDirectory.exists()) {
             packageDirectory.mkdirs();
@@ -70,42 +78,80 @@ class ProviderCodeGenerator {
             }
         }
 
-        String fileName = classToGenerate.name + ".java";
+        String fileName = element.name + ".java";
         File outputFile = new File(packageDirectory, fileName);
 
-        try (FileWriter writer = new FileWriter(outputFile)) {
-            this.generateCodeForUDT(classToGenerate, engine, writer);
+        try (Writer writer = new FileWriter(outputFile)) {
+            codeGenerator.generateCode(element, engine, writer);
         } catch (IOException e) {
             throw new RuntimeException("Unable to write file " + outputFile + ".");
         }
     }
 
-    private void generateCodeForUDT(JavaUserDefinedType udt, VelocityEngine engine, Writer writer) {
-        if (udt instanceof JavaInterface) {
-            this.generateInterface((JavaInterface) udt, engine, writer);
-        } else if (udt instanceof JavaEnum) {
-            this.generateEnum((JavaEnum) udt, engine, writer);
-        } else {
-            throw new RuntimeException("Unknown UDT type " + udt + ".");
+    private void generateCodeForUDT(JavaModelElement element, VelocityEngine engine, Writer writer) {
+        UDTCodeGenerator udtCodeGenerator = new UDTCodeGenerator(engine);
+        udtCodeGenerator.generateCodeForUDT((JavaUserDefinedType) element, writer);
+    }
+
+    private void generateCodeForService(JavaModelElement service, VelocityEngine engine, Writer writer) {
+        VelocityContext context = new VelocityContext();
+
+        context.put("service", service);
+        context.put("stringUtil", new StringUtils());
+
+        engine.mergeTemplate("java/JavaServiceInterface.vt", "UTF-8", context, writer);
+    }
+
+    private static class UDTCodeGenerator implements JavaUserDefinedTypeVisitor<Void> {
+
+        private final VelocityEngine velocityEngine;
+
+        private final StringUtils stringUtils = new StringUtils();
+
+        private Writer writer;
+
+        public UDTCodeGenerator(VelocityEngine velocityEngine) {
+            this.velocityEngine = velocityEngine;
         }
+
+        public void generateCodeForUDT(JavaUserDefinedType type, Writer writer) {
+            this.writer = writer;
+
+            type.accept(this);
+        }
+
+        private Void generateCode(JavaUserDefinedType type, String templateName) {
+            VelocityContext context = new VelocityContext();
+
+            context.put("type", type);
+            context.put("stringUtil", this.stringUtils);
+
+            this.velocityEngine.mergeTemplate(templateName, "UTF-8", context, this.writer);
+            return null;
+        }
+
+        @Override
+        public Void handleJavaEnum(JavaEnum javaEnum) {
+            return this.generateCode(javaEnum, "java/JavaEnum.vt");
+        }
+
+        @Override
+        public Void handleJavaException(JavaException javaException) {
+            return this.generateCode(javaException, "java/JavaException.vt");
+        }
+
+        @Override
+        public Void handleJavaInterface(JavaInterface javaInterface) {
+            return this.generateCode(javaInterface, "java/JavaInterface.vt");
+        }
+
     }
 
-    private void generateInterface(JavaInterface classToGenerate, VelocityEngine engine, Writer writer) {
-        VelocityContext context = new VelocityContext();
+    @FunctionalInterface
+    private interface CodeGenerator {
 
-        context.put("type", classToGenerate);
-        context.put("stringUtil", new StringUtils()); // NOSONAR Must be instantiated to be used in the context
+        void generateCode(JavaModelElement element, VelocityEngine engine, Writer writer);
 
-        engine.mergeTemplate("java/JavaInterface.vt", "UTF-8", context, writer);
-    }
-
-    private void generateEnum(JavaEnum enumToGenerate, VelocityEngine engine, Writer writer) {
-        VelocityContext context = new VelocityContext();
-
-        context.put("type", enumToGenerate);
-        context.put("stringUtil", new StringUtils()); // NOSONAR Must be instantiated to be used in the context
-
-        engine.mergeTemplate("java/JavaEnum.vt", "UTF-8", context, writer);
     }
 
 }

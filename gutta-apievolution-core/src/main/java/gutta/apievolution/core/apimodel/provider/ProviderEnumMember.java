@@ -17,13 +17,15 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
 
     /**
      * Creates a new enum member from the given data.
-     * @param publicName The enum member's public name
-     * @param internalName The enum member's internal name, if applicable. Otherwise, the public name is assumed
-     * @param owner The enum type that owns this member
-     * @param predecessor The member's predecessor, if any
+     *
+     * @param publicName   The enum member's public name
+     * @param internalName The enum member's internal name, if applicable.
+     *                     Otherwise, the public name is assumed
+     * @param owner        The enum type that owns this member
+     * @param predecessor  The member's predecessor, if any
      */
     public ProviderEnumMember(final String publicName, final Optional<String> internalName,
-                              final ProviderEnumType owner, final Optional<ProviderEnumMember> predecessor) {
+            final ProviderEnumType owner, final Optional<ProviderEnumMember> predecessor) {
         super(publicName, internalName, owner);
 
         this.predecessor = predecessor;

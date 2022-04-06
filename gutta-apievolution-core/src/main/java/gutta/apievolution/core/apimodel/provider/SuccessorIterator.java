@@ -3,8 +3,9 @@ package gutta.apievolution.core.apimodel.provider;
 import java.util.Optional;
 
 /**
- * Specific variant of the {@link RevisionHistoryIterator} to iterate over the successors of a
- * {@link RevisionedElement}.
+ * Specific variant of the {@link RevisionHistoryIterator} to iterate over the
+ * successors of a {@link RevisionedElement}.
+ *
  * @param <T> The concrete type of the revisioned element
  */
 class SuccessorIterator<T extends RevisionedElement<T>> extends RevisionHistoryIterator<T> {

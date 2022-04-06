@@ -25,7 +25,8 @@ public class ProviderApisResource {
 
     /**
      * Reads a provider API definition given its history name and revision number.
-     * @param historyName The history name of the desired definition
+     * 
+     * @param historyName    The history name of the desired definition
      * @param revisionNumber The revision number of the desired definition
      * @return The HTTP response to the request
      */
@@ -33,7 +34,7 @@ public class ProviderApisResource {
     @GET
     @Produces("application/json")
     public Response readProviderApiRevision(@PathParam("historyName") String historyName,
-                                            @PathParam("revisionNumber") int revisionNumber) {
+            @PathParam("revisionNumber") int revisionNumber) {
         Optional<PersistentProviderApiDefinition> apiDefinition = this.apisService.readApiRevision(historyName,
                 revisionNumber);
 
@@ -47,18 +48,13 @@ public class ProviderApisResource {
     }
 
     private ReadProviderApiResponse convertProviderApi(PersistentProviderApiDefinition input) {
-        return new ReadProviderApiResponse(
-          input.getHistoryName(),
-          input.getRevisionNumber(),
-          input.getCommitTime(),
-          input.getSupportedFrom(),
-          input.getSupportedUntil(),
-          input.getDefinitionText()
-        );
+        return new ReadProviderApiResponse(input.getHistoryName(), input.getRevisionNumber(), input.getCommitTime(),
+                input.getSupportedFrom(), input.getSupportedUntil(), input.getDefinitionText());
     }
 
     /**
      * Reads the supported revisions for the given history.
+     * 
      * @param historyName The name of the history
      * @return The response for the request
      */
@@ -71,6 +67,7 @@ public class ProviderApisResource {
 
     /**
      * Saves a given provider API definition in the given history.
+     * 
      * @param historyName The name of the revision history
      * @param requestData The request data
      * @return The HTTP response to the request

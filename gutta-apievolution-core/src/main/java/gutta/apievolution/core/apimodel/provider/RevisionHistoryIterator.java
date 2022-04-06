@@ -5,7 +5,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * Iterator for iterating over the revision history of a {@link RevisionedElement}.
+ * Iterator for iterating over the revision history of a
+ * {@link RevisionedElement}.
+ *
  * @param <T> The concrete type of revisioned element
  */
 abstract class RevisionHistoryIterator<T extends RevisionedElement<T>> implements Iterator<T> {

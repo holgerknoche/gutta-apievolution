@@ -9,12 +9,15 @@ import java.io.InputStream;
 /**
  * Utility class for loading consumer API definitions.
  */
-public class ConsumerApiLoader extends ApiDefinitionLoader {
+public class ConsumerApiLoader
+        extends ApiDefinitionLoader {
 
     /**
      * Loads an API definition from the given string.
-     * @param input The string to read the definition from
-     * @param referencedRevision The revision number referenced in the provider history
+     *
+     * @param input              The string to read the definition from
+     * @param referencedRevision The revision number referenced in the provider
+     *                           history
      * @return The loaded API definition
      */
     public static ConsumerApiDefinition loadFromString(String input, int referencedRevision) {
@@ -24,8 +27,10 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
 
     /**
      * Loads an API definition from the given input stream.
-     * @param inputStream The input stream to read the definition from
-     * @param referencedRevision The revision number referenced in the provider history
+     *
+     * @param inputStream        The input stream to read the definition from
+     * @param referencedRevision The revision number referenced in the provider
+     *                           history
      * @return The loaded API definition
      */
     public static ConsumerApiDefinition loadFromStream(InputStream inputStream, int referencedRevision) {
@@ -38,7 +43,7 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
     }
 
     private static ConsumerApiDefinition buildDefinition(ApiRevisionParser.ApiDefinitionContext specification,
-                                                         int referencedRevision) {
+            int referencedRevision) {
         ConsumerApiRevisionModelBuilderPass1 pass1 = new ConsumerApiRevisionModelBuilderPass1();
         ConsumerApiRevisionModelBuilderPass2 pass2 = new ConsumerApiRevisionModelBuilderPass2();
 
@@ -52,7 +57,9 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
 
     /**
      * Loads a consumer API definition from the given file on the classpath.
-     * @param fileName The file name of the file to load the definition from
+     *
+     * @param fileName           The file name of the file to load the definition
+     *                           from
      * @param referencedRevision The provider revision referenced by this definition
      * @return The loaded API definition
      */

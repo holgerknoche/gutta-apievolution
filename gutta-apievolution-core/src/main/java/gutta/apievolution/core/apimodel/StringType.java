@@ -7,6 +7,7 @@ public abstract class StringType implements BoundedType { // NOSONAR Must be a c
 
     /**
      * Creates an unbounded string type.
+     *
      * @return The string type
      */
     public static StringType unbounded() {
@@ -15,6 +16,7 @@ public abstract class StringType implements BoundedType { // NOSONAR Must be a c
 
     /**
      * Creates a bounded string type.
+     *
      * @param bound The bound of the string type
      * @return The string type
      */

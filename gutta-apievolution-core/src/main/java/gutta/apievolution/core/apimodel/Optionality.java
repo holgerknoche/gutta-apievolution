@@ -1,7 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
 /**
- * Optionality represents to which degree a given element (such as a parameter or a field) is optional.
+ * Optionality represents to which degree a given element (such as a parameter
+ * or a field) is optional.
  */
 public enum Optionality {
     /**
@@ -25,6 +26,7 @@ public enum Optionality {
 
     /**
      * Returns whether one of two optionality values is stricter than the other.
+     *
      * @param o1 The first value to compare
      * @param o2 The second ("other") value to compare
      * @return a {@link Comparable}-like comparison value
@@ -34,7 +36,9 @@ public enum Optionality {
     }
 
     /**
-     * Returns whether one of two optionality values is more permissive than the other.
+     * Returns whether one of two optionality values is more permissive than the
+     * other.
+     *
      * @param o1 The first value to compare
      * @param o2 The second ("other") value to compare
      * @return a {@link Comparable}-like comparison value
@@ -44,7 +48,9 @@ public enum Optionality {
     }
 
     /**
-     * Returns the maximum (in terms of permissiveness, i.e. the more permissive) of two optionalities
+     * Returns the maximum (in terms of permissiveness, i.e. the more permissive) of
+     * two optionalities
+     *
      * @param o1 The first value to compare
      * @param o2 The second value to compare
      * @return The more permissive optionality
@@ -55,6 +61,7 @@ public enum Optionality {
 
     /**
      * Returns whether this optionality value is more permissive than the given one.
+     *
      * @param that The optionality value to compare against
      * @return {@code True}, iff this value is more permissive than the given one
      */

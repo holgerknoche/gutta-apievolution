@@ -6,15 +6,19 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * A record type represents a user-defined record, i.e., a type that consists of fields.
+ * A record type represents a user-defined record, i.e., a type that consists of
+ * fields.
+ *
  * @param <A> The concrete API definition type that owns this type
  * @param <R> The concrete record type (e.g., provider or consumer)
  * @param <F> The concrete field type for this record type
  */
-public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordType<A, R, F>, F extends Field<R, F>>
+public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends RecordType<A, R, F>, F extends Field<R, F>>
         extends UserDefinedType<A> implements Iterable<F> {
 
     private final boolean abstractFlag;
+
+    private final boolean exception;
 
     private Optional<R> superType = Optional.empty();
 
@@ -32,33 +36,39 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Creates a new record type from the given data.
-     * @param publicName The public name of this record type
-     * @param internalName The internal name of this record type, if applicable. Otherwise, the public name is assumed
-     * @param typeId The type id of this record type
-     * @param owner The API definition that owns this record type
+     *
+     * @param publicName   The public name of this record type
+     * @param internalName The internal name of this record type, if applicable.
+     *                     Otherwise, the public name is assumed
+     * @param typeId       The type id of this record type
+     * @param owner        The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
      */
     protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
-                         final boolean abstractFlag) {
-        this(publicName, internalName, typeId, owner, abstractFlag, Optional.empty());
+            final boolean abstractFlag) {
+        this(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty());
     }
 
     /**
      * Creates a new record type from the given data.
-     * @param publicName The public name of this record type
-     * @param internalName The internal name of this record type, if applicable. Otherwise, the public name is assumed
-     * @param typeId The type id of this record type
-     * @param owner The API definition that owns this record type
+     *
+     * @param publicName   The public name of this record type
+     * @param internalName The internal name of this record type, if applicable.
+     *                     Otherwise, the public name is assumed
+     * @param typeId       The type id of this record type
+     * @param owner        The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
-     * @param superType An optional supertype for this record type
+     * @param exception    A flag denoting whether this record type is an exception
+     * @param superType    An optional supertype for this record type
      */
     protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
-                      final boolean abstractFlag, final Optional<R> superType) {
+            final boolean abstractFlag, boolean exception, final Optional<R> superType) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
         this.inheritedFields = new ArrayList<>();
         this.abstractFlag = abstractFlag;
+        this.exception = exception;
         this.fieldLookup = new HashMap<>();
         this.internalNameLookup = new HashMap<>();
 
@@ -69,6 +79,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Returns the fields declared by this type.
+     *
      * @return see above
      */
     public List<F> getDeclaredFields() {
@@ -77,18 +88,17 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Returns all fields of this type, including inherited fields.
+     *
      * @return see above
      */
     public Stream<F> getFields() {
-        return Stream.concat(
-                this.inheritedFields.stream(),
-                this.declaredFields.stream()
-        );
+        return Stream.concat(this.inheritedFields.stream(), this.declaredFields.stream());
     }
 
     /**
-     * Sets the supertype for this record type. This method can only be called if no supertype
-     * is currently assigned to this type.
+     * Sets the supertype for this record type. This method can only be called if no
+     * supertype is currently assigned to this type.
+     *
      * @param superType The supertype to assign
      */
     @SuppressWarnings("unchecked")
@@ -98,6 +108,10 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
         if (this.superType.isPresent()) {
             throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
         }
+        if (this.isException() != superType.isException()) {
+            throw new InvalidApiDefinitionException(
+                    "The super type " + superType + " of " + this + " must be an exception.");
+        }
 
         this.superType = Optional.of(superType);
         superType.registerSubType((R) this);
@@ -105,6 +119,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Adds a declared field to this record type.
+     *
      * @param field The field to add
      */
     protected void addDeclaredField(final F field) {
@@ -117,6 +132,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Adds an inherited field to this record type.
+     *
      * @param field The field to add
      */
     protected void addInheritedField(final F field) {
@@ -129,6 +145,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Returns whether this record type is abstract.
+     *
      * @return see above
      */
     public boolean isAbstract() {
@@ -136,7 +153,17 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
+     * Returns whether this record type is an exception.
+     *
+     * @return see above
+     */
+    public boolean isException() {
+        return this.exception;
+    }
+
+    /**
      * Returns whether this record type has subtypes.
+     *
      * @return see above
      */
     public boolean hasSubTypes() {
@@ -145,6 +172,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Returns whether this record type has a supertype.
+     *
      * @return see above
      */
     public boolean hasSuperType() {
@@ -153,6 +181,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Returns this record type's supertype.
+     *
      * @return see above
      */
     public Optional<R> getSuperType() {
@@ -160,9 +189,11 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     /**
-     * Resolves a field identified by its public name within this record type. Note that in merged definitions, this
-     * mapping does not need to be unique, and only one of the fields will be returned. In such definitions, use the
-     * internal name instead.
+     * Resolves a field identified by its public name within this record type. Note
+     * that in merged definitions, this mapping does not need to be unique, and only
+     * one of the fields will be returned. In such definitions, use the internal
+     * name instead.
+     *
      * @param name The public name of the desired field
      * @return The resolved field, if it exists
      */
@@ -172,6 +203,7 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Resolves a field identified by its internal name within this record type.
+     *
      * @param name The internal name of the desired field
      * @return The resolved field, if it exists
      */
@@ -186,7 +218,6 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<F> iterator() {
         return new ConcatenatedIterator<>(this.inheritedFields, this.declaredFields);
     }
@@ -198,14 +229,13 @@ public abstract class RecordType<A extends ApiDefinition<A>, R extends RecordTyp
 
     /**
      * Compares this record type's state against the state of the given member.
+     *
      * @param that The record type to compare against
      * @return Whether the states are equal
      */
     protected boolean stateEquals(RecordType<A, R, F> that) {
-        return super.stateEquals(that) &&
-                this.declaredFields.equals(that.declaredFields) &&
-                this.subTypes == that.subTypes &&
-                this.abstractFlag == that.abstractFlag &&
+        return super.stateEquals(that) && this.declaredFields.equals(that.declaredFields) &&
+                this.subTypes == that.subTypes && this.abstractFlag == that.abstractFlag &&
                 this.superType.equals(that.superType);
     }
 

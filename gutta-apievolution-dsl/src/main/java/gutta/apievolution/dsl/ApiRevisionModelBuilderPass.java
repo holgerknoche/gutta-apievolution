@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends RecordType<A, R, F>,
-        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>,
-        S extends Service<A, S, O, R>, O extends ServiceOperation<S, O, R>> extends ApiRevisionBaseVisitor<Void> {
+abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
+        F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
+        extends ApiRevisionBaseVisitor<Void> {
 
     private static String unquote(final String input) {
-        int endIndex = (input.length() - 2);
+        int endIndex = (input.length() - 1);
 
         return input.substring(1, endIndex);
     }
@@ -45,9 +45,7 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends
     }
 
     protected List<String> splitQualifiedName(final ApiRevisionParser.QualifiedNameContext context) {
-        return context.parts.stream()
-                .map(this::identifierAsText)
-                .collect(Collectors.toList());
+        return context.parts.stream().map(this::identifierAsText).collect(Collectors.toList());
     }
 
     protected Set<Annotation> handleAnnotations(final List<ApiRevisionParser.AnnotationContext> annotationContexts) {
@@ -55,7 +53,7 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends
 
         for (ApiRevisionParser.AnnotationContext annotationContext : annotationContexts) {
             String typeText = annotationContext.typeToken.getText();
-            String valueText = annotationContext.value.getText();
+            String valueText = unquote(annotationContext.value.getText());
 
             // Remove leading '@'
             String typeName = typeText.substring(1);
@@ -82,11 +80,7 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A>, R extends
         // Do nothing by default
     }
 
-    protected void registerNewService(final S service) {
-        // Do nothing by default
-    }
-
-    protected void registerNewServiceOperation(final O serviceOperation) {
+    protected void registerNewOperation(final O operation) {
         // Do nothing by default
     }
 

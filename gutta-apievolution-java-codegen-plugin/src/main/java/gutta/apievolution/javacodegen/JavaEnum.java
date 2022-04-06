@@ -8,9 +8,11 @@ import java.util.Set;
 /**
  * Representation of a Java enumeration for code generation.
  *
- * <p/> <b>Note:</b> This class must be public for Velocity code generation to work.
+ * <p/>
+ * <b>Note:</b> This class must be public for Velocity code generation to work.
  */
-public class JavaEnum extends JavaUserDefinedType {
+public class JavaEnum
+        extends JavaUserDefinedType {
 
     private final List<JavaEnumMember> members = new ArrayList<>();
 
@@ -22,6 +24,7 @@ public class JavaEnum extends JavaUserDefinedType {
 
     /**
      * Returns the members of this enumeration.
+     * 
      * @return see above
      */
     public List<JavaEnumMember> getMembers() {
@@ -33,6 +36,11 @@ public class JavaEnum extends JavaUserDefinedType {
             this.members.add(member);
             this.memberNames.add(member.getName());
         }
+    }
+
+    @Override
+    <R> R accept(JavaUserDefinedTypeVisitor<R> visitor) {
+        return visitor.handleJavaEnum(this);
     }
 
 }

@@ -13,6 +13,7 @@ public class BoundedStringType extends StringType {
 
     /**
      * Returns the bound of this string type.
+     *
      * @return see above
      */
     public int getBound() {

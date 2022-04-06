@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
  */
-public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
+public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, ProviderOperation>
         implements RevisionedElement<ProviderApiDefinition> {
 
     private final int revision;
@@ -24,14 +24,14 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
 
     /**
      * Creates a new provider API definition from the given data.
-     * @param name The name of the API definition
+     *
+     * @param name        The name of the API definition
      * @param annotations The annotations of this API definition
-     * @param revision The revision number of this API definition
+     * @param revision    The revision number of this API definition
      * @param predecessor The predecessor of this API definition
      */
-    public ProviderApiDefinition(final QualifiedName name, final Set<Annotation> annotations,
-                                 final int revision,
-                                 final Optional<ProviderApiDefinition> predecessor) {
+    public ProviderApiDefinition(final QualifiedName name, final Set<Annotation> annotations, final int revision,
+            final Optional<ProviderApiDefinition> predecessor) {
         super(name, annotations);
 
         this.predecessor = predecessor;
@@ -42,6 +42,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
 
     /**
      * Returns the revision number of this API definition.
+     *
      * @return see above
      */
     public int getRevision() {
@@ -64,12 +65,13 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
 
     /**
      * Performs the given action for each element of this API definition.
+     *
      * @param action The action to perform
      */
     public void forEach(Consumer<ProviderApiDefinitionElement> action) {
-        // Iterate over all user-defined types and services
+        // Iterate over all user-defined types and operations
         this.getUserDefinedTypes().forEach(udt -> action.accept((ProviderApiDefinitionElement) udt));
-        this.getServices().forEach(service -> action.accept((ProviderApiDefinitionElement) service));
+        this.getOperations().forEach(operation -> action.accept((ProviderApiDefinitionElement) operation));
     }
 
     @Override
@@ -89,8 +91,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
     }
 
     boolean stateEquals(ProviderApiDefinition that) {
-        return super.stateEquals(that) &&
-                this.revision == that.revision;
+        return super.stateEquals(that) && this.revision == that.revision;
     }
 
     @Override
@@ -101,8 +102,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition>
     @Override
     protected void propagateInheritedFields() {
         List<ProviderRecordType> recordTypes = this.getUserDefinedTypes().stream()
-                .filter(ProviderRecordType.class::isInstance)
-                .map(ProviderRecordType.class::cast)
+                .filter(ProviderRecordType.class::isInstance).map(ProviderRecordType.class::cast)
                 .collect(Collectors.toList());
 
         ProviderInheritedFieldPropagator propagator = new ProviderInheritedFieldPropagator();

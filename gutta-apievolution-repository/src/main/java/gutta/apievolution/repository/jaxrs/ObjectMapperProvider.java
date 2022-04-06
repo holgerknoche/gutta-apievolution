@@ -20,17 +20,14 @@ public class ObjectMapperProvider {
     private static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        objectMapper.registerModules(
-                new ParameterNamesModule(),
-                new Jdk8Module(),
-                new JavaTimeModule()
-        );
+        objectMapper.registerModules(new ParameterNamesModule(), new Jdk8Module(), new JavaTimeModule());
 
         return objectMapper;
     }
 
     /**
      * CDI Producer method for creating a simple object mapper.
+     * 
      * @return An object mapper instance
      */
     @Produces

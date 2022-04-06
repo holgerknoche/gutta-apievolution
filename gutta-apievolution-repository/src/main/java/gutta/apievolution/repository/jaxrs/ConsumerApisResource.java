@@ -26,6 +26,7 @@ public class ConsumerApisResource {
 
     /**
      * Reads a given consumer API definition.
+     * 
      * @param id The ID of the desired API
      * @return The response for the request
      */
@@ -46,19 +47,15 @@ public class ConsumerApisResource {
     }
 
     private ReadConsumerApiResponse createResponse(PersistentConsumerApiDefinition definition) {
-        return new ReadConsumerApiResponse(
-                definition.getId(),
-                definition.getCommitTime(),
-                definition.getConsumerName(),
+        return new ReadConsumerApiResponse(definition.getId(), definition.getCommitTime(), definition.getConsumerName(),
                 definition.getReferencedRevision().getHistoryName(),
-                definition.getReferencedRevision().getRevisionNumber(),
-                definition.getDefinitionText()
-        );
+                definition.getReferencedRevision().getRevisionNumber(), definition.getDefinitionText());
     }
 
     /**
      * Creates a mapping for a consumer API definition.
-     * @param id The id of the consumer API definition to map
+     * 
+     * @param id   The id of the consumer API definition to map
      * @param type The type of the desired map
      * @return The response for the request
      */
@@ -76,20 +73,21 @@ public class ConsumerApisResource {
         String actualType = (type == null) ? "" : type.toLowerCase();
 
         switch (actualType) {
-            case "consumer":
-            default:
-                return ApiMappingType.CONSUMER;
+        case "consumer":
+        default:
+            return ApiMappingType.CONSUMER;
 
-            case "provider":
-                return ApiMappingType.PROVIDER;
+        case "provider":
+            return ApiMappingType.PROVIDER;
 
-            case "full":
-                return ApiMappingType.FULL;
+        case "full":
+            return ApiMappingType.FULL;
         }
     }
 
     /**
      * Saves a given consumer API definition.
+     * 
      * @param requestData The request data
      * @return The response to the request
      */
@@ -100,17 +98,10 @@ public class ConsumerApisResource {
         try {
             SaveConsumerApiRequest request = this.objectMapper.fromJsonBytes(requestData, SaveConsumerApiRequest.class);
 
-            PersistentConsumerApiDefinition savedApi = this.apisService.saveConsumerApi(
-                    request.referencedHistoryName,
-                    request.referencedRevisionNumber,
-                    request.consumerName,
-                    request.definition
-            );
+            PersistentConsumerApiDefinition savedApi = this.apisService.saveConsumerApi(request.referencedHistoryName,
+                    request.referencedRevisionNumber, request.consumerName, request.definition);
 
-            SaveConsumerApiResponse response = new SaveConsumerApiResponse(
-                    savedApi.getId(),
-                    savedApi.getCommitTime()
-            );
+            SaveConsumerApiResponse response = new SaveConsumerApiResponse(savedApi.getId(), savedApi.getCommitTime());
 
             byte[] responseData = this.objectMapper.toJsonBytes(response);
             return Response.ok(responseData).build();

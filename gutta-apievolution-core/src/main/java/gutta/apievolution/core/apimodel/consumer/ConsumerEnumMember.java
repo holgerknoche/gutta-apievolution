@@ -12,12 +12,14 @@ public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnu
 
     /**
      * Creates a new enum member from the given data.
-     * @param publicName The enum member's public name
-     * @param internalName The enum member's internal name, if any. Otherwise, the public name is assumed
-     * @param owner The enum type that owns this member
+     *
+     * @param publicName   The enum member's public name
+     * @param internalName The enum member's internal name, if any. Otherwise, the
+     *                     public name is assumed
+     * @param owner        The enum type that owns this member
      */
     public ConsumerEnumMember(final String publicName, final Optional<String> internalName,
-                              final ConsumerEnumType owner) {
+            final ConsumerEnumType owner) {
         super(publicName, internalName, owner);
     }
 

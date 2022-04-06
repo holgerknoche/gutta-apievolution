@@ -18,6 +18,7 @@ public class ConsumerApisRepository {
 
     /**
      * Finds a consumer API definition by its ID.
+     * 
      * @param id The ID to look for
      * @return The consumer API definition, if it exists
      */
@@ -31,7 +32,9 @@ public class ConsumerApisRepository {
     }
 
     /**
-     * Saves the given definition to the repository. As part of this process, the commit timestamp is set.
+     * Saves the given definition to the repository. As part of this process, the
+     * commit timestamp is set.
+     * 
      * @param definition The definition to save
      */
     @Transactional

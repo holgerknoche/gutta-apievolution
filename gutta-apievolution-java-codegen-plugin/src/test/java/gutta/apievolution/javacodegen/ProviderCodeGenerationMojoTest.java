@@ -6,6 +6,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.MojoRule;
@@ -39,8 +40,8 @@ public class ProviderCodeGenerationMojoTest {
         File testResourcesDir = new File(baseDir, "/src/test/resources/");
 
         try {
-            return (ProviderCodeGenerationMojo) this.mojoRule.lookupConfiguredMojo(new File(testResourcesDir,
-                            projectPath), GOAL_NAME);
+            return (ProviderCodeGenerationMojo) this.mojoRule
+                    .lookupConfiguredMojo(new File(testResourcesDir, projectPath), GOAL_NAME);
         } catch (Exception e) {
             if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
@@ -54,8 +55,7 @@ public class ProviderCodeGenerationMojoTest {
         JavaParser javaParser = new JavaParser();
 
         Path outputPath = outputDirectory.toPath();
-        List<Path> paths = Files.walk(outputPath)
-                .filter(path -> path.getFileName().toString().endsWith("java"))
+        List<Path> paths = Files.walk(outputPath).filter(path -> path.getFileName().toString().endsWith("java"))
                 .collect(Collectors.toList());
 
         Map<String, CompilationUnit> classMap = new HashMap<>();
@@ -99,16 +99,26 @@ public class ProviderCodeGenerationMojoTest {
         ClassOrInterfaceDeclaration addressType = compilationUnits.get("Address").getInterfaceByName("Address").get();
         List<String> actualAddressMethods = listMethods(addressType);
 
-        List<String> expectedAddressMethods = Arrays.asList(
-                "getCity():String",
-                "getNumber():String",
-                "getPostalCode():java.math.BigDecimal",
-                "getStreet():String",
-                "setCity(String):void",
-                "setNumber(String):void",
-                "setPostalCode(java.math.BigDecimal):void",
-                "setStreet(String):void");
+        List<String> expectedAddressMethods = Arrays.asList("getCity():String", "getNumber():String",
+                "getPostalCode():java.math.BigDecimal", "getStreet():String", "setCity(String):void",
+                "setNumber(String):void", "setPostalCode(java.math.BigDecimal):void", "setStreet(String):void");
         assertEquals(expectedAddressMethods, actualAddressMethods);
+
+        ClassOrInterfaceDeclaration exception = compilationUnits.get("FormattingException")
+                .getClassByName("FormattingException").get();
+        List<String> actualExceptionMethods = listMethods(exception);
+
+        List<String> expectedExceptionMethods = Arrays.asList("getErrorCode():Integer", "setErrorCode(Integer):void");
+        assertEquals(expectedExceptionMethods, actualExceptionMethods);
+
+        ClassOrInterfaceDeclaration serviceInterface = compilationUnits.get("CustomerService")
+                .getInterfaceByName("CustomerService").get();
+        List<String> actualServiceMethods = listMethods(serviceInterface);
+
+        List<String> expectedServiceMethods = Arrays.asList(
+                "formatAddress(test.customer.Address):test.customer.FormattedAddress throws test.customer.FormattingException",
+                "save(test.customer.Customer):test.customer.Customer");
+        assertEquals(expectedServiceMethods, actualServiceMethods);
     }
 
     private static List<String> listMethods(ClassOrInterfaceDeclaration declaration) {
@@ -140,6 +150,19 @@ public class ProviderCodeGenerationMojoTest {
         builder.append("):");
         builder.append(method.getType());
 
+        if (method.getThrownExceptions().isNonEmpty()) {
+            builder.append(" throws ");
+
+            Iterator<ReferenceType> exceptions = method.getThrownExceptions().iterator();
+            while (exceptions.hasNext()) {
+                ReferenceType exceptionType = exceptions.next();
+                builder.append(exceptionType.getElementType());
+                if (exceptions.hasNext()) {
+                    builder.append(',');
+                }
+            }
+        }
+
         return builder.toString();
     }
 
@@ -156,12 +179,12 @@ public class ProviderCodeGenerationMojoTest {
         // Parse the generated code for inspection
         Map<String, CompilationUnit> compilationUnits = this.parseClasses(outputDirectory);
 
-        ClassOrInterfaceDeclaration superType = compilationUnits.get("SuperType")
-                .getInterfaceByName("SuperType").orElseThrow(NoSuchElementException::new);
+        ClassOrInterfaceDeclaration superType = compilationUnits.get("SuperType").getInterfaceByName("SuperType")
+                .orElseThrow(NoSuchElementException::new);
         List<String> actualSuperTypeMethods = listMethods(superType);
 
-        ClassOrInterfaceDeclaration subType = compilationUnits.get("SubType")
-                .getInterfaceByName("SubType").orElseThrow(NoSuchElementException::new);
+        ClassOrInterfaceDeclaration subType = compilationUnits.get("SubType").getInterfaceByName("SubType")
+                .orElseThrow(NoSuchElementException::new);
         List<String> actualSubTypeMethods = listMethods(subType);
 
         // Assert that the supertype reference is present
@@ -169,14 +192,9 @@ public class ProviderCodeGenerationMojoTest {
         assertEquals(superType.getName(), subType.getExtendedTypes(0).getName());
 
         // Check the generated methods
-        List<String> expectedSuperTypeMethods = Arrays.asList(
-                "getInheritedField():String",
-                "setInheritedField(String):void"
-        );
-        List<String> expectedSubTypeMethods = Arrays.asList(
-                "getNormalField():String",
-                "setNormalField(String):void"
-        );
+        List<String> expectedSuperTypeMethods = Arrays.asList("getInheritedField():String",
+                "setInheritedField(String):void");
+        List<String> expectedSubTypeMethods = Arrays.asList("getNormalField():String", "setNormalField(String):void");
 
         assertEquals(expectedSuperTypeMethods, actualSuperTypeMethods);
         assertEquals(expectedSubTypeMethods, actualSubTypeMethods);

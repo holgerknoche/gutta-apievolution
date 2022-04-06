@@ -5,14 +5,16 @@ import gutta.apievolution.json.ProviderServiceProxy;
 
 import java.util.*;
 
-public class TestProviderServiceProxy extends ProviderServiceProxy<ProviderParameter, ProviderResult> {
+public class TestProviderServiceProxy
+        extends ProviderServiceProxy<ProviderParameter, ProviderResult> {
 
     private static final String SERVICE_NAME = "TestService";
 
     public TestProviderServiceProxy() {
-        super(SERVICE_NAME, ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api",
-                "apis/provider-revision-2.api"), new HashSet<>(Arrays.asList(0, 1)), "TestParameter",
-                "TestResult", ProviderParameter.class);
+        super(SERVICE_NAME,
+                ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api",
+                        "apis/provider-revision-2.api"),
+                new HashSet<>(Arrays.asList(0, 1)), "TestParameter", "TestResult", ProviderParameter.class);
     }
 
     @Override

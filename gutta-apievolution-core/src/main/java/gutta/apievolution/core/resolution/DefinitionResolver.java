@@ -11,21 +11,25 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * The definition resolver resolves client API definitions against provider API revisions. The resulting resolution
- * allows the provider to transform data provided by the client into its own representation and vice-versa, thus
+ * The definition resolver resolves client API definitions against provider API
+ * revisions. The resulting resolution allows the provider to transform data
+ * provided by the client into its own representation and vice-versa, thus
  * serving the client in a representation it is able to process.
  */
 public class DefinitionResolver {
 
     /**
-     * Resolves the given consumer API definition against a given provider revision history.
-     * @param revisionHistory The provider revision history
+     * Resolves the given consumer API definition against a given provider revision
+     * history.
+     *
+     * @param revisionHistory    The provider revision history
      * @param supportedRevisions The set of supported revision numbers
-     * @param consumerApi The consumer API to resolve
-     * @return A resolution of the consumer API against the provider's internal representation
+     * @param consumerApi        The consumer API to resolve
+     * @return A resolution of the consumer API against the provider's internal
+     *         representation
      */
     public DefinitionResolution resolveConsumerDefinition(RevisionHistory revisionHistory,
-                                          Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
+            Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
 
         int desiredRevision = consumerApi.getReferencedRevision();
         if (!supportedRevisions.contains(desiredRevision)) {
@@ -41,12 +45,12 @@ public class DefinitionResolver {
     }
 
     DefinitionResolution resolveConsumerDefinitionAgainst(ProviderApiDefinition providerApi,
-                                          ConsumerApiDefinition consumerApi,
-                                          RevisionHistory revisionHistory) {
+            ConsumerApiDefinition consumerApi, RevisionHistory revisionHistory) {
         ConsumerToProviderMap consumerToProviderMap = this.createConsumerToProviderMap(consumerApi, providerApi);
         ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
 
-        // Perform consistency checks on the maps between consumer API and provider revision
+        // Perform consistency checks on the maps between consumer API and provider
+        // revision
         consumerToProviderMap.checkConsistency();
         providerToConsumerMap.checkConsistency();
 
@@ -60,15 +64,18 @@ public class DefinitionResolver {
     }
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
-                                                              ProviderApiDefinition providerApi) {
+            ProviderApiDefinition providerApi) {
         Map<Type, Type> consumerToProviderType = this.createTypeMapping(providerApi, consumerApi);
 
         Map<ConsumerField, ProviderField> consumerToProviderField = this.createFieldMapping(consumerApi,
                 consumerToProviderType);
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = this.createMemberMapping(consumerApi,
                 consumerToProviderType);
+        Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = this.createOperationMapping(consumerApi,
+                providerApi);
 
-        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember);
+        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember,
+                consumerToProviderOperation);
     }
 
     private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
@@ -77,8 +84,8 @@ public class DefinitionResolver {
         for (UserDefinedType<ConsumerApiDefinition> consumerType : consumerApi.getUserDefinedTypes()) {
             String publicTypeName = consumerType.getPublicName();
             Type providerType = providerApi.resolveUserDefinedType(publicTypeName)
-                    .orElseThrow(() -> new DefinitionResolutionException("No matching type for " + consumerType +
-                            " (" + publicTypeName + ")."));
+                    .orElseThrow(() -> new DefinitionResolutionException(
+                            "No matching type for " + consumerType + " (" + publicTypeName + ")."));
             this.assertMatchingType(consumerType, providerType);
             consumerToProviderType.put(consumerType, providerType);
         }
@@ -88,8 +95,8 @@ public class DefinitionResolver {
 
     private void assertMatchingType(Type consumerType, Type providerType) {
         if (consumerType instanceof ConsumerEnumType && !(providerType instanceof ProviderEnumType)) {
-            throw new DefinitionResolutionException("Consumer type '" + consumerType +
-                    " is an enum, but provider type " + providerType + " is not.");
+            throw new DefinitionResolutionException(
+                    "Consumer type '" + consumerType + " is an enum, but provider type " + providerType + " is not.");
         }
         if (consumerType instanceof ConsumerRecordType && !(providerType instanceof ProviderRecordType)) {
             throw new DefinitionResolutionException("Consumer type '" + consumerType +
@@ -98,7 +105,7 @@ public class DefinitionResolver {
     }
 
     private Map<ConsumerField, ProviderField> createFieldMapping(ConsumerApiDefinition consumerApi,
-                                                                 Map<Type, Type> consumerToProviderType) {
+            Map<Type, Type> consumerToProviderType) {
         Map<ConsumerField, ProviderField> consumerToProviderField = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {
@@ -110,11 +117,11 @@ public class DefinitionResolver {
             ProviderRecordType providerType = (ProviderRecordType) consumerToProviderType.get(consumerType);
             for (ConsumerField consumerField : consumerType.getDeclaredFields()) {
                 String fieldName = consumerField.getPublicName();
-                ProviderField providerField = providerType.resolveField(fieldName).orElseThrow(
-                        () -> new DefinitionResolutionException("Missing field " + fieldName + " in provider type " +
-                                providerType)
-                );
+                ProviderField providerField = providerType.resolveField(fieldName)
+                        .orElseThrow(() -> new DefinitionResolutionException(
+                                "Missing field " + fieldName + " in provider type " + providerType));
 
+                this.assertMatchingFields(consumerField, providerField);
                 consumerToProviderField.put(consumerField, providerField);
             }
         }
@@ -122,8 +129,12 @@ public class DefinitionResolver {
         return consumerToProviderField;
     }
 
+    private void assertMatchingFields(ConsumerField consumerField, ProviderField providerField) {
+        // TODO
+    }
+
     private Map<ConsumerEnumMember, ProviderEnumMember> createMemberMapping(ConsumerApiDefinition consumerApi,
-                                                                            Map<Type, Type> consumerToProviderType) {
+            Map<Type, Type> consumerToProviderType) {
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {
@@ -135,16 +146,41 @@ public class DefinitionResolver {
             ProviderEnumType providerType = (ProviderEnumType) consumerToProviderType.get(consumerType);
             for (ConsumerEnumMember consumerMember : consumerType.getDeclaredMembers()) {
                 String memberName = consumerMember.getPublicName();
-                ProviderEnumMember providerMember = providerType.resolveMember(memberName).orElseThrow(
-                        () -> new DefinitionResolutionException("Missing member " + memberName + " in provider type " +
-                                providerType)
-                );
+                ProviderEnumMember providerMember = providerType.resolveMember(memberName)
+                        .orElseThrow(() -> new DefinitionResolutionException(
+                                "Missing member " + memberName + " in provider type " + providerType));
 
+                this.assertMatchingMembers(consumerMember, providerMember);
                 consumerToProviderMember.put(consumerMember, providerMember);
             }
         }
 
         return consumerToProviderMember;
+    }
+
+    private void assertMatchingMembers(ConsumerEnumMember consumerMember, ProviderEnumMember providerMember) {
+        // TODO
+    }
+
+    private Map<ConsumerOperation, ProviderOperation> createOperationMapping(ConsumerApiDefinition consumerApi,
+            ProviderApiDefinition providerApi) {
+        Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = new HashMap<>();
+
+        for (ConsumerOperation consumerOperation : consumerApi.getOperations()) {
+            String operationName = consumerOperation.getPublicName();
+            ProviderOperation providerOperation = providerApi.resolveOperation(operationName)
+                    .orElseThrow(() -> new DefinitionResolutionException(
+                            "Missing operation " + operationName + " in provider API."));
+
+            this.assertMatchingOperations(consumerOperation, providerOperation);
+            consumerToProviderOperation.put(consumerOperation, providerOperation);
+        }
+
+        return consumerToProviderOperation;
+    }
+
+    private void assertMatchingOperations(ConsumerOperation consumerOperation, ProviderOperation providerOperation) {
+        // TODO
     }
 
 }

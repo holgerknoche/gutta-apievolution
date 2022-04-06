@@ -3,7 +3,7 @@ grammar ApiRevision;
 apiDefinition:
 	annotations+=annotation*
     refToken='api' name=qualifiedName replaces=apiReplacesClause? '{'
-	    elements+=userDefinedTypeOrService*
+	    elements+=userDefinedTypeOrOperation*
 	'}'
 	EOF
 ;
@@ -16,11 +16,10 @@ annotation:
 	typeToken=ANNOTATION_NAME '(' value=STRING_LITERAL ')'
 ;
 	
-userDefinedTypeOrService:
+userDefinedTypeOrOperation:
 	enumType |
 	recordType |
-	service |
-	exceptionType
+	operation
 ;
 
 replacesClause:
@@ -43,7 +42,7 @@ enumMember:
 
 recordType:
 	annotations+=annotation*
-    modifiers+=recordModifier* refToken='record' name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
+    modifiers+=recordModifier* refToken=(K_RECORD | K_EXCEPTION) name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
         fields+=field*
     '}'
 ;
@@ -88,22 +87,9 @@ userDefinedTypeReference:
     typeName=identifier
 ;
 
-service:
-	annotations+=annotation*
-    refToken='service' name=identifier replaces=replacesClause? as=asClause? '{'
-        operations+=serviceOperation*
-    '}'
-;
-
-serviceOperation:
-   resultType=userDefinedTypeReference name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
-;
-
-exceptionType:
-	annotations+=annotation*
-    modifier='abstract'? refToken='exception' name=identifier ('extends' superType=identifier)? replaces=replacesClause? as=asClause? '{'
-        fields+=field*
-    '}'
+operation:
+    annotations+=annotation*
+    refToken='operation' name=identifier '(' (parameterType=userDefinedTypeReference)? ')' ':' resultType=userDefinedTypeReference ('throws' exceptions+=userDefinedTypeReference (',' exceptions+=userDefinedTypeReference)*)? replaces=replacesClause? as=asClause?
 ;
 
 qualifiedName:
@@ -120,6 +106,10 @@ K_ABSTRACT:
     'abstract'
 ;
 
+K_EXCEPTION:
+    'exception'
+;
+
 K_INT32:
     'int32'
 ;
@@ -130,6 +120,10 @@ K_INT64:
 
 K_MANDATORY:
     'mandatory'
+;
+
+K_RECORD:
+    'record'
 ;
 
 K_OPTIN:
