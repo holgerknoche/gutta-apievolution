@@ -78,6 +78,15 @@ public class DefinitionResolution {
     public Stream<Type> providerTypes() {
         return this.providerToConsumerMap.providerTypes();
     }
+    
+    /**
+     * Returns a stream of all mapped provider operations.
+     *
+     * @return see above
+     */
+    public Stream<ProviderOperation> providerOperations() {
+        return this.providerToConsumerMap.providerOperations();
+    }
 
     /**
      * Resolves the given internal name into a provider type.

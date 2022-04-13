@@ -1,10 +1,8 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.consumer.*;
+import gutta.apievolution.core.apimodel.provider.*;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -20,19 +18,27 @@ class ProviderToConsumerMap {
     private final Map<ProviderField, ConsumerField> providerToConsumerField;
 
     private final Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember;
+    
+    private final Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation;
 
     public ProviderToConsumerMap(Map<Type, Type> providerToConsumerType,
             Map<ProviderField, ConsumerField> providerToConsumerField,
-            Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember) {
+            Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember,
+            Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation) {
         this.providerToConsumerType = providerToConsumerType;
         this.providerToConsumerField = providerToConsumerField;
         this.providerToConsumerMember = providerToConsumerMember;
+        this.providerToConsumerOperation = providerToConsumerOperation;
     }
 
     Stream<Type> providerTypes() {
         return this.providerToConsumerType.keySet().stream();
     }
 
+    Stream<ProviderOperation> providerOperations() {
+        return this.providerToConsumerOperation.keySet().stream();
+    }
+    
     Type mapProviderType(Type providerType) {
         return this.providerToConsumerType.get(providerType);
     }

@@ -6,4 +6,7 @@ api test {
     enum E as EConsumer {
         MEMBER_1 as MEMBER_1_CONSUMER
     }
+    
+    operation testOperation(A): A
+    
 }

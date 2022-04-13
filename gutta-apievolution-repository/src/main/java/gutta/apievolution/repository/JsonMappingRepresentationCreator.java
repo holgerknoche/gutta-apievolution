@@ -3,11 +3,17 @@ package gutta.apievolution.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeVisitor;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.io.IOException;
@@ -20,12 +26,13 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private byte[] createPublicToInternalMapping(Stream<Type> types) {
+    private byte[] createPublicToInternalMapping(Stream<Type> types, Stream<? extends Operation<?, ?, ?>> operations) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         ArrayNode rootNode = objectMapper.createArrayNode();
         PublicToInternalMapper mapper = new PublicToInternalMapper();
         types.forEach(type -> rootNode.add(type.accept(mapper)));
+        operations.forEach(operation -> rootNode.add(mapper.handleOperation(operation)));
 
         try {
             return objectMapper.writeValueAsBytes(rootNode);
@@ -36,12 +43,12 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
 
     @Override
     public byte[] createConsumerSideMapping(DefinitionResolution resolution) {
-        return this.createPublicToInternalMapping(resolution.consumerTypes());
+        return this.createPublicToInternalMapping(resolution.consumerTypes(), resolution.consumerOperations());
     }
 
     @Override
     public byte[] createProviderSideMapping(DefinitionResolution resolution) {
-        return this.createPublicToInternalMapping(resolution.providerTypes());
+        return this.createPublicToInternalMapping(resolution.providerTypes(), resolution.providerOperations());
     }
 
     @Override
@@ -51,6 +58,7 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
         ArrayNode rootNode = objectMapper.createArrayNode();
         InternalToInternalMapper mapper = new InternalToInternalMapper(resolution);
         resolution.consumerTypes().forEach(type -> rootNode.add(type.accept(mapper)));
+        resolution.consumerOperations().forEach(operation -> rootNode.add(mapper.handleOperation(operation)));
 
         try {
             return objectMapper.writeValueAsBytes(rootNode);
@@ -107,6 +115,17 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
 
             return node;
         }
+
+        public ObjectNode handleOperation(Operation<?, ?, ?> operation) {
+            ObjectNode node = OBJECT_MAPPER.createObjectNode();
+
+            node.put("$type", "operation");
+            node.put("publicName", operation.getPublicName());
+            node.put("internalName", operation.getInternalName());
+
+            return node;
+        }
+
     }
 
     /**
@@ -174,6 +193,18 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
             return node;
         }
 
+        public ObjectNode handleOperation(ConsumerOperation consumerOperation) {
+            ProviderOperation providerOperation = this.resolution.mapConsumerOperation(consumerOperation);
+            
+            ObjectNode node = OBJECT_MAPPER.createObjectNode();
+            
+            node.put("$type", "operation");
+            node.put("providerName", providerOperation.getInternalName());
+            node.put("consumerName", consumerOperation.getInternalName());
+            
+            return node;
+        }
+        
     }
 
 }

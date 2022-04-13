@@ -6,4 +6,7 @@ api test {
     enum E as EProvider {
         MEMBER_1 as MEMBER_1_PROVIDER
     }
+    
+    operation testOperation(A): A
+    
 }

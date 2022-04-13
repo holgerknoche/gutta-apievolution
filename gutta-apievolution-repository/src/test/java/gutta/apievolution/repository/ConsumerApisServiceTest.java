@@ -206,7 +206,7 @@ class ConsumerApisServiceTest {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.CONSUMER);
 
         // The actual order is not deterministic, we therefore compare sets
-        String expectedJson = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AConsumer\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EConsumer\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_CONSUMER\"}]}]";
+        String expectedJson = "[{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EConsumer\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_CONSUMER\"}]}, {\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AConsumer\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAConsumer\"}]}, {\"$type\":\"operation\",\"publicName\":\"testOperation\",\"internalName\":\"testOperation\"}]";
         Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
         String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);
@@ -224,13 +224,13 @@ class ConsumerApisServiceTest {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.PROVIDER);
 
         // The actual order is not deterministic, we therefore compare sets
-        String expectedJson = "[{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AProvider\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAProvider\"}]},{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EProvider\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_PROVIDER\"}]}]";
+        String expectedJson = "[{\"$type\":\"enum\",\"publicName\":\"E\",\"internalName\":\"EProvider\",\"members\":[{\"publicName\":\"MEMBER_1\",\"internalName\":\"MEMBER_1_PROVIDER\"}]},{\"$type\":\"record\",\"publicName\":\"A\",\"internalName\":\"AProvider\",\"fields\":[{\"publicName\":\"fieldA\",\"internalName\":\"fieldAProvider\"}]},{\"$type\":\"operation\",\"publicName\":\"testOperation\",\"internalName\":\"testOperation\"}]";
         Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
         String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);
         Set<JsonNode> actualNodeSet = toJsonNodeSet(actualJson);
 
-        assertEquals(expectedNodeSet, actualNodeSet);
+        assertEquals(expectedNodeSet, actualNodeSet);        
     }
 
     /**
@@ -242,7 +242,7 @@ class ConsumerApisServiceTest {
         byte[] mappingBytes = this.createJsonMapping(ApiMappingType.FULL);
 
         // The actual order is not deterministic, we therefore compare sets
-        String expectedJson = "[{\"$type\":\"record\",\"providerName\":\"AProvider\",\"consumerName\":\"AConsumer\",\"fields\":[{\"providerName\":\"fieldAProvider\",\"consumerName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"providerName\":\"EProvider\",\"consumerName\":\"EConsumer\",\"members\":[{\"providerName\":\"MEMBER_1_PROVIDER\",\"consumerName\":\"MEMBER_1_CONSUMER\"}]}]";
+        String expectedJson = "[{\"$type\":\"record\",\"providerName\":\"AProvider\",\"consumerName\":\"AConsumer\",\"fields\":[{\"providerName\":\"fieldAProvider\",\"consumerName\":\"fieldAConsumer\"}]},{\"$type\":\"enum\",\"providerName\":\"EProvider\",\"consumerName\":\"EConsumer\",\"members\":[{\"providerName\":\"MEMBER_1_PROVIDER\",\"consumerName\":\"MEMBER_1_CONSUMER\"}]},{\"$type\":\"operation\",\"providerName\":\"testOperation\",\"consumerName\":\"testOperation\"}]";
         Set<JsonNode> expectedNodeSet = toJsonNodeSet(expectedJson);
 
         String actualJson = new String(mappingBytes, StandardCharsets.UTF_8);

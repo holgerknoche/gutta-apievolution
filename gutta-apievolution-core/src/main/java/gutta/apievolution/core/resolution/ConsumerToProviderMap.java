@@ -75,8 +75,10 @@ class ConsumerToProviderMap {
                 this::onAmbiguousField);
         Map<ProviderEnumMember, ConsumerEnumMember> invertedMemberMap = invertMap(this.consumerToProviderMember,
                 this::onAmbiguousEnumMember);
+        Map<ProviderOperation, ConsumerOperation> invertedOperationMap = invertMap(this.consumerToProviderOperation,
+                this::onAmbiguousOperation);
 
-        return new ProviderToConsumerMap(invertedTypeMap, invertedFieldMap, invertedMemberMap);
+        return new ProviderToConsumerMap(invertedTypeMap, invertedFieldMap, invertedMemberMap, invertedOperationMap);
     }
 
     private void onAmbiguousType(Type type) {
@@ -89,6 +91,10 @@ class ConsumerToProviderMap {
 
     private void onAmbiguousEnumMember(ProviderEnumMember enumMember) {
         throw new DefinitionResolutionException("Ambiguous enum member " + enumMember + ".");
+    }
+    
+    private void onAmbiguousOperation(ProviderOperation operation) {
+        throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
     void checkConsistency() {
