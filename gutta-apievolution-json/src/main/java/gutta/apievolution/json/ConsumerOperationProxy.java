@@ -14,12 +14,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * A consumer invocation proxy transparently handles revisioned communication on
+ * A consumer operation proxy transparently handles revisioned communication on
  * the consumer side, i.e. it transforms the request to the public
  * representation and the response to the internal representation.
  */
-public abstract class ConsumerInvocationProxy
-        extends AbstractInvocationProxy {
+public abstract class ConsumerOperationProxy
+        extends AbstractOperationProxy {
 
     private final ConsumerRecordType parameterType;
 
@@ -37,7 +37,7 @@ public abstract class ConsumerInvocationProxy
      *                          definition
      * @param router            The router to use for the invocation
      */
-    protected ConsumerInvocationProxy(ConsumerApiDefinition apiDefinition, String parameterTypeName,
+    protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String parameterTypeName,
             String resultTypeName, RequestRouter router) {
         Optional<ConsumerRecordType> optionalParameterType = apiDefinition.findUDTByInternalName(parameterTypeName);
         Optional<ConsumerRecordType> optionalResultType = apiDefinition.findUDTByInternalName(resultTypeName);

@@ -5,15 +5,15 @@ import java.util.Map;
 
 public class TestRequestRouter implements RequestRouter {
 
-    private final Map<String, ProviderServiceProxy> providerProxyMap = new HashMap<>();
+    private final Map<String, ProviderOperationProxy> providerProxyMap = new HashMap<>();
 
-    public void registerProviderService(ProviderServiceProxy serviceProxy) {
+    public void registerProviderService(ProviderOperationProxy serviceProxy) {
         this.providerProxyMap.put(serviceProxy.getServiceName(), serviceProxy);
     }
 
     @Override
     public String invokeService(String consumerApiId, int referencedRevision, String serviceName, String requestJson) {
-        ProviderServiceProxy<?, ?> providerProxy = this.providerProxyMap.get(serviceName);
+        ProviderOperationProxy<?, ?> providerProxy = this.providerProxyMap.get(serviceName);
         return providerProxy.invokeService(consumerApiId, referencedRevision, requestJson);
     }
 

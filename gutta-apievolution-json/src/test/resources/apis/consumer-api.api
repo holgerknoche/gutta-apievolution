@@ -16,5 +16,7 @@ api test.customer {
         TestEnum resultEnum
         TestEnum* resultList
     }
+    
+    operation testOperation(TestParameter): TestResult
 
 }

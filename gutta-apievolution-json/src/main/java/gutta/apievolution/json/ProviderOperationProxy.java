@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * A consumer invocation proxy transparently handles revisioned communication on
+ * A provider operation proxy transparently handles revisioned communication on
  * the provider side, i.e. it transforms the request to the internal
  * representation and the response to the public representation.
  */
-public abstract class ProviderServiceProxy<P, R>
-        extends AbstractInvocationProxy {
+public abstract class ProviderOperationProxy<P, R>
+        extends AbstractOperationProxy {
 
     private final String serviceName;
 
@@ -47,7 +47,7 @@ public abstract class ProviderServiceProxy<P, R>
      * @param resultTypeName     The internal name of the result type
      * @param parameterType      The actual parameter type for request handling
      */
-    public ProviderServiceProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
+    public ProviderOperationProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
             String parameterTypeName, String resultTypeName, Class<P> parameterType) {
         this.serviceName = serviceName;
         this.revisionHistory = revisionHistory;
@@ -94,7 +94,7 @@ public abstract class ProviderServiceProxy<P, R>
             requestNode = this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
             P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
-            R result = this.invokeService(parameter);
+            R result = this.invokeOperation(parameter);
 
             Type resultType = resolution.resolveProviderType(this.resultTypeName);
             JsonNode responseNode = objectMapper.valueToTree(result);
@@ -112,7 +112,7 @@ public abstract class ProviderServiceProxy<P, R>
      * @param parameter The parameter to pass to the service method
      * @return The result of the service method
      */
-    protected abstract R invokeService(P parameter);
+    protected abstract R invokeOperation(P parameter);
 
     /**
      * Specific visitor for rewriting a public to a provider-internal

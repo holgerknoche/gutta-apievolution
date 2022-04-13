@@ -9,7 +9,7 @@ import gutta.apievolution.core.apimodel.*;
 
 import java.util.NoSuchElementException;
 
-abstract class AbstractInvocationProxy {
+abstract class AbstractOperationProxy {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

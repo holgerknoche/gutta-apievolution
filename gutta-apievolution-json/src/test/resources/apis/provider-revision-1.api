@@ -17,5 +17,7 @@ api test.provider {
         TestEnum resultEnum
         TestEnum* resultList
     }
+    
+    operation testOperation(TestParameter): TestResult
 
 }
