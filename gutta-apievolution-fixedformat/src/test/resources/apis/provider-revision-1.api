@@ -1,0 +1,23 @@
+api test.provider {
+
+    enum TestEnum as ProviderEnum {
+        A as VALUE_1
+        B as VALUE_2
+    }
+
+    record TestParameter {
+        string renamedField as field1
+        optin string deletedField as field2
+        TestEnum testEnum
+        TestEnum* testList
+    }
+
+    record TestResult {
+        string renamedField as resultField
+        TestEnum resultEnum
+        TestEnum* resultList
+    }
+    
+    operation testOperation(TestParameter): TestResult
+
+}
