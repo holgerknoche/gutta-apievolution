@@ -3,6 +3,9 @@ package gutta.apievolution.fixedformat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;

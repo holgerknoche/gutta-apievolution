@@ -2,6 +2,8 @@ package gutta.apievolution.fixedformat;
 
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;

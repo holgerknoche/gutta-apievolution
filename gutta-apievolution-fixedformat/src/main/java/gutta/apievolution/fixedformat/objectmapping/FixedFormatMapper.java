@@ -1,4 +1,4 @@
-package gutta.apievolution.fixedformat;
+package gutta.apievolution.fixedformat.objectmapping;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;

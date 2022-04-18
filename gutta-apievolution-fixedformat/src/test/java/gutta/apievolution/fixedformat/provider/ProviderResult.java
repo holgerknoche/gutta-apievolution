@@ -1,8 +1,8 @@
 package gutta.apievolution.fixedformat.provider;
 
-import java.util.List;
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 
-import gutta.apievolution.fixedformat.MaxLength;
+import java.util.List;
 
 public class ProviderResult {
 

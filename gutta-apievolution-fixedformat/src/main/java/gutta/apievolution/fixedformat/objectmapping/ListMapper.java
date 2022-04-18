@@ -1,4 +1,4 @@
-package gutta.apievolution.fixedformat;
+package gutta.apievolution.fixedformat.objectmapping;
 
 import static java.lang.Math.min;
 
