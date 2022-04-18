@@ -12,8 +12,8 @@ api test.customer {
     }
 
     record TestResult as ConsumerResult {
-        string(30) renamedField as resultField
-        TestEnum resultEnum
+    	TestEnum resultEnum
+        string(30) renamedField as resultField        
         TestEnum(10) resultList
     }
     

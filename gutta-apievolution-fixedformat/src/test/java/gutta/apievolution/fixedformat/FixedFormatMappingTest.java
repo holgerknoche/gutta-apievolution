@@ -23,12 +23,10 @@ class FixedFormatMappingTest {
         ByteBuffer requestBuffer = ByteBuffer.allocate(1024);
         FixedFormatData data = FixedFormatData.of(requestBuffer, CHARSET);
         FixedFormatMapper codec = new FixedFormatMapper();
-        
-        System.out.println(codec.determineMaxSizeOf(ConsumerParameter.class));
-        
+                
         codec.writeValue(parameter, data);
         
         System.out.println(requestBuffer);
-    }
+    }        
     
 }

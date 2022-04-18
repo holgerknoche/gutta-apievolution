@@ -1,9 +1,8 @@
 package gutta.apievolution.fixedformat.consumer;
 
-import gutta.apievolution.fixedformat.MaxLength;
-import gutta.apievolution.fixedformat.Structure;
-
 import java.util.List;
+
+import gutta.apievolution.fixedformat.MaxLength;
 
 public class ConsumerParameter {
 

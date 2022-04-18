@@ -5,16 +5,16 @@ api test.provider {
         B as VALUE_2
     }
 
-    record TestParameter {
-        string testField replaces renamedField as fieldA
+    record TestParameter as ProviderParameter {
+        string(30) testField replaces renamedField as fieldA
         TestEnum testEnum
-        TestEnum* testList
+        TestEnum(10) testList
     }
 
-    record TestResult {
-        string resultField replaces renamedField as retField
+    record TestResult as ProviderResult {
+        string(30) resultField replaces renamedField as retField
         TestEnum resultEnum
-        TestEnum* resultList
+        TestEnum(10) resultList
     }
     
     operation testOperation(TestParameter): TestResult
