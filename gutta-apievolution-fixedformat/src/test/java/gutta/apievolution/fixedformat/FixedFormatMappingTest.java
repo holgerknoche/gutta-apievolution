@@ -1,5 +1,8 @@
 package gutta.apievolution.fixedformat;
 
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScript.MappingProcedure;
+import gutta.apievolution.fixedformat.apimapping.CopyOperation;
+import gutta.apievolution.fixedformat.apimapping.SkipOperation;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
@@ -27,8 +30,22 @@ class FixedFormatMappingTest {
         FixedFormatMapper codec = new FixedFormatMapper();
                 
         codec.writeValue(parameter, data);
+
+        // Manually specify the script
+        MappingProcedure parameterProcedure = new MappingProcedure(Arrays.asList(
+                new CopyOperation(0, 30),
+                new SkipOperation(30),
+                new CopyOperation(30, 4)
+                ));
         
-        System.out.println(requestBuffer);
+        // Convert customer parameter to provider parameter
+        ByteBuffer providerParameterBuffer = ByteBuffer.allocate(104);
+
+        requestBuffer.flip();
+        parameterProcedure.apply(requestBuffer, providerParameterBuffer);
+        
+        System.out.println("Consumer Parameter: " + requestBuffer);
+        System.out.println("Provider Parameter: " + providerParameterBuffer);
     }        
     
 }
