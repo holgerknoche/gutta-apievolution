@@ -17,8 +17,8 @@ public class ApiMappingScript {
         if (procedure == null) {
             throw new IllegalArgumentException("No mapping procedure for type id " + typeId + ".");
         }
-        
-        procedure.apply(source, target);
+                        	
+        procedure.apply(0, source, target);
     }
     
     public static class MappingProcedure {
@@ -29,8 +29,8 @@ public class ApiMappingScript {
             this.operations = operations;
         }
         
-        public void apply(ByteBuffer source, ByteBuffer target) {
-            this.operations.forEach(operation -> operation.apply(source, target));
+        public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
+            this.operations.forEach(operation -> operation.apply(baseOffset, source, target));
         }
         
     }

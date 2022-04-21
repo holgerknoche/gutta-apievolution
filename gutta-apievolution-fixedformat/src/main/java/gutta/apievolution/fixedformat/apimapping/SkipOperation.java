@@ -11,7 +11,7 @@ public class SkipOperation implements ScriptOperation {
     }
     
     @Override
-    public void apply(ByteBuffer source, ByteBuffer target) {
+    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
         int currentPosition = target.position();
         target.position(currentPosition + this.amount);
     }

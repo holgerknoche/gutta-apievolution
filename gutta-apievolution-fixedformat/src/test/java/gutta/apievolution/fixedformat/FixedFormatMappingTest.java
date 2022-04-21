@@ -1,18 +1,20 @@
 package gutta.apievolution.fixedformat;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
+
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript.MappingProcedure;
 import gutta.apievolution.fixedformat.apimapping.CopyOperation;
+import gutta.apievolution.fixedformat.apimapping.MappingContext;
 import gutta.apievolution.fixedformat.apimapping.SkipOperation;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
-import org.junit.jupiter.api.Test;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 class FixedFormatMappingTest {
 
@@ -42,7 +44,7 @@ class FixedFormatMappingTest {
         ByteBuffer providerParameterBuffer = ByteBuffer.allocate(104);
 
         requestBuffer.flip();
-        parameterProcedure.apply(requestBuffer, providerParameterBuffer);
+        //parameterProcedure.apply(new MappingContext(), requestBuffer, providerParameterBuffer);
         
         System.out.println("Consumer Parameter: " + requestBuffer);
         System.out.println("Provider Parameter: " + providerParameterBuffer);

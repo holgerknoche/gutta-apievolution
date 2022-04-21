@@ -15,9 +15,11 @@ public class LoopOperation implements ScriptOperation {
     }
     
     @Override
-    public void apply(ByteBuffer source, ByteBuffer target) {
+    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
+    	// TODO How should we handle the base offset? Effectively, this is not a loop operation, but a list mapping operation,
+    	// as we need to increment the base offset for each entry (based on its source size)
         for(int count = 0; count < this.repetitions; count++) {
-            this.operations.forEach(operation -> operation.apply(source, target));
+            //this.operations.forEach(operation -> operation.apply(context, source, target));
         }   
     }
     

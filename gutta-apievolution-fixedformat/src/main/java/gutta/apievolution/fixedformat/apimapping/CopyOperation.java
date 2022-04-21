@@ -14,12 +14,12 @@ public class CopyOperation implements ScriptOperation {
     }
     
     @Override
-    public void apply(ByteBuffer source, ByteBuffer target) {
+    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
         byte[] copyBuffer = new byte[this.length];
         
         // Copy data from the given source offset. Starting with Java 13, there is
-        // also a built-in function for this
-        source.position(this.sourceOffset);
+        // also a built-in function for this        
+        source.position(baseOffset + this.sourceOffset);
         source.get(copyBuffer);
         
         target.put(copyBuffer);

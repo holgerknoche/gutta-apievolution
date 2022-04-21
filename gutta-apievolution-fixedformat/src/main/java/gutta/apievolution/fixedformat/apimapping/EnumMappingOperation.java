@@ -12,12 +12,10 @@ public class EnumMappingOperation implements ScriptOperation {
         this.sourceOffset = sourceOffset;
         this.indexMap = indexMap;
     }
-    
-    // TODO Offsets are relative to the current record
-    
+        
     @Override
-    public void apply(ByteBuffer source, ByteBuffer target) {
-        int sourceIndex = source.getInt(this.sourceOffset);
+    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
+        int sourceIndex = source.getInt(baseOffset + sourceOffset);
         int targetIndex = this.indexMap[sourceIndex];
         target.putInt(targetIndex);
     }

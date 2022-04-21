@@ -33,9 +33,11 @@ class ListMapper implements TypeMapper {
     @Override
     public void writeValue(Object value, FixedFormatData data) {
         List<?> list = (List<?>) value;
-
+                
         // Write at most maxElements elements
-        int elementsToWrite = min(list.size(), this.maxElements);         
+        int elementsToWrite = min(list.size(), this.maxElements);
+
+        // TODO Write number of written elements so that we know how many valid entries there are
         for (int elementIndex = 0; elementIndex < elementsToWrite; elementIndex++) {
             Object element = list.get(elementIndex);
             this.elementMapper.writeValue(element, data);
