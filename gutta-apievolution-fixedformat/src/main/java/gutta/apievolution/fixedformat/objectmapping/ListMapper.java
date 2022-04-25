@@ -17,7 +17,7 @@ class ListMapper implements TypeMapper<Object> {
         this.maxElements = maxElements;
         this.elementMapper = elementMapper;
         
-        this.maxLength = (maxElements * elementMapper.getMaxLength());
+        this.maxLength = (maxElements * elementMapper.getMaxLength()) + 4;
     }
     
     @Override

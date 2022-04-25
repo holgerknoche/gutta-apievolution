@@ -1,13 +1,17 @@
 package gutta.apievolution.fixedformat.consumer;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 import java.util.List;
 
 public class ConsumerResult {
 	
 	private ConsumerEnum resultEnum;
 	
+	@MaxLength(30)
 	private String resultField;
 	
+	@MaxLength(10)
 	private List<ConsumerEnum> resultList;
 	
 	public ConsumerEnum getResultEnum() {
