@@ -9,6 +9,8 @@ public class ByteBufferData implements FixedFormatData {
     
     private static final int WORK_ARRAY_SIZE = 512;
     
+    private static final byte PADDING_BYTE = 0x00;
+    
     private final Charset charset;
     
     private final ByteBuffer buffer;
@@ -36,10 +38,41 @@ public class ByteBufferData implements FixedFormatData {
     }
     
     @Override
+    public int readInt32() {
+        return this.buffer.getInt();
+    }
+    
+    @Override
     public void writeInt32(int value) {
         this.buffer.putInt(value);
     }
 
+    private int determineStringLength(byte[] encodedString, int maxLength) {
+        int currentIndex = (maxLength - 1);
+        
+        while (currentIndex >= 0) {
+            if (encodedString[currentIndex] != PADDING_BYTE) {
+                return (currentIndex + 1);
+            }
+            currentIndex--;
+        }
+        
+        return 0;
+    }
+    
+    @Override
+    public String readBoundedString(int maxLength) {
+        byte[] encodedString = this.getWorkArray(maxLength);
+        this.buffer.get(encodedString, 0, maxLength);
+        
+        int stringLength = this.determineStringLength(encodedString, maxLength);
+        if (stringLength > 0) {
+            return new String(encodedString, 0, stringLength, this.charset);
+        } else {
+            return "";
+        }
+    }
+    
     @Override
     public void writeBoundedString(String value, int maxLength) {
         int actualLength = value.length();
@@ -59,9 +92,15 @@ public class ByteBufferData implements FixedFormatData {
     }
     
     @Override
+    public void skipBytes(int amount) {
+        int currentOffset = this.buffer.position();
+        this.buffer.position(currentOffset + amount);
+    }
+    
+    @Override
     public void writePadding(int length) {
         byte[] workArray = this.getWorkArray(length);
-        Arrays.fill(workArray, 0, length, (byte) 0);
+        Arrays.fill(workArray, 0, length, PADDING_BYTE);
 
         this.buffer.put(workArray, 0, length);
     }

@@ -2,26 +2,23 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class EnumMappingOperation implements ScriptOperation {
+public class EnumMappingOperation implements ApiMappingOperation {
 
-    final int sourceOffset;
-    
     final int[] indexMap;
     
-    public EnumMappingOperation(int sourceOffset, int[] indexMap) {
-        this.sourceOffset = sourceOffset;
+    public EnumMappingOperation(int[] indexMap) {
         this.indexMap = indexMap;
     }
         
     @Override
-    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
-        int sourceIndex = source.getInt(baseOffset + sourceOffset);
+    public void apply(int offset, ByteBuffer source, ByteBuffer target) {
+        int sourceIndex = source.getInt(offset);
         int targetIndex = this.indexMap[sourceIndex];
         target.putInt(targetIndex);
     }
     
     @Override
-    public <R> R accept(ScriptOperationVisitor<R> visitor) {
+    public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleEnumMappingOperation(this);
     }
     

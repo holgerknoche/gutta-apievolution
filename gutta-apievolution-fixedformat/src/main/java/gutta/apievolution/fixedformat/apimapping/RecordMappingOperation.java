@@ -1,0 +1,24 @@
+package gutta.apievolution.fixedformat.apimapping;
+
+import java.nio.ByteBuffer;
+import java.util.List;
+
+public class RecordMappingOperation implements ApiMappingOperation {
+
+    private final List<FieldMapping> fieldMappings;
+    
+    public RecordMappingOperation(List<FieldMapping> fieldMappings) {
+        this.fieldMappings = fieldMappings;
+    }
+    
+    @Override
+    public void apply(int offset, ByteBuffer source, ByteBuffer target) {
+        this.fieldMappings.forEach(operation -> operation.apply(offset, source, target));
+    }
+
+    @Override
+    public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
+        return visitor.handleRecordMappingOperation(this);
+    }
+
+}

@@ -56,4 +56,17 @@ public class ProviderParameter {
 		return this;
 	}
 	
+	public List<ProviderEnum> getTestList() {
+        return this.testList;
+    }
+	
+	public void setTestList(List<ProviderEnum> testList) {
+        this.testList = testList;
+    }
+	
+	public ProviderParameter testList(List<ProviderEnum> testList) {
+	    this.setTestList(testList);
+	    return this;
+	}
+	
 }

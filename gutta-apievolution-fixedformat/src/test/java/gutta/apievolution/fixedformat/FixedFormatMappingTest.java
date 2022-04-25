@@ -1,20 +1,22 @@
 package gutta.apievolution.fixedformat;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-import org.junit.jupiter.api.Test;
-
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScript.MappingProcedure;
 import gutta.apievolution.fixedformat.apimapping.CopyOperation;
-import gutta.apievolution.fixedformat.apimapping.MappingContext;
+import gutta.apievolution.fixedformat.apimapping.EnumMappingOperation;
+import gutta.apievolution.fixedformat.apimapping.FieldMapping;
+import gutta.apievolution.fixedformat.apimapping.ListMappingOperation;
+import gutta.apievolution.fixedformat.apimapping.RecordMappingOperation;
 import gutta.apievolution.fixedformat.apimapping.SkipOperation;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.provider.ProviderParameter;
+import org.junit.jupiter.api.Test;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 class FixedFormatMappingTest {
 
@@ -34,20 +36,24 @@ class FixedFormatMappingTest {
         codec.writeValue(parameter, data);
 
         // Manually specify the script
-        MappingProcedure parameterProcedure = new MappingProcedure(Arrays.asList(
-                new CopyOperation(0, 30),
-                new SkipOperation(30),
-                new CopyOperation(30, 4)
+        RecordMappingOperation parameterMapping = new RecordMappingOperation(Arrays.asList(
+                new FieldMapping(0, new CopyOperation(30)),
+                new FieldMapping(0, new SkipOperation(30)),
+                new FieldMapping(30, new EnumMappingOperation(new int[] {0, 1})),
+                new FieldMapping(34, new ListMappingOperation(10, 4, 4, new EnumMappingOperation(new int[] {0, 1})))
                 ));
         
         // Convert customer parameter to provider parameter
-        ByteBuffer providerParameterBuffer = ByteBuffer.allocate(104);
+        ByteBuffer providerParameterBuffer = ByteBuffer.allocate(108);
 
         requestBuffer.flip();
-        //parameterProcedure.apply(new MappingContext(), requestBuffer, providerParameterBuffer);
+        parameterMapping.apply(0, requestBuffer, providerParameterBuffer);
         
-        System.out.println("Consumer Parameter: " + requestBuffer);
-        System.out.println("Provider Parameter: " + providerParameterBuffer);
+        providerParameterBuffer.flip();
+        FixedFormatData providerParameterData = FixedFormatData.of(providerParameterBuffer, CHARSET);
+        ProviderParameter providerParameter = codec.readValue(providerParameterData, ProviderParameter.class);
+        
+        System.out.println(providerParameter);
     }        
     
 }

@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class SkipOperation implements ScriptOperation {
+public class SkipOperation implements ApiMappingOperation {
     
     final int amount;
     
@@ -17,7 +17,7 @@ public class SkipOperation implements ScriptOperation {
     }
     
     @Override
-    public <R> R accept(ScriptOperationVisitor<R> visitor) {
+    public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleSkipOperation(this);
     }
 

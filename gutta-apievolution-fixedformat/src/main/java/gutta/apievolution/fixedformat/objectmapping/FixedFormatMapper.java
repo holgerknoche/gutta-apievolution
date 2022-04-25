@@ -12,19 +12,19 @@ import java.util.concurrent.ConcurrentMap;
 
 public class FixedFormatMapper {
     
-    private final ConcurrentMap<Class<?>, TypeMapper> typeMappers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class<?>, TypeMapper<?>> typeMappers = new ConcurrentHashMap<>();
     
-    private synchronized TypeMapper determineTypeMapperFor(Class<?> type, AnnotatedElement element) {
-        TypeMapper mapper = this.typeMappers.get(type);
+    private synchronized TypeMapper<?> determineTypeMapperFor(Class<?> type) {
+        TypeMapper<?> mapper = this.typeMappers.get(type);
         if (mapper != null) {
             return mapper;
         }
         
-        return this.createTypeMapperFor(type, null, element);
+        return this.createTypeMapperFor(type, null, type);
     }
     
-    private TypeMapper createTypeMapperFor(Class<?> type, Type genericType, AnnotatedElement element) {
-        TypeMapper typeMapper;
+    private TypeMapper<?> createTypeMapperFor(Class<?> type, Type genericType, AnnotatedElement element) {
+        TypeMapper<?> typeMapper;
         
         if (type.equals(int.class) || type.equals(Integer.class)) {
             typeMapper = new Int32Mapper();
@@ -46,14 +46,14 @@ public class FixedFormatMapper {
         return typeMapper;
     }
 
-    private TypeMapper createTypeMapperForRecord(Class<?> type) {
+    private TypeMapper<?> createTypeMapperForRecord(Class<?> type) {
         int maxLength = 0;
         List<FieldMapper> fieldMappers = new ArrayList<>();
         for (Field field : type.getDeclaredFields()) {
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
             
-            TypeMapper fieldTypeMapper = this.createTypeMapperFor(fieldType, fieldGenericType, field);
+            TypeMapper<?> fieldTypeMapper = this.createTypeMapperFor(fieldType, fieldGenericType, field);
             
             String fieldNameCapitalized = Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
             String getterName = "get" + fieldNameCapitalized;
@@ -73,10 +73,10 @@ public class FixedFormatMapper {
             fieldMappers.add(fieldMapper);
         }
         
-        return new RecordTypeMapper(maxLength, fieldMappers);
+        return new RecordTypeMapper(maxLength, type, fieldMappers);
     }
     
-    private TypeMapper createTypeMapperForList(ParameterizedType type, AnnotatedElement element) {        
+    private TypeMapper<?> createTypeMapperForList(ParameterizedType type, AnnotatedElement element) {        
         MaxLength maxLengthAnnotation = element.getAnnotation(MaxLength.class);
         if (maxLengthAnnotation == null) {
             throw new IllegalArgumentException("MaxLength annotation missing on " + element + ".");
@@ -84,23 +84,24 @@ public class FixedFormatMapper {
         int maxElements = maxLengthAnnotation.value();
         
         Class<?> elementType = (Class<?>) type.getActualTypeArguments()[0];
-        TypeMapper elementMapper = this.determineTypeMapperFor(elementType, null);
+        TypeMapper<?> elementMapper = this.determineTypeMapperFor(elementType);
         
         return new ListMapper(maxElements, elementMapper);
     }
     
     public int determineMaxSizeOf(Class<?> type) {
-        TypeMapper typeMapper = this.determineTypeMapperFor(type, null);
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return typeMapper.getMaxLength();
     }
     
+    @SuppressWarnings("unchecked")
     public <T> T readValue(FixedFormatData data, Class<T> type) {
-        // TODO
-        return null;
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
+        return (T) typeMapper.readValue(data);
     }
     
     public void writeValue(Object value, FixedFormatData data) {
-        TypeMapper typeMapper = this.determineTypeMapperFor(value.getClass(), null);
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(value.getClass());
         typeMapper.writeValue(value, data);
     }
     

@@ -1,6 +1,6 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-class StringMapper implements TypeMapper {
+class StringMapper implements TypeMapper<String> {
 
     private final int maxLength;
     
@@ -19,6 +19,11 @@ class StringMapper implements TypeMapper {
         return this.maxLength;
     }
 
+    @Override
+    public String readValue(FixedFormatData data) {
+        return data.readBoundedString(this.maxLength);
+    }
+    
     @Override
     public void writeValue(Object value, FixedFormatData data) {
         data.writeBoundedString((String) value, this.maxLength);

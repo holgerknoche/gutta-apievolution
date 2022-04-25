@@ -1,6 +1,6 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-interface ScriptOperationVisitor<R> {
+interface ApiMappingOperationVisitor<R> {
     
     default R handleCopyOperation(CopyOperation copyOperation) {
         return null;
@@ -10,11 +10,15 @@ interface ScriptOperationVisitor<R> {
         return null;
     }
     
-    default R handleLoopOperation(LoopOperation loopOperation) {
+    default R handleListMappingOperation(ListMappingOperation listMappingOperation) {
         return null;
     }
     
     default R handleEnumMappingOperation(EnumMappingOperation enumMappingOperation) {
+        return null;
+    }
+    
+    default R handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
         return null;
     }
     

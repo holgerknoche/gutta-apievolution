@@ -9,9 +9,15 @@ public interface FixedFormatData {
         return new ByteBufferData(charset, buffer);
     }
     
+    int readInt32();
+    
     void writeInt32(int value);
     
+    String readBoundedString(int maxLength);
+    
     void writeBoundedString(String value, int maxLength);
+    
+    void skipBytes(int amount);
     
     void writePadding(int length);
 
