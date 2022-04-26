@@ -4,6 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.NumericType;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -17,12 +24,6 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 class ProviderApiLoadingTest {
 
@@ -408,6 +409,31 @@ class ProviderApiLoadingTest {
         APIResolutionException exception2 = assertThrows(APIResolutionException.class,
                 () -> ProviderApiLoader.loadHistoryFromStrings(revision2Def, revision1Def));
         assertTrue(exception2.getMessage().contains("may not be a record"));
+    }
+    
+    /**
+     * Test case: API definition with bounded types.
+     */
+    @Test
+    void boundedTypes() {
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath("apis/bounded-types.api");
+        ProviderApiDefinition revision = revisionHistory.getRevision(0).orElseThrow(NoSuchElementException::new);
+        
+        String expected = "api boundedTypes [] {\n" + 
+                " enum TestEnum(TestEnum) {\n" + 
+                "  VALUE_A(VALUE_A)\n" + 
+                " }\n" + 
+                " record TestRecord2(TestRecord2) {\n" + 
+                " }\n" + 
+                " record TestRecord(TestRecord) {\n" + 
+                "  mandatory boundedString(boundedString):string(30)\n" + 
+                "  mandatory enumList(enumList):TestEnum[10]\n" + 
+                "  mandatory recordList(recordList):TestRecord2@revision 0[10]\n" + 
+                " }\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(revision);
+        assertEquals(expected, actual);
     }
 
 }

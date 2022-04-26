@@ -47,5 +47,10 @@ public class BoundedListType extends ListType {
     public <R> R accept(TypeVisitor<R> visitor) {
         return visitor.handleBoundedListType(this);
     }
+    
+    @Override
+    public String toString() {
+        return this.getElementType() + "[" + this.bound + "]";
+    }
 
 }
