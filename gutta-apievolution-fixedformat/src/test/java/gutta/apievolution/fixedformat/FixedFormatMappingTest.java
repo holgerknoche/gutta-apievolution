@@ -2,12 +2,21 @@ package gutta.apievolution.fixedformat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.core.resolution.DefinitionResolver;
+import gutta.apievolution.dsl.ConsumerApiLoader;
+import gutta.apievolution.dsl.ProviderApiLoader;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
 import gutta.apievolution.fixedformat.apimapping.CopyOperation;
 import gutta.apievolution.fixedformat.apimapping.EnumMappingOperation;
 import gutta.apievolution.fixedformat.apimapping.FieldMapping;
 import gutta.apievolution.fixedformat.apimapping.ListMappingOperation;
 import gutta.apievolution.fixedformat.apimapping.RecordMappingOperation;
 import gutta.apievolution.fixedformat.apimapping.SkipOperation;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.consumer.ConsumerResult;
@@ -21,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashSet;
 
 class FixedFormatMappingTest {
 
@@ -62,6 +72,13 @@ class FixedFormatMappingTest {
         ByteBuffer providerResultBuffer = ByteBuffer.allocate(codec.determineMaxSizeOf(ProviderResult.class));
         FixedFormatData providerResultData = FixedFormatData.of(providerResultBuffer, CHARSET);
         codec.writeValue(providerResult, providerResultData);
+        
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", 0);
+        RevisionHistory revisionHistory = ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api", "apis/provider-revision-2.api");
+        
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, new HashSet<>(Arrays.asList(0, 1)), consumerApi);
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.CONSUMER_TO_PRODUCER);
         
         // Manually specify the script
         RecordMappingOperation resultMapping = new RecordMappingOperation(Arrays.asList(
