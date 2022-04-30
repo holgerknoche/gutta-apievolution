@@ -127,7 +127,8 @@ public class ModelMerger {
      */
     private static class RevisionMergePass1 implements ProviderApiDefinitionElementVisitor<Void> {
 
-        private final Map<ProviderUserDefinedType, ProviderUserDefinedType> udtLookup = new HashMap<>();
+        // We use an identity hash map so that we can distinguish otherwise equal types in different revisions
+        private final Map<ProviderUserDefinedType, ProviderUserDefinedType> udtLookup = new IdentityHashMap<>();
 
         private final Set<String> knownTypeNames = new HashSet<>();
 
