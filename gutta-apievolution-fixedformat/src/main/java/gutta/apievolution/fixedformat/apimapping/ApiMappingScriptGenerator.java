@@ -3,15 +3,18 @@ package gutta.apievolution.fixedformat.apimapping;
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
+import gutta.apievolution.core.apimodel.EnumMember;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,12 +63,14 @@ public class ApiMappingScriptGenerator {
         MappingOperationCreator operationCreator = new MappingOperationCreator(sourceInfo, targetInfo, resolution);
         
         // TODO Remove hard-coded client-to-provider direction
-        resolution.providerTypes()
+        List<RecordMappingOperation> operations = resolution.providerTypes()
             .filter(RecordType.class::isInstance)
-            .map(RecordType.class::cast)
-            .forEach(operationCreator::deriveOperation);
+            .map(operationCreator::deriveOperation)
+            .map(RecordMappingOperation.class::cast)
+            .collect(Collectors.toList());
 
-        // TODO Collect record mapping operations, sort them according to type ids and build a script
+        // Sort operations by type id
+        Collections.sort(operations, (op1, op2) -> Integer.compare(op1.getType().getTypeId(), op2.getType().getTypeId()));
         
         // TODO
         return null;
@@ -79,14 +84,27 @@ public class ApiMappingScriptGenerator {
         
         private final DefinitionResolution resolution;
         
+        private final Map<Type, ApiMappingOperation> typeToOperation;
+        
         public MappingOperationCreator(Map<Type, TypeInfo<?>> sourceInfos, Map<Type, TypeInfo<?>> targetInfos, DefinitionResolution resolution) {
             this.sourceInfos = sourceInfos;
             this.targetInfos = targetInfos;
             this.resolution = resolution;
+            this.typeToOperation = new HashMap<>();
         }
         
         public ApiMappingOperation deriveOperation(Type type) {
-            return type.accept(this);
+            // We cannot use computeIfAbsent here, since we may call this
+            // operation recursively
+            ApiMappingOperation operation = this.typeToOperation.get(type);
+            if (operation != null) {
+                return operation;
+            }
+            
+            operation = type.accept(this);
+            this.typeToOperation.put(type, operation);
+            
+            return operation;
         }
         
         @Override
@@ -123,8 +141,28 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleEnumType(EnumType<?, ?, ?> enumType) {
-            // TODO Map enum member indexes
-            return TypeVisitor.super.handleEnumType(enumType);
+            EnumTypeInfo<?> targetTypeInfo = (EnumTypeInfo<?>) this.targetInfos.get(enumType);
+            
+            EnumType<?, ?, ?> sourceType = (EnumType<?, ?, ?>) this.resolution.mapProviderType(enumType);
+            EnumTypeInfo<?> sourceTypeInfo = (EnumTypeInfo<?>) this.sourceInfos.get(sourceType);
+            
+            int numberOfMembers = sourceType.getDeclaredMembers().size();
+            int[] ordinalMap = new int[numberOfMembers];
+            
+            for (EnumMember<?, ?> sourceMember : sourceType) {
+                EnumMember<?, ?> targetMember = this.resolution.mapConsumerEnumMember((ConsumerEnumMember) sourceMember);
+                
+                Integer sourceOrdinal = sourceTypeInfo.getOrdinalFor(sourceMember);
+                Integer targetOrdinal = targetTypeInfo.getOrdinalFor(targetMember);
+                
+                if (targetOrdinal == null) {
+                    ordinalMap[sourceOrdinal] = -1;
+                } else {
+                    ordinalMap[sourceOrdinal] = targetOrdinal;
+                }
+            }
+            
+            return new EnumMappingOperation(ordinalMap);
         }
         
         @Override
@@ -210,6 +248,29 @@ public class ApiMappingScriptGenerator {
         
         public Optional<FieldInfo> getFieldInfoFor(Field<?, ?> field) {
             return Optional.ofNullable(this.fieldInfoLookup.get(field));
+        }
+        
+    }
+    
+    private static class EnumTypeInfo<T extends EnumType<?, ?, ?>> extends TypeInfo<T> {
+        
+        private final Map<EnumMember<?, ?>, Integer> memberToOrdinal;
+        
+        public EnumTypeInfo(T type, int size) {
+            super(type, size);
+            
+            int currentOrdinal = 0;
+            Map<EnumMember<?, ?>, Integer> memberToOrdinal = new HashMap<>();
+            for (EnumMember<?, ?> member : type) {
+                memberToOrdinal.put(member, currentOrdinal);
+                currentOrdinal++;
+            }
+            
+            this.memberToOrdinal = memberToOrdinal;
+        }
+        
+        public Integer getOrdinalFor(EnumMember<?, ?> member) {
+            return this.memberToOrdinal.get(member);
         }
         
     }
@@ -301,7 +362,7 @@ public class ApiMappingScriptGenerator {
         @Override
         public TypeInfo<?> handleEnumType(EnumType<?, ?, ?> enumType) {
             // Enums are encoded as int32 values
-            return new TypeInfo<>(enumType, ENUM_SIZE);
+            return new EnumTypeInfo<>(enumType, ENUM_SIZE);
         }
         
         @Override
