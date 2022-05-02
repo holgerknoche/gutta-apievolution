@@ -46,6 +46,10 @@ class ProviderToConsumerMap {
     ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerField.get(providerField);
     }
+    
+    ConsumerEnumMember mapProviderEnumMember(ProviderEnumMember providerEnumMember) {
+        return this.providerToConsumerMember.get(providerEnumMember);
+    }
 
     void checkConsistency() {
         this.checkTypeAssociation();

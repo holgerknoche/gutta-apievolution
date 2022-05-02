@@ -127,6 +127,16 @@ public class DefinitionResolution {
     public ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerMap.mapProviderField(providerField);
     }
+    
+    /**
+     * Maps a given provider enum member to the corresponding consumer enum member.
+     *
+     * @param providerEnumMember The provider enum member to map
+     * @return The corresponding consumer enum member, if it exists
+     */
+    public ConsumerEnumMember mapProviderEnumMember(ProviderEnumMember providerEnumMember) {
+        return this.providerToConsumerMap.mapProviderEnumMember(providerEnumMember);
+    }
 
     /**
      * Maps a given consumer field to the corresponding provider field.
