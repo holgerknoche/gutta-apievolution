@@ -2,11 +2,13 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class EnumMappingOperation implements ApiMappingOperation {
+public class EnumMappingOperation extends UserDefinedTypeMappingOperation {
 
     final int[] indexMap;
     
-    public EnumMappingOperation(int[] indexMap) {
+    public EnumMappingOperation(int typeId, int[] indexMap) {
+    	super(typeId);
+    	
         this.indexMap = indexMap;
     }
         

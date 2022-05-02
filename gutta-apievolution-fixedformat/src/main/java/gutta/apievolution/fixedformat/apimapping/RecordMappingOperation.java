@@ -3,11 +3,13 @@ package gutta.apievolution.fixedformat.apimapping;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class RecordMappingOperation implements ApiMappingOperation {
+public class RecordMappingOperation extends UserDefinedTypeMappingOperation {
 
     private final List<FieldMapping> fieldMappings;
     
-    public RecordMappingOperation(List<FieldMapping> fieldMappings) {
+    public RecordMappingOperation(int typeId, List<FieldMapping> fieldMappings) {
+    	super(typeId);
+    	
         this.fieldMappings = fieldMappings;
     }
     

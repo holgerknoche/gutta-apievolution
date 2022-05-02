@@ -9,6 +9,7 @@ import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
@@ -63,17 +64,16 @@ public class ApiMappingScriptGenerator {
         MappingOperationCreator operationCreator = new MappingOperationCreator(sourceInfo, targetInfo, resolution);
         
         // TODO Remove hard-coded client-to-provider direction
-        List<RecordMappingOperation> operations = resolution.providerTypes()
-            .filter(RecordType.class::isInstance)
+        List<UserDefinedTypeMappingOperation> operations = resolution.providerTypes()
+            .filter(UserDefinedType.class::isInstance)
             .map(operationCreator::deriveOperation)
-            .map(RecordMappingOperation.class::cast)
+            .map(UserDefinedTypeMappingOperation.class::cast)
             .collect(Collectors.toList());
 
         // Sort operations by type id
-        Collections.sort(operations, (op1, op2) -> Integer.compare(op1.getType().getTypeId(), op2.getType().getTypeId()));
+        Collections.sort(operations, (op1, op2) -> Integer.compare(op1.getTypeId(), op2.getTypeId()));
         
-        // TODO
-        return null;
+        return new ApiMappingScript(operations);
     }    
     
     private static class MappingOperationCreator implements TypeVisitor<ApiMappingOperation> {
@@ -162,7 +162,7 @@ public class ApiMappingScriptGenerator {
                 }
             }
             
-            return new EnumMappingOperation(ordinalMap);
+            return new EnumMappingOperation(enumType.getTypeId(), ordinalMap);
         }
         
         @Override
@@ -190,7 +190,7 @@ public class ApiMappingScriptGenerator {
                 fieldMappings.add(fieldMapping);
             }
             
-            return new RecordMappingOperation(fieldMappings);
+            return new RecordMappingOperation(recordType.getTypeId(), fieldMappings);
         }
         
     }

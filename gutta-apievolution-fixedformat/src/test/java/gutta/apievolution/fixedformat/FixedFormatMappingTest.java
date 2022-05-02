@@ -50,11 +50,11 @@ class FixedFormatMappingTest {
         codec.writeValue(parameter, consumerParameterData);
 
         // Manually specify the script
-        RecordMappingOperation parameterMapping = new RecordMappingOperation(Arrays.asList(
+        RecordMappingOperation parameterMapping = new RecordMappingOperation(0, Arrays.asList(
                 new FieldMapping(0, new CopyOperation(30)),
                 new FieldMapping(0, new SkipOperation(30)),
-                new FieldMapping(30, new EnumMappingOperation(new int[] {0, 1})),
-                new FieldMapping(34, new ListMappingOperation(10, 4, 4, new EnumMappingOperation(new int[] {0, 1})))
+                new FieldMapping(30, new EnumMappingOperation(1, new int[] {0, 1})),
+                new FieldMapping(34, new ListMappingOperation(10, 4, 4, new EnumMappingOperation(1, new int[] {0, 1})))
                 ));
         
         // Convert customer parameter to provider parameter
@@ -81,10 +81,10 @@ class FixedFormatMappingTest {
         ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.CONSUMER_TO_PRODUCER);
         
         // Manually specify the script
-        RecordMappingOperation resultMapping = new RecordMappingOperation(Arrays.asList(
-                new FieldMapping(30, new EnumMappingOperation(new int[] {0, 1})),
+        RecordMappingOperation resultMapping = new RecordMappingOperation(2, Arrays.asList(
+                new FieldMapping(30, new EnumMappingOperation(1, new int[] {0, 1})),
                 new FieldMapping(0, new CopyOperation(30)),
-                new FieldMapping(34, new ListMappingOperation(10, 4, 4, new EnumMappingOperation(new int[] {0, 1})))
+                new FieldMapping(34, new ListMappingOperation(10, 4, 4, new EnumMappingOperation(1, new int[] {0, 1})))
                 ));
         
         ByteBuffer consumerResultBuffer = ByteBuffer.allocate(codec.determineMaxSizeOf(ConsumerResult.class));
