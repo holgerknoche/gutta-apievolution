@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class CopyOperation implements ApiMappingOperation {
+class CopyOperation implements ApiMappingOperation {
     
     final int length;
         

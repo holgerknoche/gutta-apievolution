@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class SkipOperation implements ApiMappingOperation {
+class SkipOperation implements ApiMappingOperation {
     
     final int amount;
     

@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class EnumMappingOperation extends UserDefinedTypeMappingOperation {
+class EnumMappingOperation extends UserDefinedTypeMappingOperation {
 
     final int[] indexMap;
     

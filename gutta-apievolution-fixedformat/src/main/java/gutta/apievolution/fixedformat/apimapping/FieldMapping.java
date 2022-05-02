@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class FieldMapping {
+class FieldMapping {
     
     private final int offset;
     

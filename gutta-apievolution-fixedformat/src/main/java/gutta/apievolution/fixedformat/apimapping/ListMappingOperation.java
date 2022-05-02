@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-public class ListMappingOperation implements ApiMappingOperation {
+class ListMappingOperation implements ApiMappingOperation {
     
     final int maxElements;
     
