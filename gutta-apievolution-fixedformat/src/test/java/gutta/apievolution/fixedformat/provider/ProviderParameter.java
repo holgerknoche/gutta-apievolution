@@ -8,14 +8,14 @@ public class ProviderParameter {
 
 	@MaxLength(30)
 	private String fieldA;
-	
-	@MaxLength(30)
-	private String field2;
-	
+		
 	private ProviderEnum testEnum;
 	
 	@MaxLength(10)
 	private List<ProviderEnum> testList;
+	
+	@MaxLength(30)
+	private String field2;
 	
 	public String getFieldA() {
 		return this.fieldA;

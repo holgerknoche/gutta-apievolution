@@ -1,5 +1,16 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -11,19 +22,10 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ApiMappingScriptGenerator {
 
@@ -38,62 +40,41 @@ public class ApiMappingScriptGenerator {
     private static final int DISCRIMINATOR_SIZE = 4;
     
     public ApiMappingScript generateMappingScript(DefinitionResolution resolution, MappingDirection direction) {
-        // First, calculate the sizes and offsets of all relevant types for both consumer and provider
-        Map<Type, TypeInfo<?>> consumerTypeInfo = this.createTypeInfos(resolution.consumerTypes());
-        Map<Type, TypeInfo<?>> providerTypeInfo = this.createTypeInfos(resolution.providerTypes());
-        
-        Map<Type, TypeInfo<?>> sourceInfo;
-        Map<Type, TypeInfo<?>> targetInfo;
-        
-        // TODO Then, use this data to create a mapping script.
-        if (direction == MappingDirection.CONSUMER_TO_PRODUCER) {
-            sourceInfo = consumerTypeInfo;
-            targetInfo = providerTypeInfo;
-        } else {
-            sourceInfo = providerTypeInfo;
-            targetInfo = consumerTypeInfo;
-            
-            // TODO Implement this
-            throw new IllegalArgumentException();
-        }
-        
-        return this.createScript(sourceInfo, targetInfo, resolution);
-    }    
-    
-    private ApiMappingScript createScript(Map<Type, TypeInfo<?>> sourceInfo, Map<Type, TypeInfo<?>> targetInfo, DefinitionResolution resolution) {
-        MappingOperationCreator operationCreator = new MappingOperationCreator(sourceInfo, targetInfo, resolution);
-        
-        // TODO Remove hard-coded client-to-provider direction
-        List<UserDefinedTypeMappingOperation> operations = resolution.providerTypes()
-            .filter(UserDefinedType.class::isInstance)
-            .map(operationCreator::deriveOperation)
-            .map(UserDefinedTypeMappingOperation.class::cast)
-            .collect(Collectors.toList());
+    	// First, calculate the sizes and offsets of all relevant types for both consumer and provider
+    	Map<Type, TypeInfo<?>> consumerTypeInfo = this.createTypeInfos(resolution.consumerTypes());
+    	Map<Type, TypeInfo<?>> providerTypeInfo = this.createTypeInfos(resolution.providerTypes());
 
-        // Sort operations by type id
-        Collections.sort(operations, (op1, op2) -> Integer.compare(op1.getTypeId(), op2.getTypeId()));
-        
-        return new ApiMappingScript(operations);
+    	MappingOperationCreator operationCreator;
+    	if (direction == MappingDirection.CONSUMER_TO_PRODUCER) {
+    		operationCreator = new ConsumerToProviderMappingOperationCreator(consumerTypeInfo, providerTypeInfo, resolution);
+    	} else {
+    		operationCreator = new ProviderToConsumerMappingOperationCreator(consumerTypeInfo, providerTypeInfo, resolution);
+    	}    	
+
+    	// Create operations and sort them by type id
+    	List<UserDefinedTypeMappingOperation> operations = operationCreator.deriveOperations();
+    	Collections.sort(operations, (op1, op2) -> Integer.compare(op1.getTypeId(), op2.getTypeId()));
+
+    	return new ApiMappingScript(operations);
     }    
-    
-    private static class MappingOperationCreator implements TypeVisitor<ApiMappingOperation> {
         
-        private final Map<Type, TypeInfo<?>> sourceInfos;
-        
-        private final Map<Type, TypeInfo<?>> targetInfos;
-        
-        private final DefinitionResolution resolution;
-        
+    private static abstract class MappingOperationCreator implements TypeVisitor<ApiMappingOperation> {
+                
         private final Map<Type, ApiMappingOperation> typeToOperation;
         
-        public MappingOperationCreator(Map<Type, TypeInfo<?>> sourceInfos, Map<Type, TypeInfo<?>> targetInfos, DefinitionResolution resolution) {
-            this.sourceInfos = sourceInfos;
-            this.targetInfos = targetInfos;
-            this.resolution = resolution;
+        protected MappingOperationCreator() {
             this.typeToOperation = new HashMap<>();
         }
         
-        public ApiMappingOperation deriveOperation(Type type) {
+        public List<UserDefinedTypeMappingOperation> deriveOperations() {
+        	return this.getTargetTypes()
+        			.filter(UserDefinedType.class::isInstance)
+        			.map(this::deriveOperation)
+        			.map(UserDefinedTypeMappingOperation.class::cast)
+        			.collect(Collectors.toList());	
+        }
+        
+        private ApiMappingOperation deriveOperation(Type type) {
             // We cannot use computeIfAbsent here, since we may call this
             // operation recursively
             ApiMappingOperation operation = this.typeToOperation.get(type);
@@ -107,6 +88,18 @@ public class ApiMappingScriptGenerator {
             return operation;
         }
         
+        abstract Stream<Type> getTargetTypes();
+        
+        abstract <T extends Type> T toSourceType(Type targetType);
+        
+        abstract <T extends TypeInfo<?>> T getInfoForSourceType(Type sourceType);
+        
+        abstract <T extends TypeInfo<?>> T getInfoForTargetType(Type targetType);
+        
+        abstract EnumMember<?, ?> toTargetEnumMember(EnumMember<?, ?> sourceMember);
+        
+        abstract Field<?, ?> toSourceField(Field<?, ?> targetField);
+         
         @Override
         public ApiMappingOperation handleAtomicType(AtomicType atomicType) {
             switch (atomicType) {
@@ -124,10 +117,10 @@ public class ApiMappingScriptGenerator {
         @Override
         public ApiMappingOperation handleBoundedListType(BoundedListType boundedListType) {
             Type targetElementType = boundedListType.getElementType();
-            Type sourceElementType = this.resolution.mapProviderType(targetElementType);
+            Type sourceElementType = this.toSourceType(targetElementType);
             
-            TypeInfo<?> sourceElementTypeInfo = this.sourceInfos.get(sourceElementType);
-            TypeInfo<?> targetElementTypeInfo = this.targetInfos.get(targetElementType);
+            TypeInfo<?> sourceElementTypeInfo = this.getInfoForSourceType(sourceElementType);
+            TypeInfo<?> targetElementTypeInfo = this.getInfoForTargetType(targetElementType);
             
             ApiMappingOperation elementMappingOperation = this.deriveOperation(targetElementType);
             
@@ -141,16 +134,15 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleEnumType(EnumType<?, ?, ?> enumType) {
-            EnumTypeInfo<?> targetTypeInfo = (EnumTypeInfo<?>) this.targetInfos.get(enumType);
-            
-            EnumType<?, ?, ?> sourceType = (EnumType<?, ?, ?>) this.resolution.mapProviderType(enumType);
-            EnumTypeInfo<?> sourceTypeInfo = (EnumTypeInfo<?>) this.sourceInfos.get(sourceType);
+        	EnumType<?, ?, ?> sourceType = this.toSourceType(enumType);        	                                  
+            EnumTypeInfo<?> sourceTypeInfo = this.getInfoForSourceType(sourceType);
+            EnumTypeInfo<?> targetTypeInfo = this.getInfoForTargetType(enumType);
             
             int numberOfMembers = sourceType.getDeclaredMembers().size();
             int[] ordinalMap = new int[numberOfMembers];
             
             for (EnumMember<?, ?> sourceMember : sourceType) {
-                EnumMember<?, ?> targetMember = this.resolution.mapConsumerEnumMember((ConsumerEnumMember) sourceMember);
+                EnumMember<?, ?> targetMember = this.toTargetEnumMember(sourceMember);
                 
                 Integer sourceOrdinal = sourceTypeInfo.getOrdinalFor(sourceMember);
                 Integer targetOrdinal = targetTypeInfo.getOrdinalFor(targetMember);
@@ -167,17 +159,17 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleRecordType(RecordType<?, ?, ?> recordType) {
-            Type sourceType = this.resolution.mapProviderType(recordType);
-            RecordTypeInfo<?> sourceTypeInfo = (RecordTypeInfo<?>) this.sourceInfos.get(sourceType);
+            Type sourceType = this.toSourceType(recordType);
+            RecordTypeInfo<?> sourceTypeInfo = this.getInfoForSourceType(sourceType);
             
             List<FieldMapping> fieldMappings = new ArrayList<>();
             for (Field<?, ?> targetField : recordType) {
-                Field<?, ?> sourceField = this.resolution.mapProviderField((ProviderField) targetField);
+                Field<?, ?> sourceField = this.toSourceField(targetField);
                 
                 FieldMapping fieldMapping;
                 if (sourceField == null) {
                     // If there is no source field, skip the target field
-                    TypeInfo<?> targetFieldTypeInfo = this.targetInfos.get(targetField.getType());
+                    TypeInfo<?> targetFieldTypeInfo = this.getInfoForTargetType(targetField.getType());
                     fieldMapping = new FieldMapping(0, new SkipOperation(targetFieldTypeInfo.getSize()));
                 } else {
                     // If there is a source field, perform the appropriate mapping operation
@@ -193,6 +185,104 @@ public class ApiMappingScriptGenerator {
             return new RecordMappingOperation(recordType.getTypeId(), fieldMappings);
         }
         
+    }
+    
+    private static class ConsumerToProviderMappingOperationCreator extends MappingOperationCreator {
+
+        private final Map<Type, TypeInfo<?>> consumerTypeInfos;
+        
+        private final Map<Type, TypeInfo<?>> providerTypeInfos;
+        
+        private final DefinitionResolution resolution;
+    	
+    	protected ConsumerToProviderMappingOperationCreator(Map<Type, TypeInfo<?>> consumerTypeInfos, Map<Type, TypeInfo<?>> providerTypeInfos, DefinitionResolution resolution) {
+    		this.consumerTypeInfos = consumerTypeInfos;
+    		this.providerTypeInfos = providerTypeInfos;
+    		this.resolution = resolution;
+    	}
+    	
+    	@Override
+    	Stream<Type> getTargetTypes() {
+    		return this.resolution.providerTypes();
+    	}
+    	
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends Type> T toSourceType(Type targetType) {
+			return (T) this.resolution.mapProviderType(targetType);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends TypeInfo<?>> T getInfoForSourceType(Type sourceType) {
+			return (T) this.consumerTypeInfos.get(sourceType);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends TypeInfo<?>> T getInfoForTargetType(Type targetType) {
+			return (T) this.providerTypeInfos.get(targetType);
+		}
+
+		@Override
+		EnumMember<?, ?> toTargetEnumMember(EnumMember<?, ?> sourceMember) {			
+			return this.resolution.mapConsumerEnumMember((ConsumerEnumMember) sourceMember);
+		}
+		
+		@Override
+		Field<?, ?> toSourceField(Field<?, ?> targetField) {
+			return this.resolution.mapProviderField((ProviderField) targetField);
+		}
+    	
+    }
+
+    private static class ProviderToConsumerMappingOperationCreator extends MappingOperationCreator {
+
+        private final Map<Type, TypeInfo<?>> consumerTypeInfos;
+        
+        private final Map<Type, TypeInfo<?>> providerTypeInfos;
+        
+        private final DefinitionResolution resolution;
+    	
+    	protected ProviderToConsumerMappingOperationCreator(Map<Type, TypeInfo<?>> consumerTypeInfos, Map<Type, TypeInfo<?>> providerTypeInfos, DefinitionResolution resolution) {
+    		this.consumerTypeInfos = consumerTypeInfos;
+    		this.providerTypeInfos = providerTypeInfos;
+    		this.resolution = resolution;
+    	}
+    	
+    	@Override
+    	Stream<Type> getTargetTypes() {
+    		return this.resolution.consumerTypes();
+    	}
+    	
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends Type> T toSourceType(Type targetType) {
+			return (T) this.resolution.mapConsumerType(targetType);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends TypeInfo<?>> T getInfoForSourceType(Type sourceType) {
+			return (T) this.providerTypeInfos.get(sourceType);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		<T extends TypeInfo<?>> T getInfoForTargetType(Type targetType) {
+			return (T) this.consumerTypeInfos.get(targetType);
+		}
+
+		@Override
+		EnumMember<?, ?> toTargetEnumMember(EnumMember<?, ?> sourceMember) {			
+			return this.resolution.mapProviderEnumMember((ProviderEnumMember) sourceMember);
+		}
+		
+		@Override
+		Field<?, ?> toSourceField(Field<?, ?> targetField) {
+			return this.resolution.mapConsumerField((ConsumerField) targetField);
+		}
+    	
     }
     
     private Map<Type, TypeInfo<?>> createTypeInfos(Stream<Type> types) {
@@ -222,30 +312,28 @@ public class ApiMappingScriptGenerator {
         public T getType() {
             return this.type;
         }
+        
+        @Override
+        public String toString() {
+        	return "Type info for " + this.getType();
+        }
                 
     }
     
     private static class RecordTypeInfo<T extends RecordType<?, ?, ?>> extends TypeInfo<T> {
-        
-        private final List<FieldInfo> fieldInfos;
-        
+                
         private final Map<Field<?, ?>, FieldInfo> fieldInfoLookup;
         
         public RecordTypeInfo(T type, int size, List<FieldInfo> fieldInfos) {
             super(type, size);
             
-            this.fieldInfos = fieldInfos;
             this.fieldInfoLookup = createFieldInfoLookup(fieldInfos);
         }
         
         private static Map<Field<?, ?>, FieldInfo> createFieldInfoLookup(List<FieldInfo> fieldInfos) {
             return fieldInfos.stream().collect(Collectors.toMap(FieldInfo::getField, Function.identity()));
         }
-        
-        public List<FieldInfo> getFieldInfos() {
-            return this.fieldInfos;
-        }
-        
+                
         public Optional<FieldInfo> getFieldInfoFor(Field<?, ?> field) {
             return Optional.ofNullable(this.fieldInfoLookup.get(field));
         }

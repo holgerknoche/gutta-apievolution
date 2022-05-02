@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import gutta.apievolution.core.apimodel.UserDefinedType;
+
 public class ApiMappingScript {
     
 	private final List<UserDefinedTypeMappingOperation> operations;
@@ -17,7 +19,11 @@ public class ApiMappingScript {
         this.typeToOperation = operations.stream().collect(Collectors.toMap(op -> op.getTypeId(), Function.identity()));
     }
     
-    public void mapRecord(Integer typeId, ByteBuffer source, ByteBuffer target) {
+    public void mapType(UserDefinedType<?> type, ByteBuffer source, ByteBuffer target) {
+    	this.mapType(type.getTypeId(), source, target);
+    }
+    
+    public void mapType(Integer typeId, ByteBuffer source, ByteBuffer target) {
     	UserDefinedTypeMappingOperation mappingOperation = this.typeToOperation.get(typeId);
         if (mappingOperation == null) {
             throw new IllegalArgumentException("No mapping for type id " + typeId + ".");
