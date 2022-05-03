@@ -1,9 +1,11 @@
 package gutta.apievolution.core.apimodel;
 
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Abstract supertype for the provider and consumer inherited field propagation.
