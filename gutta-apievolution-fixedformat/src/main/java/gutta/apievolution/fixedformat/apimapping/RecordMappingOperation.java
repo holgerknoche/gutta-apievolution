@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
-class RecordMappingOperation extends UserDefinedTypeMappingOperation {
+class RecordMappingOperation extends UserDefinedTypeMappingOperation implements Iterable<FieldMapping> {
 
     private final List<FieldMapping> fieldMappings;
     
@@ -22,6 +22,11 @@ class RecordMappingOperation extends UserDefinedTypeMappingOperation {
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleRecordMappingOperation(this);
+    }
+    
+    @Override
+    public Iterator<FieldMapping> iterator() {
+    	return this.fieldMappings.iterator();
     }
     
     @Override
