@@ -67,6 +67,10 @@ public class ApiMappingScriptPrinter {
         	builder.append("\n");
         	
         	for (FieldMapping fieldMapping : recordMappingOperation) {
+        		builder.append("@");
+        		builder.append(fieldMapping.getOffset());
+        		builder.append(": ");
+        		
         		fieldMapping.getMappingOperation().accept(this.subPrinter);
         		builder.append("\n");
         	}

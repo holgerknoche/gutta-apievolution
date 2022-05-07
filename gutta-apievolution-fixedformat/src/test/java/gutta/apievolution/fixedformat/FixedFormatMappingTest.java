@@ -17,6 +17,7 @@ import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptCodec;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptPrinter;
@@ -61,6 +62,8 @@ class FixedFormatMappingTest {
         consumerToProviderScript.mapType(1, consumerParameterBuffer, providerParameterBuffer);
         
         System.out.println(new ApiMappingScriptPrinter().printMappingScript(consumerToProviderScript));
+        byte[] mappingScript = new ApiMappingScriptCodec().writeScript(consumerToProviderScript);
+        System.out.println(mappingScript.length);
         
         providerParameterBuffer.flip();
         FixedFormatData providerParameterData = FixedFormatData.of(providerParameterBuffer, CHARSET);

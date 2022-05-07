@@ -37,5 +37,9 @@ public class ApiMappingScript implements Iterable<UserDefinedTypeMappingOperatio
     public Iterator<UserDefinedTypeMappingOperation> iterator() {
         return this.operations.iterator();
     }
+    
+    public int size() {
+    	return this.operations.size();
+    }
 
 }
