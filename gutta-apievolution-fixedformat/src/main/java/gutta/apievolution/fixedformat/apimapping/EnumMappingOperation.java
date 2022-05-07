@@ -24,4 +24,28 @@ class EnumMappingOperation extends UserDefinedTypeMappingOperation {
         return visitor.handleEnumMappingOperation(this);
     }
     
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        
+        builder.append("map enum ");
+        builder.append(this.getTypeId());
+        builder.append(": [");
+        
+        int maxIndex = (this.indexMap.length - 1);
+        for (int sourceIndex = 0; sourceIndex <= maxIndex; sourceIndex++) {
+            builder.append(sourceIndex);
+            builder.append(" -> ");
+            builder.append(this.indexMap[sourceIndex]);
+            
+            if (sourceIndex < maxIndex) {
+                builder.append(", ");
+            }
+        }
+        
+        builder.append("]");
+        
+        return builder.toString();
+    }
+    
 }

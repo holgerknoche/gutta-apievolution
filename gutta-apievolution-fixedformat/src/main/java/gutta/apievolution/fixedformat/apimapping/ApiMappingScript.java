@@ -1,6 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 
 import gutta.apievolution.core.apimodel.UserDefinedType;
 
-public class ApiMappingScript {
+public class ApiMappingScript implements Iterable<UserDefinedTypeMappingOperation> {
     
 	private final List<UserDefinedTypeMappingOperation> operations;
 	
@@ -30,6 +31,11 @@ public class ApiMappingScript {
         }
                         	
         mappingOperation.apply(0, source, target);
+    }
+    
+    @Override
+    public Iterator<UserDefinedTypeMappingOperation> iterator() {
+        return this.operations.iterator();
     }
 
 }

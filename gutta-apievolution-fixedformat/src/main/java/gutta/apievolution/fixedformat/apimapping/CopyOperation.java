@@ -27,4 +27,9 @@ class CopyOperation implements ApiMappingOperation {
         return visitor.handleCopyOperation(this);
     }
 
+    @Override
+    public String toString() {
+        return "copy " + this.length;
+    }
+    
 }

@@ -47,5 +47,10 @@ class ListMappingOperation implements ApiMappingOperation {
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleListMappingOperation(this);
     }
+    
+    @Override
+    public String toString() {
+        return "list " + this.maxElements + ", " + this.sourceElementSize + ", " + this.targetElementSize;
+    }
 
 }

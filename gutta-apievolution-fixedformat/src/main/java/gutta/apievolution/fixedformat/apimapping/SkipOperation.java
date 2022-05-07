@@ -20,5 +20,10 @@ class SkipOperation implements ApiMappingOperation {
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleSkipOperation(this);
     }
+    
+    @Override
+    public String toString() {
+        return "skip " + this.amount;
+    }
 
 }
