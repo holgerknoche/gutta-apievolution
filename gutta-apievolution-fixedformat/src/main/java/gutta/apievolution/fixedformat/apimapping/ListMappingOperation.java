@@ -20,7 +20,7 @@ class ListMappingOperation implements ApiMappingOperation {
     }
     
     @Override
-    public void apply(int sourceOffset, ByteBuffer source, ByteBuffer target) {
+    public void apply(int sourceOffset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
         source.position(sourceOffset);
         // Read and transfer the actual number of arguments
         int actualElements = source.getInt();
@@ -33,7 +33,7 @@ class ListMappingOperation implements ApiMappingOperation {
         // Map the elements
         int currentOffset = (sourceOffset + 4);
         for (int elementIndex = 0; elementIndex < actualElements; elementIndex++) {
-            this.elementMappingOperation.apply(currentOffset, source, target);
+            this.elementMappingOperation.apply(currentOffset, typeEntryResolver, source, target);
             currentOffset += this.sourceElementSize;
         }
         

@@ -3,19 +3,17 @@ package gutta.apievolution.fixedformat.apimapping;
 import java.nio.ByteBuffer;
 
 class EnumMappingOperation extends UserDefinedTypeMappingOperation {
-
-    final int[] indexMap;
     
-    public EnumMappingOperation(int typeId, int[] indexMap) {
-    	super(typeId);
-    	
-        this.indexMap = indexMap;
+    public EnumMappingOperation(int entryIndex) {
+    	super(entryIndex);
     }
         
     @Override
-    public void apply(int offset, ByteBuffer source, ByteBuffer target) {
+    public void apply(int offset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
+        EnumTypeEntry typeEntry = typeEntryResolver.resolveEntry(this.getEntryIndex());
+        
         int sourceIndex = source.getInt(offset);
-        int targetIndex = this.indexMap[sourceIndex];
+        int targetIndex = typeEntry.mapIndex(sourceIndex);
         target.putInt(targetIndex);
     }
     
@@ -26,26 +24,7 @@ class EnumMappingOperation extends UserDefinedTypeMappingOperation {
     
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        
-        builder.append("map enum ");
-        builder.append(this.getTypeId());
-        builder.append(": [");
-        
-        int maxIndex = (this.indexMap.length - 1);
-        for (int sourceIndex = 0; sourceIndex <= maxIndex; sourceIndex++) {
-            builder.append(sourceIndex);
-            builder.append(" -> ");
-            builder.append(this.indexMap[sourceIndex]);
-            
-            if (sourceIndex < maxIndex) {
-                builder.append(", ");
-            }
-        }
-        
-        builder.append("]");
-        
-        return builder.toString();
+        return "map enum " + this.getEntryIndex();
     }
     
 }

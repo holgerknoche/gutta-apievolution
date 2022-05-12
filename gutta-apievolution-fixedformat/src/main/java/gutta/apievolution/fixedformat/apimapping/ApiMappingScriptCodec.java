@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApiMappingScriptCodec {
 	
@@ -54,46 +54,60 @@ public class ApiMappingScriptCodec {
 		for (int entry = 0; entry < numberOfEntries; entry++) {
 			stream.writeInt(0);
 		}
-		
-		// Create the mapping type id to table index
-		Map<Integer, Integer> typeIdToIndex = new HashMap<>(numberOfEntries);
-		int tableIndex = 0;
-		for (UserDefinedTypeMappingOperation operation : script) {
-			typeIdToIndex.put(operation.getTypeId(), tableIndex++);
-		}
-		
-		int entryCount = 0;
-		Level1Writer writer = new Level1Writer(stream, typeIdToIndex);
-		
-		for (UserDefinedTypeMappingOperation operation : script) {
-			offsets[entryCount] = stream.size();
-			writer.writeOperation(operation);
-			entryCount++;
+				
+		TypeEntryWriter writer = new TypeEntryWriter(stream);		
+		for (TypeEntry typeEntry : script) {
+			offsets[typeEntry.getEntryIndex()] = stream.size();
+			writer.writeEntry(typeEntry);
 		}
 		
 		return offsets;
 	}
 	
-	private static class Level1Writer implements ApiMappingOperationVisitor<Void> {
+	public ApiMappingScript readScript(byte[] encodedScript) {
+	    ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
+	    
+	    int numberOfEntries = scriptBuffer.getInt();
+	    int[] offsets = new int[numberOfEntries + 1];
+	    for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
+	        offsets[entryIndex] = scriptBuffer.getInt();
+	    }
+	    offsets[numberOfEntries] = encodedScript.length;
+	    
+	    List<TypeEntry> typeEntries = new ArrayList<>(numberOfEntries);
+	    for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
+	        TypeEntry typeEntry = this.readTypeEntry(scriptBuffer, offsets[entryIndex + 1]);
+	        typeEntries.add(typeEntry);
+	    }
+	   
+	    return new ApiMappingScript(typeEntries);
+	}
+	
+	private <T extends TypeEntry> T readTypeEntry(ByteBuffer byteBuffer, int endOffset) {
+	    // TODO
+	    return null;
+	}
+	
+	private static class TypeEntryWriter implements TypeEntryVisitor<Void> {
 		
 		private final DataOutputStream dataStream;
 		
-		private final Level2Writer fieldWriter;
+		private final FieldWriter fieldWriter;
 				
-		public Level1Writer(DataOutputStream dataStream, Map<Integer, Integer> typeIdToIndex) {
+		public TypeEntryWriter(DataOutputStream dataStream) {
 			this.dataStream = dataStream;
-			this.fieldWriter = new Level2Writer(dataStream, typeIdToIndex);
+			this.fieldWriter = new FieldWriter(dataStream);
 		}
 		
-		public void writeOperation(UserDefinedTypeMappingOperation operation) {
-			operation.accept(this);
+		public void writeEntry(TypeEntry typeEntry) {
+			typeEntry.accept(this);
 		}
 		
 		@Override
-		public Void handleEnumMappingOperation(EnumMappingOperation enumMappingOperation) {
+		public Void handleEnumTypeEntry(EnumTypeEntry enumTypeEntry) {
 			try {
 				DataOutputStream outputStream = this.dataStream;
-				int[] indexMap = enumMappingOperation.indexMap;
+				int[] indexMap = enumTypeEntry.indexMap;
 				
 				outputStream.writeByte(ENTRY_TYPE_ENUM);
 				
@@ -110,14 +124,14 @@ public class ApiMappingScriptCodec {
 		}
 		
 		@Override
-		public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+		public Void handleRecordTypeEntry(RecordTypeEntry recordTypeEntry) {
 			try {
 				DataOutputStream outputStream = this.dataStream;
 				
 				outputStream.writeByte(ENTRY_TYPE_RECORD);
 				
 				// Write the individual field mapping operations
-				for (FieldMapping fieldMapping : recordMappingOperation) {
+				for (FieldMapping fieldMapping : recordTypeEntry) {
 					this.fieldWriter.writeFieldMapping(fieldMapping);
 				}
 				
@@ -129,15 +143,12 @@ public class ApiMappingScriptCodec {
 		
 	}
 	
-	private static class Level2Writer implements ApiMappingOperationVisitor<Void> {
+	private static class FieldWriter implements ApiMappingOperationVisitor<Void> {
 		
 		private final DataOutputStream dataStream;
-		
-		private final Map<Integer, Integer> typeIdToIndex;
-				
-		public Level2Writer(DataOutputStream dataStream, Map<Integer, Integer> typeIdToIndex) {			
-			this.dataStream = dataStream;
-			this.typeIdToIndex = typeIdToIndex;
+						
+		public FieldWriter(DataOutputStream dataStream) {			
+			this.dataStream = dataStream;			
 		}
 	
 		public void writeFieldMapping(FieldMapping fieldMapping) {
@@ -152,11 +163,7 @@ public class ApiMappingScriptCodec {
 		private void writeOperation(ApiMappingOperation operation) {
 			operation.accept(this);
 		}
-		
-		private int indexForTypeId(int typeId) {
-			return this.typeIdToIndex.get(typeId);
-		}
-		
+				
 		@Override
 		public Void handleCopyOperation(CopyOperation copyOperation) {
 			try {
@@ -177,7 +184,7 @@ public class ApiMappingScriptCodec {
 				DataOutputStream outputStream = this.dataStream;
 				
 				outputStream.writeByte(OPCODE_MAP_ENUM);
-				outputStream.writeInt(this.indexForTypeId(enumMappingOperation.getTypeId()));
+				outputStream.writeInt(enumMappingOperation.getEntryIndex());
 				
 				return null;	
 			} catch (IOException e) {
@@ -209,7 +216,7 @@ public class ApiMappingScriptCodec {
 				DataOutputStream outputStream = this.dataStream;
 				
 				outputStream.writeByte(OPCODE_MAP_RECORD);
-				outputStream.writeInt(this.indexForTypeId(recordMappingOperation.getTypeId()));
+				outputStream.writeInt(recordMappingOperation.getEntryIndex());
 				
 				return null;	
 			} catch (IOException e) {

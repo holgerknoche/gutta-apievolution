@@ -5,41 +5,34 @@ public class ApiMappingScriptPrinter {
     public String printMappingScript(ApiMappingScript script) {
         StringBuilder scriptBuilder = new StringBuilder();
         
-        int index = 0;
-        Level1Printer printer = new Level1Printer(scriptBuilder);
-        
-        for (UserDefinedTypeMappingOperation operation : script) {
-            scriptBuilder.append("entry ");
-            scriptBuilder.append(index);
-            scriptBuilder.append("\n");
-            
-            operation.accept(printer);            
-            index++;
-        }
+        TypeEntryPrinter typeEntryPrinter = new TypeEntryPrinter(scriptBuilder);
+        for (TypeEntry typeEntry : script) {
+            typeEntry.accept(typeEntryPrinter);
+        }        
         
         return scriptBuilder.toString();
     }
-
-    private static class Level1Printer implements ApiMappingOperationVisitor<Void> {
+    
+    private static class TypeEntryPrinter implements TypeEntryVisitor<Void> {
         
         private final StringBuilder scriptBuilder;
         
-        private final Level2Printer subPrinter;
+        private final MappingOperationPrinter operationPrinter;
         
-        public Level1Printer(StringBuilder scriptBuilder) {
+        public TypeEntryPrinter(StringBuilder scriptBuilder) {
             this.scriptBuilder = scriptBuilder;
-            this.subPrinter = new Level2Printer(scriptBuilder);
+            this.operationPrinter = new MappingOperationPrinter(scriptBuilder);
         }
         
         @Override
-        public Void handleEnumMappingOperation(EnumMappingOperation enumMappingOperation) {
+        public Void handleEnumTypeEntry(EnumTypeEntry enumTypeEntry) {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("enum ");
-        	builder.append(enumMappingOperation.getTypeId());
+        	builder.append(enumTypeEntry.getTypeId());
         	builder.append(" [");
         	
-        	int[] indexMap = enumMappingOperation.indexMap;
+        	int[] indexMap = enumTypeEntry.indexMap;
         	int maxIndex = (indexMap.length - 1);
         	for (int sourceIndex = 0; sourceIndex <= maxIndex; sourceIndex++) {
         		int targetIndex = indexMap[sourceIndex];
@@ -59,19 +52,19 @@ public class ApiMappingScriptPrinter {
         }
         
         @Override
-        public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+        public Void handleRecordTypeEntry(RecordTypeEntry recordTypeEntry) {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("record ");
-        	builder.append(recordMappingOperation.getTypeId());
+        	builder.append(recordTypeEntry.getTypeId());
         	builder.append("\n");
         	
-        	for (FieldMapping fieldMapping : recordMappingOperation) {
+        	for (FieldMapping fieldMapping : recordTypeEntry) {
         		builder.append("@");
         		builder.append(fieldMapping.getOffset());
         		builder.append(": ");
         		
-        		fieldMapping.getMappingOperation().accept(this.subPrinter);
+        		fieldMapping.getMappingOperation().accept(this.operationPrinter);
         		builder.append("\n");
         	}
         	
@@ -80,11 +73,11 @@ public class ApiMappingScriptPrinter {
         
     }
     
-    private static class Level2Printer implements ApiMappingOperationVisitor<Void> {
+    private static class MappingOperationPrinter implements ApiMappingOperationVisitor<Void> {
         
         private final StringBuilder scriptBuilder;
         
-        public Level2Printer(StringBuilder scriptBuilder) {
+        public MappingOperationPrinter(StringBuilder scriptBuilder) {
             this.scriptBuilder = scriptBuilder;
         }
         
@@ -104,7 +97,7 @@ public class ApiMappingScriptPrinter {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("map enum ");
-        	builder.append(enumMappingOperation.getTypeId());
+        	builder.append(enumMappingOperation.getEntryIndex());
         	
         	return null;
         }
@@ -131,7 +124,7 @@ public class ApiMappingScriptPrinter {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("map record ");
-        	builder.append(recordMappingOperation.getTypeId());
+        	builder.append(recordMappingOperation.getEntryIndex());
         	
         	return null;
         }

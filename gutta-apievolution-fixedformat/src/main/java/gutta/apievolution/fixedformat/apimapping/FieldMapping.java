@@ -21,9 +21,9 @@ class FieldMapping {
         return this.mappingOperation;
     }
     
-    public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
+    public void apply(int baseOffset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
         int effectiveOffset = (baseOffset + this.offset);
-        this.mappingOperation.apply(effectiveOffset, source, target);
+        this.mappingOperation.apply(effectiveOffset, typeEntryResolver, source, target);
     }
 
 }

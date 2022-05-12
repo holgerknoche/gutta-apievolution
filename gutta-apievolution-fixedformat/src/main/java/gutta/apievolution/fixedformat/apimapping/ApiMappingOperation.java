@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 interface ApiMappingOperation {
     
-    void apply(int sourceOffset, ByteBuffer source, ByteBuffer target);
+    void apply(int sourceOffset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target);
     
     <R> R accept(ApiMappingOperationVisitor<R> visitor);
 

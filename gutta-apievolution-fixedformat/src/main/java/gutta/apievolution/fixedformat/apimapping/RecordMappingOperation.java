@@ -1,67 +1,30 @@
 package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.List;
 
-class RecordMappingOperation extends UserDefinedTypeMappingOperation implements Iterable<FieldMapping> {
-
-    private final List<FieldMapping> fieldMappings;
+class RecordMappingOperation extends UserDefinedTypeMappingOperation {
     
-    public RecordMappingOperation(int typeId, List<FieldMapping> fieldMappings) {
-    	super(typeId);
-    	
-        this.fieldMappings = fieldMappings;
+    public RecordMappingOperation(int entryIndex) {
+        super(entryIndex);
     }
     
     @Override
-    public void apply(int offset, ByteBuffer source, ByteBuffer target) {
-        this.fieldMappings.forEach(operation -> operation.apply(offset, source, target));
+    public void apply(int offset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
+        RecordTypeEntry typeEntry = typeEntryResolver.resolveEntry(this.getEntryIndex());
+        
+        for (FieldMapping fieldMapping : typeEntry) {
+            fieldMapping.apply(offset, typeEntryResolver, source, target);
+        }
     }
 
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleRecordMappingOperation(this);
     }
-    
-    @Override
-    public Iterator<FieldMapping> iterator() {
-    	return this.fieldMappings.iterator();
-    }
-    
+            
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        
-        builder.append("map record ");
-        builder.append(this.getTypeId());
-        builder.append("\n");
-        
-        Iterator<FieldMapping> mappings = this.fieldMappings.iterator();
-        while (mappings.hasNext()) {
-            FieldMapping fieldMapping = mappings.next();
-            
-            builder.append("source offset ");
-            builder.append(fieldMapping.getOffset());
-            builder.append(" -> ");
-            
-            ApiMappingOperation mappingOperation = fieldMapping.getMappingOperation();
-            if (mappingOperation instanceof RecordMappingOperation) {
-                builder.append("map record ");
-                builder.append(((RecordMappingOperation) mappingOperation).getTypeId());
-            } else if (mappingOperation instanceof EnumMappingOperation) {
-                builder.append("map enum ");
-                builder.append(((EnumMappingOperation) mappingOperation).getTypeId());
-            } else {
-                builder.append(mappingOperation.toString());
-            }
-            
-            if (mappings.hasNext()) {
-                builder.append("\n");
-            }
-        }
-        
-        return builder.toString();
+        return "map record " + this.getEntryIndex();
     }
 
 }

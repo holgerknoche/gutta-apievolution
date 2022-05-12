@@ -9,15 +9,15 @@ import java.util.stream.Collectors;
 
 import gutta.apievolution.core.apimodel.UserDefinedType;
 
-public class ApiMappingScript implements Iterable<UserDefinedTypeMappingOperation> {
+public class ApiMappingScript implements Iterable<TypeEntry> {
     
-	private final List<UserDefinedTypeMappingOperation> operations;
+	private final List<TypeEntry> typeEntries;
 	
-    private final Map<Integer, UserDefinedTypeMappingOperation> typeToOperation;
+    private final Map<Integer, TypeEntry> typeToEntry;
     
-    public ApiMappingScript(List<UserDefinedTypeMappingOperation> operations) {
-    	this.operations = operations;
-        this.typeToOperation = operations.stream().collect(Collectors.toMap(op -> op.getTypeId(), Function.identity()));
+    public ApiMappingScript(List<TypeEntry> typeEntries) {
+    	this.typeEntries = typeEntries;
+        this.typeToEntry = typeEntries.stream().collect(Collectors.toMap(op -> op.getTypeId(), Function.identity()));
     }
     
     public void mapType(UserDefinedType<?> type, ByteBuffer source, ByteBuffer target) {
@@ -25,21 +25,27 @@ public class ApiMappingScript implements Iterable<UserDefinedTypeMappingOperatio
     }
     
     public void mapType(Integer typeId, ByteBuffer source, ByteBuffer target) {
-    	UserDefinedTypeMappingOperation mappingOperation = this.typeToOperation.get(typeId);
-        if (mappingOperation == null) {
-            throw new IllegalArgumentException("No mapping for type id " + typeId + ".");
+    	TypeEntry typeEntry = this.typeToEntry.get(typeId);
+        if (typeEntry == null) {
+            throw new IllegalArgumentException("No entry for type id " + typeId + ".");
         }
                         	
-        mappingOperation.apply(0, source, target);
+        ApiMappingOperation mappingOperation = typeEntry.createMappingOperation();
+        mappingOperation.apply(0, this::resolveTypeEntry, source, target);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends TypeEntry> T resolveTypeEntry(int entryIndex) {
+        return (T) this.typeEntries.get(entryIndex);
     }
     
     @Override
-    public Iterator<UserDefinedTypeMappingOperation> iterator() {
-        return this.operations.iterator();
+    public Iterator<TypeEntry> iterator() {
+        return this.typeEntries.iterator();
     }
     
     public int size() {
-    	return this.operations.size();
+    	return this.typeEntries.size();
     }
 
 }

@@ -11,7 +11,7 @@ class CopyOperation implements ApiMappingOperation {
     }
     
     @Override
-    public void apply(int offset, ByteBuffer source, ByteBuffer target) {
+    public void apply(int offset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
         byte[] copyBuffer = new byte[this.length];
         
         // Copy data from the given source offset. Starting with Java 13, there is

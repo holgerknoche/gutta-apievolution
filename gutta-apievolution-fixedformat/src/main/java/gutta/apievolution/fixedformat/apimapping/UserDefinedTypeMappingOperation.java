@@ -2,14 +2,14 @@ package gutta.apievolution.fixedformat.apimapping;
 
 abstract class UserDefinedTypeMappingOperation implements ApiMappingOperation {
 	
-	private final int typeId;
+	private final int entryIndex;
 	
-	protected UserDefinedTypeMappingOperation(int typeId) {
-		this.typeId = typeId;
+	protected UserDefinedTypeMappingOperation(int entryIndex) {
+		this.entryIndex = entryIndex;
 	}
 	
-	public int getTypeId() {
-		return this.typeId;
+	public int getEntryIndex() {
+		return this.entryIndex;
 	}
 
 }
