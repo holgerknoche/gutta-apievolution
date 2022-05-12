@@ -64,6 +64,8 @@ class FixedFormatMappingTest {
         System.out.println(new ApiMappingScriptPrinter().printMappingScript(consumerToProviderScript));
         byte[] mappingScript = new ApiMappingScriptCodec().writeScript(consumerToProviderScript);
         System.out.println(mappingScript.length);
+        ApiMappingScript readMappingScript = new ApiMappingScriptCodec().readScript(mappingScript);
+        System.out.println(readMappingScript);
         
         providerParameterBuffer.flip();
         FixedFormatData providerParameterData = FixedFormatData.of(providerParameterBuffer, CHARSET);

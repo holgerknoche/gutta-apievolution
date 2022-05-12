@@ -76,16 +76,107 @@ public class ApiMappingScriptCodec {
 	    
 	    List<TypeEntry> typeEntries = new ArrayList<>(numberOfEntries);
 	    for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
-	        TypeEntry typeEntry = this.readTypeEntry(scriptBuffer, offsets[entryIndex + 1]);
+	        TypeEntry typeEntry = this.readTypeEntry(entryIndex, scriptBuffer, offsets[entryIndex + 1]);
 	        typeEntries.add(typeEntry);
 	    }
 	   
 	    return new ApiMappingScript(typeEntries);
 	}
 	
-	private <T extends TypeEntry> T readTypeEntry(ByteBuffer byteBuffer, int endOffset) {
-	    // TODO
-	    return null;
+	private TypeEntry readTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
+	    byte entryType = buffer.get();
+	    
+	    switch (entryType) {
+	    case ENTRY_TYPE_ENUM:
+	        return this.readEnumTypeEntry(entryIndex, buffer, endOffset);
+	        
+	    case ENTRY_TYPE_RECORD:
+	        return this.readRecordTypeEntry(entryIndex, buffer, endOffset);
+	        
+	    default:
+	        throw new IllegalStateException("Unknown entry type " + entryType + " at offset " + buffer.position() + ".");
+	    }
+	}
+	
+	private EnumTypeEntry readEnumTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
+	    int typeId = buffer.getInt();
+	    int numberOfEntries = buffer.getInt();
+	    int[] indexMap = new int[numberOfEntries];
+	    
+	    for (int index = 0; index < numberOfEntries; index++) {
+	        int targetIndex = buffer.getInt();
+	        indexMap[index] = targetIndex;
+	    }
+
+	    return new EnumTypeEntry(entryIndex, typeId, indexMap);
+	}
+	
+	private RecordTypeEntry readRecordTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
+	    int typeId = buffer.getInt();	    
+	    List<FieldMapping> fieldMappings = new ArrayList<>();
+	    
+	    while (buffer.position() < endOffset) {
+	        int offset = buffer.getInt(); 
+	        ApiMappingOperation operation = this.readOperation(buffer);
+
+	        FieldMapping fieldMapping = new FieldMapping(offset, operation);
+	        fieldMappings.add(fieldMapping);
+	    }
+	    
+	    return new RecordTypeEntry(entryIndex, typeId, fieldMappings);
+	}
+	
+	private ApiMappingOperation readOperation(ByteBuffer buffer) {
+	    byte opcode = buffer.get();
+	    
+	    switch (opcode) {
+	    case OPCODE_COPY:
+	        return this.readCopyOperation(buffer);
+	        
+	    case OPCODE_SKIP:
+	        return this.readSkipOperation(buffer);
+	        
+	    case OPCODE_MAP_ENUM:
+	        return this.readMapEnumOperation(buffer);
+	        
+	    case OPCODE_MAP_RECORD:
+	        return this.readMapRecordOperation(buffer);
+	        
+	    case OPCODE_MAP_LIST:
+	        return this.readMapListOperation(buffer);
+	    
+	    default:
+	        throw new IllegalStateException("Unknown opcode " + opcode + " at offset " + buffer.position() + ".");
+	    }
+	}
+	
+	private ApiMappingOperation readCopyOperation(ByteBuffer buffer) {
+	    int bytesToCopy = buffer.getInt();
+	    return new CopyOperation(bytesToCopy);
+	}
+	
+	private ApiMappingOperation readSkipOperation(ByteBuffer buffer) {
+	    int bytesToSkip = buffer.getInt();
+	    return new SkipOperation(bytesToSkip);
+	}
+	
+	private ApiMappingOperation readMapEnumOperation(ByteBuffer buffer) {
+	    int entryIndex = buffer.getInt();
+	    return new EnumMappingOperation(entryIndex);
+	}
+	
+	private ApiMappingOperation readMapRecordOperation(ByteBuffer buffer) {
+	    int entryIndex = buffer.getInt();
+        return new RecordMappingOperation(entryIndex);
+	}
+	
+	private ApiMappingOperation readMapListOperation(ByteBuffer buffer) {
+	    int maxElements = buffer.getInt();
+	    int sourceElementSize = buffer.getInt();
+	    int targetElementSize = buffer.getInt();
+	    ApiMappingOperation elementMappingOperation = this.readOperation(buffer);
+	    
+	    return new ListMappingOperation(maxElements, sourceElementSize, targetElementSize, elementMappingOperation);
 	}
 	
 	private static class TypeEntryWriter implements TypeEntryVisitor<Void> {
@@ -110,6 +201,7 @@ public class ApiMappingScriptCodec {
 				int[] indexMap = enumTypeEntry.indexMap;
 				
 				outputStream.writeByte(ENTRY_TYPE_ENUM);
+				outputStream.writeInt(enumTypeEntry.getTypeId());
 				
 				// Write the index map
 				outputStream.writeInt(indexMap.length);
@@ -129,6 +221,7 @@ public class ApiMappingScriptCodec {
 				DataOutputStream outputStream = this.dataStream;
 				
 				outputStream.writeByte(ENTRY_TYPE_RECORD);
+				outputStream.writeInt(recordTypeEntry.getTypeId());
 				
 				// Write the individual field mapping operations
 				for (FieldMapping fieldMapping : recordTypeEntry) {
