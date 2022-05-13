@@ -180,11 +180,15 @@ public class ApiMappingScriptGenerator {
         }
         
         public List<TypeEntry> createTypeEntries() {
-            List<UserDefinedType<?>> udts = this.mappingInfoProvider.getTargetTypes()
-                    .filter(UserDefinedType.class::isInstance)
-                    .map(UserDefinedType.class::cast)
-                    .collect(Collectors.toList());
-            
+        	// Filter out all user-defined types. Javac seems to have problems figuring out the correct types,
+        	// so we do not use the purely stream-based approach here
+        	List<UserDefinedType<?>> udts = new ArrayList<>();
+        	this.mappingInfoProvider.getTargetTypes().forEach(type -> {
+        		if (type instanceof UserDefinedType) {
+        			udts.add((UserDefinedType<?>) type);
+        		}
+        	});       
+        	            
             // Sort entries by type id and create type-to-entry map
             Collections.sort(udts, (udt1, udt2) -> Integer.compare(udt1.getTypeId(), udt2.getTypeId()));
             int entryIndex = 0;
