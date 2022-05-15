@@ -1,6 +1,6 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-public interface TypeEntryVisitor<R> {
+interface TypeEntryVisitor<R> {
     
     default R handleEnumTypeEntry(EnumTypeEntry enumTypeEntry) {
         return null;

@@ -198,7 +198,7 @@ public class ApiMappingScriptCodec {
 		public Void handleEnumTypeEntry(EnumTypeEntry enumTypeEntry) {
 			try {
 				DataOutputStream outputStream = this.dataStream;
-				int[] indexMap = enumTypeEntry.indexMap;
+				int[] indexMap = enumTypeEntry.getIndexMap();
 				
 				outputStream.writeByte(ENTRY_TYPE_ENUM);
 				outputStream.writeInt(enumTypeEntry.getTypeId());

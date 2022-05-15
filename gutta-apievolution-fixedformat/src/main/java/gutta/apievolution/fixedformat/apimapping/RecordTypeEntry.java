@@ -3,7 +3,7 @@ package gutta.apievolution.fixedformat.apimapping;
 import java.util.Iterator;
 import java.util.List;
 
-public class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
+class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
     
     private final List<FieldMapping> fieldMappings;
 

@@ -15,7 +15,7 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
 	
     private final Map<Integer, TypeEntry> typeToEntry;
     
-    public ApiMappingScript(List<TypeEntry> typeEntries) {
+    ApiMappingScript(List<TypeEntry> typeEntries) {
     	this.typeEntries = typeEntries;
         this.typeToEntry = typeEntries.stream().collect(Collectors.toMap(op -> op.getTypeId(), Function.identity()));
     }
@@ -44,7 +44,7 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         return this.typeEntries.iterator();
     }
     
-    public int size() {
+    int size() {
     	return this.typeEntries.size();
     }
 

@@ -32,7 +32,7 @@ public class ApiMappingScriptPrinter {
         	builder.append(enumTypeEntry.getTypeId());
         	builder.append(" [");
         	
-        	int[] indexMap = enumTypeEntry.indexMap;
+        	int[] indexMap = enumTypeEntry.getIndexMap();
         	int maxIndex = (indexMap.length - 1);
         	for (int sourceIndex = 0; sourceIndex <= maxIndex; sourceIndex++) {
         		int targetIndex = indexMap[sourceIndex];

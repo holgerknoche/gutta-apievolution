@@ -1,8 +1,10 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-public class EnumTypeEntry extends TypeEntry {
+import java.util.Arrays;
+
+class EnumTypeEntry extends TypeEntry {
     
-    final int[] indexMap;
+    private final int[] indexMap;
     
     public EnumTypeEntry(int entryIndex, int typeId, int[] indexMap) {
         super(entryIndex, typeId);
@@ -12,6 +14,10 @@ public class EnumTypeEntry extends TypeEntry {
     
     int mapIndex(int sourceIndex) {
         return this.indexMap[sourceIndex];
+    }
+    
+    int[] getIndexMap() {
+        return Arrays.copyOf(this.indexMap, this.indexMap.length);
     }
     
     @Override
