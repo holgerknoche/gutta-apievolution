@@ -3,7 +3,7 @@ package gutta.apievolution.core.apimodel;
 import gutta.apievolution.core.util.ConcatenatedIterator;
 
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 /**
  * A record type represents a user-defined record, i.e., a type that consists of
@@ -30,9 +30,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
 
     private final Map<String, F> internalNameLookup;
 
-    private boolean subTypes;
-
-    private Usage usage = Usage.NONE;
+    private final Set<R> subTypes;
 
     /**
      * Creates a new record type from the given data.
@@ -71,6 +69,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         this.exception = exception;
         this.fieldLookup = new HashMap<>();
         this.internalNameLookup = new HashMap<>();
+        this.subTypes = new HashSet<>();
 
         owner.addUserDefinedType(this);
 
@@ -167,9 +166,18 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * @return see above
      */
     public boolean hasSubTypes() {
-        return this.subTypes;
+        return !(this.subTypes.isEmpty());
     }
 
+    /**
+     * Returns the subtypes of this record type.
+     * 
+     * @return see above
+     */
+    public Set<R> getSubTypes() {
+        return Collections.unmodifiableSet(this.subTypes);
+    }
+    
     /**
      * Returns whether this record type has a supertype.
      *
@@ -214,7 +222,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     void registerSubType(final R subType) {
         this.assertMutability();
 
-        this.subTypes = true;
+        this.subTypes.add(subType);
     }
 
     @Override
@@ -224,9 +232,19 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subtypes
-        return super.hashCode() + Objects.hash(this.declaredFields, this.superType);
+        return this.getTypeId();
     }
 
+    private Set<Integer> subTypeIds() {
+        if (!this.hasSubTypes()) {
+            return Collections.emptySet();
+        } else {
+            return this.subTypes.stream()
+                    .map(RecordType::getTypeId)
+                    .collect(Collectors.toSet());
+        }
+    }
+    
     /**
      * Compares this record type's state against the state of the given member.
      *
@@ -234,8 +252,9 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * @return Whether the states are equal
      */
     protected boolean stateEquals(RecordType<A, R, F> that) {
+        // To avoid cycles, we only compare the type ids of the subtypes
         return super.stateEquals(that) && this.declaredFields.equals(that.declaredFields) &&
-                this.subTypes == that.subTypes && this.abstractFlag == that.abstractFlag &&
+                this.subTypeIds().equals(that.subTypeIds()) && this.abstractFlag == that.abstractFlag &&
                 this.superType.equals(that.superType);
     }
 
