@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
 
 class ApiMappingOperationTest {
     
@@ -170,6 +174,49 @@ class ApiMappingOperationTest {
         assertEquals(10, targetDataBuffer.position());
     }
     
+    /**
+     * Test case: The polymorphic record mapping operation works as expected.
+     */
+    @Test
+    void polymorphicRecordMappingOperation() {
+    	FieldMapping fieldMappingType1_1 = new FieldMapping(0, new CopyOperation(5));
+    	FieldMapping fieldMappingType1_2 = new FieldMapping(5, new CopyOperation(5));
+    	
+    	RecordTypeEntry typeEntry1 = new RecordTypeEntry(0, 1, Arrays.asList(fieldMappingType1_1, fieldMappingType1_2));
+    	
+    	FieldMapping fieldMappingType2_1 = new FieldMapping(5, new CopyOperation(5));
+    	FieldMapping fieldMappingType2_2 = new FieldMapping(0, new CopyOperation(5));
+    	
+    	RecordTypeEntry typeEntry2 = new RecordTypeEntry(1, 2, Arrays.asList(fieldMappingType2_1, fieldMappingType2_2));
+    	
+    	TypeEntryResolver typeEntryResolver = new TestPolyEntryResolver(new TypeEntry[] {typeEntry1, typeEntry2});
+    	
+    	Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>();
+    	idToRecordMapping.put(1, new PolymorphicRecordMapping(1, 2, 0));
+    	idToRecordMapping.put(2, new PolymorphicRecordMapping(2, 1, 1));
+    	
+    	PolymorphicRecordMappingOperation operation = new PolymorphicRecordMappingOperation(idToRecordMapping);
+    	
+    	ByteBuffer sourceDataBuffer = ByteBuffer.allocate(14);
+    	ByteBuffer targetDataBuffer = ByteBuffer.allocate(14);
+    	
+    	sourceDataBuffer.putInt(2);
+    	sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    	sourceDataBuffer.flip();
+    	
+    	operation.apply(0, typeEntryResolver, sourceDataBuffer, targetDataBuffer);
+    	
+    	assertEquals(14, targetDataBuffer.position());
+    	
+    	targetDataBuffer.flip();
+    	int targetTypeId = targetDataBuffer.getInt();
+    	byte[] targetData = new byte[10];
+    	targetDataBuffer.get(targetData);
+    	
+    	assertEquals(1, targetTypeId);
+    	assertArrayEquals(new byte[] {5, 6, 7, 8, 9, 0, 1, 2, 3, 4}, targetData);
+    }
+    
     private static class TestEntryResolver implements TypeEntryResolver {
         
         private final TypeEntry entry;
@@ -184,6 +231,22 @@ class ApiMappingOperationTest {
             return (T) this.entry;
         }
         
+    }
+    
+    private static class TestPolyEntryResolver implements TypeEntryResolver {
+    	
+    	private final TypeEntry[] entries; 
+    	
+    	public TestPolyEntryResolver(TypeEntry[] entries) {
+    		this.entries = entries;
+    	}
+    	
+    	@Override
+    	@SuppressWarnings("unchecked")
+    	public <T extends TypeEntry> T resolveEntry(int index) {
+    		return (T) this.entries[index];
+    	}
+    	
     }
 
 }

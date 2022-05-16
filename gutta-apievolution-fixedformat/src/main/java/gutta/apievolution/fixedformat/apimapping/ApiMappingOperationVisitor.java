@@ -22,4 +22,8 @@ interface ApiMappingOperationVisitor<R> {
         return null;
     }
     
+    default R handlePolymorphicRecordMappingOperation(PolymorphicRecordMappingOperation polymorphicRecordMappingOperation) {
+    	return null;
+    }
+    
 }
