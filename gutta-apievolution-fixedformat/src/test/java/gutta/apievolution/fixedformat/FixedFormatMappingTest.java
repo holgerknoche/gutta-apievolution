@@ -41,8 +41,8 @@ class FixedFormatMappingTest {
         
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, new HashSet<>(Arrays.asList(0, 1)), consumerApi);
         ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
-        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.CONSUMER_TO_PRODUCER);
-        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.PRODUCER_TO_CONSUMER);
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(resolution, MappingDirection.PROVIDER_TO_CONSUMER);
         
         ConsumerParameter parameter = new ConsumerParameter()
                 .testField("TestString")

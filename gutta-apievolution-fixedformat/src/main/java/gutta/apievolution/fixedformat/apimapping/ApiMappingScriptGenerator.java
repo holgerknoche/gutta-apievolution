@@ -19,6 +19,7 @@ import gutta.apievolution.core.apimodel.BoundedStringType;
 import gutta.apievolution.core.apimodel.EnumMember;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.NumericType;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
@@ -48,7 +49,7 @@ public class ApiMappingScriptGenerator {
     	Map<Type, TypeInfo<?>> providerTypeInfo = this.createTypeInfos(resolution.providerTypes());
 
     	MappingInfoProvider mappingInfoProvider;
-    	if (direction == MappingDirection.CONSUMER_TO_PRODUCER) {
+    	if (direction == MappingDirection.CONSUMER_TO_PROVIDER) {
     	    mappingInfoProvider = new ConsumerToProviderMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
     	} else {
     	    mappingInfoProvider = new ProviderToConsumerMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
@@ -347,6 +348,13 @@ public class ApiMappingScriptGenerator {
         }
         
         @Override
+        public ApiMappingOperation handleNumericType(NumericType numericType) {
+        	// We can use either the source and target type info as they need to have the same spec
+        	TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(numericType);
+        	return new CopyOperation(typeInfo.getSize());
+        }
+        
+        @Override
         public ApiMappingOperation handleRecordType(RecordType<?, ?, ?> recordType) {
             if (recordType.hasSubTypes()) {
             	return this.handlePolymorphicRecordType(recordType);
@@ -363,7 +371,7 @@ public class ApiMappingScriptGenerator {
         private ApiMappingOperation handlePolymorphicRecordType(RecordType<?, ?, ?> recordType) {
         	Set<RecordType<?, ?, ?>> allConcreteSubtypes = this.collectAllConcreteSubtypes(recordType);
         	
-        	// TODO Collect the necessary data, esp. target type ids        	
+        	// Collect the necessary data for polymorhic mapping        	
         	Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(allConcreteSubtypes.size());
         	for (RecordType<?, ?, ?> targetType : allConcreteSubtypes) {
         		RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
@@ -570,6 +578,13 @@ public class ApiMappingScriptGenerator {
         }
         
         @Override
+        public TypeInfo<?> handleNumericType(NumericType numericType) {
+        	// Numeric types are encoded as strings with leading sign
+        	int size = (numericType.getIntegerPlaces() + numericType.getFractionalPlaces() + 1);
+        	return new TypeInfo<>(numericType, size);
+        }
+        
+        @Override
         public TypeInfo<?> handleRecordType(RecordType<?, ?, ?> recordType) {
             int offset = 0;
             
@@ -600,8 +615,8 @@ public class ApiMappingScriptGenerator {
     }        
     
     public enum MappingDirection {
-        CONSUMER_TO_PRODUCER,
-        PRODUCER_TO_CONSUMER
+        CONSUMER_TO_PROVIDER,
+        PROVIDER_TO_CONSUMER
     }
 
 }
