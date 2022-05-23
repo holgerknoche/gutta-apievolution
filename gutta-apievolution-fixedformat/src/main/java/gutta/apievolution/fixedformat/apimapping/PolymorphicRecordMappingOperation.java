@@ -1,6 +1,8 @@
 package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 class PolymorphicRecordMappingOperation implements ApiMappingOperation {
@@ -31,6 +33,10 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
 	@Override
 	public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
 		return visitor.handlePolymorphicRecordMappingOperation(this);
+	}
+	
+	Collection<PolymorphicRecordMapping> getRecordMappings() {
+		return Collections.unmodifiableCollection(this.idToRecordMapping.values());
 	}
 	
 	static class PolymorphicRecordMapping {

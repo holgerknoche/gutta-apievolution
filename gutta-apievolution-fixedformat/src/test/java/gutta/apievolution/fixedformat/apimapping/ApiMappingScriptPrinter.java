@@ -1,5 +1,11 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
+
 public class ApiMappingScriptPrinter {
     
     public String printMappingScript(ApiMappingScript script) {
@@ -125,6 +131,32 @@ public class ApiMappingScriptPrinter {
         	
         	builder.append("map record ");
         	builder.append(recordMappingOperation.getEntryIndex());
+        	
+        	return null;
+        }
+        
+        @Override
+        public Void handlePolymorphicRecordMappingOperation(PolymorphicRecordMappingOperation polymorphicRecordMappingOperation) {
+        	StringBuilder builder = this.scriptBuilder;
+        	
+        	builder.append("map poly record ");
+        	
+        	List<PolymorphicRecordMapping> orderedMappings = new ArrayList<>(polymorphicRecordMappingOperation.getRecordMappings());
+        	Iterator<PolymorphicRecordMapping> mappings = orderedMappings.iterator();
+        	while (mappings.hasNext()) {
+        		PolymorphicRecordMapping mapping = mappings.next();
+        		
+        		builder.append(mapping.getSourceTypeId());
+        		builder.append("->(");
+        		builder.append(mapping.getTargetTypeId());
+        		builder.append("@");
+        		builder.append(mapping.getEntryIndex());
+        		builder.append(")");
+        		
+        		if (mappings.hasNext()) {
+        			builder.append(", ");
+        		}
+        	}        	
         	
         	return null;
         }

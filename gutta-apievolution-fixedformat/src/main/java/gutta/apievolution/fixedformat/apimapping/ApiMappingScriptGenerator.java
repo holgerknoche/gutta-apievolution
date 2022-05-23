@@ -1,5 +1,18 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -15,17 +28,7 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
 
 public class ApiMappingScriptGenerator {
 
@@ -345,8 +348,55 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleRecordType(RecordType<?, ?, ?> recordType) {
-            int entryIndex = this.typeToEntryIndex.get(recordType);
+            if (recordType.hasSubTypes()) {
+            	return this.handlePolymorphicRecordType(recordType);
+            } else {
+            	return this.handleNonPolymorphicRecordType(recordType);
+            }
+        }
+        
+        private ApiMappingOperation handleNonPolymorphicRecordType(RecordType<?, ?, ?> recordType) {
+        	int entryIndex = this.typeToEntryIndex.get(recordType);
             return new RecordMappingOperation(entryIndex);
+        }
+        
+        private ApiMappingOperation handlePolymorphicRecordType(RecordType<?, ?, ?> recordType) {
+        	Set<RecordType<?, ?, ?>> allConcreteSubtypes = this.collectAllConcreteSubtypes(recordType);
+        	
+        	// TODO Collect the necessary data, esp. target type ids        	
+        	Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(allConcreteSubtypes.size());
+        	for (RecordType<?, ?, ?> targetType : allConcreteSubtypes) {
+        		RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
+        		
+        		int sourceTypeId = sourceType.getTypeId();
+        		int targetTypeId = targetType.getTypeId();        		
+        		int entryIndex = this.typeToEntryIndex.get(targetType);
+        		
+        		PolymorphicRecordMapping recordMapping = new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
+        		idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
+        	}
+        	
+        	return new PolymorphicRecordMappingOperation(idToRecordMapping);
+        }
+        
+        private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType) {
+        	return this.collectAllConcreteSubtypes(recordType, new HashSet<>());
+        }
+        
+        private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType, Set<RecordType<?, ?, ?>> knownTypes) {
+        	if (knownTypes.contains(recordType)) {
+        		return knownTypes;
+        	}
+        	 
+        	if (!recordType.isAbstract()) {
+        		knownTypes.add(recordType);
+        	}
+        	
+        	for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
+        		this.collectAllConcreteSubtypes(subType, knownTypes);
+        	}
+        	
+        	return knownTypes;
         }
         
     }

@@ -15,10 +15,6 @@
 			<artifactId>gutta-apievolution-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>gutta.apievolution</groupId>
-			<artifactId>gutta-apievolution-dsl</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.12.6</version>
@@ -27,6 +23,11 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>gutta.apievolution</groupId>
+			<artifactId>gutta-apievolution-dsl</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
