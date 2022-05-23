@@ -71,6 +71,10 @@
             <groupId>gutta.apievolution</groupId>
             <artifactId>gutta-apievolution-dsl</artifactId>
         </dependency>
+		<dependency>	
+            <groupId>gutta.apievolution</groupId>
+            <artifactId>gutta-apievolution-fixedformat</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
