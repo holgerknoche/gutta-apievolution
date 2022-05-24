@@ -1,13 +1,35 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.ListType;
+import gutta.apievolution.core.apimodel.NumericType;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.StringType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Test cases for definition resolution.
@@ -250,4 +272,39 @@ class DefinitionResolverTest {
         assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
     }
 
+    /**
+     * Test case: Map list fields.
+     */
+    @Test
+    void mapListFields() {
+        // Create a consumer API with an bounded and unbounded list field
+        ConsumerApiDefinition consumerApi = new ConsumerApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0);
+        ConsumerRecordType consumerRecordA = new ConsumerRecordType("A", Optional.empty(), 0, consumerApi, false);
+        ConsumerRecordType consumerRecordB = new ConsumerRecordType("B", Optional.empty(), 1, consumerApi, false);
+        new ConsumerField("boundedListField", Optional.empty(), consumerRecordB, ListType.bounded(consumerRecordA, 10), Optionality.MANDATORY);
+        new ConsumerField("unboundedListField", Optional.empty(), consumerRecordB, ListType.unbounded(consumerRecordA), Optionality.MANDATORY);
+        consumerApi.finalizeDefinition();
+        
+        // Create a matching provider API
+        ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0, Optional.empty());
+        ProviderRecordType providerRecordA = new ProviderRecordType("A", Optional.empty(), 0, providerApi, false, Optional.empty());
+        ProviderRecordType providerRecordB = new ProviderRecordType("B", Optional.empty(), 1, providerApi, false, Optional.empty());
+        new ProviderField("boundedListField", Optional.empty(), providerRecordB, ListType.bounded(providerRecordA, 10), Optionality.MANDATORY);
+        new ProviderField("unboundedListField", Optional.empty(), providerRecordB, ListType.unbounded(providerRecordA), Optionality.MANDATORY);
+        providerApi.finalizeDefinition();
+        
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory,
+                supportedRevisions, consumerApi);
+
+        String expectedResolution = "A -> A@revision 0\n" +
+                "B -> B@revision 0\n" +
+                " boundedListField -> boundedListField@B@revision 0\n" +
+                " unboundedListField -> unboundedListField@B@revision 0\n";
+
+        assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
+    }
+    
 }
