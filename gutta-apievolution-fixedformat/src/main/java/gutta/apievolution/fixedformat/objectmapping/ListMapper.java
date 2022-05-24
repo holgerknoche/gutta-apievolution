@@ -1,9 +1,9 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-import static java.lang.Math.min;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 class ListMapper implements TypeMapper<Object> {
 

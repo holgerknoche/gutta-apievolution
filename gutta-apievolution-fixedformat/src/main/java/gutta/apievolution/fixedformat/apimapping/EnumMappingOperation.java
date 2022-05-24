@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 class EnumMappingOperation extends UserDefinedTypeMappingOperation {
     
     public EnumMappingOperation(int entryIndex) {
-    	super(entryIndex);
+        super(entryIndex);
     }
         
     @Override

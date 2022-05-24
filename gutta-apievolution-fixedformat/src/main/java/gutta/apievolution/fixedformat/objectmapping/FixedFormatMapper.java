@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Simple fixed-format object-to-data mapper.
+ */
 public class FixedFormatMapper {
     
     private final ConcurrentMap<Class<?>, TypeMapper<?>> typeMappers = new ConcurrentHashMap<>();
@@ -55,7 +58,8 @@ public class FixedFormatMapper {
             
             TypeMapper<?> fieldTypeMapper = this.createTypeMapperFor(fieldType, fieldGenericType, field);
             
-            String fieldNameCapitalized = Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
+            String fieldNameCapitalized = Character.toUpperCase(field.getName().charAt(0)) + 
+                    field.getName().substring(1);
             String getterName = "get" + fieldNameCapitalized;
             String setterName = "set" + fieldNameCapitalized;
             
@@ -89,17 +93,34 @@ public class FixedFormatMapper {
         return new ListMapper(maxElements, elementMapper);
     }
     
+    /**
+     * Determines the size of the given type's representation.
+     * @param type The type to determine the size of
+     * @return The size of the type's representation in bytes
+     */
     public int determineMaxSizeOf(Class<?> type) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return typeMapper.getMaxLength();
     }
     
+    /**
+     * Reads an object of the given type from the given data.
+     * @param <T> The type to read
+     * @param data The data to read from
+     * @param type The runtime class of the type to read
+     * @return The object read from the data
+     */
     @SuppressWarnings("unchecked")
     public <T> T readValue(FixedFormatData data, Class<T> type) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return (T) typeMapper.readValue(data);
     }
     
+    /**
+     * Writes an object to the given data object.
+     * @param value The value to write
+     * @param data The data object to write to
+     */
     public void writeValue(Object value, FixedFormatData data) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(value.getClass());
         typeMapper.writeValue(value, data);

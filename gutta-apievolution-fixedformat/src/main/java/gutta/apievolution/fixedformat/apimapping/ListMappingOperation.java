@@ -12,7 +12,8 @@ class ListMappingOperation implements ApiMappingOperation {
     
     final ApiMappingOperation elementMappingOperation;
     
-    public ListMappingOperation(int maxElements, int sourceElementSize, int targetElementSize, ApiMappingOperation elementMappingOperation) {
+    public ListMappingOperation(int maxElements, int sourceElementSize, int targetElementSize,
+            ApiMappingOperation elementMappingOperation) {
         this.maxElements = maxElements;
         this.sourceElementSize = sourceElementSize;
         this.targetElementSize = targetElementSize;
@@ -25,11 +26,12 @@ class ListMappingOperation implements ApiMappingOperation {
         // Read and transfer the actual number of arguments
         int actualElements = source.getInt();
         if (actualElements > this.maxElements) {
-            throw new IllegalStateException("Too many elements (" + actualElements + ") at offset " + sourceOffset + ".");
+            throw new IllegalStateException("Too many elements (" + actualElements + ") at offset " + sourceOffset + 
+                    ".");
         }
         
         target.putInt(actualElements);
-    	
+        
         // Map the elements
         int currentOffset = (sourceOffset + 4);
         for (int elementIndex = 0; elementIndex < actualElements; elementIndex++) {

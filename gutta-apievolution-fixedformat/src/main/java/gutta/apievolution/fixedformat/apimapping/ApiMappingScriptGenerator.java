@@ -1,18 +1,5 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -31,6 +18,22 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * This class provides operations to generate an API mapping script from a definition resolution.
+ */
 public class ApiMappingScriptGenerator {
 
     private static final int INT32_SIZE = 4;
@@ -43,25 +46,33 @@ public class ApiMappingScriptGenerator {
     
     private static final int DISCRIMINATOR_SIZE = 4;
     
+    /**
+     * Generates a mapping script from the given definition resolution.
+     * @param resolution The definition resolution to generate the script from
+     * @param direction The direction of the desired mapping
+     * @return The generated mapping script
+     */
     public ApiMappingScript generateMappingScript(DefinitionResolution resolution, MappingDirection direction) {
-    	// First, calculate the sizes and offsets of all relevant types for both consumer and provider
-    	Map<Type, TypeInfo<?>> consumerTypeInfo = this.createTypeInfos(resolution.consumerTypes());
-    	Map<Type, TypeInfo<?>> providerTypeInfo = this.createTypeInfos(resolution.providerTypes());
+        // First, calculate the sizes and offsets of all relevant types for both consumer and provider
+        Map<Type, TypeInfo<?>> consumerTypeInfo = this.createTypeInfos(resolution.consumerTypes());
+        Map<Type, TypeInfo<?>> providerTypeInfo = this.createTypeInfos(resolution.providerTypes());
 
-    	MappingInfoProvider mappingInfoProvider;
-    	if (direction == MappingDirection.CONSUMER_TO_PROVIDER) {
-    	    mappingInfoProvider = new ConsumerToProviderMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
-    	} else {
-    	    mappingInfoProvider = new ProviderToConsumerMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
-    	}    	
+        MappingInfoProvider mappingInfoProvider;
+        if (direction == MappingDirection.CONSUMER_TO_PROVIDER) {
+            mappingInfoProvider = 
+                    new ConsumerToProviderMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
+        } else {
+            mappingInfoProvider = 
+                    new ProviderToConsumerMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
+        }        
 
-    	TypeEntryCreator typeEntryCreator = new TypeEntryCreator(mappingInfoProvider);
-    	List<TypeEntry> typeEntries = typeEntryCreator.createTypeEntries();
-    	
-    	return new ApiMappingScript(typeEntries);
+        TypeEntryCreator typeEntryCreator = new TypeEntryCreator(mappingInfoProvider);
+        List<TypeEntry> typeEntries = typeEntryCreator.createTypeEntries();
+        
+        return new ApiMappingScript(typeEntries);
     }    
 
-    private static abstract class MappingInfoProvider {
+    private abstract static class MappingInfoProvider {
         
         final Map<Type, TypeInfo<?>> consumerTypeInfo;
         
@@ -69,7 +80,8 @@ public class ApiMappingScriptGenerator {
         
         final DefinitionResolution resolution;
         
-        protected MappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, Map<Type, TypeInfo<?>> providerTypeInfo, DefinitionResolution resolution) {
+        protected MappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, Map<Type, TypeInfo<?>> providerTypeInfo, 
+                DefinitionResolution resolution) {
             this.consumerTypeInfo = consumerTypeInfo;
             this.providerTypeInfo = providerTypeInfo;
             this.resolution = resolution;
@@ -91,7 +103,8 @@ public class ApiMappingScriptGenerator {
     
     private static class ConsumerToProviderMappingInfoProvider extends MappingInfoProvider {
         
-        public ConsumerToProviderMappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, Map<Type, TypeInfo<?>> providerTypeInfo, DefinitionResolution resolution) {
+        public ConsumerToProviderMappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, 
+                Map<Type, TypeInfo<?>> providerTypeInfo, DefinitionResolution resolution) {
             super(consumerTypeInfo, providerTypeInfo, resolution);
         }
         
@@ -132,7 +145,8 @@ public class ApiMappingScriptGenerator {
     
     private static class ProviderToConsumerMappingInfoProvider extends MappingInfoProvider {
         
-        public ProviderToConsumerMappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, Map<Type, TypeInfo<?>> providerTypeInfo, DefinitionResolution resolution) {
+        public ProviderToConsumerMappingInfoProvider(Map<Type, TypeInfo<?>> consumerTypeInfo, 
+                Map<Type, TypeInfo<?>> providerTypeInfo, DefinitionResolution resolution) {
             super(consumerTypeInfo, providerTypeInfo, resolution);
         }
         
@@ -184,15 +198,15 @@ public class ApiMappingScriptGenerator {
         }
         
         public List<TypeEntry> createTypeEntries() {
-        	// Filter out all user-defined types. Javac seems to have problems figuring out the correct types,
-        	// so we do not use the purely stream-based approach here
-        	List<UserDefinedType<?>> udts = new ArrayList<>();
-        	this.mappingInfoProvider.getTargetTypes().forEach(type -> {
-        		if (type instanceof UserDefinedType) {
-        			udts.add((UserDefinedType<?>) type);
-        		}
-        	});       
-        	            
+            // Filter out all user-defined types. Javac seems to have problems figuring out the correct types,
+            // so we do not use the purely stream-based approach here
+            List<UserDefinedType<?>> udts = new ArrayList<>();
+            this.mappingInfoProvider.getTargetTypes().forEach(type -> {
+                if (type instanceof UserDefinedType) {
+                    udts.add((UserDefinedType<?>) type);
+                }
+            });       
+                        
             // Sort entries by type id and create type-to-entry map
             Collections.sort(udts, (udt1, udt2) -> Integer.compare(udt1.getTypeId(), udt2.getTypeId()));
             int entryIndex = 0;
@@ -222,7 +236,7 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public TypeEntry handleEnumType(EnumType<?, ?, ?> enumType) {
-            EnumType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(enumType);                                           
+            EnumType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(enumType);
             EnumTypeInfo<?> sourceTypeInfo = this.mappingInfoProvider.getInfoForSourceType(sourceType);
             EnumTypeInfo<?> targetTypeInfo = this.mappingInfoProvider.getInfoForTargetType(enumType);
             
@@ -258,11 +272,13 @@ public class ApiMappingScriptGenerator {
                 FieldMapping fieldMapping;
                 if (sourceField == null) {
                     // If there is no source field, skip the target field
-                    TypeInfo<?> targetFieldTypeInfo = this.mappingInfoProvider.getInfoForTargetType(targetField.getType());
+                    TypeInfo<?> targetFieldTypeInfo = 
+                            this.mappingInfoProvider.getInfoForTargetType(targetField.getType());
                     fieldMapping = new FieldMapping(0, new SkipOperation(targetFieldTypeInfo.getSize()));
                 } else {
                     // If there is a source field, perform the appropriate mapping operation
-                    FieldInfo sourceFieldInfo = sourceTypeInfo.getFieldInfoFor(sourceField).orElseThrow(NoSuchElementException::new);
+                    FieldInfo sourceFieldInfo = 
+                            sourceTypeInfo.getFieldInfoFor(sourceField).orElseThrow(NoSuchElementException::new);
                     ApiMappingOperation fieldMappingOperation = this.deriveOperation(targetField.getType());
                     
                     fieldMapping = new FieldMapping(sourceFieldInfo.getOffset(), fieldMappingOperation);
@@ -289,7 +305,8 @@ public class ApiMappingScriptGenerator {
         
         private final MappingInfoProvider mappingInfoProvider;
         
-        protected MappingOperationCreator(MappingInfoProvider mappingInfoProvider, Map<Type, Integer> typeToEntryIndex) {
+        protected MappingOperationCreator(MappingInfoProvider mappingInfoProvider, 
+                Map<Type, Integer> typeToEntryIndex) {
             this.mappingInfoProvider = mappingInfoProvider;
             this.typeToEntryIndex = typeToEntryIndex;
             this.typeToOperation = new HashMap<>();
@@ -333,7 +350,8 @@ public class ApiMappingScriptGenerator {
             
             ApiMappingOperation elementMappingOperation = this.deriveOperation(targetElementType);
             
-            return new ListMappingOperation(boundedListType.getBound(), sourceElementTypeInfo.getSize(), targetElementTypeInfo.getSize(), elementMappingOperation);
+            return new ListMappingOperation(boundedListType.getBound(), sourceElementTypeInfo.getSize(),
+                    targetElementTypeInfo.getSize(), elementMappingOperation);
         }
         
         @Override
@@ -343,68 +361,70 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleEnumType(EnumType<?, ?, ?> enumType) {
-        	int entryIndex = this.typeToEntryIndex.get(enumType);
-        	return new EnumMappingOperation(entryIndex);
+            int entryIndex = this.typeToEntryIndex.get(enumType);
+            return new EnumMappingOperation(entryIndex);
         }
         
         @Override
         public ApiMappingOperation handleNumericType(NumericType numericType) {
-        	// We can use either the source and target type info as they need to have the same spec
-        	TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(numericType);
-        	return new CopyOperation(typeInfo.getSize());
+            // We can use either the source and target type info as they need to have the same spec
+            TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(numericType);
+            return new CopyOperation(typeInfo.getSize());
         }
         
         @Override
         public ApiMappingOperation handleRecordType(RecordType<?, ?, ?> recordType) {
             if (recordType.hasSubTypes()) {
-            	return this.handlePolymorphicRecordType(recordType);
+                return this.handlePolymorphicRecordType(recordType);
             } else {
-            	return this.handleNonPolymorphicRecordType(recordType);
+                return this.handleNonPolymorphicRecordType(recordType);
             }
         }
         
         private ApiMappingOperation handleNonPolymorphicRecordType(RecordType<?, ?, ?> recordType) {
-        	int entryIndex = this.typeToEntryIndex.get(recordType);
+            int entryIndex = this.typeToEntryIndex.get(recordType);
             return new RecordMappingOperation(entryIndex);
         }
         
         private ApiMappingOperation handlePolymorphicRecordType(RecordType<?, ?, ?> recordType) {
-        	Set<RecordType<?, ?, ?>> allConcreteSubtypes = this.collectAllConcreteSubtypes(recordType);
-        	
-        	// Collect the necessary data for polymorhic mapping        	
-        	Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(allConcreteSubtypes.size());
-        	for (RecordType<?, ?, ?> targetType : allConcreteSubtypes) {
-        		RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
-        		
-        		int sourceTypeId = sourceType.getTypeId();
-        		int targetTypeId = targetType.getTypeId();        		
-        		int entryIndex = this.typeToEntryIndex.get(targetType);
-        		
-        		PolymorphicRecordMapping recordMapping = new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
-        		idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
-        	}
-        	
-        	return new PolymorphicRecordMappingOperation(idToRecordMapping);
+            Set<RecordType<?, ?, ?>> allConcreteSubtypes = this.collectAllConcreteSubtypes(recordType);
+            
+            // Collect the necessary data for polymorhic mapping            
+            Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(allConcreteSubtypes.size());
+            for (RecordType<?, ?, ?> targetType : allConcreteSubtypes) {
+                RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
+                
+                int sourceTypeId = sourceType.getTypeId();
+                int targetTypeId = targetType.getTypeId();                
+                int entryIndex = this.typeToEntryIndex.get(targetType);
+                
+                PolymorphicRecordMapping recordMapping = 
+                        new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
+                idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
+            }
+            
+            return new PolymorphicRecordMappingOperation(idToRecordMapping);
         }
         
         private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType) {
-        	return this.collectAllConcreteSubtypes(recordType, new HashSet<>());
+            return this.collectAllConcreteSubtypes(recordType, new HashSet<>());
         }
         
-        private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType, Set<RecordType<?, ?, ?>> knownTypes) {
-        	if (knownTypes.contains(recordType)) {
-        		return knownTypes;
-        	}
-        	 
-        	if (!recordType.isAbstract()) {
-        		knownTypes.add(recordType);
-        	}
-        	
-        	for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
-        		this.collectAllConcreteSubtypes(subType, knownTypes);
-        	}
-        	
-        	return knownTypes;
+        private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType, 
+                Set<RecordType<?, ?, ?>> knownTypes) {
+            if (knownTypes.contains(recordType)) {
+                return knownTypes;
+            }
+             
+            if (!recordType.isAbstract()) {
+                knownTypes.add(recordType);
+            }
+            
+            for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
+                this.collectAllConcreteSubtypes(subType, knownTypes);
+            }
+            
+            return knownTypes;
         }
         
     }
@@ -439,7 +459,7 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public String toString() {
-        	return "Type info for " + this.getType();
+            return "Type info for " + this.getType();
         }
                 
     }
@@ -579,9 +599,9 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public TypeInfo<?> handleNumericType(NumericType numericType) {
-        	// Numeric types are encoded as strings with leading sign
-        	int size = (numericType.getIntegerPlaces() + numericType.getFractionalPlaces() + 1);
-        	return new TypeInfo<>(numericType, size);
+            // Numeric types are encoded as strings with leading sign
+            int size = (numericType.getIntegerPlaces() + numericType.getFractionalPlaces() + 1);
+            return new TypeInfo<>(numericType, size);
         }
         
         @Override
@@ -614,8 +634,18 @@ public class ApiMappingScriptGenerator {
         
     }        
     
+    /**
+     * Enumeration of possible mapping directions.
+     *
+     */
     public enum MappingDirection {
+        /**
+         * Represents a mapping from consumer to provider.
+         */
         CONSUMER_TO_PROVIDER,
+        /**
+         * Represents a mapping from provider to consumer.
+         */
         PROVIDER_TO_CONSUMER
     }
 

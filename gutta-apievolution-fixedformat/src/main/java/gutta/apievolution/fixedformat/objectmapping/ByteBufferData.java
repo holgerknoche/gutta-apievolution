@@ -5,6 +5,9 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+/**
+ * Specific implementation of fixed-format data contained in a byte buffer.
+ */
 public class ByteBufferData implements FixedFormatData {
     
     private static final int WORK_ARRAY_SIZE = 512;
@@ -17,6 +20,11 @@ public class ByteBufferData implements FixedFormatData {
     
     private final byte[] workArray = new byte[WORK_ARRAY_SIZE];
     
+    /**
+     * Creates a new object from the given data.
+     * @param charset The charset to use (must be a one-byte-per-character charset)
+     * @param buffer The buffer to work with
+     */
     protected ByteBufferData(Charset charset, ByteBuffer buffer) {
         assertValidCharset(charset);
         
