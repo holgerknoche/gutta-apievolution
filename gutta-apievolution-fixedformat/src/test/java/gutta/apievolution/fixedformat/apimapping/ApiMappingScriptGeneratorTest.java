@@ -1,12 +1,5 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Collections;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
@@ -15,6 +8,14 @@ import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ApiMappingScriptGeneratorTest {    
     
@@ -148,6 +149,30 @@ class ApiMappingScriptGeneratorTest {
         String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript); 
         
         assertEquals(expectedScript, actualScript);
+    }
+    
+    /**
+     * Test case: Script generation fails for an unbounded string field.
+     */
+    @Test
+    void failOnUnboundedString() {
+        String providerApi = "api test { record A { string unboundedString } }";
+        String consumerApi = providerApi;
+        
+        ScriptGenerationException exception = assertThrows(ScriptGenerationException.class, () -> this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER));
+        assertTrue(exception.getMessage().contains("is unbounded"));
+    }
+    
+    /**
+     * Test case: Script generation fails for an unbounded list field.
+     */
+    @Test
+    void failOnUnboundedList() {
+        String providerApi = "api test { record A { int32* unboundedList } }";
+        String consumerApi = providerApi;
+        
+        ScriptGenerationException exception = assertThrows(ScriptGenerationException.class, () -> this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER));
+        assertTrue(exception.getMessage().contains("is unbounded"));
     }
     
     private ApiMappingScript createMappingScript(String providerApi, String consumerApi, MappingDirection mappingDirection) {

@@ -10,6 +10,7 @@ import gutta.apievolution.core.apimodel.NumericType;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UnboundedStringType;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
@@ -590,7 +591,7 @@ public class ApiMappingScriptGenerator {
         public TypeInfo<?> handleBoundedStringType(BoundedStringType boundedStringType) {
             return new TypeInfo<>(boundedStringType, boundedStringType.getBound());
         }
-        
+                
         @Override
         public TypeInfo<?> handleEnumType(EnumType<?, ?, ?> enumType) {
             // Enums are encoded as int32 values
@@ -627,6 +628,11 @@ public class ApiMappingScriptGenerator {
                 
         private FieldInfo handleField(Field<?, ?> field, int offset) {
             Type fieldType = field.getType();
+            
+            if (fieldType.isUnbounded()) {
+                throw new ScriptGenerationException("The type of field '" +  field + "' is unbounded.");
+            }
+            
             TypeInfo<?> fieldTypeInfo = this.determineInfoForType(fieldType);
                                     
             return new FieldInfo(field, offset, fieldTypeInfo.getSize());
