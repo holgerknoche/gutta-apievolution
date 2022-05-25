@@ -14,7 +14,7 @@ public interface ApiMappingRepresentationCreator {
      * @param resolution The definition resolution to work with
      * @return The consumer-side mapping in an appropriate representation
      */
-    byte[] createConsumerSideMapping(DefinitionResolution resolution);
+    MappingRepresentation createConsumerSideMapping(DefinitionResolution resolution);
 
     /**
      * Creates the provider-side mapping representation of the given resolution.
@@ -22,7 +22,7 @@ public interface ApiMappingRepresentationCreator {
      * @param resolution The definition resolution to work with
      * @return The provider-side mapping in an appropriate representation
      */
-    byte[] createProviderSideMapping(DefinitionResolution resolution);
+    MappingRepresentation createProviderSideMapping(DefinitionResolution resolution);
 
     /**
      * Creates a full mapping representation of the given resolution, i.e., a
@@ -33,6 +33,6 @@ public interface ApiMappingRepresentationCreator {
      * @param resolution The definition resolution to work with
      * @return The mapping in an appropriate representation
      */
-    byte[] createFullMapping(DefinitionResolution resolution);
+    MappingRepresentation createFullMapping(DefinitionResolution resolution);
 
 }

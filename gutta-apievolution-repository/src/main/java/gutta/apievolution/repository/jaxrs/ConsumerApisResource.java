@@ -3,6 +3,7 @@ package gutta.apievolution.repository.jaxrs;
 import gutta.apievolution.repository.ApiMappingType;
 import gutta.apievolution.repository.ApiProcessingException;
 import gutta.apievolution.repository.ConsumerApisService;
+import gutta.apievolution.repository.MappingRepresentation;
 import gutta.apievolution.repository.PersistentConsumerApiDefinition;
 
 import java.util.Optional;
@@ -61,12 +62,11 @@ public class ConsumerApisResource {
      */
     @GET
     @Path("{id}/map")
-    @Produces("application/json")
     public Response mapConsumerApi(@PathParam("id") int id, @QueryParam("type") String type) {
         ApiMappingType mappingType = this.convertMappingType(type);
 
-        byte[] mappingBytes = this.apisService.mapConsumerApi(id, "json", mappingType);
-        return Response.ok(mappingBytes).build();
+        MappingRepresentation representation = this.apisService.mapConsumerApi(id, "json", mappingType);
+        return Response.ok(representation.getData()).type(representation.getMediaType()).build();
     }
 
     private ApiMappingType convertMappingType(String type) {
