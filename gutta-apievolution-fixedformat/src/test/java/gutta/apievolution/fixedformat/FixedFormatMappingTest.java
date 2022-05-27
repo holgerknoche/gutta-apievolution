@@ -54,7 +54,7 @@ class FixedFormatMappingTest {
         codec.writeValue(parameter, consumerParameterData);
         
         // Convert customer parameter to provider parameter
-        ByteBuffer providerParameterBuffer = ByteBuffer.allocate(108);
+        ByteBuffer providerParameterBuffer = ByteBuffer.allocate(codec.determineMaxSizeOf(ProviderParameter.class));
 
         consumerParameterBuffer.flip();
         consumerToProviderScript.mapType(1, consumerParameterBuffer, providerParameterBuffer);
