@@ -57,7 +57,7 @@ class FixedFormatMappingTest {
         ByteBuffer providerParameterBuffer = ByteBuffer.allocate(codec.determineMaxSizeOf(ProviderParameter.class));
 
         consumerParameterBuffer.flip();
-        consumerToProviderScript.mapType(1, consumerParameterBuffer, providerParameterBuffer);
+        consumerToProviderScript.mapParameterFor("testOperation", consumerParameterBuffer, providerParameterBuffer);
                 
         providerParameterBuffer.flip();
         FixedFormatData providerParameterData = FixedFormatData.of(providerParameterBuffer, CHARSET);
@@ -72,7 +72,7 @@ class FixedFormatMappingTest {
         ByteBuffer consumerResultBuffer = ByteBuffer.allocate(codec.determineMaxSizeOf(ConsumerResult.class));
         
         providerResultBuffer.flip();
-        providerToConsumerScript.mapType(2, providerResultBuffer, consumerResultBuffer);
+        providerToConsumerScript.mapResultFor("testOperation", providerResultBuffer, consumerResultBuffer);
         
         consumerResultBuffer.flip();
         FixedFormatData consumerResultData = FixedFormatData.of(consumerResultBuffer, CHARSET);

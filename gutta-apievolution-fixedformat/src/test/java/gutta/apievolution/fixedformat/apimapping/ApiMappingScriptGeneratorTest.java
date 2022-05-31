@@ -152,6 +152,20 @@ class ApiMappingScriptGeneratorTest {
     }
     
     /**
+     * Test case: Mapping of an operation with a unique result type (i.e., non-polymorphic result and no exceptions).
+     */
+    @Test
+    void operationMappingWithUniqueResultType() {
+    	String providerApi = "api test { record A {} operation testOperation (A) : A }";
+    	String consumerApi = "api test { record A {} operation testOperation (A) : A }";
+    	
+    	ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
+    	
+    	String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript);
+    	System.out.println(actualScript);
+    }
+    
+    /**
      * Test case: Script generation fails for an unbounded string field.
      */
     @Test

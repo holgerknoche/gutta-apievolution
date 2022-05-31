@@ -1,25 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-import gutta.apievolution.core.apimodel.AtomicType;
-import gutta.apievolution.core.apimodel.BoundedListType;
-import gutta.apievolution.core.apimodel.BoundedStringType;
-import gutta.apievolution.core.apimodel.EnumMember;
-import gutta.apievolution.core.apimodel.EnumType;
-import gutta.apievolution.core.apimodel.Field;
-import gutta.apievolution.core.apimodel.NumericType;
-import gutta.apievolution.core.apimodel.RecordType;
-import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.TypeVisitor;
-import gutta.apievolution.core.apimodel.UnboundedStringType;
-import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +12,25 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.BoundedListType;
+import gutta.apievolution.core.apimodel.BoundedStringType;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.NumericType;
+import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
 
 /**
  * This class provides operations to generate an API mapping script from a definition resolution.
@@ -67,12 +67,13 @@ public class ApiMappingScriptGenerator {
                     new ProviderToConsumerMappingInfoProvider(consumerTypeInfo, providerTypeInfo, resolution);
         }        
 
-        TypeEntryCreator typeEntryCreator = new TypeEntryCreator(mappingInfoProvider);
-        List<TypeEntry> typeEntries = typeEntryCreator.createTypeEntries();
+        EntryCreator entryCreator = new EntryCreator(mappingInfoProvider);
+        List<TypeEntry> typeEntries = entryCreator.createTypeEntries();        
+        List<OperationEntry> operationEntries = entryCreator.createOperationEntries();
         
-        return new ApiMappingScript(typeEntries);
+        return new ApiMappingScript(typeEntries, operationEntries);
     }    
-
+            
     private abstract static class MappingInfoProvider {
         
         final Map<Type, TypeInfo<?>> consumerTypeInfo;
@@ -88,7 +89,9 @@ public class ApiMappingScriptGenerator {
             this.resolution = resolution;
         }
         
-        abstract Stream<Type> getTargetTypes();
+        abstract Collection<Type> getTargetTypes();
+        
+        abstract Collection<? extends Operation<?, ?, ?>> getTargetOperations();
         
         abstract <T extends Type> T toSourceType(Type targetType);
         
@@ -110,8 +113,13 @@ public class ApiMappingScriptGenerator {
         }
         
         @Override
-        Stream<Type> getTargetTypes() {
+        Collection<Type> getTargetTypes() {
             return this.resolution.providerTypes();
+        }
+        
+        @Override
+        Collection<? extends Operation<?, ?, ?>> getTargetOperations() {
+            return this.resolution.providerOperations();
         }
         
         @Override
@@ -152,8 +160,13 @@ public class ApiMappingScriptGenerator {
         }
         
         @Override
-        Stream<Type> getTargetTypes() {
+        Collection<Type> getTargetTypes() {
             return this.resolution.consumerTypes();
+        }
+        
+        @Override
+        Collection<? extends Operation<?, ?, ?>> getTargetOperations() {
+            return this.resolution.consumerOperations();
         }
         
         @Override
@@ -186,27 +199,22 @@ public class ApiMappingScriptGenerator {
         
     }
     
-    private static class TypeEntryCreator implements TypeVisitor<TypeEntry> {
+    private static class EntryCreator implements TypeVisitor<TypeEntry> {
         
         private final MappingInfoProvider mappingInfoProvider;
         
-        private Map<Type, Integer> typeToEntryIndex;
+        private final Map<Type, Integer> typeToEntryIndex;
         
-        private MappingOperationCreator operationCreator;
+        private final MappingOperationCreator operationCreator;
                 
-        public TypeEntryCreator(MappingInfoProvider mappingInfoProvider) {
+        public EntryCreator(MappingInfoProvider mappingInfoProvider) {
             this.mappingInfoProvider = mappingInfoProvider;
+            this.typeToEntryIndex = createTypeToEntryIndex(mappingInfoProvider);
+            this.operationCreator = new MappingOperationCreator(this.mappingInfoProvider, this.typeToEntryIndex);
         }
         
-        public List<TypeEntry> createTypeEntries() {
-            // Filter out all user-defined types. Javac seems to have problems figuring out the correct types,
-            // so we do not use the purely stream-based approach here
-            List<UserDefinedType<?>> udts = new ArrayList<>();
-            this.mappingInfoProvider.getTargetTypes().forEach(type -> {
-                if (type instanceof UserDefinedType) {
-                    udts.add((UserDefinedType<?>) type);
-                }
-            });       
+        private static Map<Type, Integer> createTypeToEntryIndex(MappingInfoProvider mappingInfoProvider) {
+            List<UserDefinedType<?>> udts = getTargetUDTs(mappingInfoProvider);
                         
             // Sort entries by type id and create type-to-entry map
             Collections.sort(udts, (udt1, udt2) -> Integer.compare(udt1.getTypeId(), udt2.getTypeId()));
@@ -218,21 +226,74 @@ public class ApiMappingScriptGenerator {
                 entryIndex++;
             }
             
-            this.typeToEntryIndex = typeToEntryIndex;
-            this.operationCreator = new MappingOperationCreator(this.mappingInfoProvider, typeToEntryIndex);
+            return typeToEntryIndex;
+        }
+        
+        private static List<UserDefinedType<?>> getTargetUDTs(MappingInfoProvider mappingInfoProvider) {
+            // Filter out all user-defined types. Javac seems to have problems figuring out the correct types,
+            // so we do not use the purely stream-based approach here
+            List<UserDefinedType<?>> udts = new ArrayList<>();
+            mappingInfoProvider.getTargetTypes().forEach(type -> {
+                if (type instanceof UserDefinedType) {
+                    udts.add((UserDefinedType<?>) type);
+                }
+            });
             
-            List<TypeEntry> typeEntries = udts.stream()
+            return udts;
+        }
+        
+        public List<TypeEntry> createTypeEntries() {
+            List<TypeEntry> typeEntries = getTargetUDTs(this.mappingInfoProvider).stream()
                     .map(this::createTypeEntryFor)
                     .collect(Collectors.toList());
             
-            this.typeToEntryIndex = null;
-            this.operationCreator = null;
+            Collections.sort(typeEntries, (entry1, entry2) -> Integer.compare(entry1.getEntryIndex(), entry2.getEntryIndex()));
             
             return typeEntries;
         }               
 
         private TypeEntry createTypeEntryFor(UserDefinedType<?> type) {
             return type.accept(this);
+        }
+        
+        public List<OperationEntry> createOperationEntries() {
+            int entryIndex = 0;
+            
+            Collection<? extends Operation<?,?,?>> operations = mappingInfoProvider.getTargetOperations();
+            List<OperationEntry> entries = new ArrayList<>(operations.size());
+            
+            for (Operation<?, ?, ?> operation : operations) {
+                OperationEntry operationEntry = this.createOperationEntry(entryIndex, operation, mappingInfoProvider);
+                entries.add(operationEntry);
+                
+                entryIndex++;
+            }
+            
+            return entries;
+        }
+        
+        @SuppressWarnings("unchecked")
+        private OperationEntry createOperationEntry(int entryIndex, Operation<?, ?, ?> targetOperation, MappingInfoProvider mappingInfoProvider) {
+            // Result: (Possibly polymorphic) mapping of anonymous union of (all) result types and all exceptions
+            Set<RecordType<?, ?, ?>> possibleResultTypes = new HashSet<>();
+            possibleResultTypes.addAll(targetOperation.getReturnType().collectAllSubtypes(RecordType::isConcrete));
+            
+            for (RecordType<?, ?, ?> exceptionType : targetOperation.getThrownExceptions()) {
+                possibleResultTypes.addAll(exceptionType.collectAllSubtypes(RecordType::isConcrete));
+            }
+            
+            ApiMappingOperation resultMappingOperation = this.createMappingOperation(possibleResultTypes);
+            
+            // Parameter: (Possibly polymorphic) mapping of all parameter types
+            Set<RecordType<?, ?, ?>> possibleParameterTypes = (Set<RecordType<?, ?, ?>>) targetOperation.getParameterType().collectAllSubtypes(RecordType::isConcrete);                
+            
+            ApiMappingOperation parameterMappingOperation = this.createMappingOperation(possibleParameterTypes);
+            
+            return new OperationEntry(entryIndex, targetOperation.getPublicName(), parameterMappingOperation, resultMappingOperation);
+        }
+        
+        private ApiMappingOperation createMappingOperation(Set<RecordType<?, ?, ?>> possibleTypes) {
+            return this.operationCreator.createRecordMappingOperation(possibleTypes);
         }
         
         @Override
@@ -375,62 +436,46 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleRecordType(RecordType<?, ?, ?> recordType) {
-            if (recordType.hasSubTypes()) {
-                return this.handlePolymorphicRecordType(recordType);
+            return this.createRecordMappingOperation(this.collectAllConcreteSubtypes(recordType));
+        }
+        
+        private ApiMappingOperation createRecordMappingOperation(Set<RecordType<?, ?, ?>> types) {
+            if (types.isEmpty()) {
+                throw new IllegalArgumentException("The type set must not be empty.");
+            }
+            
+            if (types.size() == 1) {
+                // Only one possible type => non-polymorphic mapping operation
+                RecordType<?, ?, ?> recordType = types.iterator().next();
+                int entryIndex = this.typeToEntryIndex.get(recordType);
+                return new RecordMappingOperation(entryIndex);
             } else {
-                return this.handleNonPolymorphicRecordType(recordType);
+                // More than one possible type => polymorphic mapping operation
+                Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(types.size());
+                for (RecordType<?, ?, ?> targetType : types) {
+                    RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
+                    
+                    int sourceTypeId = sourceType.getTypeId();
+                    int targetTypeId = targetType.getTypeId();                
+                    int entryIndex = this.typeToEntryIndex.get(targetType);
+                    
+                    PolymorphicRecordMapping recordMapping = 
+                            new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
+                    idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
+                }
+                
+                return new PolymorphicRecordMappingOperation(idToRecordMapping);
             }
         }
-        
-        private ApiMappingOperation handleNonPolymorphicRecordType(RecordType<?, ?, ?> recordType) {
-            int entryIndex = this.typeToEntryIndex.get(recordType);
-            return new RecordMappingOperation(entryIndex);
-        }
-        
-        private ApiMappingOperation handlePolymorphicRecordType(RecordType<?, ?, ?> recordType) {
-            Set<RecordType<?, ?, ?>> allConcreteSubtypes = this.collectAllConcreteSubtypes(recordType);
-            
-            // Collect the necessary data for polymorhic mapping            
-            Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(allConcreteSubtypes.size());
-            for (RecordType<?, ?, ?> targetType : allConcreteSubtypes) {
-                RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
-                
-                int sourceTypeId = sourceType.getTypeId();
-                int targetTypeId = targetType.getTypeId();                
-                int entryIndex = this.typeToEntryIndex.get(targetType);
-                
-                PolymorphicRecordMapping recordMapping = 
-                        new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
-                idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
-            }
-            
-            return new PolymorphicRecordMappingOperation(idToRecordMapping);
-        }
-        
+                        
+        @SuppressWarnings("unchecked")
         private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType) {
-            return this.collectAllConcreteSubtypes(recordType, new HashSet<>());
+            return (Set<RecordType<?, ?, ?>>) recordType.collectAllSubtypes(RecordType::isConcrete);
         }
-        
-        private Set<RecordType<?, ?, ?>> collectAllConcreteSubtypes(RecordType<?, ?, ?> recordType, 
-                Set<RecordType<?, ?, ?>> knownTypes) {
-            if (knownTypes.contains(recordType)) {
-                return knownTypes;
-            }
-             
-            if (!recordType.isAbstract()) {
-                knownTypes.add(recordType);
-            }
-            
-            for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
-                this.collectAllConcreteSubtypes(subType, knownTypes);
-            }
-            
-            return knownTypes;
-        }
-        
+                
     }
     
-    private Map<Type, TypeInfo<?>> createTypeInfos(Stream<Type> types) {
+    private Map<Type, TypeInfo<?>> createTypeInfos(Collection<Type> types) {
         Map<Type, TypeInfo<?>> typeInfos = new HashMap<>();        
         TypeInfoCreator infoCreator = new TypeInfoCreator(typeInfos);
                 

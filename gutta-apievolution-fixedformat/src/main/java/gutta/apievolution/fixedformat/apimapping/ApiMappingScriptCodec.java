@@ -93,7 +93,8 @@ public class ApiMappingScriptCodec {
             typeEntries.add(typeEntry);
         }
        
-        return new ApiMappingScript(typeEntries);
+        // TODO
+        return new ApiMappingScript(typeEntries, null);
     }
     
     private TypeEntry readTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {

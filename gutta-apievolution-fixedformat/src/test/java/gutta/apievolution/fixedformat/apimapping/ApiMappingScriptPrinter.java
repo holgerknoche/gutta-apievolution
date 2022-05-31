@@ -14,9 +14,23 @@ public class ApiMappingScriptPrinter {
         TypeEntryPrinter typeEntryPrinter = new TypeEntryPrinter(scriptBuilder);
         for (TypeEntry typeEntry : script) {
             typeEntry.accept(typeEntryPrinter);
-        }        
+        }
+        
+        for (OperationEntry operationEntry : script.getOperationEntries()) {
+            this.printOperationEntry(operationEntry, scriptBuilder);
+        }
         
         return scriptBuilder.toString();
+    }
+    
+    private void printOperationEntry(OperationEntry entry, StringBuilder builder) {
+        builder.append("operation ");
+        builder.append(entry.getName());
+        builder.append(" param: ");
+        builder.append(entry.getParameterMappingOperation());
+        builder.append(" result: ");
+        builder.append(entry.getResultMappingOperation());
+        builder.append("\n");        
     }
     
     private static class TypeEntryPrinter implements TypeEntryVisitor<Void> {
