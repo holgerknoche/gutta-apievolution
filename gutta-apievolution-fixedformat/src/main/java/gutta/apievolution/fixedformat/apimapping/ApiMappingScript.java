@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 /**
  * This class represents an API mapping script for converting a fixed-format representation of an API into another.
  */
-public class ApiMappingScript implements Iterable<TypeEntry> {	
-	
+public class ApiMappingScript implements Iterable<TypeEntry> {    
+    
     private final List<TypeEntry> typeEntries;
     
     private final List<OperationEntry> operationEntries;    
@@ -25,7 +25,7 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         
         // Populate lookup
         this.nameToOperation = operationEntries.stream().collect(Collectors.toMap(operation -> operation.getName(),
-        		Function.identity()));
+                Function.identity()));
     }
 
     /**
@@ -48,8 +48,8 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         this.mapDataForOperation(operationName, OperationEntry::getResultMappingOperation, source, target);
     }
     
-    private void mapDataForOperation(String operationName, Function<OperationEntry, ApiMappingOperation> operationProvider,
-            ByteBuffer source, ByteBuffer target) {        
+    private void mapDataForOperation(String operationName, Function<OperationEntry, 
+            ApiMappingOperation> operationProvider, ByteBuffer source, ByteBuffer target) {        
         OperationEntry operationEntry = this.nameToOperation.get(operationName);
         if (operationEntry == null) {
             throw new IllegalArgumentException("No entry for operation '" + operationName + "'.");
@@ -73,6 +73,11 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         return this.typeEntries.size();
     }
     
+    /**
+     * Returns the operation entries of this mapping script.
+     * 
+     * @return see above
+     */
     public List<OperationEntry> getOperationEntries() {
         return Collections.unmodifiableList(this.operationEntries);
     }

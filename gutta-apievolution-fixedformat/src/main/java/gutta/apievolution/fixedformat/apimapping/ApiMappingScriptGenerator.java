@@ -1,18 +1,5 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -31,6 +18,19 @@ import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This class provides operations to generate an API mapping script from a definition resolution.
@@ -247,7 +247,8 @@ public class ApiMappingScriptGenerator {
                     .map(this::createTypeEntryFor)
                     .collect(Collectors.toList());
             
-            Collections.sort(typeEntries, (entry1, entry2) -> Integer.compare(entry1.getEntryIndex(), entry2.getEntryIndex()));
+            Collections.sort(typeEntries, (entry1, entry2) -> Integer.compare(entry1.getEntryIndex(), 
+                    entry2.getEntryIndex()));
             
             return typeEntries;
         }               
@@ -259,7 +260,7 @@ public class ApiMappingScriptGenerator {
         public List<OperationEntry> createOperationEntries() {
             int entryIndex = 0;
             
-            Collection<? extends Operation<?,?,?>> operations = mappingInfoProvider.getTargetOperations();
+            Collection<? extends Operation<?, ?, ?>> operations = mappingInfoProvider.getTargetOperations();
             List<OperationEntry> entries = new ArrayList<>(operations.size());
             
             for (Operation<?, ?, ?> operation : operations) {
@@ -273,7 +274,8 @@ public class ApiMappingScriptGenerator {
         }
         
         @SuppressWarnings("unchecked")
-        private OperationEntry createOperationEntry(int entryIndex, Operation<?, ?, ?> targetOperation, MappingInfoProvider mappingInfoProvider) {
+        private OperationEntry createOperationEntry(int entryIndex, Operation<?, ?, ?> targetOperation,
+                MappingInfoProvider mappingInfoProvider) {
             // Result: (Possibly polymorphic) mapping of anonymous union of (all) result types and all exceptions
             Set<RecordType<?, ?, ?>> possibleResultTypes = new HashSet<>();
             possibleResultTypes.addAll(targetOperation.getReturnType().collectAllSubtypes(RecordType::isConcrete));
@@ -285,11 +287,13 @@ public class ApiMappingScriptGenerator {
             ApiMappingOperation resultMappingOperation = this.createMappingOperation(possibleResultTypes);
             
             // Parameter: (Possibly polymorphic) mapping of all parameter types
-            Set<RecordType<?, ?, ?>> possibleParameterTypes = (Set<RecordType<?, ?, ?>>) targetOperation.getParameterType().collectAllSubtypes(RecordType::isConcrete);                
+            Set<RecordType<?, ?, ?>> possibleParameterTypes = (Set<RecordType<?, ?, ?>>) 
+                    targetOperation.getParameterType().collectAllSubtypes(RecordType::isConcrete);                
             
             ApiMappingOperation parameterMappingOperation = this.createMappingOperation(possibleParameterTypes);
             
-            return new OperationEntry(entryIndex, targetOperation.getPublicName(), parameterMappingOperation, resultMappingOperation);
+            return new OperationEntry(entryIndex, targetOperation.getPublicName(), parameterMappingOperation,
+                    resultMappingOperation);
         }
         
         private ApiMappingOperation createMappingOperation(Set<RecordType<?, ?, ?>> possibleTypes) {
