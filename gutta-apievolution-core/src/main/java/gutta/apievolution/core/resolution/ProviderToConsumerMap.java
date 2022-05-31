@@ -4,8 +4,7 @@ import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * This class represents a map from a provider's internal representation to a
@@ -31,12 +30,12 @@ class ProviderToConsumerMap {
         this.providerToConsumerOperation = providerToConsumerOperation;
     }
 
-    Stream<Type> providerTypes() {
-        return this.providerToConsumerType.keySet().stream();
+    Collection<Type> providerTypes() {
+        return Collections.unmodifiableSet(this.providerToConsumerType.keySet());
     }
 
-    Stream<ProviderOperation> providerOperations() {
-        return this.providerToConsumerOperation.keySet().stream();
+    Collection<ProviderOperation> providerOperations() {
+        return Collections.unmodifiableSet(this.providerToConsumerOperation.keySet());
     }
     
     Type mapProviderType(Type providerType) {

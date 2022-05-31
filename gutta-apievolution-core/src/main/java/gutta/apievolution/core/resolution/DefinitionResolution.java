@@ -1,18 +1,12 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.consumer.*;
+import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 /**
  * A definition resolution represents the result of the resolution of a client
@@ -37,26 +31,26 @@ public class DefinitionResolution {
         this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
     }
 
-    private static Map<String, Type> createTypeMap(Stream<Type> types) {
-        return types.filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
+    private static Map<String, Type> createTypeMap(Collection<Type> types) {
+        return types.stream().filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
                 .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));
     }
 
     /**
-     * Returns a stream of all mapped consumer types.
+     * Returns a collection of all mapped consumer types.
      *
      * @return see above
      */
-    public Stream<Type> consumerTypes() {
+    public Collection<Type> consumerTypes() {
         return this.consumerToProviderMap.consumerTypes();
     }
 
     /**
-     * Returns a stream of all mapped consumer operations.
+     * Returns a collection of all mapped consumer operations.
      *
      * @return see above
      */
-    public Stream<ConsumerOperation> consumerOperations() {
+    public Collection<ConsumerOperation> consumerOperations() {
         return this.consumerToProviderMap.consumerOperations();
     }
 
@@ -71,20 +65,20 @@ public class DefinitionResolution {
     }
 
     /**
-     * Returns a stream of all mapped provider types.
+     * Returns a collection of all mapped provider types.
      *
      * @return see above
      */
-    public Stream<Type> providerTypes() {
+    public Collection<Type> providerTypes() {
         return this.providerToConsumerMap.providerTypes();
     }
     
     /**
-     * Returns a stream of all mapped provider operations.
+     * Returns a collection of all mapped provider operations.
      *
      * @return see above
      */
-    public Stream<ProviderOperation> providerOperations() {
+    public Collection<ProviderOperation> providerOperations() {
         return this.providerToConsumerMap.providerOperations();
     }
 

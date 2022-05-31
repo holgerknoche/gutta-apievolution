@@ -1,19 +1,11 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
-import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
-import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
+import gutta.apievolution.core.apimodel.consumer.*;
+import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 /**
@@ -136,12 +128,12 @@ class ConsumerToProviderMap {
         return invertedMap;
     }
 
-    Stream<Type> consumerTypes() {
-        return this.consumerToProviderType.keySet().stream();
+    Collection<Type> consumerTypes() {
+        return Collections.unmodifiableSet(this.consumerToProviderType.keySet());
     }
 
-    Stream<ConsumerOperation> consumerOperations() {
-        return this.consumerToProviderOperation.keySet().stream();
+    Collection<ConsumerOperation> consumerOperations() {
+        return Collections.unmodifiableSet(this.consumerToProviderOperation.keySet());
     }
 
     Type mapConsumerType(Type consumerType) {

@@ -3,6 +3,7 @@ package gutta.apievolution.core.apimodel;
 import gutta.apievolution.core.util.ConcatenatedIterator;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.*;
 
 /**
@@ -152,6 +153,15 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     }
 
     /**
+     * Returns whether this record type is concrete.
+     * 
+     * @return see above
+     */
+    public boolean isConcrete() {
+        return !(this.isAbstract());
+    }
+    
+    /**
      * Returns whether this record type is an exception.
      *
      * @return see above
@@ -228,6 +238,33 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     @Override
     public Iterator<F> iterator() {
         return new ConcatenatedIterator<>(this.inheritedFields, this.declaredFields);
+    }
+    
+    /**
+     * Returns the set of all subtypes of this record type, including the type itself, that match the given predicate.
+     * @param selectionPredicate A predicate determining the types to be included in the set 
+     * @return see above
+     */
+    public Set<R> collectAllSubtypes(Predicate<R> selectionPredicate) {
+        Set<R> subTypes = new HashSet<>();        
+        
+        this.collectAllSubtypesInternal(subTypes, selectionPredicate);
+        
+        return subTypes;
+    }
+    
+    @SuppressWarnings("unchecked")
+    void collectAllSubtypesInternal(Set<R> knownSubtypes, Predicate<R> selectionPredicate) {
+        if (knownSubtypes.contains(this)) {
+            return;
+        }
+        
+        R currentType = (R) this;
+        if (selectionPredicate.test(currentType)) {
+            knownSubtypes.add(currentType);
+        }
+        
+        this.subTypes.forEach(type -> type.collectAllSubtypesInternal(knownSubtypes, selectionPredicate));
     }
 
     @Override
