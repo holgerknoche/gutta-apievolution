@@ -17,7 +17,8 @@ import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.io.IOException;
-import java.util.stream.Stream;
+import java.util.Collection;
+
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -29,7 +30,8 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private byte[] createPublicToInternalMapping(Stream<Type> types, Stream<? extends Operation<?, ?, ?>> operations) {
+    private byte[] createPublicToInternalMapping(Collection<Type> types, 
+            Collection<? extends Operation<?, ?, ?>> operations) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         ArrayNode rootNode = objectMapper.createArrayNode();
