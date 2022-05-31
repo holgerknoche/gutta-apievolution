@@ -18,7 +18,6 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.io.IOException;
 import java.util.Collection;
-
 import javax.ws.rs.core.MediaType;
 
 /**
