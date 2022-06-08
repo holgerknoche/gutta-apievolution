@@ -5,6 +5,8 @@ package gutta.apievolution.core.apimodel.provider;
  */
 public class ModelMergeException extends RuntimeException {
 
+    private static final long serialVersionUID = -1033593977705417711L;
+
     ModelMergeException(String message) {
         super(message);
     }

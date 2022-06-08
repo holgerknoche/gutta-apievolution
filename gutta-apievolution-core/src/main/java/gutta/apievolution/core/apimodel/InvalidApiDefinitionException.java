@@ -6,6 +6,8 @@ package gutta.apievolution.core.apimodel;
  */
 public class InvalidApiDefinitionException extends RuntimeException {
 
+    private static final long serialVersionUID = 3948698901439917077L;
+
     InvalidApiDefinitionException(String message) {
         super(message);
     }

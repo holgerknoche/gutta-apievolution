@@ -6,7 +6,6 @@ import gutta.apievolution.core.apimodel.provider.*;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Stream;
 
 /**
  * This class represents a map from a consumer revision to a specific provider
