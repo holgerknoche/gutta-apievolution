@@ -21,7 +21,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
     private final Optional<ProviderApiDefinition> predecessor;
 
     private Optional<ProviderApiDefinition> successor = Optional.empty();
-
+    
     /**
      * Creates a new provider API definition from the given data.
      *
@@ -40,6 +40,19 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
         predecessor.ifPresent(definition -> definition.setSuccessor(this));
     }
 
+    /**
+     * Creates a new provider API definition from the given data.
+     * 
+     * @param name The name of the API definition
+     * @param annotations The annotations of this API definition
+     * @param revision The revision number of this API definition
+     * @param predecessor The predecessor of this API definition
+     */
+    public ProviderApiDefinition(String name, Set<Annotation> annotations, int revision, 
+            Optional<ProviderApiDefinition> predecessor) {
+        this(QualifiedName.of(name), annotations, revision, predecessor);
+    }
+    
     /**
      * Returns the revision number of this API definition.
      *

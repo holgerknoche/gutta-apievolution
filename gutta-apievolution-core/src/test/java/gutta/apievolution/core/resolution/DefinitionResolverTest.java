@@ -153,8 +153,11 @@ class DefinitionResolverTest {
         assertTrue(exception.getMessage().contains("is not mapped"));
     }
 
+    /**
+     * Test case: A mapping of types with incompatible (base) types is detected.
+     */
     @Test
-    void testIncompatibleTypesInMapping() {
+    void testIncompatibleBaseTypesInMapping() {
         // Provider revision
         ProviderApiDefinition providerApi = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(),
                 0, Optional.empty());
@@ -305,6 +308,44 @@ class DefinitionResolverTest {
                 " unboundedListField -> unboundedListField@B@revision 0\n";
 
         assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
+    }
+ 
+    /**
+     * Test case: A mapping of fields with incompatible record types is detected.
+     */
+    @Test
+    void mapIncompatibleRecordTypes() {
+        // Construct a provider API with a field of type "C".
+        ProviderApiDefinition providerDefinition = new ProviderApiDefinition("test", Collections.emptySet(), 0, Optional.empty());
+        
+        ProviderRecordType providerTypeA = new ProviderRecordType("A", Optional.empty(), 0, providerDefinition, false, Optional.empty());
+        ProviderRecordType providerTypeB = new ProviderRecordType("B", Optional.empty(), 1, providerDefinition, false, Optional.empty());
+        new ProviderRecordType("C", Optional.empty(), 2, providerDefinition, false, Optional.empty());
+        
+        new ProviderField("field", Optional.empty(), providerTypeA, providerTypeB, Optionality.MANDATORY);
+        
+        providerDefinition.finalizeDefinition();
+        
+        // Construct a consumer API with a field of type "B".
+        ConsumerApiDefinition consumerDefinition = new ConsumerApiDefinition("test", Collections.emptySet(), 0);
+        
+        ConsumerRecordType consumerTypeA = new ConsumerRecordType("A", Optional.empty(), 0, consumerDefinition, false);
+        new ConsumerRecordType("B", Optional.empty(), 1, consumerDefinition, false);
+        ConsumerRecordType consumerTypeC = new ConsumerRecordType("C", Optional.empty(), 2, consumerDefinition, false);
+        
+        new ConsumerField("field", Optional.empty(), consumerTypeA, consumerTypeC, Optionality.MANDATORY);
+        
+        consumerDefinition.finalizeDefinition();
+        
+        // Try to resolve the revisions against each other
+        RevisionHistory revisionHistory = new RevisionHistory(providerDefinition);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+        
+        DefinitionResolutionException exception = assertThrows(DefinitionResolutionException.class, 
+                () -> new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
+                        consumerDefinition));
+        
+        assertTrue(exception.getMessage().contains("do not match"));
     }
     
 }
