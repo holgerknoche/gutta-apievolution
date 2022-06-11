@@ -123,12 +123,6 @@ class ProviderToConsumerMap {
                     return;
                 }
             }
-
-            Optionality foreignOptionality = foreignField.getOptionality();
-            if (ownOptionality.isMorePermissiveThan(foreignOptionality)) {
-                throw new DefinitionResolutionException(
-                        "Consumer optionality on field " + foreignField + " is too restrictive.");
-            }
         }
 
     }

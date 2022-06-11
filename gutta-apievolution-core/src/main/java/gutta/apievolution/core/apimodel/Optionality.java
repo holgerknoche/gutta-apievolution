@@ -25,14 +25,14 @@ public enum Optionality {
     }
 
     /**
-     * Returns whether one of two optionality values is stricter than the other.
+     * Returns whether one of two optionality values is more restrictive than the other.
      *
      * @param o1 The first value to compare
      * @param o2 The second ("other") value to compare
      * @return a {@link Comparable}-like comparison value
      */
-    public static int moreStrict(Optionality o1, Optionality o2) {
-        return Integer.compare(o2.ordinal(), o1.ordinal());
+    public static int moreRestrictive(Optionality o1, Optionality o2) {
+        return Integer.compare(o1.ordinal(), o2.ordinal());
     }
 
     /**
@@ -44,7 +44,7 @@ public enum Optionality {
      * @return a {@link Comparable}-like comparison value
      */
     public static int morePermissive(Optionality o1, Optionality o2) {
-        return Integer.compare(o1.ordinal(), o2.ordinal());
+        return Integer.compare(o2.ordinal(), o1.ordinal());
     }
 
     /**
@@ -66,7 +66,7 @@ public enum Optionality {
      * @return {@code True}, iff this value is more permissive than the given one
      */
     public boolean isMorePermissiveThan(Optionality that) {
-        return (morePermissive(this, that) < 0);
+        return (morePermissive(this, that) > 0);
     }
 
     @Override

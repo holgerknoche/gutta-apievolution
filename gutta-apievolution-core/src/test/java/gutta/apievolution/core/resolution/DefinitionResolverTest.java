@@ -1,6 +1,7 @@
 package gutta.apievolution.core.resolution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -346,6 +347,95 @@ class DefinitionResolverTest {
                         consumerDefinition));
         
         assertTrue(exception.getMessage().contains("do not match"));
+    }
+        
+    private DefinitionResolution runOptionalityTestForInputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
+        // Create a provider API definition with a type that is only used as input
+        ProviderApiDefinition providerDefinition = new ProviderApiDefinition("test", Collections.emptySet(), 0, Optional.empty());
+        
+        ProviderRecordType providerInputType = new ProviderRecordType("A", Optional.empty(), 0, providerDefinition, false, Optional.empty());
+        new ProviderField("field", Optional.empty(), providerInputType, AtomicType.INT_32, providerOptionality);
+        
+        ProviderRecordType providerOutputType = new ProviderRecordType("B", Optional.empty(), 1, providerDefinition, false, Optional.empty());
+        
+        new ProviderOperation("op", Optional.empty(), providerDefinition, providerOutputType, providerInputType, Optional.empty());
+        
+        providerDefinition.finalizeDefinition();
+        
+        // Create a consumer API with a matching type
+        ConsumerApiDefinition consumerDefinition = new ConsumerApiDefinition("test", Collections.emptySet(), 0);
+        
+        ConsumerRecordType consumerInputType = new ConsumerRecordType("A", Optional.empty(), 0, consumerDefinition, false, Optional.empty());
+        
+        if (consumerOptionality != null) {
+            // Do not create a field if no consumer optionality is given
+            new ConsumerField("field", Optional.empty(), consumerInputType, AtomicType.INT_32, consumerOptionality);
+        }
+        
+        ConsumerRecordType consumerOutputType = new ConsumerRecordType("B", Optional.empty(), 1, consumerDefinition, false, Optional.empty());
+        
+        new ConsumerOperation("op", Optional.empty(), consumerDefinition, consumerOutputType, consumerInputType);
+        
+        consumerDefinition.finalizeDefinition();
+        
+        // Try to resolve the consumer definition against the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(providerDefinition);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+        
+        return new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerDefinition);
+    }
+    
+    /**
+     * Test case: Map a mandatory field that is used for input only in different consumer constructs.
+     */
+    @Test
+    void mapMandatoryInputField() {
+        DefinitionResolutionException exception;
+        
+        // The field must be mapped, so not mapping it must fail
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
+        assertTrue(exception.getMessage().contains("Non-optional field") && exception.getMessage().contains("is not mapped"));
+        
+        // Mapping mandatory to mandatory must work
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.MANDATORY));
+        // The field cannot be considered optional-for-input
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+        // Same for fully optional
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+    }
+    
+    /**
+     * Test case: Map an opt-in field that is used for input only in different consumer constructs.
+     */
+    @Test
+    void mapOptInInputField() {
+        // The field is opt-in, so it does not have to be mapped
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPT_IN, null));
+        
+        // The field may be considered mandatory by the consumer
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPT_IN, Optionality.MANDATORY));
+        // The field can be considered optional-for-input
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPT_IN, Optionality.OPT_IN));
+        // Same for fully optional
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPT_IN, Optionality.OPTIONAL));
+    }
+    
+    /**
+     * Test case: Map an opt-in field that is used for input only in different consumer constructs.
+     */
+    @Test
+    void mapOptionalInputField() {
+        // The field is optional, so it does not have to be mapped
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, null));
+        
+        // The field may be considered mandatory by the consumer
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
+        // The field can be considered optional-for-input
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
+        // Same for fully optional
+        assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, Optionality.OPTIONAL));
     }
     
 }

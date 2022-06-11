@@ -374,10 +374,8 @@ public class ModelMerger {
 
         private Optionality determineOptionalityForField(ProviderField field) {
             // First, determine the minimal specified optionality. Note that the field is
-            // always from the latest
-            // revision in which it exists, as we iterate backwards through the revision
-            // history. Therefore, we
-            // only have to take predecessors into account
+            // always from the latest revision in which it exists, as we iterate backwards through the revision
+            // history. Therefore, we only have to take predecessors into account
             MaxOptionalityCollector maxOptionalityCollector = new MaxOptionalityCollector();
             field.predecessorStream(true).forEach(maxOptionalityCollector);
             Optionality specifiedOptionality = maxOptionalityCollector.getMaxOptionality();
@@ -393,8 +391,7 @@ public class ModelMerger {
                 minimalOptionality = Optionality.MANDATORY;
             } else {
                 // If the field does not exist in all revisions, it must be optional in some
-                // way. If it is used as
-                // output, it must be fully optional, otherwise, it may be opt-in.
+                // way. If it is used as output, it must be fully optional, otherwise, it may be opt-in.
                 Usage fieldUsage = field.getOwner().getUsage();
                 minimalOptionality = (fieldUsage.includes(Usage.OUTPUT)) ? Optionality.OPTIONAL : Optionality.OPT_IN;
             }

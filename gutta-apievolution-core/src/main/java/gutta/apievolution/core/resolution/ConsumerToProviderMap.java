@@ -195,16 +195,47 @@ class ConsumerToProviderMap {
             return null;
         }
 
-        private void checkField(ConsumerField ownField, ProviderField foreignField) {
-            // Make sure that the optionalities match
+        private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
             Optionality consumerOptionality = ownField.getOptionality();
             Optionality providerOptionality = foreignField.getOptionality();
 
-            if (consumerOptionality != providerOptionality) {
+            // The consumer usage is the one that counts
+            Usage usage = ownField.getOwner().getUsage();
+            
+            switch (usage) {
+            case INPUT:
+                // For types only used as input, the consumer can be more strict than the
+                // provider. Furthermore, opt-in and optional are equivalent.
+                if (providerOptionality == Optionality.MANDATORY) {
+                    return (consumerOptionality == Optionality.MANDATORY);
+                } else {
+                    return true;
+                }
+                
+            case OUTPUT:
+                // For types only used as output, the consumer can be more permissive than
+                // the provider. Furthermore, opt-in and mandatory are equivalent.
+                if (providerOptionality == Optionality.OPTIONAL) {
+                    return (consumerOptionality == Optionality.OPTIONAL);
+                } else {
+                    return true;
+                }
+                
+            default:
+                // If the type is used for both input and output, the optionalities
+                // must match exactly
+                return (consumerOptionality == providerOptionality);
+            }
+        }
+        
+        private void checkField(ConsumerField ownField, ProviderField foreignField) {
+            // Make sure that the optionalities are compatible
+            boolean optionalityIsCompatible = this.isOptionalityCompatible(ownField, foreignField);
+            if (!optionalityIsCompatible) {
                 throw new DefinitionResolutionException(
                         "Optionalities of " + ownField + " and " + foreignField + " are not compatible.");
             }
-
+            
             // Make sure that the types match
             Type ownType = ownField.getType();
             Type foreignType = foreignField.getType();
