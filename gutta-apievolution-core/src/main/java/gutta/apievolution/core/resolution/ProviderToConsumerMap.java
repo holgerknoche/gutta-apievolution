@@ -106,22 +106,21 @@ class ProviderToConsumerMap {
             for (Field<?, ?> field : recordType.getDeclaredFields()) { // NOSONAR Type is correct
                 ProviderField ownField = (ProviderField) field;
                 ConsumerField foreignField = this.resolveForeignField(ownField);
-                this.checkField(ownField, foreignField);
+                this.checkField(ownField, foreignField, foreignRecordType);
             }
 
             return null;
         }
 
-        private void checkField(ProviderField ownField, ConsumerField foreignField) {
+        private void checkField(ProviderField ownField, ConsumerField foreignField, RecordType<?, ?, ?> foreignType) {
             Optionality ownOptionality = ownField.getOptionality();
 
-            if (foreignField == null) {
-                if (ownOptionality == Optionality.MANDATORY) {
-                    // Report an error if a mandatory field is not mapped
-                    throw new DefinitionResolutionException("Non-optional field " + ownField + " is not mapped.");
-                } else {
-                    return;
-                }
+            // Determine the usage by the consumer, since output-only types do not have to be mapped
+            Usage usage = foreignType.getUsage();
+            
+            if (foreignField == null && ownOptionality == Optionality.MANDATORY && usage != Usage.OUTPUT) {
+                // Report an error if a mandatory field is not mapped and is not used only for output
+                throw new DefinitionResolutionException("Non-optional field " + ownField + " is not mapped.");
             }
         }
 

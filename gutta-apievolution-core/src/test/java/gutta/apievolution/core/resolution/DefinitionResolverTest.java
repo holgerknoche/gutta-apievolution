@@ -11,6 +11,7 @@ import gutta.apievolution.core.apimodel.NumericType;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.StringType;
+import gutta.apievolution.core.apimodel.Usage;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
@@ -349,14 +350,35 @@ class DefinitionResolverTest {
         assertTrue(exception.getMessage().contains("do not match"));
     }
         
-    private DefinitionResolution runOptionalityTestForInputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
+    private DefinitionResolution runOptionalityTest(Optionality providerOptionality, Optionality consumerOptionality, Usage desiredUsage) {
         // Create a provider API definition with a type that is only used as input
         ProviderApiDefinition providerDefinition = new ProviderApiDefinition("test", Collections.emptySet(), 0, Optional.empty());
         
-        ProviderRecordType providerInputType = new ProviderRecordType("A", Optional.empty(), 0, providerDefinition, false, Optional.empty());
-        new ProviderField("field", Optional.empty(), providerInputType, AtomicType.INT_32, providerOptionality);
+        ProviderRecordType providerTypeWithField = new ProviderRecordType("A", Optional.empty(), 0, providerDefinition, false, Optional.empty());
+        new ProviderField("field", Optional.empty(), providerTypeWithField, AtomicType.INT_32, providerOptionality);
         
-        ProviderRecordType providerOutputType = new ProviderRecordType("B", Optional.empty(), 1, providerDefinition, false, Optional.empty());
+        ProviderRecordType providerTypeNoField = new ProviderRecordType("B", Optional.empty(), 1, providerDefinition, false, Optional.empty());
+        
+        ProviderRecordType providerInputType;
+        ProviderRecordType providerOutputType;
+        
+        switch (desiredUsage) {
+        case INPUT:
+            providerInputType = providerTypeWithField;
+            providerOutputType = providerTypeNoField;
+            break;
+            
+        case OUTPUT:
+            providerInputType = providerTypeNoField;
+            providerOutputType = providerTypeWithField;
+            break;
+            
+        default:
+            providerInputType = providerTypeWithField;
+            providerOutputType = providerTypeWithField;
+            break;
+            
+        }
         
         new ProviderOperation("op", Optional.empty(), providerDefinition, providerOutputType, providerInputType, Optional.empty());
         
@@ -365,14 +387,35 @@ class DefinitionResolverTest {
         // Create a consumer API with a matching type
         ConsumerApiDefinition consumerDefinition = new ConsumerApiDefinition("test", Collections.emptySet(), 0);
         
-        ConsumerRecordType consumerInputType = new ConsumerRecordType("A", Optional.empty(), 0, consumerDefinition, false, Optional.empty());
+        ConsumerRecordType consumerTypeWithField = new ConsumerRecordType("A", Optional.empty(), 0, consumerDefinition, false, Optional.empty());
         
         if (consumerOptionality != null) {
             // Do not create a field if no consumer optionality is given
-            new ConsumerField("field", Optional.empty(), consumerInputType, AtomicType.INT_32, consumerOptionality);
+            new ConsumerField("field", Optional.empty(), consumerTypeWithField, AtomicType.INT_32, consumerOptionality);
         }
         
-        ConsumerRecordType consumerOutputType = new ConsumerRecordType("B", Optional.empty(), 1, consumerDefinition, false, Optional.empty());
+        ConsumerRecordType consumerTypeNoField = new ConsumerRecordType("B", Optional.empty(), 1, consumerDefinition, false, Optional.empty());
+        
+        ConsumerRecordType consumerInputType;
+        ConsumerRecordType consumerOutputType;
+        
+        switch (desiredUsage) {
+        case INPUT:
+            consumerInputType = consumerTypeWithField;
+            consumerOutputType = consumerTypeNoField;
+            break;
+            
+        case OUTPUT:
+            consumerInputType = consumerTypeNoField;
+            consumerOutputType = consumerTypeWithField;
+            break;
+            
+        default:
+            consumerInputType = consumerTypeWithField;
+            consumerOutputType = consumerTypeWithField;
+            break;
+            
+        }
         
         new ConsumerOperation("op", Optional.empty(), consumerDefinition, consumerOutputType, consumerInputType);
         
@@ -383,6 +426,10 @@ class DefinitionResolverTest {
         Set<Integer> supportedRevisions = Collections.singleton(0);
         
         return new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerDefinition);
+    }
+    
+    private DefinitionResolution runOptionalityTestForInputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
+        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.INPUT);
     }
     
     /**
@@ -423,7 +470,7 @@ class DefinitionResolverTest {
     }
     
     /**
-     * Test case: Map an opt-in field that is used for input only in different consumer constructs.
+     * Test case: Map an optional field that is used for input only in different consumer constructs.
      */
     @Test
     void mapOptionalInputField() {
@@ -436,6 +483,123 @@ class DefinitionResolverTest {
         assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
         // Same for fully optional
         assertNotNull(this.runOptionalityTestForInputOnly(Optionality.OPTIONAL, Optionality.OPTIONAL));
+    }
+    
+    private DefinitionResolution runOptionalityTestForOutputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
+        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.OUTPUT);
+    }
+    
+    /**
+     * Test case: Map a mandatory field that is used for output only in different consumer constructs.
+     */
+    @Test
+    void mapMandatoryOutputField() {
+        // Output-only fields do not have to be mapped, even if they are marked as mandatory by the provider
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.MANDATORY, null));
+        
+        // Mapping mandatory to mandatory must work
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.MANDATORY, Optionality.MANDATORY));
+        // The field can be considered optional-for-input by the consumer, which has no effect for output-only fields
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
+        // Same for fully optional
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
+    }
+    
+    /**
+     * Test case: Map an opt-in field that is used for output only in different consumer constructs.
+     */
+    @Test
+    void mapOptInOutputField() {
+        // Output-only fields do not have to be mapped
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPT_IN, null));
+        
+        // The field may be considered mandatory by the consumer
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPT_IN, Optionality.MANDATORY));
+        // Same for optional-as-input
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPT_IN, Optionality.OPT_IN));
+        // Same for fully optional
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPT_IN, Optionality.OPTIONAL));
+    }
+    
+    /**
+     * Test case: Map an optional field that is used for output only in different consumer constructs.
+     */
+    @Test
+    void mapOptionalOutputField() {
+        DefinitionResolutionException exception;
+        
+        // Output-only fields do not have to be mapped
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, null));
+        
+        // Optional fields can only be considered optional by the consumer
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
+        assertTrue(exception.getMessage().contains("are not compatible"));        
+        // Same for optional-for-input
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+        // Optional must work
+        assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPTIONAL));
+    }
+    
+    private DefinitionResolution runOptionalityTestForInOut(Optionality providerOptionality, Optionality consumerOptionality) {
+        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.IN_OUT);
+    }
+    
+    /**
+     * Test case: Map a mandatory field that is used for both input and output in different consumer constructs.
+     */
+    @Test
+    void mapMandatoryInOutField() {
+        DefinitionResolutionException exception;
+        
+        // Mandatory fields must be mapped        
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, null));
+        assertTrue(exception.getMessage().contains("Non-optional field") && exception.getMessage().contains("is not mapped"));
+        
+        // Mapping mandatory to mandatory must work
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.MANDATORY));
+        // No optionality is allowed for mandatory in-out fields
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPT_IN));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+        // Same for fully optional
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPTIONAL));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+    }
+    
+    /**
+     * Test case: Map an opt-in field that is used for both input and output in different consumer constructs.
+     */
+    @Test
+    void mapOptInInOutField() {
+        // Opt-in fields do not have to be mapped, since the consumer does not have to provide it and is free to ignore it
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPT_IN, null));
+        
+        // The field may be considered mandatory by the consumer
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPT_IN, Optionality.MANDATORY));
+        // Same for optional-as-input
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPT_IN, Optionality.OPT_IN));
+        // Same for fully optional
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPT_IN, Optionality.OPTIONAL));
+    }
+    
+    /**
+     * Test case: Map an optional field that is used for both input and output in different consumer constructs.
+     */
+    @Test
+    void mapOptionalInOutField() {
+        DefinitionResolutionException exception;
+        
+        // Fully optional fields do not have to be mapped
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, null));
+        
+        // Optional fields can only be considered optional by the consumer
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.MANDATORY));
+        assertTrue(exception.getMessage().contains("are not compatible"));        
+        // Same for optional-for-input
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPT_IN));
+        assertTrue(exception.getMessage().contains("are not compatible"));
+        // Optional must work
+        assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPTIONAL));
     }
     
 }

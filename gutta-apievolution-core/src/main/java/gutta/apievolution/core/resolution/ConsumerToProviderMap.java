@@ -7,6 +7,8 @@ import gutta.apievolution.core.apimodel.provider.*;
 import java.util.*;
 import java.util.function.*;
 
+import static gutta.apievolution.core.apimodel.Optionality.*;
+
 /**
  * This class represents a map from a consumer revision to a specific provider
  * revision. It is complemented with a mapping from the provider revision to the
@@ -198,7 +200,7 @@ class ConsumerToProviderMap {
         private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
             Optionality consumerOptionality = ownField.getOptionality();
             Optionality providerOptionality = foreignField.getOptionality();
-
+            
             // The consumer usage is the one that counts
             Usage usage = ownField.getOwner().getUsage();
             
@@ -206,8 +208,8 @@ class ConsumerToProviderMap {
             case INPUT:
                 // For types only used as input, the consumer can be more strict than the
                 // provider. Furthermore, opt-in and optional are equivalent.
-                if (providerOptionality == Optionality.MANDATORY) {
-                    return (consumerOptionality == Optionality.MANDATORY);
+                if (providerOptionality == MANDATORY) {
+                    return (consumerOptionality == MANDATORY);
                 } else {
                     return true;
                 }
@@ -215,16 +217,31 @@ class ConsumerToProviderMap {
             case OUTPUT:
                 // For types only used as output, the consumer can be more permissive than
                 // the provider. Furthermore, opt-in and mandatory are equivalent.
-                if (providerOptionality == Optionality.OPTIONAL) {
-                    return (consumerOptionality == Optionality.OPTIONAL);
+                if (providerOptionality == OPTIONAL) {
+                    return (consumerOptionality == OPTIONAL);
                 } else {
                     return true;
                 }
                 
+            case IN_OUT:
+                // If the type is used for both input and output, we have a mixture of the previous cases
+                if (providerOptionality == MANDATORY) {
+                    // The type is used as input and therefore, mandatory fields must be provided
+                    return (consumerOptionality == MANDATORY);
+                } else if (providerOptionality == OPTIONAL) {
+                    // The type is used as output and therefore, optional fields cannot be expected
+                    return (consumerOptionality == OPTIONAL);
+                } else {
+                    // Opt-in on the provider side is compatible with all optionalities on the consumer side
+                    return true;
+                }
+                
+            case NONE:
+                // If the type is not used at all, anything goes
+                return true;
+                
             default:
-                // If the type is used for both input and output, the optionalities
-                // must match exactly
-                return (consumerOptionality == providerOptionality);
+                throw new IllegalArgumentException("Unsupported usage " + usage + ".");
             }
         }
         
