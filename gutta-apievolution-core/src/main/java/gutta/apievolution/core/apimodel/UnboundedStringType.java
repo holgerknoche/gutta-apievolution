@@ -14,6 +14,11 @@ public class UnboundedStringType extends StringType {
     private UnboundedStringType() {
         // Empty Singleton Constructor
     }
+    
+    @Override
+    public boolean isUnbounded() {
+        return true;
+    }
 
     @Override
     public int hashCode() {

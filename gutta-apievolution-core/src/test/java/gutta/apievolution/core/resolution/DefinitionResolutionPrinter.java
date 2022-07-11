@@ -31,7 +31,8 @@ class DefinitionResolutionPrinter implements TypeVisitor<Void> {
         StringBuilder builder = this.stringBuilder = new StringBuilder();
         this.definitionResolution = resolution;
 
-        List<UserDefinedType> consumerTypes = resolution.consumerTypes().filter(UserDefinedType.class::isInstance)
+        List<UserDefinedType> consumerTypes = resolution.consumerTypes().stream()
+                .filter(UserDefinedType.class::isInstance)
                 .map(UserDefinedType.class::cast).sorted(Comparator.comparing(type -> type.getInternalName()))
                 .collect(Collectors.toList());
 

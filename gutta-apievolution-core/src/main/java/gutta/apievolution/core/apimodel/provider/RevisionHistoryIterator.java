@@ -26,7 +26,6 @@ abstract class RevisionHistoryIterator<T extends RevisionedElement<T>> implement
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T next() {
         Optional<T> optionalNext = this.navigateToNext(this.currentElement);
 

@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class TestRequestRouter implements RequestRouter {
 
-    private final Map<String, ProviderOperationProxy> providerProxyMap = new HashMap<>();
+    private final Map<String, ProviderOperationProxy<?, ?>> providerProxyMap = new HashMap<>();
 
-    public void registerProviderService(ProviderOperationProxy serviceProxy) {
+    public void registerProviderService(ProviderOperationProxy<?, ?> serviceProxy) {
         this.providerProxyMap.put(serviceProxy.getServiceName(), serviceProxy);
     }
 

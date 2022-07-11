@@ -17,16 +17,20 @@ import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.io.IOException;
-import java.util.stream.Stream;
+import java.util.Collection;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Representation creator for JSON representation mapping, represented as JSON.
  */
 class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreator {
 
+    private static final String MEDIA_TYPE = MediaType.APPLICATION_JSON;
+    
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private byte[] createPublicToInternalMapping(Stream<Type> types, Stream<? extends Operation<?, ?, ?>> operations) {
+    private byte[] createPublicToInternalMapping(Collection<Type> types, 
+            Collection<? extends Operation<?, ?, ?>> operations) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         ArrayNode rootNode = objectMapper.createArrayNode();
@@ -41,18 +45,26 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
         }
     }
 
+    private MappingRepresentation toRepresentation(byte[] data) {
+        return new MappingRepresentation(MEDIA_TYPE, data);
+    }
+    
     @Override
-    public byte[] createConsumerSideMapping(DefinitionResolution resolution) {
-        return this.createPublicToInternalMapping(resolution.consumerTypes(), resolution.consumerOperations());
+    public MappingRepresentation createConsumerSideMapping(DefinitionResolution resolution) {
+        return this.toRepresentation(
+                this.createPublicToInternalMapping(resolution.consumerTypes(), resolution.consumerOperations())
+               );
     }
 
     @Override
-    public byte[] createProviderSideMapping(DefinitionResolution resolution) {
-        return this.createPublicToInternalMapping(resolution.providerTypes(), resolution.providerOperations());
+    public MappingRepresentation createProviderSideMapping(DefinitionResolution resolution) {
+        return this.toRepresentation(
+                this.createPublicToInternalMapping(resolution.providerTypes(), resolution.providerOperations())
+               );
     }
 
     @Override
-    public byte[] createFullMapping(DefinitionResolution resolution) {
+    public MappingRepresentation createFullMapping(DefinitionResolution resolution) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         ArrayNode rootNode = objectMapper.createArrayNode();
@@ -61,7 +73,7 @@ class JsonMappingRepresentationCreator implements ApiMappingRepresentationCreato
         resolution.consumerOperations().forEach(operation -> rootNode.add(mapper.handleOperation(operation)));
 
         try {
-            return objectMapper.writeValueAsBytes(rootNode);
+            return this.toRepresentation(objectMapper.writeValueAsBytes(rootNode));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -10,6 +10,11 @@ public class UnboundedListType extends ListType {
     }
 
     @Override
+    public boolean isUnbounded() {
+        return true;
+    }
+    
+    @Override
     public boolean isBounded() {
         return false;
     }

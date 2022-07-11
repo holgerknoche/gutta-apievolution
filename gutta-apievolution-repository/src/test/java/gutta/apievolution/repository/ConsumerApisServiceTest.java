@@ -154,8 +154,16 @@ class ConsumerApisServiceTest {
     }
 
     private byte[] createJsonMapping(ApiMappingType mappingType) {
-        String providerDefinitionText = this.readFileFromClasspath("apis/clientMapping/providerApi.api");
-        String consumerDefinitionText = this.readFileFromClasspath("apis/clientMapping/consumerApi.api");
+        return this.createMapping("providerApi.api", "consumerApi.api", "json", mappingType);
+    }
+    
+    private byte[] createScriptMapping(ApiMappingType mappingType) {
+        return this.createMapping("boundedProviderApi.api", "boundedConsumerApi.api", "mappingscript", mappingType);
+    }
+
+    private byte[] createMapping(String providerDefinitionName, String consumerDefinitionName, String format, ApiMappingType mappingType) {
+        String providerDefinitionText = this.readFileFromClasspath("apis/clientMapping/" + providerDefinitionName);
+        String consumerDefinitionText = this.readFileFromClasspath("apis/clientMapping/" + consumerDefinitionName);
 
         PersistentProviderApiDefinition persistentProviderDefinition = new PersistentProviderApiDefinition();
         persistentProviderDefinition.setHistoryName("testHistory");
@@ -181,9 +189,9 @@ class ConsumerApisServiceTest {
         service.apisRepository = repositoryMock;
         service.providerApisService = providerServiceMock;
 
-        return service.mapConsumerApi(1, "json", mappingType);
+        return service.mapConsumerApi(1, format, mappingType).getData();
     }
-
+    
     private static Set<JsonNode> toJsonNodeSet(String json) {
         ArrayNode arrayNode;
         try {
@@ -250,5 +258,27 @@ class ConsumerApisServiceTest {
 
         assertEquals(expectedNodeSet, actualNodeSet);
     }
+    
+    /**
+     * Test case: Client mapping represented as a mapping script.
+     */
+    @Test
+    void testMappingScriptForConsumer() {
+        byte[] mappingBytes = this.createScriptMapping(ApiMappingType.CONSUMER);
+        
+        // We currently only assert that data is returned at all
+        assertTrue(mappingBytes.length > 0);
+    }
 
+    /**
+     * Test case: Provider mapping represented as a mapping script.
+     */
+    @Test
+    void testMappingScriptForProvider() {
+        byte[] mappingBytes = this.createScriptMapping(ApiMappingType.PROVIDER);
+        
+        // We currently only assert that data is returned at all
+        assertTrue(mappingBytes.length > 0);
+    }
+    
 }

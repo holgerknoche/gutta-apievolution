@@ -49,8 +49,7 @@ public class DefinitionResolver {
         ConsumerToProviderMap consumerToProviderMap = this.createConsumerToProviderMap(consumerApi, providerApi);
         ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
 
-        // Perform consistency checks on the maps between consumer API and provider
-        // revision
+        // Perform consistency checks on the maps between consumer API and provider revision
         consumerToProviderMap.checkConsistency();
         providerToConsumerMap.checkConsistency();
 

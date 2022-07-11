@@ -1,0 +1,12 @@
+api test {
+    record A as AConsumer {
+        string(30) fieldA as fieldAConsumer
+    }
+
+    enum E as EConsumer {
+        MEMBER_1 as MEMBER_1_CONSUMER
+    }
+    
+    operation testOperation(A): A
+    
+}

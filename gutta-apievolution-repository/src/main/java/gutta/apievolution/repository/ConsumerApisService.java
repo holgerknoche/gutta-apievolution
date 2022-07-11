@@ -49,7 +49,7 @@ public class ConsumerApisService {
      * @param type   The type of mapping to be created
      * @return The mapping in the appropriate representation
      */
-    public byte[] mapConsumerApi(Integer id, String format, ApiMappingType type) {
+    public MappingRepresentation mapConsumerApi(Integer id, String format, ApiMappingType type) {
         Optional<PersistentConsumerApiDefinition> optionalConsumerApi = this.readConsumerApi(id);
         if (optionalConsumerApi.isEmpty()) {
             throw new ApiProcessingException("The desired consumer API does not exist.");
@@ -87,10 +87,19 @@ public class ConsumerApisService {
     }
 
     private Optional<ApiMappingRepresentationCreator> getMappingCreatorFor(String format) {
-        if ("json".equals(format)) {
-            return Optional.of(new JsonMappingRepresentationCreator());
-        } else {
+        if (format == null) {
             return Optional.empty();
+        }
+        
+        switch (format) {
+        case "json":
+            return Optional.of(new JsonMappingRepresentationCreator());
+            
+        case "mappingscript":
+            return Optional.of(new MappingScriptRepresentationCreator());
+            
+        default:
+            return Optional.empty();    
         }
     }
 

@@ -1,20 +1,13 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
-import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
-import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
+import gutta.apievolution.core.apimodel.consumer.*;
+import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.function.*;
+
+import static gutta.apievolution.core.apimodel.Optionality.*;
 
 /**
  * This class represents a map from a consumer revision to a specific provider
@@ -136,12 +129,12 @@ class ConsumerToProviderMap {
         return invertedMap;
     }
 
-    Stream<Type> consumerTypes() {
-        return this.consumerToProviderType.keySet().stream();
+    Collection<Type> consumerTypes() {
+        return Collections.unmodifiableSet(this.consumerToProviderType.keySet());
     }
 
-    Stream<ConsumerOperation> consumerOperations() {
-        return this.consumerToProviderOperation.keySet().stream();
+    Collection<ConsumerOperation> consumerOperations() {
+        return Collections.unmodifiableSet(this.consumerToProviderOperation.keySet());
     }
 
     Type mapConsumerType(Type consumerType) {
@@ -204,16 +197,62 @@ class ConsumerToProviderMap {
             return null;
         }
 
-        private void checkField(ConsumerField ownField, ProviderField foreignField) {
-            // Make sure that the optionalities match
+        private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
             Optionality consumerOptionality = ownField.getOptionality();
             Optionality providerOptionality = foreignField.getOptionality();
-
-            if (consumerOptionality != providerOptionality) {
+            
+            // The consumer usage is the one that counts
+            Usage usage = ownField.getOwner().getUsage();
+            
+            switch (usage) {
+            case INPUT:
+                // For types only used as input, the consumer can be more strict than the
+                // provider. Furthermore, opt-in and optional are equivalent.
+                if (providerOptionality == MANDATORY) {
+                    return (consumerOptionality == MANDATORY);
+                } else {
+                    return true;
+                }
+                
+            case OUTPUT:
+                // For types only used as output, the consumer can be more permissive than
+                // the provider. Furthermore, opt-in and mandatory are equivalent.
+                if (providerOptionality == OPTIONAL) {
+                    return (consumerOptionality == OPTIONAL);
+                } else {
+                    return true;
+                }
+                
+            case IN_OUT:
+                // If the type is used for both input and output, we have a mixture of the previous cases
+                if (providerOptionality == MANDATORY) {
+                    // The type is used as input and therefore, mandatory fields must be provided
+                    return (consumerOptionality == MANDATORY);
+                } else if (providerOptionality == OPTIONAL) {
+                    // The type is used as output and therefore, optional fields cannot be expected
+                    return (consumerOptionality == OPTIONAL);
+                } else {
+                    // Opt-in on the provider side is compatible with all optionalities on the consumer side
+                    return true;
+                }
+                
+            case NONE:
+                // If the type is not used at all, anything goes
+                return true;
+                
+            default:
+                throw new IllegalArgumentException("Unsupported usage " + usage + ".");
+            }
+        }
+        
+        private void checkField(ConsumerField ownField, ProviderField foreignField) {
+            // Make sure that the optionalities are compatible
+            boolean optionalityIsCompatible = this.isOptionalityCompatible(ownField, foreignField);
+            if (!optionalityIsCompatible) {
                 throw new DefinitionResolutionException(
                         "Optionalities of " + ownField + " and " + foreignField + " are not compatible.");
             }
-
+            
             // Make sure that the types match
             Type ownType = ownField.getType();
             Type foreignType = foreignField.getType();

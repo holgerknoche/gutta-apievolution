@@ -1,0 +1,16 @@
+api boundedTypes {
+
+	enum TestEnum {
+		VALUE_A
+	}
+
+	record TestRecord2 {
+	}
+
+	record TestRecord {
+		string(30) boundedString
+		TestEnum[10] enumList
+		TestRecord2[10] recordList
+	}
+
+}

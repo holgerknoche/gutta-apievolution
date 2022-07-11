@@ -28,6 +28,17 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
         this.referencedRevision = referencedRevision;
     }
+    
+    /**
+     * Creates an API definition from the given data.
+     *
+     * @param name               The API definition's name
+     * @param annotations        The annotations on this API definition, if any
+     * @param referencedRevision The referenced revision number
+     */
+    public ConsumerApiDefinition(String name, Set<Annotation> annotations, int referencedRevision) {
+        this(QualifiedName.of(name), annotations, referencedRevision);
+    }
 
     /**
      * Returns the referenced revision number.

@@ -4,8 +4,7 @@ import gutta.apievolution.core.apimodel.*;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.core.apimodel.provider.*;
 
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * This class represents a map from a provider's internal representation to a
@@ -31,12 +30,12 @@ class ProviderToConsumerMap {
         this.providerToConsumerOperation = providerToConsumerOperation;
     }
 
-    Stream<Type> providerTypes() {
-        return this.providerToConsumerType.keySet().stream();
+    Collection<Type> providerTypes() {
+        return Collections.unmodifiableSet(this.providerToConsumerType.keySet());
     }
 
-    Stream<ProviderOperation> providerOperations() {
-        return this.providerToConsumerOperation.keySet().stream();
+    Collection<ProviderOperation> providerOperations() {
+        return Collections.unmodifiableSet(this.providerToConsumerOperation.keySet());
     }
     
     Type mapProviderType(Type providerType) {
@@ -45,6 +44,10 @@ class ProviderToConsumerMap {
 
     ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerField.get(providerField);
+    }
+    
+    ConsumerEnumMember mapProviderEnumMember(ProviderEnumMember providerEnumMember) {
+        return this.providerToConsumerMember.get(providerEnumMember);
     }
 
     void checkConsistency() {
@@ -103,28 +106,21 @@ class ProviderToConsumerMap {
             for (Field<?, ?> field : recordType.getDeclaredFields()) { // NOSONAR Type is correct
                 ProviderField ownField = (ProviderField) field;
                 ConsumerField foreignField = this.resolveForeignField(ownField);
-                this.checkField(ownField, foreignField);
+                this.checkField(ownField, foreignField, foreignRecordType);
             }
 
             return null;
         }
 
-        private void checkField(ProviderField ownField, ConsumerField foreignField) {
+        private void checkField(ProviderField ownField, ConsumerField foreignField, RecordType<?, ?, ?> foreignType) {
             Optionality ownOptionality = ownField.getOptionality();
 
-            if (foreignField == null) {
-                if (ownOptionality == Optionality.MANDATORY) {
-                    // Report an error if a mandatory field is not mapped
-                    throw new DefinitionResolutionException("Non-optional field " + ownField + " is not mapped.");
-                } else {
-                    return;
-                }
-            }
-
-            Optionality foreignOptionality = foreignField.getOptionality();
-            if (ownOptionality.isMorePermissiveThan(foreignOptionality)) {
-                throw new DefinitionResolutionException(
-                        "Consumer optionality on field " + foreignField + " is too restrictive.");
+            // Determine the usage by the consumer, since output-only types do not have to be mapped
+            Usage usage = foreignType.getUsage();
+            
+            if (foreignField == null && ownOptionality == Optionality.MANDATORY && usage != Usage.OUTPUT) {
+                // Report an error if a mandatory field is not mapped and is not used only for output
+                throw new DefinitionResolutionException("Non-optional field " + ownField + " is not mapped.");
             }
         }
 

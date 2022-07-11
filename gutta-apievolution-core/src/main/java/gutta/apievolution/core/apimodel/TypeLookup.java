@@ -48,9 +48,9 @@ public abstract class TypeLookup<S, T> {
 
     private ListType convertListType(ListType inType) {
         if (inType.isBounded()) {
-            return ListType.bounded(inType.getElementType(), inType.getBound());
+            return ListType.bounded(this.lookupType(inType.getElementType()), inType.getBound());
         } else {
-            return ListType.unbounded(inType.getElementType());
+            return ListType.unbounded(this.lookupType(inType.getElementType()));
         }
     }
 

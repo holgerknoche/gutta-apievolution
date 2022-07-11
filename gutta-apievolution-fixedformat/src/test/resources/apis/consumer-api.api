@@ -1,0 +1,22 @@
+api test.customer {
+
+    enum TestEnum as ConsumerEnum {
+        A as VALUE_A
+        B as VALUE_B
+    }
+
+    record TestParameter as ConsumerParameter {
+        string(30) renamedField as testField
+        TestEnum testEnum
+        TestEnum[10] testList
+    }
+
+    record TestResult as ConsumerResult {
+    	TestEnum resultEnum
+        string(30) renamedField as resultField        
+        TestEnum[10] resultList
+    }
+    
+    operation testOperation(TestParameter): TestResult
+
+}

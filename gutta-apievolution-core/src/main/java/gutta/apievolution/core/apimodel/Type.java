@@ -13,5 +13,14 @@ public interface Type {
      * @return The visitor operation's result
      */
     <R> R accept(TypeVisitor<R> visitor);
+    
+    /**
+     * Denotes whether this type is unbounded.
+     * 
+     * @return {@code True} if this type is unbounded, otherwise {@code false}.
+     */
+    default boolean isUnbounded() {
+        return false;
+    }
 
 }
