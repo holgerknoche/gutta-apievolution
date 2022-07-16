@@ -10,44 +10,38 @@ import java.util.*;
  * This class represents a map from a provider's internal representation to a
  * consumer revision.
  */
-class ProviderToConsumerMap {
-
-    private final TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType;
-
-    private final Map<ProviderField, ConsumerField> providerToConsumerField;
-
-    private final Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember;
-    
-    private final Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation;
+class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition, ConsumerApiDefinition,
+    ProviderUserDefinedType, ConsumerUserDefinedType,
+    ProviderField, ConsumerField,
+    ProviderEnumMember, ConsumerEnumMember,
+    ProviderOperation, ConsumerOperation> {
 
     public ProviderToConsumerMap(TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType,
             Map<ProviderField, ConsumerField> providerToConsumerField,
             Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember,
             Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation) {
-        this.providerToConsumerType = providerToConsumerType;
-        this.providerToConsumerField = providerToConsumerField;
-        this.providerToConsumerMember = providerToConsumerMember;
-        this.providerToConsumerOperation = providerToConsumerOperation;
+        
+        super(providerToConsumerType, providerToConsumerField, providerToConsumerMember, providerToConsumerOperation);
     }
 
     Collection<Type> providerTypes() {
-        return Collections.unmodifiableSet(this.providerToConsumerType.sourceTypes());
+        return Collections.unmodifiableSet(this.typeMap.sourceTypes());
     }
 
     Collection<ProviderOperation> providerOperations() {
-        return Collections.unmodifiableSet(this.providerToConsumerOperation.keySet());
+        return Collections.unmodifiableSet(this.operationMap.keySet());
     }
     
     Type mapProviderType(Type providerType) {
-        return this.providerToConsumerType.mapType(providerType);
+        return this.typeMap.mapType(providerType);
     }
 
     ConsumerField mapProviderField(ProviderField providerField) {
-        return this.providerToConsumerField.get(providerField);
+        return this.fieldMap.get(providerField);
     }
     
     ConsumerEnumMember mapProviderEnumMember(ProviderEnumMember providerEnumMember) {
-        return this.providerToConsumerMember.get(providerEnumMember);
+        return this.memberMap.get(providerEnumMember);
     }
 
     void checkConsistency() {
@@ -57,7 +51,7 @@ class ProviderToConsumerMap {
     private void checkTypeAssociation() {
         ProviderTypeConsistencyChecker checker = new ProviderTypeConsistencyChecker();
 
-        providerToConsumerType.forEach(checker::checkConsistency);
+        this.typeMap.forEach(checker::checkConsistency);
     }
 
     private class ProviderTypeConsistencyChecker implements TypeVisitor<Void> {
@@ -71,11 +65,11 @@ class ProviderToConsumerMap {
 
         @SuppressWarnings("unchecked")
         private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) ProviderToConsumerMap.this.providerToConsumerType.mapType(ownType);
+            return (T) ProviderToConsumerMap.this.typeMap.mapType(ownType);
         }
 
         private ConsumerField resolveForeignField(ProviderField ownField) {
-            return ProviderToConsumerMap.this.providerToConsumerField.get(ownField);
+            return ProviderToConsumerMap.this.fieldMap.get(ownField);
         }
 
         @Override
