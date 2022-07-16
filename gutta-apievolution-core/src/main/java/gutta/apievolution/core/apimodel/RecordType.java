@@ -15,7 +15,7 @@ import java.util.stream.*;
  * @param <F> The concrete field type for this record type
  */
 public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends RecordType<A, R, F>, F extends Field<R, F>>
-        extends UserDefinedType<A> implements Iterable<F> {
+        extends AbstractUserDefinedType<A> implements Iterable<F> {
 
     private final boolean abstractFlag;
 

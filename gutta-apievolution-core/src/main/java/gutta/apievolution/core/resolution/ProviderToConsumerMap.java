@@ -12,7 +12,7 @@ import java.util.*;
  */
 class ProviderToConsumerMap {
 
-    private final Map<Type, Type> providerToConsumerType;
+    private final TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType;
 
     private final Map<ProviderField, ConsumerField> providerToConsumerField;
 
@@ -20,7 +20,7 @@ class ProviderToConsumerMap {
     
     private final Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation;
 
-    public ProviderToConsumerMap(Map<Type, Type> providerToConsumerType,
+    public ProviderToConsumerMap(TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType,
             Map<ProviderField, ConsumerField> providerToConsumerField,
             Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember,
             Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation) {
@@ -31,7 +31,7 @@ class ProviderToConsumerMap {
     }
 
     Collection<Type> providerTypes() {
-        return Collections.unmodifiableSet(this.providerToConsumerType.keySet());
+        return Collections.unmodifiableSet(this.providerToConsumerType.sourceTypes());
     }
 
     Collection<ProviderOperation> providerOperations() {
@@ -39,7 +39,7 @@ class ProviderToConsumerMap {
     }
     
     Type mapProviderType(Type providerType) {
-        return this.providerToConsumerType.get(providerType);
+        return this.providerToConsumerType.mapType(providerType);
     }
 
     ConsumerField mapProviderField(ProviderField providerField) {
@@ -71,7 +71,7 @@ class ProviderToConsumerMap {
 
         @SuppressWarnings("unchecked")
         private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) ProviderToConsumerMap.this.providerToConsumerType.get(ownType);
+            return (T) ProviderToConsumerMap.this.providerToConsumerType.mapType(ownType);
         }
 
         private ConsumerField resolveForeignField(ProviderField ownField) {

@@ -11,7 +11,7 @@ import java.util.*;
  * @param <M> The concrete type of the enum members
  */
 public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>>
-        extends UserDefinedType<A> implements Iterable<M> {
+        extends AbstractUserDefinedType<A> implements Iterable<M> {
 
     private final List<M> declaredMembers;
 

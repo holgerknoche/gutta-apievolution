@@ -1,39 +1,60 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
+import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
+import static gutta.apievolution.core.util.MapUtil.composeMaps;
+import static gutta.apievolution.core.util.MapUtil.invertMap;
 
-import java.util.*;
-import java.util.function.*;
+import gutta.apievolution.core.apimodel.ApiDefinitionMorphism;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeMap;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.Usage;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
 
-import static gutta.apievolution.core.apimodel.Optionality.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * This class represents a map from a consumer revision to a specific provider
  * revision. It is complemented with a mapping from the provider revision to the
  * current provider's internal representation.
  */
-class ConsumerToProviderMap {
+class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition, ProviderApiDefinition, 
+    ConsumerUserDefinedType, ProviderUserDefinedType, ConsumerField, ProviderField, ConsumerEnumMember, 
+    ProviderEnumMember, ConsumerOperation, ProviderOperation> {
 
-    private final Map<Type, Type> consumerToProviderType;
-
-    private final Map<ConsumerField, ProviderField> consumerToProviderField;
-
-    private final Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember;
-
-    private final Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation;
-
-    public ConsumerToProviderMap(Map<Type, Type> consumerToProviderType,
+    public ConsumerToProviderMap(Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
             Map<ConsumerField, ProviderField> consumerToProviderField,
             Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
             Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
-        this.consumerToProviderType = consumerToProviderType;
-        this.consumerToProviderField = consumerToProviderField;
-        this.consumerToProviderMember = consumerToProviderMember;
-        this.consumerToProviderOperation = consumerToProviderOperation;
+        
+        this(new TypeMap<>(consumerToProviderType), consumerToProviderField, 
+                consumerToProviderMember, consumerToProviderOperation);
     }
-
+    
+    private ConsumerToProviderMap(TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap,
+            Map<ConsumerField, ProviderField> consumerToProviderField,
+            Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
+            Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
+        super(typeMap, consumerToProviderField, consumerToProviderMember, consumerToProviderOperation);
+    }
+    
     /**
      * Composes this map with the given map to a provider's merged definition,
      * resulting in a map from the consumer definition of this map to the merged
@@ -44,13 +65,13 @@ class ConsumerToProviderMap {
      * @return A composed map of this and the given map
      */
     public ConsumerToProviderMap compose(ToMergedModelMap toMergedModelMap) {
-        Map<Type, Type> composedTypeMap = composeMaps(this.consumerToProviderType,
-                type -> toMergedModelMap.mapType(type).orElse(null));
-        Map<ConsumerField, ProviderField> composedFieldMap = composeMaps(this.consumerToProviderField,
+        TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> composedTypeMap =
+                this.typeMap.compose(type -> toMergedModelMap.mapUserDefinedType(type).orElse(null));                
+        Map<ConsumerField, ProviderField> composedFieldMap = composeMaps(this.fieldMap,
                 field -> toMergedModelMap.mapField(field).orElse(null));
-        Map<ConsumerEnumMember, ProviderEnumMember> composedMemberMap = composeMaps(this.consumerToProviderMember,
+        Map<ConsumerEnumMember, ProviderEnumMember> composedMemberMap = composeMaps(this.memberMap,
                 member -> toMergedModelMap.mapEnumMember(member).orElse(null));
-        Map<ConsumerOperation, ProviderOperation> composedOperationMap = composeMaps(this.consumerToProviderOperation,
+        Map<ConsumerOperation, ProviderOperation> composedOperationMap = composeMaps(this.operationMap,
                 operation -> toMergedModelMap.mapOperation(operation).orElse(null));
 
         return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap, composedOperationMap);
@@ -63,12 +84,13 @@ class ConsumerToProviderMap {
      * @return see above
      */
     public ProviderToConsumerMap invert() {
-        Map<Type, Type> invertedTypeMap = invertMap(this.consumerToProviderType, this::onAmbiguousType);
-        Map<ProviderField, ConsumerField> invertedFieldMap = invertMap(this.consumerToProviderField,
+        TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> invertedTypeMap = 
+                this.typeMap.invert(this::onAmbiguousType);
+        Map<ProviderField, ConsumerField> invertedFieldMap = invertMap(this.fieldMap,
                 this::onAmbiguousField);
-        Map<ProviderEnumMember, ConsumerEnumMember> invertedMemberMap = invertMap(this.consumerToProviderMember,
+        Map<ProviderEnumMember, ConsumerEnumMember> invertedMemberMap = invertMap(this.memberMap,
                 this::onAmbiguousEnumMember);
-        Map<ProviderOperation, ConsumerOperation> invertedOperationMap = invertMap(this.consumerToProviderOperation,
+        Map<ProviderOperation, ConsumerOperation> invertedOperationMap = invertMap(this.operationMap,
                 this::onAmbiguousOperation);
 
         return new ProviderToConsumerMap(invertedTypeMap, invertedFieldMap, invertedMemberMap, invertedOperationMap);
@@ -91,77 +113,46 @@ class ConsumerToProviderMap {
     }
 
     void checkConsistency() {
-        this.checkTypeAssociation(this.consumerToProviderType, this.consumerToProviderField);
+        this.checkTypeAssociation(this.typeMap, this.fieldMap);
     }
 
-    private void checkTypeAssociation(Map<Type, Type> consumerToProviderType,
+    private void checkTypeAssociation(TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
             Map<ConsumerField, ProviderField> consumerToProviderField) {
         ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker();
 
         consumerToProviderType.forEach(checker::checkConsistency);
     }
 
-    private static <A, B, C> Map<A, C> composeMaps(Map<A, B> map1, Function<B, C> map2) {
-        Map<A, C> composedMap = new HashMap<>(map1.size());
-
-        for (Map.Entry<A, B> entry : map1.entrySet()) {
-            C value = map2.apply(entry.getValue());
-
-            if (value != null) {
-                composedMap.put(entry.getKey(), value);
-            }
-        }
-
-        return composedMap;
-    }
-
-    private static <A, B> Map<B, A> invertMap(Map<A, B> map, Consumer<B> onConflict) {
-        Map<B, A> invertedMap = new HashMap<>(map.size());
-
-        for (Map.Entry<A, B> entry : map.entrySet()) {
-            A existingValue = invertedMap.put(entry.getValue(), entry.getKey());
-
-            if (existingValue != null) {
-                onConflict.accept(entry.getValue());
-            }
-        }
-
-        return invertedMap;
-    }
-
     Collection<Type> consumerTypes() {
-        return Collections.unmodifiableSet(this.consumerToProviderType.keySet());
+        return Collections.unmodifiableSet(this.typeMap.sourceTypes());
     }
 
     Collection<ConsumerOperation> consumerOperations() {
-        return Collections.unmodifiableSet(this.consumerToProviderOperation.keySet());
+        return Collections.unmodifiableSet(this.operationMap.keySet());
     }
 
     Type mapConsumerType(Type consumerType) {
-        return this.consumerToProviderType.get(consumerType);
+        return this.typeMap.mapType(consumerType);
     }
 
     ProviderField mapConsumerField(ConsumerField consumerField) {
-        return this.consumerToProviderField.get(consumerField);
+        return this.fieldMap.get(consumerField);
     }
 
     ProviderEnumMember mapConsumerMember(ConsumerEnumMember consumerEnumMember) {
-        return this.consumerToProviderMember.get(consumerEnumMember);
+        return this.memberMap.get(consumerEnumMember);
     }
 
     ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
-        return this.consumerToProviderOperation.get(consumerOperation);
+        return this.operationMap.get(consumerOperation);
     }
 
     private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
 
         private Type foreignType;
 
-        private ConsumerToProviderTypeLookup typeLookup;
-
         public void checkConsistency(Type ownType, Type foreignType) {
             this.foreignType = foreignType;
-            this.typeLookup = new ConsumerToProviderTypeLookup();
             ownType.accept(this);
         }
 
@@ -173,11 +164,11 @@ class ConsumerToProviderMap {
 
         @SuppressWarnings("unchecked")
         private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) ConsumerToProviderMap.this.consumerToProviderType.get(ownType);
+            return (T) ConsumerToProviderMap.this.typeMap.mapType(ownType);
         }
 
         private ProviderField resolveForeignField(ConsumerField ownField) {
-            return ConsumerToProviderMap.this.consumerToProviderField.get(ownField);
+            return ConsumerToProviderMap.this.fieldMap.get(ownField);
         }
 
         private Type determineMatchingProviderType(Type consumerType) {
@@ -259,7 +250,7 @@ class ConsumerToProviderMap {
 
             // The foreign type must be matched against the provider image of the
             // current type
-            Type expectedType = this.typeLookup.lookupType(ownType);
+            Type expectedType = ConsumerToProviderMap.this.typeMap.mapType(ownType);
 
             if (!foreignType.equals(expectedType)) {
                 throw new DefinitionResolutionException("Types of " + ownField + " (" + ownType + ") and of " +
@@ -267,22 +258,6 @@ class ConsumerToProviderMap {
             }
         }
 
-    }
-
-    /**
-     * Type lookup for mapping consumer to provider types.
-     */
-    private class ConsumerToProviderTypeLookup extends TypeLookup<Type, Type> {
-
-        @Override
-        protected boolean isUserDefinedType(Type type) {
-            return (type instanceof ConsumerUserDefinedType);
-        }
-
-        @Override
-        protected Type mapUserDefinedType(Type type) {
-            return consumerToProviderType.get(type);
-        }
     }
 
 }

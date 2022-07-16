@@ -64,7 +64,8 @@ public class DefinitionResolver {
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
             ProviderApiDefinition providerApi) {
-        Map<Type, Type> consumerToProviderType = this.createTypeMapping(providerApi, consumerApi);
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType = 
+                this.createTypeMapping(providerApi, consumerApi);
 
         Map<ConsumerField, ProviderField> consumerToProviderField = this.createFieldMapping(consumerApi,
                 consumerToProviderType);
@@ -77,16 +78,17 @@ public class DefinitionResolver {
                 consumerToProviderOperation);
     }
 
-    private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
-        Map<Type, Type> consumerToProviderType = new HashMap<>();
+    private Map<ConsumerUserDefinedType, ProviderUserDefinedType> createTypeMapping(ProviderApiDefinition providerApi,
+            ConsumerApiDefinition consumerApi) {
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerType : consumerApi.getUserDefinedTypes()) {
             String publicTypeName = consumerType.getPublicName();
-            Type providerType = providerApi.resolveUserDefinedType(publicTypeName)
+            UserDefinedType<ProviderApiDefinition> providerType = providerApi.resolveUserDefinedType(publicTypeName)
                     .orElseThrow(() -> new DefinitionResolutionException(
                             "No matching type for " + consumerType + " (" + publicTypeName + ")."));
             this.assertMatchingType(consumerType, providerType);
-            consumerToProviderType.put(consumerType, providerType);
+            consumerToProviderType.put((ConsumerUserDefinedType) consumerType, (ProviderUserDefinedType) providerType);
         }
 
         return consumerToProviderType;
@@ -104,7 +106,7 @@ public class DefinitionResolver {
     }
 
     private Map<ConsumerField, ProviderField> createFieldMapping(ConsumerApiDefinition consumerApi,
-            Map<Type, Type> consumerToProviderType) {
+            Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType) {
         Map<ConsumerField, ProviderField> consumerToProviderField = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {
@@ -133,7 +135,7 @@ public class DefinitionResolver {
     }
 
     private Map<ConsumerEnumMember, ProviderEnumMember> createMemberMapping(ConsumerApiDefinition consumerApi,
-            Map<Type, Type> consumerToProviderType) {
+            Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType) {
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {

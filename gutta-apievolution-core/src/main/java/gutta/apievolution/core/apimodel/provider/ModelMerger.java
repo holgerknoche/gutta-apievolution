@@ -106,7 +106,8 @@ public class ModelMerger {
         // First, merge the user-defined types and create a type lookup for the second
         // pass
         RevisionMergePass1 pass1 = new RevisionMergePass1();
-        ProviderTypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
+        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeLookup = 
+                pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
 
         // Then, convert the remaining elements using the previously created type lookup
         RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup, mergedDefinition);
@@ -134,7 +135,8 @@ public class ModelMerger {
 
         private ProviderApiDefinition mergedDefinition;
 
-        public ProviderTypeLookup createTypeLookup(RevisionHistory revisionHistory,
+        public TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> 
+                createTypeLookup(RevisionHistory revisionHistory,
                 Set<ProviderApiDefinition> supportedRevisions, ProviderApiDefinition mergedDefinition) {
             // Ensure that the revision history is consistent
             revisionHistory.checkConsistency();
@@ -147,10 +149,10 @@ public class ModelMerger {
                 currentRevision.forEach(element -> element.accept(this));
             }
 
-            return new ProviderTypeLookup(this.udtLookup);
+            return new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(this.udtLookup);
         }
 
-        @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+        @SuppressWarnings("unchecked")
         private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType> 
             Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
 
@@ -209,7 +211,8 @@ public class ModelMerger {
     @FunctionalInterface
     private interface MergePass2Creator {
 
-        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, 
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition);
 
     }
@@ -224,7 +227,7 @@ public class ModelMerger {
 
         private final Set<ProviderApiDefinition> supportedRevisions;
 
-        protected final ProviderTypeLookup typeLookup;
+        protected final TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap;
 
         private final ProviderApiDefinition mergedDefinition;
 
@@ -240,10 +243,11 @@ public class ModelMerger {
 
         private ProviderEnumType currentEnumType;
 
-        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition) {
             this.supportedRevisions = supportedRevisions;
-            this.typeLookup = typeLookup;
+            this.typeMap = typeMap;
             this.mergedDefinition = mergedDefinition;
         }
 
@@ -252,16 +256,16 @@ public class ModelMerger {
         }
 
         protected <T extends Type> T lookupType(T inType) {
-            return this.typeLookup.lookupType(inType);
+            return this.typeMap.mapType(inType);
         }
 
         @Override
         public Void handleProviderRecordType(ProviderRecordType recordType) {
-            this.currentRecordType = this.typeLookup.lookupType(recordType);
+            this.currentRecordType = this.typeMap.mapType(recordType);
 
             // Set supertype, if applicable
             recordType.getSuperType().ifPresent(originalSuperType -> {
-                ProviderRecordType superType = this.typeLookup.lookupType(originalSuperType);
+                ProviderRecordType superType = this.typeMap.mapType(originalSuperType);
 
                 // If the current record already has a supertype, make sure that it is the
                 // same as the one we would add
@@ -284,7 +288,7 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderEnumType(ProviderEnumType enumType) {
-            this.currentEnumType = this.typeLookup.lookupType(enumType);
+            this.currentEnumType = this.typeMap.mapType(enumType);
 
             for (ProviderEnumMember member : enumType.getDeclaredMembers()) {
                 member.accept(this);
@@ -563,9 +567,10 @@ public class ModelMerger {
 
         private final Map<ProviderOperation, ProviderOperation> operationMap = new HashMap<>();
 
-        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, 
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition, ProviderApiDefinition referenceRevision) {
-            super(supportedRevisions, typeLookup, mergedDefinition);
+            super(supportedRevisions, typeMap, mergedDefinition);
 
             this.referenceRevision = referenceRevision;
         }
@@ -593,7 +598,8 @@ public class ModelMerger {
         }
 
         public ToMergedModelMap getToMergedModelMap() {
-            ProviderTypeLookup restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
+            TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> restrictedTypeLookup = 
+                    this.typeMap.restrictTo(this.referenceRevision);
             return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap, this.operationMap);
         }
 
