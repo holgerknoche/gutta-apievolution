@@ -112,7 +112,9 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
-    void checkConsistency() {
+    protected void checkConsistency() {
+        super.checkConsistency();
+        
         this.checkTypeAssociation(this.typeMap, this.fieldMap);
     }
 

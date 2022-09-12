@@ -44,7 +44,9 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         return this.memberMap.get(providerEnumMember);
     }
 
-    void checkConsistency() {
+    protected void checkConsistency() {
+        super.checkConsistency();
+        
         this.checkTypeAssociation();
     }
 

@@ -42,5 +42,9 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     public Optional<O2> mapOperation(O1 sourceOperation) {
         return Optional.ofNullable(this.operationMap.get(sourceOperation));
     }
+    
+    protected void checkConsistency() {
+        
+    }
 
 }
