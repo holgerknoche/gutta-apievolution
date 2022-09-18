@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.EnumType;
-import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
@@ -52,11 +51,6 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
     @Override
     public <R> R accept(ProviderApiDefinitionElementVisitor<R> visitor) {
         return visitor.handleProviderEnumType(this);
-    }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.handleEnumType(this);
     }
 
     @Override

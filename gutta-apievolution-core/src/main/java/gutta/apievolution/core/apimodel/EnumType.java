@@ -99,5 +99,10 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
     protected boolean stateEquals(EnumType<A, E, M> that) {
         return super.stateEquals(that) && this.declaredMembers.equals(that.declaredMembers);
     }
+    
+    @Override
+    public final <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleEnumType(this);
+    }
 
 }

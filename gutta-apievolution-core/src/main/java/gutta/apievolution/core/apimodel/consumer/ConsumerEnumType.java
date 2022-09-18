@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumType;
-import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
@@ -43,11 +42,6 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
 
     boolean stateEquals(ConsumerEnumType that) {
         return super.stateEquals(that);
-    }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.handleEnumType(this);
     }
 
     @Override

@@ -294,5 +294,10 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
                 this.subTypeIds().equals(that.subTypeIds()) && this.abstractFlag == that.abstractFlag &&
                 this.superType.equals(that.superType);
     }
+    
+    @Override
+    public final <X> X accept(TypeVisitor<X> visitor) {
+        return visitor.handleRecordType(this);
+    }
 
 }

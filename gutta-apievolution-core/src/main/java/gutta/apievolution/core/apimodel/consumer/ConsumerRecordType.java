@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.RecordType;
-import gutta.apievolution.core.apimodel.TypeVisitor;
 
 import java.util.Optional;
 
@@ -79,11 +78,6 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
 
     boolean stateEquals(ConsumerRecordType that) {
         return super.stateEquals(that);
-    }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.handleRecordType(this);
     }
 
     @Override
