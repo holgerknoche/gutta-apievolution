@@ -1,10 +1,29 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.ApiDefinitionMorphism;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeMap;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.Usage;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
+import gutta.apievolution.core.util.CheckResult;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * This class represents a map from a provider's internal representation to a
@@ -44,10 +63,13 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         return this.memberMap.get(providerEnumMember);
     }
 
-    protected void checkConsistency() {
-        super.checkConsistency();
+    protected CheckResult checkConsistency() {
+        CheckResult superResult = super.checkConsistency();
         
         this.checkTypeAssociation();
+        
+        // TODO Join with own result
+        return superResult;
     }
 
     private void checkTypeAssociation() {

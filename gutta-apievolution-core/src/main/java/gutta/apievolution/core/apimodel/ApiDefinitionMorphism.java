@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.CheckResult;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,8 +45,46 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
         return Optional.ofNullable(this.operationMap.get(sourceOperation));
     }
     
-    protected void checkConsistency() {
+    protected CheckResult checkConsistency() {
+        CheckResult result = new CheckResult();
         
+        this.checkFieldTypes(result);
+        this.checkOperationTypes(result);
+        
+        return result;
+    }
+    
+    private void checkFieldTypes(CheckResult result) {
+        // Ensure that field types are mapped consistently by this morphism
+        this.fieldMap.forEach((sourceField, targetField) -> this.ensureConsistentFieldTypeMapping(sourceField,
+                targetField, result));
+    }
+    
+    private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField,
+            CheckResult result) {
+        // Make sure that this(type(f)) = type(this(f)) for all mapped fields
+        Type sourceType = sourceField.getType();
+        Type mappedSourceType = this.mapType(sourceType).orElse(null);
+        Type targetType = targetField.getType();
+        
+        if (mappedSourceType == null) {
+            result.addErrorMessage("Type '" + sourceType + "' of mapped field '" + sourceField + "' is not mapped.");
+        } else if (!mappedSourceType.equals(targetType)) {
+            result.addErrorMessage("Type '" + sourceType + "' of mapped field '" + sourceField + 
+                    "' is mapped to incompatible type '" + mappedSourceType + "' instead of '" + targetType + "'.");
+        }
+    }
+    
+    private void checkOperationTypes(CheckResult result) {
+        // Ensure that operation parameter and result types are mapped consistently by this morphism
+        this.operationMap.forEach(
+                (sourceOperation, targetOperation) -> this.ensureConsistentOperationTypeMapping(sourceOperation, targetOperation, result)
+                );
     }
 
+    private void ensureConsistentOperationTypeMapping(Operation<?, ?, ?> sourceOperation, Operation<?, ?, ?> targetOperation,
+            CheckResult result) {
+        // TODO
+    }
+    
 }

@@ -25,6 +25,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
+import gutta.apievolution.core.util.CheckResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -112,10 +113,13 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
-    protected void checkConsistency() {
-        super.checkConsistency();
+    protected CheckResult checkConsistency() {
+        CheckResult superResult = super.checkConsistency();
         
         this.checkTypeAssociation(this.typeMap, this.fieldMap);
+        
+        // TODO Join with own result
+        return superResult;
     }
 
     private void checkTypeAssociation(TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
