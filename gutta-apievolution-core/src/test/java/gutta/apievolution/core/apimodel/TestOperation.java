@@ -1,14 +1,12 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 class TestOperation extends Operation<TestApiDefinition, TestOperation, TestRecordType> {
 
-    public TestOperation(Set<Annotation> annotations, String publicName, Optional<String> internalName,
-            TestApiDefinition owner, TestRecordType returnType, TestRecordType parameterType) {
-        
-        super(annotations, publicName, internalName, owner, returnType, parameterType);
+    public TestOperation(String publicName, TestApiDefinition owner, TestRecordType returnType, TestRecordType parameterType) {        
+        super(Collections.emptySet(), publicName, Optional.empty(), owner, returnType, parameterType);
     }
 
 }

@@ -62,7 +62,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     
     private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField,
             CheckResult result) {
-        // Make sure that this(type(f)) = type(this(f)) for all mapped fields
+        // Make sure that the field types are mapped in a compatible way
         Type sourceType = sourceField.getType();
         Type mappedSourceType = this.mapType(sourceType).orElse(null);
         Type targetType = targetField.getType();
@@ -84,7 +84,28 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     private void ensureConsistentOperationTypeMapping(Operation<?, ?, ?> sourceOperation, Operation<?, ?, ?> targetOperation,
             CheckResult result) {
-        // TODO
+        // Make sure that operation parameter and result types are mapped in a compatible way
+        Type sourceParameterType = sourceOperation.getParameterType();
+        Type mappedSourceParameterType = this.mapType(sourceParameterType).orElse(null);
+        Type targetParameterType = targetOperation.getParameterType();
+        
+        if (mappedSourceParameterType == null) {
+            result.addErrorMessage("Parameter type '" + sourceParameterType + "' of mapped operation '" + sourceOperation + "' is not mapped.");
+        } else if (!mappedSourceParameterType.equals(targetParameterType)) {
+            result.addErrorMessage("Parameter type '" + sourceParameterType + "' of mapped operation '" + sourceOperation + 
+                    "' is mapped to incompatible type '" + mappedSourceParameterType + "' instead of '" + targetParameterType + "'.");
+        }
+        
+        Type sourceReturnType = sourceOperation.getReturnType();
+        Type mappedSourceReturnType = this.mapType(sourceReturnType).orElse(null);
+        Type targetReturnType = targetOperation.getReturnType();
+        
+        if (mappedSourceReturnType == null) {
+            result.addErrorMessage("Return type '" + sourceReturnType + "' of mapped operation '" + sourceOperation + "' is not mapped.");
+        } else if (!mappedSourceReturnType.equals(targetReturnType)) {
+            result.addErrorMessage("Return type '" + sourceReturnType + "' of mapped operation '" + sourceOperation + 
+                    "' is mapped to incompatible type '" + mappedSourceReturnType + "' instead of '" + targetReturnType + "'.");
+        }
     }
     
 }
