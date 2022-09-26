@@ -4,6 +4,8 @@ import gutta.apievolution.core.util.CheckResult;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, 
     T1 extends UserDefinedType<A1>, T2 extends UserDefinedType<A2>, 
@@ -48,34 +50,65 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     protected CheckResult checkConsistency() {
         CheckResult result = new CheckResult();
         
-        this.checkFieldTypes(result);
-        this.checkOperationTypes(result);
+        this.checkFieldMapping(result);
+        this.checkEnumMemberMapping(result);
+        this.checkOperationMapping(result);
         
         return result;
     }
     
-    private void checkFieldTypes(CheckResult result) {
+    private <E> void ensureConsistentTypeMapping(E sourceElement, E targetElement, Function<E, Type> operation, 
+            CheckResult result, BiFunction<E, Type, String> onUnmappedType,
+            ConsistencyCheckErrorMessageProvider<E> onIncompatibleType) {
+        
+        Type sourceType = operation.apply(sourceElement);
+        Type mappedSourceType = this.mapType(sourceType).orElse(null);
+        Type targetType = operation.apply(targetElement);
+        
+        if (mappedSourceType == null) {
+            result.addErrorMessage(onUnmappedType.apply(sourceElement, sourceType));
+        } else if (!mappedSourceType.equals(targetType)) {
+            result.addErrorMessage(onIncompatibleType.createMessage(sourceElement, sourceType, mappedSourceType, targetType));
+        }
+    }
+    
+    private void checkFieldMapping(CheckResult result) {
         // Ensure that field types are mapped consistently by this morphism
         this.fieldMap.forEach((sourceField, targetField) -> this.ensureConsistentFieldTypeMapping(sourceField,
                 targetField, result));
     }
-    
+        
     private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField,
             CheckResult result) {
-        // Make sure that the field types are mapped in a compatible way
-        Type sourceType = sourceField.getType();
-        Type mappedSourceType = this.mapType(sourceType).orElse(null);
-        Type targetType = targetField.getType();
+        // Make sure that the record type containing the member is mapped in a compatible way
+        this.ensureConsistentTypeMapping(sourceField, targetField, Field::getOwner, result,
+                (source, sourceType) -> "Record type '" + sourceType + "' containing field '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Record type '" + sourceType + "' containing field '" + source + 
+                "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
         
-        if (mappedSourceType == null) {
-            result.addErrorMessage("Type '" + sourceType + "' of mapped field '" + sourceField + "' is not mapped.");
-        } else if (!mappedSourceType.equals(targetType)) {
-            result.addErrorMessage("Type '" + sourceType + "' of mapped field '" + sourceField + 
-                    "' is mapped to incompatible type '" + mappedSourceType + "' instead of '" + targetType + "'.");
-        }
+        // Make sure that the field type is mapped in a compatible way
+        this.ensureConsistentTypeMapping(sourceField, targetField, Field::getType, result,
+                (source, sourceType) -> "Type '" + sourceType + "' of mapped field '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Type '" + sourceType + "' of mapped field '" + source + 
+                "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");        
     }
     
-    private void checkOperationTypes(CheckResult result) {
+    private void checkEnumMemberMapping(CheckResult result) {
+        this.memberMap.forEach(
+                (sourceMember, targetMember) -> this.ensureConsistentMemberTypeMapping(sourceMember, targetMember, result)
+                );
+    }
+    
+    private void ensureConsistentMemberTypeMapping(EnumMember<?, ?> sourceMember, EnumMember<?, ?> targetMember,
+            CheckResult result) {
+        // Make sure that the enum type containing the member is mapped in a compatible way
+        this.ensureConsistentTypeMapping(sourceMember, targetMember, EnumMember::getOwner, result,
+                (source, sourceType) -> "Enum type '" + sourceType + "' containing member '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Enum type '" + sourceType + "' containing member '" + source + 
+                "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
+    }
+    
+    private void checkOperationMapping(CheckResult result) {
         // Ensure that operation parameter and result types are mapped consistently by this morphism
         this.operationMap.forEach(
                 (sourceOperation, targetOperation) -> this.ensureConsistentOperationTypeMapping(sourceOperation, targetOperation, result)
@@ -85,27 +118,21 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     private void ensureConsistentOperationTypeMapping(Operation<?, ?, ?> sourceOperation, Operation<?, ?, ?> targetOperation,
             CheckResult result) {
         // Make sure that operation parameter and result types are mapped in a compatible way
-        Type sourceParameterType = sourceOperation.getParameterType();
-        Type mappedSourceParameterType = this.mapType(sourceParameterType).orElse(null);
-        Type targetParameterType = targetOperation.getParameterType();
+        this.ensureConsistentTypeMapping(sourceOperation, targetOperation, Operation::getParameterType, result,
+                (source, sourceType) -> "Parameter type '" + sourceType + "' of mapped operation '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Parameter type '" + sourceType + "' of mapped operation '" + source + 
+                "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
         
-        if (mappedSourceParameterType == null) {
-            result.addErrorMessage("Parameter type '" + sourceParameterType + "' of mapped operation '" + sourceOperation + "' is not mapped.");
-        } else if (!mappedSourceParameterType.equals(targetParameterType)) {
-            result.addErrorMessage("Parameter type '" + sourceParameterType + "' of mapped operation '" + sourceOperation + 
-                    "' is mapped to incompatible type '" + mappedSourceParameterType + "' instead of '" + targetParameterType + "'.");
-        }
+        this.ensureConsistentTypeMapping(sourceOperation, targetOperation, Operation::getReturnType, result,
+                (source, sourceType) -> "Return type '" + sourceType + "' of mapped operation '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Return type '" + sourceType + "' of mapped operation '" + source + 
+                "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
+    }
+
+    private interface ConsistencyCheckErrorMessageProvider<E> {
         
-        Type sourceReturnType = sourceOperation.getReturnType();
-        Type mappedSourceReturnType = this.mapType(sourceReturnType).orElse(null);
-        Type targetReturnType = targetOperation.getReturnType();
+        String createMessage(E sourceElement, Type sourceType, Type mappedType, Type expectedMappedType);
         
-        if (mappedSourceReturnType == null) {
-            result.addErrorMessage("Return type '" + sourceReturnType + "' of mapped operation '" + sourceOperation + "' is not mapped.");
-        } else if (!mappedSourceReturnType.equals(targetReturnType)) {
-            result.addErrorMessage("Return type '" + sourceReturnType + "' of mapped operation '" + sourceOperation + 
-                    "' is mapped to incompatible type '" + mappedSourceReturnType + "' instead of '" + targetReturnType + "'.");
-        }
     }
     
 }

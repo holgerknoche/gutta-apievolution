@@ -90,25 +90,27 @@ class ApiDefinitionMorphismTest {
      * Test case: An incompatible type mapping of a field is detected and reported.
      */
     @Test
-    void incompatibleMappingForField() {
+    void incompatibleTypeMappingForField() {
         // Create definition A
         TestApiDefinition definitionA = new TestApiDefinition("A");
         
-        TestRecordType recordTypeA1 = new TestRecordType("TypeA1", 0, definitionA);
-        TestRecordType recordTypeA2 = new TestRecordType("TypeA2", 1, definitionA);
+        TestRecordType recordTypeA = new TestRecordType("TypeA", 0, definitionA);
+        TestRecordType recordTypeA1 = new TestRecordType("TypeA1", 1, definitionA);
+        TestRecordType recordTypeA2 = new TestRecordType("TypeA2", 2, definitionA);
         
-        TestField fieldA = new TestField("fieldA", recordTypeA1, recordTypeA2);
+        TestField fieldA = new TestField("fieldA", recordTypeA, recordTypeA2);
         
         // Create definition B
         TestApiDefinition definitionB = new TestApiDefinition("B");
         
-        TestRecordType recordTypeB1 = new TestRecordType("TypeB1", 0, definitionB);
-        TestRecordType recordTypeB2 = new TestRecordType("TypeB2", 1, definitionB);
+        TestRecordType recordTypeB = new TestRecordType("TypeB", 0, definitionB);
+        TestRecordType recordTypeB1 = new TestRecordType("TypeB1", 1, definitionB);
+        TestRecordType recordTypeB2 = new TestRecordType("TypeB2", 2, definitionB);
         
-        TestField fieldB = new TestField("fieldB", recordTypeB1, recordTypeB2);
+        TestField fieldB = new TestField("fieldB", recordTypeB, recordTypeB2);
         
         // Create an API morphism from A to B with an incompatible type mapping
-        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
         TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
@@ -120,6 +122,141 @@ class ApiDefinitionMorphismTest {
         assertEquals(singletonList("Type 'TypeA2' of mapped field 'fieldA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'."), result.getMessages());
     }
     
+    /**
+     * Test case: A missing owner mapping of a field is detected and reported.
+     */
+    @Test
+    void missingOwnerMappingForField() {
+        // Create definition A
+        TestApiDefinition definitionA = new TestApiDefinition("A");
+        
+        TestRecordType recordTypeA = new TestRecordType("TypeA", 0, definitionA);
+        TestRecordType recordTypeA1 = new TestRecordType("TypeA1", 1, definitionA);
+        
+        TestField fieldA = new TestField("fieldA", recordTypeA1, recordTypeA);
+        
+        // Create definition B
+        TestApiDefinition definitionB = new TestApiDefinition("B");
+        
+        TestRecordType recordTypeB = new TestRecordType("TypeB", 0, definitionB);
+        TestRecordType recordTypeB1 = new TestRecordType("TypeB1", 1, definitionB);
+        
+        TestField fieldB = new TestField("fieldB", recordTypeB1, recordTypeB);
+        
+        // Create an API morphism from A to B with an incompatible type mapping
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB));
+        Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
+        
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        
+        // Check the consistency of the morphism
+        CheckResult result = morphism.checkConsistency();
+
+        assertTrue(result.hasError());
+        assertEquals(singletonList("Record type 'TypeA1' containing field 'fieldA' is not mapped."), result.getMessages());
+    }
+    
+    /**
+     * Test case: An incompatible owner mapping of a field is detected and reported.
+     */
+    @Test
+    void incompatibleOwnerMappingForField() {
+        // Create definition A
+        TestApiDefinition definitionA = new TestApiDefinition("A");
+        
+        TestRecordType recordTypeA = new TestRecordType("TypeA", 0, definitionA);
+        TestRecordType recordTypeA1 = new TestRecordType("TypeA1", 1, definitionA);
+        TestRecordType recordTypeA2 = new TestRecordType("TypeA2", 2, definitionA);
+        
+        TestField fieldA = new TestField("fieldA", recordTypeA1, recordTypeA);
+        
+        // Create definition B
+        TestApiDefinition definitionB = new TestApiDefinition("B");
+        
+        TestRecordType recordTypeB = new TestRecordType("TypeB", 0, definitionB);
+        TestRecordType recordTypeB1 = new TestRecordType("TypeB1", 1, definitionB);
+        TestRecordType recordTypeB2 = new TestRecordType("TypeB2", 2, definitionB);
+        
+        TestField fieldB = new TestField("fieldB", recordTypeB1, recordTypeB);
+        
+        // Create an API morphism from A to B with an incompatible type mapping
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
+        Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
+        
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        
+        // Check the consistency of the morphism
+        CheckResult result = morphism.checkConsistency();
+
+        assertTrue(result.hasError());
+        assertEquals(singletonList("Record type 'TypeA1' containing field 'fieldA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."), result.getMessages());
+    }
+    
+    /**
+     * Test case: A missing owner mapping of an enum member is detected and reported.
+     */
+    @Test
+    void missingOwnerMappingForEnumMember() {
+        // Create definition A
+        TestApiDefinition definitionA = new TestApiDefinition("A");
+        
+        TestEnumType enumTypeA = new TestEnumType("TypeA", 0, definitionA);
+        
+        TestEnumMember memberA = new TestEnumMember("memberA", enumTypeA);
+        
+        // Create definition B
+        TestApiDefinition definitionB = new TestApiDefinition("B");
+        
+        TestEnumType enumTypeB = new TestEnumType("TypeB", 0, definitionB);
+        
+        TestEnumMember memberB = new TestEnumMember("memberB", enumTypeB);
+        
+        // Create an API morphism from A to B with an incompatible type mapping
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(emptyMap());
+        Map<TestEnumMember, TestEnumMember> memberMap = mapOf(memberA, memberB);
+        
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), memberMap, emptyMap());
+        
+        // Check the consistency of the morphism
+        CheckResult result = morphism.checkConsistency();
+
+        assertTrue(result.hasError());
+        assertEquals(singletonList("Enum type 'TypeA' containing member 'memberA' is not mapped."), result.getMessages());
+    }
+    
+    /**
+     * Test case: An incompatible owner mapping of an enum member is detected and reported.
+     */
+    @Test
+    void incompatibleOwnerMappingForEnumMember() {
+        // Create definition A
+        TestApiDefinition definitionA = new TestApiDefinition("A");
+        
+        TestEnumType enumTypeA = new TestEnumType("TypeA1", 0, definitionA);
+        
+        TestEnumMember memberA = new TestEnumMember("memberA", enumTypeA);
+        
+        // Create definition B
+        TestApiDefinition definitionB = new TestApiDefinition("B");
+        
+        TestEnumType enumTypeB1 = new TestEnumType("TypeB1", 0, definitionB);
+        TestEnumType enumTypeB2 = new TestEnumType("TypeB2", 1, definitionB);
+        
+        TestEnumMember memberB = new TestEnumMember("memberB", enumTypeB1);
+        
+        // Create an API morphism from A to B with an incompatible type mapping
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(enumTypeA, enumTypeB2));
+        Map<TestEnumMember, TestEnumMember> memberMap = mapOf(memberA, memberB);
+        
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), memberMap, emptyMap());
+        
+        // Check the consistency of the morphism
+        CheckResult result = morphism.checkConsistency();
+
+        assertTrue(result.hasError());
+        assertEquals(singletonList("Enum type 'TypeA1' containing member 'memberA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."), result.getMessages());
+    }
+        
     /**
      * Test case: A missing mapping of an operation's parameter type is detected and reported.
      */
