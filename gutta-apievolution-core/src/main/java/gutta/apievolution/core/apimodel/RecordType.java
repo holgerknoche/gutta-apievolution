@@ -21,7 +21,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
 
     private final boolean exception;
 
-    private Optional<R> superType = Optional.empty();
+    private final Set<R> superTypes = new LinkedHashSet<>(); // We use a linked hash set for a predictable iteration order
 
     private final List<F> declaredFields;
 
@@ -38,30 +38,30 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      *
      * @param publicName   The public name of this record type
      * @param internalName The internal name of this record type, if applicable.
-     *                     Otherwise, the public name is assumed
+     *                     If {@code null}, the public name is assumed
      * @param typeId       The type id of this record type
      * @param owner        The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
      */
-    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
+    protected RecordType(final String publicName, final String internalName, final int typeId, final A owner,
             final boolean abstractFlag) {
-        this(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty());
+        this(publicName, internalName, typeId, owner, abstractFlag, false, Collections.emptySet());
     }
 
     /**
      * Creates a new record type from the given data.
      *
      * @param publicName   The public name of this record type
-     * @param internalName The internal name of this record type, if applicable.
-     *                     Otherwise, the public name is assumed
+     * @param internalName The internal name of this record type, if any.
+     *                     If {@code null}, the public name is assumed
      * @param typeId       The type id of this record type
      * @param owner        The API definition that owns this record type
      * @param abstractFlag A flag denoting whether this record type is abstract
      * @param exception    A flag denoting whether this record type is an exception
-     * @param superType    An optional supertype for this record type
+     * @param superTypes   A (possibly empty) set of supertypes for this record type
      */
-    protected RecordType(final String publicName, final Optional<String> internalName, final int typeId, final A owner,
-            final boolean abstractFlag, boolean exception, final Optional<R> superType) {
+    protected RecordType(final String publicName, final String internalName, final int typeId, final A owner,
+            final boolean abstractFlag, boolean exception, final Set<R> superTypes) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
@@ -74,7 +74,9 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
 
         owner.addUserDefinedType(this);
 
-        superType.ifPresent(this::setSuperType);
+        if (superTypes != null) {
+            this.superTypes.addAll(superTypes);
+        }
     }
 
     /**
@@ -96,24 +98,20 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     }
 
     /**
-     * Sets the supertype for this record type. This method can only be called if no
-     * supertype is currently assigned to this type.
+     * Adds a supertype for this record type.
      *
-     * @param superType The supertype to assign
+     * @param superType The supertype to add
      */
     @SuppressWarnings("unchecked")
-    public void setSuperType(R superType) {
+    public void addSuperType(R superType) {
         this.assertMutability();
 
-        if (this.superType.isPresent()) {
-            throw new InvalidApiDefinitionException("There is already a supertype for " + this + ".");
-        }
         if (this.isException() != superType.isException()) {
             throw new InvalidApiDefinitionException(
                     "The super type " + superType + " of " + this + " must be an exception.");
         }
 
-        this.superType = Optional.of(superType);
+        this.superTypes.add(superType);
         superType.registerSubType((R) this);
     }
 
@@ -189,21 +187,21 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     }
     
     /**
-     * Returns whether this record type has a supertype.
+     * Returns whether this record type has at least one supertype.
      *
      * @return see above
      */
-    public boolean hasSuperType() {
-        return this.superType.isPresent();
+    public boolean hasSuperTypes() {
+        return !(this.superTypes.isEmpty());
     }
 
     /**
-     * Returns this record type's supertype.
+     * Returns this record type's supertypes.
      *
      * @return see above
      */
-    public Optional<R> getSuperType() {
-        return this.superType;
+    public Set<R> getSuperTypes() {
+        return this.superTypes;
     }
 
     /**
@@ -272,14 +270,22 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         return this.getTypeId();
     }
 
-    private Set<Integer> subTypeIds() {
-        if (!this.hasSubTypes()) {
+    private Set<Integer> typeIdSet(Collection<R> types) {
+        if (types.isEmpty()) {
             return Collections.emptySet();
         } else {
-            return this.subTypes.stream()
+            return types.stream()
                     .map(RecordType::getTypeId)
                     .collect(Collectors.toSet());
         }
+    }
+    
+    private Set<Integer> subTypeIds() {
+        return this.typeIdSet(this.subTypes);
+    }
+    
+    private Set<Integer> superTypeIds() {
+        return this.typeIdSet(this.superTypes);
     }
     
     /**
@@ -292,7 +298,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         // To avoid cycles, we only compare the type ids of the subtypes
         return super.stateEquals(that) && this.declaredFields.equals(that.declaredFields) &&
                 this.subTypeIds().equals(that.subTypeIds()) && this.abstractFlag == that.abstractFlag &&
-                this.superType.equals(that.superType);
+                this.superTypeIds().equals(that.superTypeIds());
     }
     
     @Override

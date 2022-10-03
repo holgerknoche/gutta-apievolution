@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -26,7 +25,7 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
         this.processedTypes = new HashSet<>();
 
         // Iterate over "leaf types" with super types
-        recordTypes.stream().filter(type -> !type.hasSubTypes()).filter(RecordType::hasSuperType)
+        recordTypes.stream().filter(type -> !type.hasSubTypes()).filter(RecordType::hasSuperTypes)
                 .forEach(this::propagateFields);
     }
 
@@ -35,15 +34,14 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
     }
 
     private void propagateFields(R targetType, List<F> inheritedFields) {
-        // Collect fields from the supertype, if present
-        Optional<R> optionalSuperType = targetType.getSuperType();
-        optionalSuperType.ifPresent(superType -> {
+        // Collect fields from the supertypes
+        Set<R> superTypes = targetType.getSuperTypes();
+        for (R superType : superTypes) {
             this.propagateFields(superType, inheritedFields);
-        });
+        }
 
         // If the current type has not yet been processed, add the inherited types to
-        // the
-        // current type
+        // the current type
         if (!this.processedTypes.contains(targetType)) {
             for (F inheritedField : inheritedFields) {
                 this.createInheritedField(inheritedField, targetType);

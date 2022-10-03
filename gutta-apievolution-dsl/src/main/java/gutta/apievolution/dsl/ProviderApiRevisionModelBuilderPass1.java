@@ -12,6 +12,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -86,7 +87,7 @@ class ProviderApiRevisionModelBuilderPass1
         });
 
         return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
-                Optional.empty(), predecessor);
+                Collections.emptySet(), predecessor);
     }
 
     private Optional<ProviderRecordType> resolvePredecessorRecord(final String name, final boolean explicitReference,

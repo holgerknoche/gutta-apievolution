@@ -4,6 +4,7 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +16,10 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
     private final int referencedRevision;
 
+    public static ConsumerApiDefinition create(String name, int referencedRevision) {
+        return new ConsumerApiDefinition(name, Collections.emptySet(), referencedRevision);
+    }
+    
     /**
      * Creates an API definition from the given data.
      *

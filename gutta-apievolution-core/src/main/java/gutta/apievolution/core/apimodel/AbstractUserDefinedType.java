@@ -1,7 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.Optional;
-
 /**
  * As the name implies, user-defined types (UDTs) are types that are given by
  * the user. Examples of such types are record and enumeration types.
@@ -21,19 +19,19 @@ public abstract class AbstractUserDefinedType<A extends ApiDefinition<A, ?>> ext
      * Creates a new UDT from the given data.
      *
      * @param publicName   The UDT's public name
-     * @param internalName The UDT's internal name, if any (otherwise, the public
+     * @param internalName The UDT's internal name, if any (if {@code null}, the public
      *                     name is assumed)
      * @param typeId       The UDT's type id
      * @param owner        The API definition owning this UDT
      */
-    protected AbstractUserDefinedType(final String publicName, final Optional<String> internalName, final int typeId,
+    protected AbstractUserDefinedType(final String publicName, final String internalName, final int typeId,
             final A owner) {
         super(publicName, internalName);
 
         this.owner = owner;
         this.typeId = typeId;
     }
-
+    
     /**
      * Returns this UDT's type id.
      *

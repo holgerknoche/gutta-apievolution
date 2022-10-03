@@ -4,11 +4,14 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
@@ -18,9 +21,17 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
 
     private final int revision;
 
-    private final Optional<ProviderApiDefinition> predecessor;
+    private final ProviderApiDefinition predecessor;
 
-    private Optional<ProviderApiDefinition> successor = Optional.empty();
+    private ProviderApiDefinition successor;
+    
+    public static ProviderApiDefinition create(String name, int revision) {
+        return new ProviderApiDefinition(name, Collections.emptySet(), revision, null);
+    }
+    
+    public static ProviderApiDefinition withPredecessor(String name, int revision, ProviderApiDefinition predecessor) {
+        return new ProviderApiDefinition(name, Collections.emptySet(), revision, predecessor);
+    }
     
     /**
      * Creates a new provider API definition from the given data.
@@ -28,16 +39,16 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
      * @param name        The name of the API definition
      * @param annotations The annotations of this API definition
      * @param revision    The revision number of this API definition
-     * @param predecessor The predecessor of this API definition
+     * @param predecessor The predecessor of this API definition, if any
      */
     public ProviderApiDefinition(final QualifiedName name, final Set<Annotation> annotations, final int revision,
-            final Optional<ProviderApiDefinition> predecessor) {
+            final ProviderApiDefinition predecessor) {
         super(name, annotations);
 
         this.predecessor = predecessor;
         this.revision = revision;
 
-        predecessor.ifPresent(definition -> definition.setSuccessor(this));
+        ifPresent(predecessor, definition -> definition.setSuccessor(this));
     }
 
     /**
@@ -49,7 +60,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
      * @param predecessor The predecessor of this API definition
      */
     public ProviderApiDefinition(String name, Set<Annotation> annotations, int revision, 
-            Optional<ProviderApiDefinition> predecessor) {
+            ProviderApiDefinition predecessor) {
         this(QualifiedName.of(name), annotations, revision, predecessor);
     }
     
@@ -64,16 +75,16 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
 
     @Override
     public Optional<ProviderApiDefinition> getPredecessor() {
-        return this.predecessor;
+        return Optional.ofNullable(this.predecessor);
     }
 
     @Override
     public Optional<ProviderApiDefinition> getSuccessor() {
-        return this.successor;
+        return Optional.ofNullable(this.successor);
     }
 
     private void setSuccessor(final ProviderApiDefinition successor) {
-        this.successor = Optional.of(successor);
+        this.successor = successor;
     }
 
     /**

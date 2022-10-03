@@ -4,17 +4,33 @@ import gutta.apievolution.core.apimodel.EnumMember;
 
 import java.util.Optional;
 
+import static gutta.apievolution.core.util.UtilityFunctions.*;
+import static java.util.Objects.*;
+
 /**
  * Provider-specific implementation of an {@link EnumMember}.
  */
 public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnumMember>
         implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private final Optional<ProviderEnumMember> predecessor;
+    private final ProviderEnumMember predecessor;
 
-    private Optional<ProviderEnumMember> successor;
+    private ProviderEnumMember successor;
 
+    public static ProviderEnumMember create(String publicName, ProviderEnumType owner) {
+        return withInternalName(publicName, null, owner);
+    }
+    
+    public static ProviderEnumMember withInternalName(String publicName, String internalName,
+            ProviderEnumType owner) {
+        return new ProviderEnumMember(publicName, internalName, owner, null);
+    }
+    
+    public static ProviderEnumMember withPredecessor(String publicName, String internalName,
+            ProviderEnumType owner, ProviderEnumMember predecessor) {
+        return new ProviderEnumMember(publicName, internalName, owner, requireNonNull(predecessor));
+    }
+    
     /**
      * Creates a new enum member from the given data.
      *
@@ -24,28 +40,28 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
      * @param owner        The enum type that owns this member
      * @param predecessor  The member's predecessor, if any
      */
-    public ProviderEnumMember(final String publicName, final Optional<String> internalName,
-            final ProviderEnumType owner, final Optional<ProviderEnumMember> predecessor) {
+    private ProviderEnumMember(final String publicName, final String internalName,
+            final ProviderEnumType owner, final ProviderEnumMember predecessor) {
         super(publicName, internalName, owner);
 
         this.predecessor = predecessor;
-        this.successor = Optional.empty();
+        this.successor = null;
 
-        predecessor.ifPresent(enumMember -> enumMember.setSuccessor(this));
+        ifPresent(predecessor, enumMember -> enumMember.setSuccessor(this));
     }
 
     @Override
     public Optional<ProviderEnumMember> getPredecessor() {
-        return this.predecessor;
+        return Optional.ofNullable(this.predecessor);
     }
 
     @Override
     public Optional<ProviderEnumMember> getSuccessor() {
-        return this.successor;
+        return Optional.ofNullable(this.successor);
     }
 
     private void setSuccessor(final ProviderEnumMember successor) {
-        this.successor = Optional.of(successor);
+        this.successor = successor;
     }
 
     @Override

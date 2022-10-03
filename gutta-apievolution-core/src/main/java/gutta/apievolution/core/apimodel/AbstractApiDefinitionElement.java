@@ -26,10 +26,10 @@ abstract class AbstractApiDefinitionElement {
      * Creates a new API definition element from the given data.
      *
      * @param publicName   The element's public name
-     * @param internalName The element's internal name, if any. Otherwise, the
+     * @param internalName The element's internal name, if any. If {@code null}, the
      *                     public name is assumed
      */
-    protected AbstractApiDefinitionElement(final String publicName, final Optional<String> internalName) {
+    protected AbstractApiDefinitionElement(final String publicName, final String internalName) {
         this(Collections.emptySet(), publicName, internalName);
     }
 
@@ -38,16 +38,16 @@ abstract class AbstractApiDefinitionElement {
      *
      * @param annotations  The annotations on the element
      * @param publicName   The element's public name
-     * @param internalName The element's internal name, if any. Otherwise, the
+     * @param internalName The element's internal name, if any. If {@code null}, the
      *                     public name is assumed
      */
     protected AbstractApiDefinitionElement(Set<Annotation> annotations, String publicName,
-            Optional<String> internalName) {
+            String internalName) {
         this.annotations = annotations;
         this.annotationLookup = (annotations.isEmpty()) ? Collections.emptyMap()
                 : annotations.stream().collect(Collectors.toMap(Annotation::getName, Function.identity()));
         this.publicName = publicName;
-        this.internalName = internalName.orElse(publicName);
+        this.internalName = (internalName == null) ? publicName : internalName;
     }
 
     /**

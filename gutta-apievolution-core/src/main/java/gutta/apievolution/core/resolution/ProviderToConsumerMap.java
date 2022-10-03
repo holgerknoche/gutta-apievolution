@@ -87,11 +87,6 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
             ownType.accept(this);
         }
 
-        @SuppressWarnings("unchecked")
-        private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) ProviderToConsumerMap.this.typeMap.mapType(ownType);
-        }
-
         private ConsumerField resolveForeignField(ProviderField ownField) {
             return ProviderToConsumerMap.this.fieldMap.get(ownField);
         }
@@ -105,20 +100,6 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         @Override
         public Void handleRecordType(RecordType<?, ?, ?> recordType) {
             RecordType<?, ?, ?> foreignRecordType = (RecordType<?, ?, ?>) this.foreignType;
-
-            if (recordType.getSuperType().isPresent()) {
-                // When the current record has a supertype, ensure that it is mapped in a
-                // compatible way
-                RecordType<?, ?, ?> ownSuperType = recordType.getSuperType().get(); // NOSONAR IsPresent is called
-                RecordType<?, ?, ?> foreignSuperType = foreignRecordType.getSuperType().orElseThrow(
-                        () -> new DefinitionResolutionException("Missing supertype on " + foreignRecordType + "."));
-
-                Type mappedForeignSupertype = this.resolveForeignType(ownSuperType);
-                if (!foreignSuperType.equals(mappedForeignSupertype)) {
-                    throw new DefinitionResolutionException("Supertype of " + foreignRecordType + " is mapped to " +
-                            mappedForeignSupertype + ", expected " + foreignSuperType + ".");
-                }
-            }
 
             // Assert that the types of the fields are compatible
             for (Field<?, ?> field : recordType.getDeclaredFields()) { // NOSONAR Type is correct

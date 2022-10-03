@@ -58,7 +58,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
         // Resolve super type, if applicable
         Optional<String> optionalSuperTypeName = this.optionalIdentifierAsText(ctx.superType);
         Optional<R> optionalSuperType = this.resolveRecord(optionalSuperTypeName, () -> ctx.superType.start);
-        optionalSuperType.ifPresent(recordType::setSuperType);
+        optionalSuperType.ifPresent(recordType::addSuperType);
 
         this.currentRecordType = recordType;
         ctx.fields.forEach(field -> field.accept(this));

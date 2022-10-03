@@ -1,7 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A field represents a data field within a record type.
@@ -23,7 +22,7 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      * Creates a new field from the given data.
      *
      * @param publicName   The public name of the field
-     * @param internalName The internal name of the field, if applicable. Otherwise,
+     * @param internalName The internal name of the field, if applicable. If {@code null}
      *                     the public name is assumed
      * @param owner        The record type that owns this field
      * @param type         The field's type
@@ -31,7 +30,7 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      * @param inherited    Denotes whether the field is inherited from a supertype
      */
     @SuppressWarnings("unchecked")
-    protected Field(final String publicName, final Optional<String> internalName, final R owner, final Type type,
+    protected Field(final String publicName, final String internalName, final R owner, final Type type,
             Optionality optionality, boolean inherited) {
         super(publicName, internalName);
 

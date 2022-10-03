@@ -24,11 +24,11 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
      *
      * @param publicName   The public name of the enum type
      * @param internalName The internal name of the enum type, if applicable.
-     *                     Otherwise, the public name is assumed
+     *                     If {@code null} the public name is assumed
      * @param typeId       The enum type's type id
      * @param owner        The API definition that owns this enum type
      */
-    protected EnumType(final String publicName, final Optional<String> internalName, final int typeId, final A owner) {
+    protected EnumType(final String publicName, final String internalName, final int typeId, final A owner) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredMembers = new ArrayList<>();

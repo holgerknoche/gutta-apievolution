@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.consumer.*;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ class ConsumerApiRevisionModelBuilderPass1
             final Optional<String> internalName, final int typeId, final ConsumerApiDefinition currentRevision,
             final boolean abstractFlag, boolean exception) {
         return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
-                Optional.empty());
+                Collections.emptySet());
     }
 
     @Override

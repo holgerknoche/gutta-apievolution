@@ -72,10 +72,18 @@ public class ProviderApiDefinitionPrinter implements ProviderApiDefinitionElemen
         builder.append(recordType.getInternalName());
         builder.append(")");
 
-        recordType.getSuperType().ifPresent(type -> {
+        if (recordType.hasSuperTypes()) {
             builder.append(" extends ");
-            builder.append(type.getPublicName());
-        });
+            
+            Iterator<ProviderRecordType> superTypes = recordType.getSuperTypes().iterator();
+            while (superTypes.hasNext()) {
+                builder.append(superTypes.next().getPublicName());
+                
+                if (superTypes.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+        }        
 
         recordType.getPredecessor().ifPresent(pred -> {
             builder.append(" <- ");
