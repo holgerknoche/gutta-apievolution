@@ -1,5 +1,6 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
 import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 import gutta.apievolution.core.apimodel.EnumType;
@@ -56,6 +57,10 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
     }
 
     // Element creators
+    
+    public ProviderEnumMember newEnumMember(String publicName) {
+        return new ProviderEnumMember(publicName, noInternalName(), this, noPredecessor());
+    }
     
     public ProviderEnumMember newEnumMember(String publicName, String internalName, ProviderEnumMember predecessor) {
         return new ProviderEnumMember(publicName, internalName, this, predecessor);

@@ -74,6 +74,11 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
                 noDeclaredPredecessors(), noPredecessor());
     }
     
+    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality, ProviderField predecessor) {
+        return new ProviderField(publicName, internalName, this, type, optionality, Inherited.NO,
+                noDeclaredPredecessors(), predecessor);
+    }
+    
     public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
             Inherited inherited, List<ProviderField> declaredPredecessors, ProviderField predecessor) {
         return new ProviderField(publicName, internalName, this, type, optionality, inherited, declaredPredecessors,

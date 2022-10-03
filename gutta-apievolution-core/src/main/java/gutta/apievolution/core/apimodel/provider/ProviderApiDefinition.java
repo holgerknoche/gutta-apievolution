@@ -83,7 +83,11 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
     }
 
     // Element creators
-        
+     
+    public ProviderEnumType newEnumType(String publicName, int typeId) {
+        return new ProviderEnumType(publicName, noInternalName(), typeId, this, noPredecessor());
+    }
+    
     public ProviderEnumType newEnumType(String publicName, String internalName, int typeId, ProviderEnumType predecessor) {
         return new ProviderEnumType(publicName, internalName, typeId, this, predecessor);
     }
@@ -92,10 +96,23 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
         return this.newRecordType(publicName, noInternalName(), typeId, Abstract.NO, noSuperTypes(), noPredecessor());
     }
     
+    public ProviderRecordType newRecordType(String publicName, String internalName, int typeId, ProviderRecordType predecessor) {
+        return this.newRecordType(publicName, internalName, typeId, Abstract.NO, noSuperTypes(), predecessor);
+    }
+    
     public ProviderRecordType newRecordType(String publicName, String internalName, int typeId, Abstract abstractFlag,
             Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
         return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.RECORD,
                 superTypes, predecessor);
+    }
+    
+    public ProviderRecordType newExceptionType(String publicName, int typeId) {
+        return this.newExceptionType(publicName, noInternalName(), typeId, noPredecessor());
+    }
+    
+    public ProviderRecordType newExceptionType(String publicName, String internalName, int typeId,
+            ProviderRecordType predecessor) {
+        return this.newExceptionType(publicName, internalName, typeId, Abstract.NO, noSuperTypes(), predecessor);
     }
     
     public ProviderRecordType newExceptionType(String publicName, String internalName, int typeId, Abstract abstractFlag,
