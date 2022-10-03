@@ -1,15 +1,14 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+
 import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.Type;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of a {@link Field}.
@@ -22,29 +21,6 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     private final List<ProviderField> declaredPredecessors;
 
     private ProviderField successor;
-
-    public static ProviderField create(String publicName, ProviderRecordType owner, Type type, Optionality optionality) {
-        return withoutPredecessor(publicName, null, owner, type, optionality);
-    }
-    
-    public static ProviderField withInternalName(String publicName, String internalName, ProviderRecordType owner, Type type, Optionality optionality) {
-        return withoutPredecessor(publicName, internalName, owner, type, optionality);
-    }
-    
-    public static ProviderField withoutPredecessor(final String publicName, final String internalName, final ProviderRecordType owner,
-            final Type type, Optionality optionality) {
-        return new ProviderField(publicName, internalName, owner, type, optionality, false, Collections.emptyList(), null);
-    }
-    
-    public static ProviderField withPredecessor(final String publicName, final String internalName, final ProviderRecordType owner,
-            final Type type, Optionality optionality, ProviderField predecessor) {
-        return new ProviderField(publicName, internalName, owner, type, optionality, false, Collections.emptyList(), requireNonNull(predecessor));
-    }
-
-    static ProviderField inheritedField(String publicName, String internalName, ProviderRecordType owner, Type type, Optionality optionality,
-            ProviderField predecessor) {
-        return new ProviderField(publicName, internalName, owner, type, optionality, true, Collections.emptyList(), predecessor);
-    }
     
     /**
      * Creates a new field from the given data.
@@ -59,8 +35,8 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
      * @param declaredPredecessors The declared predecessors, if any
      * @param predecessor          The field's predecessor, if any
      */
-    public ProviderField(final String publicName, final String internalName, final ProviderRecordType owner,
-            final Type type, Optionality optionality, boolean inherited, List<ProviderField> declaredPredecessors,
+    ProviderField(final String publicName, final String internalName, final ProviderRecordType owner,
+            final Type type, Optionality optionality, Inherited inherited, List<ProviderField> declaredPredecessors,
             final ProviderField predecessor) {
         super(publicName, internalName, owner, type, optionality, inherited);
 

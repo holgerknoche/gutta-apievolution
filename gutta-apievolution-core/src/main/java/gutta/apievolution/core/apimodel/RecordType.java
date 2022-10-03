@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.*;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * A record type represents a user-defined record, i.e., a type that consists of
  * fields.
@@ -37,37 +39,22 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * Creates a new record type from the given data.
      *
      * @param publicName   The public name of this record type
-     * @param internalName The internal name of this record type, if applicable.
-     *                     If {@code null}, the public name is assumed
-     * @param typeId       The type id of this record type
-     * @param owner        The API definition that owns this record type
-     * @param abstractFlag A flag denoting whether this record type is abstract
-     */
-    protected RecordType(final String publicName, final String internalName, final int typeId, final A owner,
-            final boolean abstractFlag) {
-        this(publicName, internalName, typeId, owner, abstractFlag, false, Collections.emptySet());
-    }
-
-    /**
-     * Creates a new record type from the given data.
-     *
-     * @param publicName   The public name of this record type
      * @param internalName The internal name of this record type, if any.
      *                     If {@code null}, the public name is assumed
      * @param typeId       The type id of this record type
      * @param owner        The API definition that owns this record type
-     * @param abstractFlag A flag denoting whether this record type is abstract
-     * @param exception    A flag denoting whether this record type is an exception
+     * @param abstractFlag Denotes whether this type is abstract
+     * @param recordKind   Denotes the kind of record to be created
      * @param superTypes   A (possibly empty) set of supertypes for this record type
      */
     protected RecordType(final String publicName, final String internalName, final int typeId, final A owner,
-            final boolean abstractFlag, boolean exception, final Set<R> superTypes) {
+            final Abstract abstractFlag, RecordKind recordKind, final Set<R> superTypes) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredFields = new ArrayList<>();
         this.inheritedFields = new ArrayList<>();
-        this.abstractFlag = abstractFlag;
-        this.exception = exception;
+        this.abstractFlag = (requireNonNull(abstractFlag) == Abstract.YES);
+        this.exception = (requireNonNull(recordKind) == RecordKind.EXCEPTION);
         this.fieldLookup = new HashMap<>();
         this.internalNameLookup = new HashMap<>();
         this.subTypes = new HashSet<>();

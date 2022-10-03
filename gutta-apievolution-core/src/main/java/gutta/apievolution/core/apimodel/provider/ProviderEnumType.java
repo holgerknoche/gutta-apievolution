@@ -1,11 +1,10 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+
 import gutta.apievolution.core.apimodel.EnumType;
 
 import java.util.Optional;
-
-import static gutta.apievolution.core.util.UtilityFunctions.*;
-import static java.util.Objects.*;
 
 /**
  * Provider-specific implementation of an {@link EnumType}.
@@ -16,20 +15,6 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
     private final ProviderEnumType predecessor;
 
     private ProviderEnumType successor;
-
-    public static ProviderEnumType create(String publicName, int typeId, ProviderApiDefinition owner) {
-        return withInternalName(publicName, null, typeId, owner);
-    }
-        
-    public static ProviderEnumType withInternalName(final String publicName, final String internalName, final int typeId,
-            final ProviderApiDefinition owner) {
-        return new ProviderEnumType(publicName, internalName, typeId, owner, null);
-    }
-    
-    public static ProviderEnumType withPredecessor(final String publicName, final String internalName, final int typeId,
-            final ProviderApiDefinition owner, final ProviderEnumType predecessor) {
-        return new ProviderEnumType(publicName, internalName, typeId, owner, requireNonNull(predecessor));
-    }
     
     /**
      * Creates a new enum type from the given data.
@@ -41,7 +26,7 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
      * @param owner        The API definition that owns this enum type
      * @param predecessor  The enum type's predecessor
      */
-    private ProviderEnumType(final String publicName, final String internalName, final int typeId,
+    ProviderEnumType(final String publicName, final String internalName, final int typeId,
             final ProviderApiDefinition owner, final ProviderEnumType predecessor) {
         super(publicName, internalName, typeId, owner);
 
@@ -70,6 +55,12 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
         return visitor.handleProviderEnumType(this);
     }
 
+    // Element creators
+    
+    public ProviderEnumMember newEnumMember(String publicName, String internalName, ProviderEnumMember predecessor) {
+        return new ProviderEnumMember(publicName, internalName, this, predecessor);
+    }
+        
     @Override
     public int hashCode() {
         // No predecessors or successors to avoid cycles

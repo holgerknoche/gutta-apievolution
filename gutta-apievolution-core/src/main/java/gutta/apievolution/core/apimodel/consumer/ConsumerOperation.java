@@ -7,14 +7,6 @@ import gutta.apievolution.core.apimodel.Operation;
  */
 public class ConsumerOperation extends Operation<ConsumerApiDefinition, ConsumerOperation, ConsumerRecordType>
         implements ConsumerApiDefinitionElement {
-
-    public static ConsumerOperation create(String publicName, ConsumerApiDefinition owner, ConsumerRecordType returnType, ConsumerRecordType parameterType) {
-        return new ConsumerOperation(publicName, null, owner, returnType, parameterType);
-    }
-    
-    public static ConsumerOperation withInternalName(String publicName, String internalName, ConsumerApiDefinition owner, ConsumerRecordType returnType, ConsumerRecordType parameterType) {
-        return new ConsumerOperation(publicName, internalName, owner, returnType, parameterType);
-    }
     
     /**
      * Creates a new service operation from the given data.
@@ -26,7 +18,7 @@ public class ConsumerOperation extends Operation<ConsumerApiDefinition, Consumer
      * @param returnType    The operation's return type
      * @param parameterType The operation's parameter type
      */
-    public ConsumerOperation(final String publicName, final String internalName,
+    ConsumerOperation(final String publicName, final String internalName,
             final ConsumerApiDefinition owner, ConsumerRecordType returnType, ConsumerRecordType parameterType) {
         super(publicName, internalName, owner, returnType, parameterType);
     }

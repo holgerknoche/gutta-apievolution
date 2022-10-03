@@ -1,8 +1,9 @@
 package gutta.apievolution.core.apimodel.consumer;
 
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
-import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.RecordKind;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,21 +20,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
     public static ConsumerApiDefinition create(String name, int referencedRevision) {
         return new ConsumerApiDefinition(name, Collections.emptySet(), referencedRevision);
     }
-    
-    /**
-     * Creates an API definition from the given data.
-     *
-     * @param name               The API definition's name
-     * @param annotations        The annotations on this API definition, if any
-     * @param referencedRevision The referenced revision number
-     */
-    public ConsumerApiDefinition(final QualifiedName name, final Set<Annotation> annotations,
-            final int referencedRevision) {
-        super(name, annotations);
-
-        this.referencedRevision = referencedRevision;
-    }
-    
+        
     /**
      * Creates an API definition from the given data.
      *
@@ -42,7 +29,9 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
      * @param referencedRevision The referenced revision number
      */
     public ConsumerApiDefinition(String name, Set<Annotation> annotations, int referencedRevision) {
-        this(QualifiedName.of(name), annotations, referencedRevision);
+        super(name, annotations);
+        
+        this.referencedRevision = referencedRevision;
     }
 
     /**
@@ -54,6 +43,22 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
         return this.referencedRevision;
     }
 
+    // Element creators
+        
+    public ConsumerEnumType newEnumType(String publicName, String internalName, int typeId) {
+        return new ConsumerEnumType(publicName, internalName, typeId, this);
+    }
+    
+    public ConsumerRecordType newRecordType(String publicName, String internalName, int typeId,
+            Abstract abstractFlag, Set<ConsumerRecordType> superTypes) {
+        return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.RECORD, superTypes);
+    }
+    
+    public ConsumerRecordType newExceptionType(String publicName, String internalName, int typeId,
+            Abstract abstractFlag, Set<ConsumerRecordType> superTypes) {
+        return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION, superTypes);
+    }
+    
     @Override
     public int hashCode() {
         return super.hashCode() + this.referencedRevision;

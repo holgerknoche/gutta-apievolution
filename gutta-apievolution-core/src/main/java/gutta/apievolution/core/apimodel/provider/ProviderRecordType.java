@@ -1,12 +1,18 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.RecordType;
+import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
-import java.util.Collections;
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Inherited;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.RecordKind;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import static gutta.apievolution.core.util.UtilityFunctions.*;
 
 /**
  * Provider-specific implementation of a {@link RecordType}.
@@ -17,54 +23,7 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
     private final ProviderRecordType predecessor;
 
     private ProviderRecordType successor;
-       
-    public static ProviderRecordType createRecordType(String publicName, int typeId, ProviderApiDefinition owner) {
-        return recordWithInternalName(publicName, null, typeId, owner);
-    }
-    
-    public static ProviderRecordType abstractRecord(String publicName, int typeId, ProviderApiDefinition owner) {
-        return new ProviderRecordType(publicName, null, typeId, owner, true, false, Collections.emptySet(), null);
-    }
-        
-    public static ProviderRecordType recordWithoutSupertype(String publicName, String internalName, int typeId, ProviderApiDefinition owner,
-            boolean abstractFlag, ProviderRecordType predecessor) {
-        return new ProviderRecordType(publicName, internalName, typeId, owner, abstractFlag, false, Collections.emptySet(), predecessor);
-    }
-    
-    public static ProviderRecordType recordWithSuperType(String publicName, int typeId, ProviderApiDefinition owner, ProviderRecordType superType) {
-        return new ProviderRecordType(publicName, null, typeId, owner, false, false, Collections.singleton(superType), null);
-    }
-    
-    public static ProviderRecordType recordWithInternalName(String publicName, String internalName, int typeId, ProviderApiDefinition owner) {
-        return new ProviderRecordType(publicName, internalName, typeId, owner, false, false, Collections.emptySet(), null); 
-    }
-    
-    public static ProviderRecordType recordWithoutInternalName(String publicName, int typeId, ProviderApiDefinition owner, boolean abstractFlag,
-            ProviderRecordType superType, ProviderRecordType predecessor) {
-        return new ProviderRecordType(publicName, null, typeId, owner, abstractFlag, false, Collections.singleton(superType), predecessor);
-    }
-    
-    public static ProviderRecordType recordWithPredecessor(String publicName, int typeId, ProviderApiDefinition owner, ProviderRecordType predecessor) {
-        return new ProviderRecordType(publicName, null, typeId, owner, false, false, null, predecessor);
-    }
-        
-    public static ProviderRecordType withoutSuperTypeOrPredecessor(String publicName, String internalName, int typeId, ProviderApiDefinition owner,
-            boolean abstractFlag, boolean exception) {
-        return new ProviderRecordType(publicName, internalName, typeId, owner, abstractFlag, exception, Collections.emptySet(), null);
-    }
-    
-    public static ProviderRecordType createExceptionType(String publicName, int typeId, ProviderApiDefinition owner) {
-        return exceptionWithInternalName(publicName, null, typeId, owner);
-    }
-    
-    public static ProviderRecordType exceptionWithInternalName(String publicName, String internalName, int typeId, ProviderApiDefinition owner) {
-        return new ProviderRecordType(publicName, internalName, typeId, owner, false, true, Collections.emptySet(), null); 
-    }
-    
-    public static ProviderRecordType exceptionWithPredecessor(String publicName, int typeId, ProviderApiDefinition owner, ProviderRecordType prededessor) {
-        return new ProviderRecordType(publicName, null, typeId, owner, false, true, Collections.emptySet(), prededessor);
-    }
-    
+           
     /**
      * Creates a new record type from the given data.
      *
@@ -74,14 +33,14 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
      * @param typeId       The record type's type id
      * @param owner        The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
-     * @param exception    Denotes whether this type is an exception
+     * @param exception    Denotes whether this type is an ordinary record or an exception
      * @param superTypes   This type's supertypes, if any
      * @param predecessor  The type's predecessor, if any
      */
-    public ProviderRecordType(final String publicName, final String internalName, final int typeId,
-            final ProviderApiDefinition owner, final boolean abstractFlag, boolean exception,
+    ProviderRecordType(final String publicName, final String internalName, final int typeId,
+            final ProviderApiDefinition owner, final Abstract abstractFlag, RecordKind recordKind,
             final Set<ProviderRecordType> superTypes, final ProviderRecordType predecessor) {
-        super(publicName, internalName, typeId, owner, abstractFlag, exception, superTypes);
+        super(publicName, internalName, typeId, owner, abstractFlag, recordKind, superTypes);
 
         this.predecessor = predecessor;
         this.successor = null;
@@ -108,6 +67,19 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
         return visitor.handleProviderRecordType(this);
     }
 
+    // Element creators
+    
+    public ProviderField newField(String publicName, Type type, Optionality optionality) {
+        return new ProviderField(publicName, noInternalName(), this, type, optionality, Inherited.NO,
+                noDeclaredPredecessors(), noPredecessor());
+    }
+    
+    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
+            Inherited inherited, List<ProviderField> declaredPredecessors, ProviderField predecessor) {
+        return new ProviderField(publicName, internalName, this, type, optionality, inherited, declaredPredecessors,
+                predecessor);
+    }
+    
     @Override
     public String toString() {
         return this.getInternalName() + "@" + this.getOwner().toString();

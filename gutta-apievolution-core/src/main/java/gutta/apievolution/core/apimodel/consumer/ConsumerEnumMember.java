@@ -7,16 +7,6 @@ import gutta.apievolution.core.apimodel.EnumMember;
  */
 public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnumMember>
         implements ConsumerApiDefinitionElement {
-
-    /**
-     * Creates a simple enum member where the public name equals the internal name.
-     *
-     * @param publicName   The enum member's public name
-     * @param owner        The enum type that owns this member
-     */
-    public static ConsumerEnumMember create(String publicName, ConsumerEnumType owner) {
-        return new ConsumerEnumMember(publicName, null, owner);
-    }
         
     /**
      * Creates a new enum member from the given data.
@@ -26,7 +16,7 @@ public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnu
      *                     public name is assumed
      * @param owner        The enum type that owns this member
      */
-    public ConsumerEnumMember(final String publicName, final String internalName,
+    ConsumerEnumMember(final String publicName, final String internalName,
             final ConsumerEnumType owner) {
         super(publicName, internalName, owner);
     }

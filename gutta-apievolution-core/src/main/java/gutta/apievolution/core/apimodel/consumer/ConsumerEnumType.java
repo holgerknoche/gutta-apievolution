@@ -7,17 +7,6 @@ import gutta.apievolution.core.apimodel.EnumType;
  */
 public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEnumType, ConsumerEnumMember>
         implements ConsumerUserDefinedType {
-
-    /**
-     * Creates a simple enum type where the public name equals the internal name.
-     * @param publicName The enum type's public name
-     * @param typeId The enum type's type id
-     * @param owner The API definition that owns this enum type
-     * @return The created enum type
-     */
-    public static ConsumerEnumType create(String publicName, int typeId, ConsumerApiDefinition owner) {
-        return new ConsumerEnumType(publicName, null, typeId, owner);
-    }
     
     /**
      * Creates a new enum type from the given data.
@@ -28,11 +17,17 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
      * @param typeId       The enum type's type id
      * @param owner        The API definition that owns this enum type
      */
-    public ConsumerEnumType(final String publicName, final String internalName, final int typeId,
+    ConsumerEnumType(final String publicName, final String internalName, final int typeId,
             final ConsumerApiDefinition owner) {
         super(publicName, internalName, typeId, owner);
     }
 
+    // Element creators
+        
+    public ConsumerEnumMember newEnumMember(String publicName, String internalName) {
+        return new ConsumerEnumMember(publicName, internalName, this);
+    }
+    
     @Override
     public int hashCode() {
         return super.hashCode();

@@ -1,11 +1,10 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+
 import gutta.apievolution.core.apimodel.EnumMember;
 
 import java.util.Optional;
-
-import static gutta.apievolution.core.util.UtilityFunctions.*;
-import static java.util.Objects.*;
 
 /**
  * Provider-specific implementation of an {@link EnumMember}.
@@ -16,20 +15,6 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
     private final ProviderEnumMember predecessor;
 
     private ProviderEnumMember successor;
-
-    public static ProviderEnumMember create(String publicName, ProviderEnumType owner) {
-        return withInternalName(publicName, null, owner);
-    }
-    
-    public static ProviderEnumMember withInternalName(String publicName, String internalName,
-            ProviderEnumType owner) {
-        return new ProviderEnumMember(publicName, internalName, owner, null);
-    }
-    
-    public static ProviderEnumMember withPredecessor(String publicName, String internalName,
-            ProviderEnumType owner, ProviderEnumMember predecessor) {
-        return new ProviderEnumMember(publicName, internalName, owner, requireNonNull(predecessor));
-    }
     
     /**
      * Creates a new enum member from the given data.
@@ -40,7 +25,7 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
      * @param owner        The enum type that owns this member
      * @param predecessor  The member's predecessor, if any
      */
-    private ProviderEnumMember(final String publicName, final String internalName,
+     ProviderEnumMember(final String publicName, final String internalName,
             final ProviderEnumType owner, final ProviderEnumMember predecessor) {
         super(publicName, internalName, owner);
 

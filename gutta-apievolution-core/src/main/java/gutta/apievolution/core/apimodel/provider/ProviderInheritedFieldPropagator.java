@@ -1,5 +1,8 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
+
+import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.InheritedFieldPropagator;
 
 class ProviderInheritedFieldPropagator
@@ -15,8 +18,8 @@ class ProviderInheritedFieldPropagator
             }
         }
 
-        return ProviderField.inheritedField(originalField.getPublicName(), originalField.getInternalName(), targetType, originalField.getType(),
-                originalField.getOptionality(), predecessor);
+        return targetType.newField(originalField.getPublicName(), originalField.getInternalName(), originalField.getType(),
+                originalField.getOptionality(), Inherited.YES, noDeclaredPredecessors(), predecessor);
     }
 
 }

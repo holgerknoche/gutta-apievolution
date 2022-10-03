@@ -2,6 +2,8 @@ package gutta.apievolution.core.apimodel;
 
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * A field represents a data field within a record type.
  *
@@ -31,15 +33,15 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      */
     @SuppressWarnings("unchecked")
     protected Field(final String publicName, final String internalName, final R owner, final Type type,
-            Optionality optionality, boolean inherited) {
+            Optionality optionality, Inherited inherited) {
         super(publicName, internalName);
 
         this.owner = owner;
         this.type = type;
         this.optionality = optionality;
-        this.inherited = inherited;
+        this.inherited = (requireNonNull(inherited) == Inherited.YES);
 
-        if (inherited) {
+        if (this.inherited) {
             owner.addInheritedField((F) this);
         } else {
             owner.addDeclaredField((F) this);

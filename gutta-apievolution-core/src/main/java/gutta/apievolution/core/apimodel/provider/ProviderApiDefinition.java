@@ -1,17 +1,18 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
-import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.RecordKind;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
@@ -24,13 +25,9 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
     private final ProviderApiDefinition predecessor;
 
     private ProviderApiDefinition successor;
-    
+
     public static ProviderApiDefinition create(String name, int revision) {
-        return new ProviderApiDefinition(name, Collections.emptySet(), revision, null);
-    }
-    
-    public static ProviderApiDefinition withPredecessor(String name, int revision, ProviderApiDefinition predecessor) {
-        return new ProviderApiDefinition(name, Collections.emptySet(), revision, predecessor);
+        return new ProviderApiDefinition(name, noAnnotations(), revision, noPredecessor());
     }
     
     /**
@@ -41,7 +38,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
      * @param revision    The revision number of this API definition
      * @param predecessor The predecessor of this API definition, if any
      */
-    public ProviderApiDefinition(final QualifiedName name, final Set<Annotation> annotations, final int revision,
+    public ProviderApiDefinition(final String name, final Set<Annotation> annotations, final int revision,
             final ProviderApiDefinition predecessor) {
         super(name, annotations);
 
@@ -49,19 +46,6 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
         this.revision = revision;
 
         ifPresent(predecessor, definition -> definition.setSuccessor(this));
-    }
-
-    /**
-     * Creates a new provider API definition from the given data.
-     * 
-     * @param name The name of the API definition
-     * @param annotations The annotations of this API definition
-     * @param revision The revision number of this API definition
-     * @param predecessor The predecessor of this API definition
-     */
-    public ProviderApiDefinition(String name, Set<Annotation> annotations, int revision, 
-            ProviderApiDefinition predecessor) {
-        this(QualifiedName.of(name), annotations, revision, predecessor);
     }
     
     /**
@@ -98,6 +82,28 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
         this.getOperations().forEach(operation -> action.accept((ProviderApiDefinitionElement) operation));
     }
 
+    // Element creators
+        
+    public ProviderEnumType newEnumType(String publicName, String internalName, int typeId, ProviderEnumType predecessor) {
+        return new ProviderEnumType(publicName, internalName, typeId, this, predecessor);
+    }
+    
+    public ProviderRecordType newRecordType(String publicName, int typeId) {
+        return this.newRecordType(publicName, noInternalName(), typeId, Abstract.NO, noSuperTypes(), noPredecessor());
+    }
+    
+    public ProviderRecordType newRecordType(String publicName, String internalName, int typeId, Abstract abstractFlag,
+            Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
+        return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.RECORD,
+                superTypes, predecessor);
+    }
+    
+    public ProviderRecordType newExceptionType(String publicName, String internalName, int typeId, Abstract abstractFlag,
+            Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
+        return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION,
+                superTypes, predecessor);
+    }
+        
     @Override
     public int hashCode() {
         return super.hashCode() + this.revision;

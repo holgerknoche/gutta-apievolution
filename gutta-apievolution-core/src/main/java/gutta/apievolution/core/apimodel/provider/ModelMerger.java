@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
 import static gutta.apievolution.core.apimodel.provider.ProviderTypeTools.isTypeChange;
 
 /**
@@ -57,13 +58,13 @@ public class ModelMerger {
             throw new ModelMergeException("No or empty revision history given.");
         }
 
-        QualifiedName mergedDefinitionName = this.determineHistoryName(revisionHistory);
+        String mergedDefinitionName = this.determineHistoryName(revisionHistory);
         Set<Annotation> mergedAnnotations = this.mergeAnnotations(revisionHistory);
 
         return new ProviderApiDefinition(mergedDefinitionName, mergedAnnotations, 0, null);
     }
 
-    private QualifiedName determineHistoryName(RevisionHistory revisionHistory) {
+    private String determineHistoryName(RevisionHistory revisionHistory) {
         ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
         QualifiedName nameCandidate = revisions.previous().getName();
 
@@ -74,7 +75,7 @@ public class ModelMerger {
             }
         }
 
-        return nameCandidate;
+        return nameCandidate.toString();
     }
 
     private Set<Annotation> mergeAnnotations(RevisionHistory revisionHistory) {
@@ -186,8 +187,15 @@ public class ModelMerger {
         }
 
         private ProviderRecordType convertRecordType(ProviderRecordType inType) {
-            return ProviderRecordType.withoutSuperTypeOrPredecessor(inType.getPublicName(), inType.getInternalName(),
-                    inType.getTypeId(), this.mergedDefinition, inType.isAbstract(), inType.isException());
+            Abstract abstractness = (inType.isAbstract()) ? Abstract.YES : Abstract.NO;
+            
+            if (inType.isException()) {
+                return this.mergedDefinition.newExceptionType(inType.getPublicName(), inType.getInternalName(),
+                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+            } else {
+                return this.mergedDefinition.newRecordType(inType.getPublicName(), inType.getInternalName(),
+                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+            }
         }
 
         @Override
@@ -196,8 +204,7 @@ public class ModelMerger {
         }
 
         private ProviderEnumType convertEnumType(ProviderEnumType inType) {
-            return ProviderEnumType.withInternalName(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(),
-                    this.mergedDefinition);
+            return this.mergedDefinition.newEnumType(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(), null);
         }
 
     }
@@ -336,14 +343,11 @@ public class ModelMerger {
                     originalField.getInternalName());
             this.assertUniqueMemberName(memberName);
 
-            ProviderField newField;
-            if (originalField.isInherited()) {
-                newField = ProviderField.inheritedField(originalField.getPublicName(), originalField.getInternalName(),
-                        this.currentRecordType, type, optionality, null);
-            } else {
-                newField = ProviderField.withoutPredecessor(originalField.getPublicName(), originalField.getInternalName(),
-                        this.currentRecordType, type, optionality);    
-            }
+            
+            Inherited inherited = (originalField.isInherited()) ? Inherited.YES : Inherited.NO;            
+            ProviderField newField = this.currentRecordType.newField(originalField.getPublicName(),
+                    originalField.getInternalName(), type, optionality, inherited, noDeclaredPredecessors(),
+                    noPredecessor());
             
             this.knownMemberNames.add(memberName);
             this.mappedFields.put(originalField, newField);
@@ -405,7 +409,7 @@ public class ModelMerger {
                         enumMember.getInternalName());
                 this.assertUniqueMemberName(memberName);
 
-                mappedMember = ProviderEnumMember.withInternalName(enumMember.getPublicName(), internalName, this.currentEnumType);
+                mappedMember = this.currentEnumType.newEnumMember(enumMember.getPublicName(), internalName, noPredecessor());
 
                 this.mappedMembers.put(enumMember, mappedMember);
             } else {
