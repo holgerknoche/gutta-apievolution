@@ -1,15 +1,16 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.Collections;
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+
 import java.util.Set;
 
 class TestApiDefinition extends ApiDefinition<TestApiDefinition, TestOperation> {
 
     public TestApiDefinition(String name) {
-        this(QualifiedName.of(name), Collections.emptySet());
+        this(name, noAnnotations());
     }
     
-    public TestApiDefinition(QualifiedName name, Set<Annotation> annotations) {
+    public TestApiDefinition(String name, Set<Annotation> annotations) {
         super(name, annotations);
     }
 

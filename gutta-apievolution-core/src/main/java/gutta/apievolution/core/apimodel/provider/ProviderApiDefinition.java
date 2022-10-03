@@ -120,6 +120,22 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
         return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION,
                 superTypes, predecessor);
     }
+    
+    public ProviderOperation newOperation(String publicName, ProviderRecordType returnType,
+            ProviderRecordType parameterType) {        
+        return this.newOperation(publicName, noInternalName(), returnType, parameterType, noPredecessor());
+    }
+    
+    public ProviderOperation newOperation(String publicName, String internalName, ProviderRecordType returnType,
+            ProviderRecordType parameterType, ProviderOperation predecessor) {
+        return this.newOperation(noAnnotations(), publicName, internalName, returnType, parameterType, predecessor);
+    }
+    
+    public ProviderOperation newOperation(Set<Annotation> annotations, String publicName, String internalName,
+            ProviderRecordType returnType, ProviderRecordType parameterType, ProviderOperation predecessor) {
+        return new ProviderOperation(annotations, publicName, internalName, this, returnType, parameterType,
+                predecessor);
+    }    
         
     @Override
     public int hashCode() {

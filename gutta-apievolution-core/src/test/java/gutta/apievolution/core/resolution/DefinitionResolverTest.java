@@ -1,10 +1,13 @@
 package gutta.apievolution.core.resolution;
 
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.ListType;
 import gutta.apievolution.core.apimodel.NumericType;
@@ -12,15 +15,11 @@ import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.StringType;
 import gutta.apievolution.core.apimodel.Usage;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
-import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
@@ -44,34 +43,34 @@ class DefinitionResolverTest {
         // Consumer API definition
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
 
-        ConsumerRecordType consumerType = ConsumerRecordType.createRecordType("TestType", 0, consumerApi);
+        ConsumerRecordType consumerType = consumerApi.newRecordType("TestType", 0);
 
-        ConsumerField.create("int32Field", consumerType, AtomicType.INT_32, Optionality.MANDATORY);
-        ConsumerField.create("int64Field", consumerType, AtomicType.INT_64, Optionality.MANDATORY);
-        ConsumerField.create("unboundedStringField", consumerType, StringType.unbounded(), Optionality.MANDATORY);
-        ConsumerField.create("boundedStringField", consumerType, StringType.bounded(10), Optionality.MANDATORY);
-        ConsumerField.create("unboundedListField", consumerType, ListType.unbounded(StringType.unbounded()),
+        consumerType.newField("int32Field", AtomicType.INT_32, Optionality.MANDATORY);
+        consumerType.newField("int64Field", AtomicType.INT_64, Optionality.MANDATORY);
+        consumerType.newField("unboundedStringField", StringType.unbounded(), Optionality.MANDATORY);
+        consumerType.newField("boundedStringField", StringType.bounded(10), Optionality.MANDATORY);
+        consumerType.newField("unboundedListField", ListType.unbounded(StringType.unbounded()),
                 Optionality.MANDATORY);
-        ConsumerField.create("boundedListField", consumerType, ListType.bounded(StringType.unbounded(), 10),
+        consumerType.newField("boundedListField", ListType.bounded(StringType.unbounded(), 10),
                 Optionality.MANDATORY);
-        ConsumerField.create("numericField", consumerType, NumericType.bounded(5, 0), Optionality.MANDATORY);
+        consumerType.newField("numericField", NumericType.bounded(5, 0), Optionality.MANDATORY);
 
         consumerApi.finalizeDefinition();
 
         // Provider API definition
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType providerType = ProviderRecordType.createRecordType("TestType", 0, providerApi);
+        ProviderRecordType providerType = providerApi.newRecordType("TestType", 0);
 
-        ProviderField.create("int32Field", providerType, AtomicType.INT_32, Optionality.MANDATORY);
-        ProviderField.create("int64Field", providerType, AtomicType.INT_64, Optionality.MANDATORY);
-        ProviderField.create("unboundedStringField", providerType, StringType.unbounded(), Optionality.MANDATORY);
-        ProviderField.create("boundedStringField", providerType, StringType.bounded(10), Optionality.MANDATORY);
-        ProviderField.create("unboundedListField", providerType, ListType.unbounded(StringType.unbounded()),
+        providerType.newField("int32Field", AtomicType.INT_32, Optionality.MANDATORY);
+        providerType.newField("int64Field", AtomicType.INT_64, Optionality.MANDATORY);
+        providerType.newField("unboundedStringField", StringType.unbounded(), Optionality.MANDATORY);
+        providerType.newField("boundedStringField", StringType.bounded(10), Optionality.MANDATORY);
+        providerType.newField("unboundedListField", ListType.unbounded(StringType.unbounded()),
                 Optionality.MANDATORY);
-        ProviderField.create("boundedListField", providerType, ListType.bounded(StringType.unbounded(), 10),
+        providerType.newField("boundedListField", ListType.bounded(StringType.unbounded(), 10),
                 Optionality.MANDATORY);
-        ProviderField.create("numericField", providerType, NumericType.bounded(5, 0), Optionality.MANDATORY);
+        providerType.newField("numericField", NumericType.bounded(5, 0), Optionality.MANDATORY);
 
         providerApi.finalizeDefinition();
 
@@ -101,17 +100,17 @@ class DefinitionResolverTest {
     void testMissingMappingForMandatoryField() {
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
 
-        ConsumerRecordType consumerType = ConsumerRecordType.createRecordType("Test", 1, consumerApi);
+        ConsumerRecordType consumerType = consumerApi.newRecordType("Test", 1);
 
-        ConsumerField.create("optionalField", consumerType, AtomicType.INT_32, Optionality.OPTIONAL);
+        consumerType.newField("optionalField", AtomicType.INT_32, Optionality.OPTIONAL);
 
         // Define a provider API with a mandatory field
         ProviderApiDefinition revision = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType recordType = ProviderRecordType.createRecordType("Test", 1, revision);
+        ProviderRecordType recordType = revision.newRecordType("Test", 1);
 
-        ProviderField.create("mandatoryField", recordType, AtomicType.INT_32, Optionality.MANDATORY);
-        ProviderField.create("optionalField", recordType, AtomicType.INT_32, Optionality.OPTIONAL);
+        recordType.newField("mandatoryField", AtomicType.INT_32, Optionality.MANDATORY);
+        recordType.newField("optionalField", AtomicType.INT_32, Optionality.OPTIONAL);
 
         // Resolve the consumer definition against the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision);
@@ -133,16 +132,16 @@ class DefinitionResolverTest {
         // Provider revision
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType providerType = ProviderRecordType.createRecordType("TestType", 0, providerApi);
+        ProviderRecordType providerType = providerApi.newRecordType("TestType", 0);
 
-        ProviderField.create("testField", providerType, AtomicType.INT_32, Optionality.MANDATORY);
+        providerType.newField("testField", AtomicType.INT_32, Optionality.MANDATORY);
 
         // Consumer definition
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
 
-        ConsumerRecordType consumerType = ConsumerRecordType.createRecordType("TestType", 0, consumerApi);
+        ConsumerRecordType consumerType = consumerApi.newRecordType("TestType", 0);
 
-        ConsumerField.create("testField", consumerType, AtomicType.INT_64, Optionality.MANDATORY);
+        consumerType.newField("testField", AtomicType.INT_64, Optionality.MANDATORY);
 
         //
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
@@ -160,20 +159,20 @@ class DefinitionResolverTest {
         // Consumer API definition
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
 
-        ConsumerEnumType consumerEnum = ConsumerEnumType.create("TestEnum", 0, consumerApi);
+        ConsumerEnumType consumerEnum = consumerApi.newEnumType("TestEnum", 0);
 
-        ConsumerEnumMember.create("MEMBER_A", consumerEnum);
-        ConsumerEnumMember.create("MEMBER_B", consumerEnum);
+        consumerEnum.newEnumMember("MEMBER_A");
+        consumerEnum.newEnumMember("MEMBER_B");
 
         consumerApi.finalizeDefinition();
 
         // Provider API definition
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
-        ProviderEnumType providerEnum = ProviderEnumType.create("TestEnum", 0, providerApi);
+        ProviderEnumType providerEnum = providerApi.newEnumType("TestEnum", 0);
 
-        ProviderEnumMember.create("MEMBER_A", providerEnum);
-        ProviderEnumMember.create("MEMBER_B", providerEnum);
+        providerEnum.newEnumMember("MEMBER_A");
+        providerEnum.newEnumMember("MEMBER_B");
 
         providerApi.finalizeDefinition();
 
@@ -197,28 +196,28 @@ class DefinitionResolverTest {
     void mapServicesAndOperations() {
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
 
-        ConsumerRecordType consumerRecord = ConsumerRecordType.withInternalName("RecordType", "ConsumerRecordType", 0,
-                consumerApi);
+        ConsumerRecordType consumerRecord = consumerApi.newRecordType("RecordType", "ConsumerRecordType", 0,
+                Abstract.NO, noSuperTypes());
 
-        ConsumerRecordType consumerException = ConsumerRecordType.exceptionType("ExceptionType",
-                "ConsumerExceptionType", 1, consumerApi, false, Collections.emptySet());
+        ConsumerRecordType consumerException = consumerApi.newExceptionType("ExceptionType",
+                "ConsumerExceptionType", 1, Abstract.NO, noSuperTypes());
 
-        ConsumerOperation consumerOperation = ConsumerOperation.withInternalName("operation", "consumerOperation",
-                consumerApi, consumerRecord, consumerRecord);
+        ConsumerOperation consumerOperation = consumerApi.newOperation("operation", "consumerOperation",
+                consumerRecord, consumerRecord);
 
         consumerOperation.addThrownException(consumerException);
         consumerApi.finalizeDefinition();
 
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType providerRecord = ProviderRecordType.recordWithInternalName("RecordType", "ProviderRecordType", 0,
-                providerApi);
+        ProviderRecordType providerRecord = providerApi.newRecordType("RecordType", "ProviderRecordType", 0,
+                noPredecessor());
 
-        ProviderRecordType providerException = ProviderRecordType.exceptionWithInternalName("ExceptionType",
-                "ProviderExceptionType", 1, providerApi);
+        ProviderRecordType providerException = providerApi.newExceptionType("ExceptionType", "ProviderExceptionType",
+                1, noPredecessor());
 
-        ProviderOperation providerOperation = ProviderOperation.withInternalName("operation", "providerOperation",
-                providerApi, providerRecord, providerRecord);
+        ProviderOperation providerOperation = providerApi.newOperation("operation", "providerOperation",
+                providerRecord, providerRecord, noPredecessor());
 
         providerOperation.addThrownException(providerException);
         providerApi.finalizeDefinition();
@@ -243,18 +242,18 @@ class DefinitionResolverTest {
     void mapListFields() {
         // Create a consumer API with an bounded and unbounded list field
         ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
-        ConsumerRecordType consumerRecordA = ConsumerRecordType.createRecordType("A", 0, consumerApi);
-        ConsumerRecordType consumerRecordB = ConsumerRecordType.createRecordType("B", 1, consumerApi);
-        ConsumerField.create("boundedListField", consumerRecordB, ListType.bounded(consumerRecordA, 10), Optionality.MANDATORY);
-        ConsumerField.create("unboundedListField", consumerRecordB, ListType.unbounded(consumerRecordA), Optionality.MANDATORY);
+        ConsumerRecordType consumerRecordA = consumerApi.newRecordType("A", 0);
+        ConsumerRecordType consumerRecordB = consumerApi.newRecordType("B", 1);
+        consumerRecordB.newField("boundedListField", ListType.bounded(consumerRecordA, 10), Optionality.MANDATORY);
+        consumerRecordB.newField("unboundedListField", ListType.unbounded(consumerRecordA), Optionality.MANDATORY);
         consumerApi.finalizeDefinition();
         
         // Create a matching provider API
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
-        ProviderRecordType providerRecordA = ProviderRecordType.createRecordType("A", 0, providerApi);
-        ProviderRecordType providerRecordB = ProviderRecordType.createRecordType("B", 1, providerApi);
-        ProviderField.create("boundedListField", providerRecordB, ListType.bounded(providerRecordA, 10), Optionality.MANDATORY);
-        ProviderField.create("unboundedListField", providerRecordB, ListType.unbounded(providerRecordA), Optionality.MANDATORY);
+        ProviderRecordType providerRecordA = providerApi.newRecordType("A", 0);
+        ProviderRecordType providerRecordB = providerApi.newRecordType("B", 1);
+        providerRecordB.newField("boundedListField", ListType.bounded(providerRecordA, 10), Optionality.MANDATORY);
+        providerRecordB.newField("unboundedListField", ListType.unbounded(providerRecordA), Optionality.MANDATORY);
         providerApi.finalizeDefinition();
         
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
@@ -279,22 +278,22 @@ class DefinitionResolverTest {
         // Construct a provider API with a field of type "C".
         ProviderApiDefinition providerDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType providerTypeA = ProviderRecordType.createRecordType("A", 0, providerDefinition);
-        ProviderRecordType providerTypeB = ProviderRecordType.createRecordType("B", 1, providerDefinition);
-        ProviderRecordType.createRecordType("C", 2, providerDefinition);
+        ProviderRecordType providerTypeA = providerDefinition.newRecordType("A", 0);
+        ProviderRecordType providerTypeB = providerDefinition.newRecordType("B", 1);
+        providerDefinition.newRecordType("C", 2);
         
-        ProviderField.create("field", providerTypeA, providerTypeB, Optionality.MANDATORY);
+        providerTypeA.newField("field", providerTypeB, Optionality.MANDATORY);
         
         providerDefinition.finalizeDefinition();
         
         // Construct a consumer API with a field of type "B".
         ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
         
-        ConsumerRecordType consumerTypeA = ConsumerRecordType.createRecordType("A", 0, consumerDefinition);
-        ConsumerRecordType.createRecordType("B", 1, consumerDefinition);
-        ConsumerRecordType consumerTypeC = ConsumerRecordType.createRecordType("C", 2, consumerDefinition);
+        ConsumerRecordType consumerTypeA = consumerDefinition.newRecordType("A", 0);
+        consumerDefinition.newRecordType("B", 1);
+        ConsumerRecordType consumerTypeC = consumerDefinition.newRecordType("C", 2);
         
-        ConsumerField.create("field", consumerTypeA, consumerTypeC, Optionality.MANDATORY);
+        consumerTypeA.newField("field", consumerTypeC, Optionality.MANDATORY);
         
         consumerDefinition.finalizeDefinition();
         
@@ -313,10 +312,10 @@ class DefinitionResolverTest {
         // Create a provider API definition with a type that is only used as input
         ProviderApiDefinition providerDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType providerTypeWithField = ProviderRecordType.createRecordType("A", 0, providerDefinition);
-        ProviderField.create("field", providerTypeWithField, AtomicType.INT_32, providerOptionality);
+        ProviderRecordType providerTypeWithField = providerDefinition.newRecordType("A", 0);
+        providerTypeWithField.newField("field", AtomicType.INT_32, providerOptionality);
         
-        ProviderRecordType providerTypeNoField = ProviderRecordType.createRecordType("B", 1, providerDefinition);
+        ProviderRecordType providerTypeNoField = providerDefinition.newRecordType("B", 1);
         
         ProviderRecordType providerInputType;
         ProviderRecordType providerOutputType;
@@ -339,21 +338,21 @@ class DefinitionResolverTest {
             
         }
         
-        ProviderOperation.create("op", providerDefinition, providerOutputType, providerInputType);
+        providerDefinition.newOperation("op", providerOutputType, providerInputType);
         
         providerDefinition.finalizeDefinition();
         
         // Create a consumer API with a matching type
         ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
         
-        ConsumerRecordType consumerTypeWithField = ConsumerRecordType.createRecordType("A", 0, consumerDefinition);
+        ConsumerRecordType consumerTypeWithField = consumerDefinition.newRecordType("A", 0);
         
         if (consumerOptionality != null) {
             // Do not create a field if no consumer optionality is given
-            ConsumerField.create("field", consumerTypeWithField, AtomicType.INT_32, consumerOptionality);
+            consumerTypeWithField.newField("field", AtomicType.INT_32, consumerOptionality);
         }
         
-        ConsumerRecordType consumerTypeNoField = ConsumerRecordType.createRecordType("B", 1, consumerDefinition);
+        ConsumerRecordType consumerTypeNoField = consumerDefinition.newRecordType("B", 1);
         
         ConsumerRecordType consumerInputType;
         ConsumerRecordType consumerOutputType;
@@ -376,7 +375,7 @@ class DefinitionResolverTest {
             
         }
         
-        ConsumerOperation.create("op", consumerDefinition, consumerOutputType, consumerInputType);
+        consumerDefinition.newOperation("op", consumerOutputType, consumerInputType);
         
         consumerDefinition.finalizeDefinition();
         

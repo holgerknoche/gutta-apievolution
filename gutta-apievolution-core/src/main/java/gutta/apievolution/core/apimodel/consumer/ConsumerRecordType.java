@@ -9,6 +9,8 @@ import gutta.apievolution.core.apimodel.Type;
 
 import java.util.Set;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
+
 /**
  * Consumer-specific implementation of a {@link RecordType}.
  */
@@ -34,6 +36,10 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
     }
 
     // Element creators
+    
+    public ConsumerField newField(String publicName, Type type, Optionality optionality) {
+        return new ConsumerField(publicName, noInternalName(), this, type, optionality, Inherited.NO);
+    }
     
     public ConsumerField newField(String publicName, String internalName, Type type, Optionality optionality,
             Inherited inherited) {

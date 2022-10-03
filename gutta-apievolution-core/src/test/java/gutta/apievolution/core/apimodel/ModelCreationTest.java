@@ -3,7 +3,6 @@ package gutta.apievolution.core.apimodel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import org.junit.jupiter.api.Test;
 
@@ -22,17 +21,17 @@ class ModelCreationTest {
         // not at all
         ProviderApiDefinition apiDefinition = ProviderApiDefinition.create("test", 1);
 
-        ProviderRecordType parameterType = ProviderRecordType.createRecordType("ParameterType", 0, apiDefinition);
+        ProviderRecordType parameterType = apiDefinition.newRecordType("ParameterType", 0);
 
-        ProviderRecordType returnType = ProviderRecordType.createRecordType("ReturnType", 0, apiDefinition);
+        ProviderRecordType returnType = apiDefinition.newRecordType("ReturnType", 0);
 
-        ProviderRecordType inoutType = ProviderRecordType.createRecordType("InOutType", 0, apiDefinition);
+        ProviderRecordType inoutType = apiDefinition.newRecordType("InOutType", 0);
 
-        ProviderRecordType unusedType = ProviderRecordType.createRecordType("UnusedType", 0, apiDefinition);
+        ProviderRecordType unusedType = apiDefinition.newRecordType("UnusedType", 0);
 
-        ProviderOperation.create("op1", apiDefinition, returnType, parameterType);
+        apiDefinition.newOperation("op1", returnType, parameterType);
 
-        ProviderOperation.create("op2", apiDefinition, inoutType, inoutType);
+        apiDefinition.newOperation("op2", inoutType, inoutType);
 
         // Assert that the usages on the types are set accordingly
         assertEquals(Usage.NONE, unusedType.getUsage());

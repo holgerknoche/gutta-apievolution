@@ -2,6 +2,8 @@ package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumType;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
+
 /**
  * Consumer-specific implementation of an {@link EnumType}.
  */
@@ -24,6 +26,10 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
 
     // Element creators
         
+    public ConsumerEnumMember newEnumMember(String publicName) {
+        return this.newEnumMember(publicName, noInternalName());
+    }
+    
     public ConsumerEnumMember newEnumMember(String publicName, String internalName) {
         return new ConsumerEnumMember(publicName, internalName, this);
     }

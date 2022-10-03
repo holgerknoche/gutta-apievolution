@@ -449,10 +449,10 @@ class ModelMergerTest {
     }
 
     /**
-     * Test case: Merge a model with service operations and exceptions.
+     * Test case: Merge a model with operations and exceptions.
      */
     @Test
-    void mergeModelWithServices() {
+    void mergeModelWithOperations() {
         // Revision 1
         ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
@@ -462,11 +462,11 @@ class ModelMergerTest {
 
         exceptionType1V1.newField("e1", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderOperation operation1V1 = ProviderOperation.create("method1", revision1, recordTypeV1, recordTypeV1);
+        ProviderOperation operation1V1 = revision1.newOperation("method1", recordTypeV1, recordTypeV1);
 
         operation1V1.addThrownException(exceptionType1V1);
 
-        ProviderOperation.create("method2", revision1, recordTypeV1, recordTypeV1);
+        revision1.newOperation("method2", recordTypeV1, recordTypeV1);
 
         revision1.finalizeDefinition();
 
@@ -480,13 +480,12 @@ class ModelMergerTest {
         ProviderField exceptionField2V2 = exceptionType2V2.newField("e2", StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderOperation operation1V2 = ProviderOperation.withPredecessor("method1", revision2, recordTypeV2,
+        ProviderOperation operation1V2 = revision2.newOperation("method1", noInternalName(), recordTypeV2,
                 recordTypeV2, operation1V1);
 
         operation1V2.addThrownException(exceptionType2V2);
 
-        ProviderOperation operation3V2 = ProviderOperation.create("method3", revision2, recordTypeV2,
-                recordTypeV2);
+        ProviderOperation operation3V2 = revision2.newOperation("method3", recordTypeV2, recordTypeV2);
 
         revision2.finalizeDefinition();
 
@@ -503,12 +502,12 @@ class ModelMergerTest {
         exceptionType2V3.newField("e2", noInternalName(), StringType.unbounded(), Optionality.MANDATORY,
                 exceptionField2V2);
 
-        ProviderOperation operation1V3 = ProviderOperation.withPredecessor("method1", revision3, recordTypeV3,
+        ProviderOperation operation1V3 = revision3.newOperation("method1", noInternalName(), recordTypeV3,
                 recordTypeV3, operation1V2);
 
         operation1V3.addThrownException(exceptionType2V3);
 
-        ProviderOperation operation3V3 = ProviderOperation.withPredecessor("method3", revision3, recordTypeV3,
+        ProviderOperation operation3V3 = revision3.newOperation("method3", noInternalName(), recordTypeV3,
                 recordTypeV3, operation3V2);
 
         operation3V3.addThrownException(exceptionType2V3);

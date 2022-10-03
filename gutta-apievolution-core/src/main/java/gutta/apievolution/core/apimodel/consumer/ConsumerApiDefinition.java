@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
+
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
  */
@@ -45,8 +47,12 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
     // Element creators
         
-    public ConsumerEnumType newEnumType(String publicName, String internalName, int typeId) {
-        return new ConsumerEnumType(publicName, internalName, typeId, this);
+    public ConsumerEnumType newEnumType(String publicName, int typeId) {
+        return new ConsumerEnumType(publicName, noInternalName(), typeId, this);
+    }
+    
+    public ConsumerRecordType newRecordType(String publicName, int typeId) {
+        return this.newRecordType(publicName, noInternalName(), typeId, Abstract.NO, noSuperTypes());
     }
     
     public ConsumerRecordType newRecordType(String publicName, String internalName, int typeId,
@@ -57,6 +63,16 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
     public ConsumerRecordType newExceptionType(String publicName, String internalName, int typeId,
             Abstract abstractFlag, Set<ConsumerRecordType> superTypes) {
         return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION, superTypes);
+    }
+    
+    public ConsumerOperation newOperation(String publicName, ConsumerRecordType returnType,
+            ConsumerRecordType parameterType) {
+        return this.newOperation(publicName, noInternalName(), returnType, parameterType);
+    }
+    
+    public ConsumerOperation newOperation(String publicName, String internalName, ConsumerRecordType returnType,
+            ConsumerRecordType parameterType) {
+        return new ConsumerOperation(publicName, internalName, this, returnType, parameterType);
     }
     
     @Override
@@ -88,4 +104,6 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
         ConsumerInheritedFieldPropagator propagator = new ConsumerInheritedFieldPropagator();
         propagator.propagateFieldsFor(recordTypes);
     }
+
+    
 }
