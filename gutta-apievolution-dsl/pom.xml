@@ -31,16 +31,16 @@
                 </configuration>
             </plugin>
             <!-- Run CheckStyle -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <sourceDirectories>
+                    <sourceDirectories>-->
                         <!-- Do not scan generated ANTLR sources -->
-                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                        <!--<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     </sourceDirectories>
                 </configuration>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

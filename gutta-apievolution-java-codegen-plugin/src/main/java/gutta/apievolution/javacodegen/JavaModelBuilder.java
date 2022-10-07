@@ -99,7 +99,13 @@ class JavaModelBuilder {
         public JavaType handleProviderRecordType(ProviderRecordType recordType) {
             JavaRecordLikeType targetClass = (JavaRecordLikeType) this.knownClasses.get(recordType);
 
-            recordType.getSuperType().ifPresent(superType -> {
+            // TODO Support multiple supertypes for non-exceptions
+            if (recordType.getSuperTypes().size() > 1) {
+                throw new UnsupportedOperationException();
+            }
+            
+            if (!recordType.getSuperTypes().isEmpty()) {
+                ProviderRecordType superType = recordType.getSuperTypes().iterator().next();
                 if (recordType.isException()) {
                     JavaException superException = (JavaException) this.knownClasses.get(superType);
                     ((JavaException) targetClass).setSuperType(superException);
@@ -107,8 +113,8 @@ class JavaModelBuilder {
                     JavaInterface superInterface = (JavaInterface) this.knownClasses.get(superType);
                     ((JavaInterface) targetClass).setSuperType(superInterface);
                 }
-            });
-
+            }
+            
             for (ProviderField field : recordType.getDeclaredFields()) {
                 JavaType fieldType = this.resolveType(field.getType());
                 JavaProperty javaProperty = new JavaProperty(field.getInternalName(), fieldType);
