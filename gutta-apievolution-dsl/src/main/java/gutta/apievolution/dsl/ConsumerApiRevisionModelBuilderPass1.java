@@ -1,11 +1,19 @@
 package gutta.apievolution.dsl;
 
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.QualifiedName;
-import gutta.apievolution.core.apimodel.consumer.*;
+import gutta.apievolution.core.apimodel.RecordKind;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,22 +32,22 @@ class ConsumerApiRevisionModelBuilderPass1
     @Override
     protected ConsumerApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
             final QualifiedName name, final Set<Annotation> annotations,
-            final Optional<ConsumerApiDefinition> predecessor) {
+            final ConsumerApiDefinition predecessor) {
         return new ConsumerApiDefinition(name, annotations, this.referencedRevision);
     }
 
     @Override
     protected ConsumerRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-            final Optional<String> internalName, final int typeId, final ConsumerApiDefinition currentRevision,
-            final boolean abstractFlag, boolean exception) {
-        return new ConsumerRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
-                Collections.emptySet());
+            final String internalName, final int typeId, final ConsumerApiDefinition revision,
+            final Abstract abstractFlag, RecordKind recordKind) {
+        return revision.newRecordOrExceptionType(name, internalName, typeId, abstractFlag, recordKind,
+                noSuperTypes());
     }
 
     @Override
     protected ConsumerEnumType createEnumType(final ApiRevisionParser.EnumTypeContext context, final String name,
-            final Optional<String> internalName, final int typeId, final ConsumerApiDefinition owner) {
-        return new ConsumerEnumType(name, internalName, typeId, owner);
+            final String internalName, final int typeId, final ConsumerApiDefinition revision) {
+        return revision.newEnumType(name, internalName, typeId);
     }
 
 }

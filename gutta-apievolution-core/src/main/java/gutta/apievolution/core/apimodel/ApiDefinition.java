@@ -44,7 +44,11 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
      * @param annotations Annotations of this API definition
      */
     protected ApiDefinition(final String name, final Set<Annotation> annotations) {
-        this.name = QualifiedName.of(name);
+        this(QualifiedName.of(name), annotations);
+    }
+    
+    protected ApiDefinition(QualifiedName name, Set<Annotation> annotations) {
+        this.name = name;
         this.annotations = (annotations == null) ? new HashSet<>() : annotations;
         this.userDefinedTypes = new ArrayList<>();
         this.udtPublicNameLookup = new HashMap<>();

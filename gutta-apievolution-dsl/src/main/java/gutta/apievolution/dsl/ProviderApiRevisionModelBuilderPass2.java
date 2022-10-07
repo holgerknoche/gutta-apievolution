@@ -1,11 +1,25 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+
+import gutta.apievolution.core.apimodel.Inherited;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderTypeTools;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +53,7 @@ class ProviderApiRevisionModelBuilderPass2
 
     @Override
     protected ProviderField createField(final ApiRevisionParser.FieldContext context, final String name,
-            final Optional<String> internalName, final Type type, final Optionality optionality,
+            final String internalName, final Type type, final Optionality optionality,
             final ProviderRecordType owner) {
         // Resolve predecessor field, if present
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
@@ -92,11 +106,11 @@ class ProviderApiRevisionModelBuilderPass2
         if (typeChange) {
             // If a type change is detected, it is actually a new field (hence, no
             // predecessor)
-            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
-                    Optional.empty());
+            return owner.newField(name, internalName, type, optionality, Inherited.NO, declaredPredecessors,
+                    noPredecessor());
         } else {
-            return new ProviderField(name, internalName, owner, type, optionality, false, declaredPredecessors,
-                    predecessor);
+            return owner.newField(name, internalName, type, optionality, Inherited.NO, declaredPredecessors,
+                    predecessor.orElse(noPredecessor()));
         }
     }
 
@@ -184,7 +198,7 @@ class ProviderApiRevisionModelBuilderPass2
 
     @Override
     protected ProviderEnumMember createEnumMember(final ApiRevisionParser.EnumMemberContext context, final String name,
-            final Optional<String> internalName, final ProviderEnumType owner) {
+            final String internalName, final ProviderEnumType owner) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderEnumMember> predecessor;
@@ -207,7 +221,7 @@ class ProviderApiRevisionModelBuilderPass2
             break;
         }
 
-        return new ProviderEnumMember(name, internalName, this.currentEnumType, predecessor);
+        return this.currentEnumType.newEnumMember(name, internalName, predecessor.orElse(noPredecessor()));
     }
 
     private Optional<ProviderEnumMember> resolvePredecessorEnumMember(final String name,
@@ -243,7 +257,7 @@ class ProviderApiRevisionModelBuilderPass2
 
     @Override
     protected ProviderOperation createOperation(final ApiRevisionParser.OperationContext context, final String name,
-            final Optional<String> internalName, final ProviderApiDefinition owner, final ProviderRecordType returnType,
+            final String internalName, final ProviderApiDefinition owner, final ProviderRecordType returnType,
             final ProviderRecordType parameterType) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
@@ -267,8 +281,8 @@ class ProviderApiRevisionModelBuilderPass2
             break;
         }
 
-        return new ProviderOperation(this.handleAnnotations(context.annotations), name, internalName, owner, returnType,
-                parameterType, predecessor);
+        return owner.newOperation(this.handleAnnotations(context.annotations), name, internalName, returnType,
+                parameterType, predecessor.orElse(noPredecessor()));
     }
 
     private Optional<ProviderOperation> resolvePredecessorOperation(final String name, final boolean explicitReference,

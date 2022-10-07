@@ -1,16 +1,18 @@
 package gutta.apievolution.core.apimodel.consumer;
 
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
+import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.RecordKind;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static gutta.apievolution.core.apimodel.Conventions.*;
 
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
@@ -35,6 +37,12 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
         
         this.referencedRevision = referencedRevision;
     }
+    
+    public ConsumerApiDefinition(QualifiedName name, Set<Annotation> annotations, int referencedRevision) {
+        super(name, annotations);
+        
+        this.referencedRevision = referencedRevision;
+    }
 
     /**
      * Returns the referenced revision number.
@@ -48,7 +56,11 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
     // Element creators
         
     public ConsumerEnumType newEnumType(String publicName, int typeId) {
-        return new ConsumerEnumType(publicName, noInternalName(), typeId, this);
+        return this.newEnumType(publicName, noInternalName(), typeId);
+    }
+    
+    public ConsumerEnumType newEnumType(String publicName, String internalName, int typeId) {
+        return new ConsumerEnumType(publicName, internalName, typeId, this);
     }
     
     public ConsumerRecordType newRecordType(String publicName, int typeId) {
@@ -57,12 +69,17 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
     
     public ConsumerRecordType newRecordType(String publicName, String internalName, int typeId,
             Abstract abstractFlag, Set<ConsumerRecordType> superTypes) {
-        return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.RECORD, superTypes);
+        return this.newRecordOrExceptionType(publicName, internalName, typeId, abstractFlag, RecordKind.RECORD, superTypes);
     }
     
     public ConsumerRecordType newExceptionType(String publicName, String internalName, int typeId,
             Abstract abstractFlag, Set<ConsumerRecordType> superTypes) {
-        return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION, superTypes);
+        return this.newRecordOrExceptionType(publicName, internalName, typeId, abstractFlag, RecordKind.EXCEPTION, superTypes);
+    }
+    
+    public ConsumerRecordType newRecordOrExceptionType(String publicName, String internalName, int typeId,
+            Abstract abstractFlag, RecordKind recordKind, Set<ConsumerRecordType> superTypes) {
+        return new ConsumerRecordType(publicName, internalName, typeId, this, abstractFlag, recordKind, superTypes);
     }
     
     public ConsumerOperation newOperation(String publicName, ConsumerRecordType returnType,

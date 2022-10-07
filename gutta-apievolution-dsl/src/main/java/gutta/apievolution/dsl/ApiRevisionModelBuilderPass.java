@@ -36,11 +36,11 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R exte
         }
     }
 
-    protected Optional<String> determineInternalName(final ApiRevisionParser.AsClauseContext context) {
+    protected String determineInternalName(final ApiRevisionParser.AsClauseContext context) {
         if (context == null) {
-            return Optional.empty();
+            return null;
         } else {
-            return Optional.of(this.identifierAsText(context.aliasName));
+            return this.identifierAsText(context.aliasName);
         }
     }
 

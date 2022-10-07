@@ -1,11 +1,15 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
+import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.RecordKind;
 
 import java.util.List;
@@ -39,6 +43,11 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
      * @param predecessor The predecessor of this API definition, if any
      */
     public ProviderApiDefinition(final String name, final Set<Annotation> annotations, final int revision,
+            final ProviderApiDefinition predecessor) {
+        this(QualifiedName.of(name), annotations, revision, predecessor);
+    }
+    
+    public ProviderApiDefinition(QualifiedName name, final Set<Annotation> annotations, final int revision,
             final ProviderApiDefinition predecessor) {
         super(name, annotations);
 
@@ -102,7 +111,7 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
     
     public ProviderRecordType newRecordType(String publicName, String internalName, int typeId, Abstract abstractFlag,
             Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
-        return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.RECORD,
+        return this.newRecordOrExceptionType(publicName, internalName, typeId, abstractFlag, RecordKind.RECORD,
                 superTypes, predecessor);
     }
     
@@ -117,7 +126,13 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
     
     public ProviderRecordType newExceptionType(String publicName, String internalName, int typeId, Abstract abstractFlag,
             Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
-        return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, RecordKind.EXCEPTION,
+        return this.newRecordOrExceptionType(publicName, internalName, typeId, abstractFlag, RecordKind.EXCEPTION,
+                superTypes, predecessor);
+    }
+    
+    public ProviderRecordType newRecordOrExceptionType(String publicName, String internalName, int typeId,
+            Abstract abstractFlag, RecordKind recordKind, Set<ProviderRecordType> superTypes, ProviderRecordType predecessor) {
+        return new ProviderRecordType(publicName, internalName, typeId, this, abstractFlag, recordKind,
                 superTypes, predecessor);
     }
     
