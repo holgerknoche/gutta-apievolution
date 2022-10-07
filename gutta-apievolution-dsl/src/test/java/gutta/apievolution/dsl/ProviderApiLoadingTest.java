@@ -125,7 +125,7 @@ class ProviderApiLoadingTest {
 
         ProviderRecordType unchangedTypeV2 = expectedRevision2.newRecordType("UnchangedType", 0);
 
-        ProviderField unchangedTypeFieldV2 = unchangedTypeV1.newField("field", noInternalName(),
+        ProviderField unchangedTypeFieldV2 = unchangedTypeV2.newField("field", noInternalName(),
                 StringType.unbounded(), Optionality.MANDATORY, Inherited.NO,
                 Arrays.asList(unchangedTypeFieldV1), unchangedTypeFieldV1);
 

@@ -21,7 +21,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
 
     private final boolean abstractFlag;
 
-    private final boolean exception;
+    private final RecordKind recordKind;
 
     private final Set<R> superTypes = new LinkedHashSet<>(); // We use a linked hash set for a predictable iteration order
 
@@ -54,7 +54,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         this.declaredFields = new ArrayList<>();
         this.inheritedFields = new ArrayList<>();
         this.abstractFlag = (requireNonNull(abstractFlag) == Abstract.YES);
-        this.exception = (requireNonNull(recordKind) == RecordKind.EXCEPTION);
+        this.recordKind = requireNonNull(recordKind);
         this.fieldLookup = new HashMap<>();
         this.internalNameLookup = new HashMap<>();
         this.subTypes = new HashSet<>();
@@ -62,7 +62,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         owner.addUserDefinedType(this);
 
         if (superTypes != null) {
-            this.superTypes.addAll(superTypes);
+            superTypes.forEach(this::addSuperType);
         }
     }
 
@@ -152,7 +152,11 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * @return see above
      */
     public boolean isException() {
-        return this.exception;
+        return (this.recordKind == RecordKind.EXCEPTION);
+    }
+    
+    public RecordKind getRecordKind() {
+        return this.recordKind;
     }
 
     /**

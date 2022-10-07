@@ -83,7 +83,7 @@ class ProviderApiRevisionModelBuilderPass1
         }
 
         predecessor.ifPresent(record -> {
-            if (record.isException() && (recordKind != RecordKind.EXCEPTION)) {
+            if (record.getRecordKind() != recordKind) {
                 throw new APIResolutionException(context.refToken,
                         "The predecessor of an exception may not be a record (or vice versa).");
             }
