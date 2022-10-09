@@ -357,7 +357,7 @@ class ModelMergerTest {
     }
 
     /**
-     * Test case: Inherited fields are handled correctly in the merge.
+     * Test case: Inherited fields are handled correctly in the merge (simple case).
      */
     @Test
     void mergeWithInheritedFields() {
@@ -401,6 +401,62 @@ class ModelMergerTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Test case: Inherited fields are handled correctly when a super type is changed. 
+     */
+    @Test
+    void mergeWithChangeOfSupertype() {
+        // Build the first revision
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+
+        ProviderRecordType superTypeV1 = revision1.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), noPredecessor());
+
+        superTypeV1.newField("inheritedField", StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV1), noPredecessor());
+
+        revision1.finalizeDefinition();
+        
+        // Build the second revision
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
+
+        // The super type is not related to the previous super type
+        ProviderRecordType newSuperTypeV2 = revision2.newRecordType("NewSuperType", noInternalName(), 2, Abstract.YES,
+                noSuperTypes(), noPredecessor());
+        
+        newSuperTypeV2.newField("anotherField", StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(newSuperTypeV2), subTypeAV1);
+
+        subTypeAV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
+
+        revision2.finalizeDefinition();
+
+        // Merge the revisions and inspect the merged revision
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        String expected = "api test [] {\n"
+                + " abstract record NewSuperType(NewSuperType) {\n"
+                + "  optin anotherField(anotherField):string\n"
+                + " }\n"
+                + " record SubTypeA(SubTypeA) extends NewSuperType, SuperType {\n"
+                + "  inherited optin anotherField(anotherField):string\n"
+                + "  inherited optin inheritedField(inheritedField):string\n"
+                + "  optin addedField(addedField):string\n"
+                + " }\n"
+                + " abstract record SuperType(SuperType) {\n"
+                + "  optin inheritedField(inheritedField):string\n"
+                + " }\n"
+                + "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
     /**
      * Test case: When a field is restored to a previous state in a revision
      * history, the existing field can be reused in the merge (e.g., type change

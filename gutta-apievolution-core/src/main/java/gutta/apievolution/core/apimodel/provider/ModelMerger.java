@@ -271,9 +271,7 @@ public class ModelMerger {
                 this.currentRecordType.addSuperType(superType);
             });
 
-            for (ProviderField field : recordType.getDeclaredFields()) {
-                field.accept(this);
-            }
+            recordType.getDeclaredFields().forEach(field -> field.accept(this));
 
             this.currentRecordType = null;
             return null;
