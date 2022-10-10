@@ -1,8 +1,5 @@
 package gutta.apievolution.core.apimodel.consumer;
 
-import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
@@ -13,6 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.

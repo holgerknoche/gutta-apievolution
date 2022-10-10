@@ -1,12 +1,16 @@
 package gutta.apievolution.core.apimodel;
 
+import org.junit.jupiter.api.Test;
+
+import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
+import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
+import static gutta.apievolution.core.apimodel.Optionality.OPT_IN;
+import static gutta.apievolution.core.apimodel.Optionality.max;
+import static gutta.apievolution.core.apimodel.Optionality.morePermissive;
+import static gutta.apievolution.core.apimodel.Optionality.moreRestrictive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-
-import static gutta.apievolution.core.apimodel.Optionality.*;
 
 /**
  * Test cases for the {@link Optionality} enumeration.

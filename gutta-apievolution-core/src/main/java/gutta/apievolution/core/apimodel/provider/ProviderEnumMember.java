@@ -1,21 +1,21 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
-
 import gutta.apievolution.core.apimodel.EnumMember;
 
 import java.util.Optional;
+
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of an {@link EnumMember}.
  */
 public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnumMember>
-        implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
+    implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
 
     private final ProviderEnumMember predecessor;
 
     private ProviderEnumMember successor;
-    
+
     /**
      * Creates a new enum member from the given data.
      *
@@ -25,7 +25,7 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
      * @param owner        The enum type that owns this member
      * @param predecessor  The member's predecessor, if any
      */
-     ProviderEnumMember(final String publicName, final String internalName,
+    ProviderEnumMember(final String publicName, final String internalName,
             final ProviderEnumType owner, final ProviderEnumMember predecessor) {
         super(publicName, internalName, owner);
 

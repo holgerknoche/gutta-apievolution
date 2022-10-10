@@ -46,7 +46,13 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
     protected ApiDefinition(final String name, final Set<Annotation> annotations) {
         this(QualifiedName.of(name), annotations);
     }
-    
+
+    /**
+     * Creates a new API definition using the given data.
+     * 
+     * @param name        The name of the API definition
+     * @param annotations Annotations of this API definition
+     */
     protected ApiDefinition(QualifiedName name, Set<Annotation> annotations) {
         this.name = name;
         this.annotations = (annotations == null) ? new HashSet<>() : annotations;

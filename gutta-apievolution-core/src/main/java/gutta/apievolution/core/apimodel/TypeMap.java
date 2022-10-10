@@ -21,6 +21,10 @@ public class TypeMap<S extends UserDefinedType<?>, T extends UserDefinedType<?>>
 
     private final Map<S, T> udtMap;
     
+    /**
+     * Creates a new type mapping based on the given mapping on user-defined types.
+     * @param udtMap The underlying mapping on user-defined types
+     */
     public TypeMap(Map<S, T> udtMap) {
         this.udtMap = udtMap;
     }
@@ -112,13 +116,24 @@ public class TypeMap<S extends UserDefinedType<?>, T extends UserDefinedType<?>>
         return new TypeMap<>(restrictedUdtLookup);
     }
     
+    /**
+     * Composes this type map with the given one and returns the composed type map.
+     * @param <X> The target type of user-defined type
+     * @param udtMappingFunction The type map to compose this type map with
+     * @return The composed type map
+     */
     public <X extends UserDefinedType<?>> TypeMap<S, X> compose(Function<T, X> udtMappingFunction) {
-         Map<S, X> composedUdtMap = this.udtMap.entrySet().stream()
-            .collect(Collectors.toMap(Entry::getKey, entry -> udtMappingFunction.apply(entry.getValue())));
-         
-         return new TypeMap<>(composedUdtMap);
+        Map<S, X> composedUdtMap = this.udtMap.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> udtMappingFunction.apply(entry.getValue())));
+
+        return new TypeMap<>(composedUdtMap);
     }
     
+    /**
+     * Inverts this type map.
+     * @param onConflict The action to perform on conflicts, i.e., when in inverse is not a function
+     * @return The inverted type map
+     */
     public TypeMap<T, S> invert(Consumer<T> onConflict) {
         Map<T, S> invertedUdtMap = MapUtil.invertMap(this.udtMap, onConflict);
         return new TypeMap<>(invertedUdtMap);

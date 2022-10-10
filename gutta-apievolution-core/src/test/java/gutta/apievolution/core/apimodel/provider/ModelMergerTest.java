@@ -1,11 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
-import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
-import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.AtomicType;
@@ -19,6 +13,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ModelMergerTest {
 
@@ -141,18 +141,16 @@ class ModelMergerTest {
 
         ProviderEnumMember unchangedMemberV1 = testEnumV1.newEnumMember("UNCHANGED");
         ProviderEnumMember deletedMemberV1 = testEnumV1.newEnumMember("DELETED");
-        
+
         ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 2);
 
         ProviderRecordType testTypeV2 = revision2.newRecordType("Test", "TestInternal", 0, testTypeV1);
 
         ProviderField typeChangeFieldV2 = testTypeV2.newField("typeChangeField", "newTypeChangeField",
                 AtomicType.INT_64, Optionality.MANDATORY, noPredecessor());
-        ProviderField unchangedFieldV2 = testTypeV2.newField("unchangedField", noInternalName(),
-                StringType.unbounded(), Optionality.MANDATORY, Inherited.NO,
-                Collections.singletonList(unchangedFieldV1), unchangedFieldV1);
-        ProviderField addedFieldV2 = testTypeV2.newField("addedField", StringType.unbounded(),
-                Optionality.MANDATORY);
+        ProviderField unchangedFieldV2 = testTypeV2.newField("unchangedField", noInternalName(), StringType.unbounded(),
+                Optionality.MANDATORY, Inherited.NO, Collections.singletonList(unchangedFieldV1), unchangedFieldV1);
+        ProviderField addedFieldV2 = testTypeV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
 
         ProviderEnumType testEnumV2 = revision2.newEnumType("Test", noInternalName(), 0, testEnumV1);
 
@@ -253,8 +251,7 @@ class ModelMergerTest {
 
         ProviderRecordType usingTypeV1 = revision1.newRecordType("UsingType", 1);
 
-        ProviderField usingFieldV1 = usingTypeV1.newField("usingField", extendedTypeV1,
-                Optionality.MANDATORY);
+        ProviderField usingFieldV1 = usingTypeV1.newField("usingField", extendedTypeV1, Optionality.MANDATORY);
 
         revision1.finalizeDefinition();
 
@@ -402,7 +399,8 @@ class ModelMergerTest {
     }
 
     /**
-     * Test case: Inherited fields are handled correctly when a super type is changed. 
+     * Test case: Inherited fields are handled correctly when a super type is
+     * changed.
      */
     @Test
     void mergeWithChangeOfSupertype() {
@@ -418,14 +416,14 @@ class ModelMergerTest {
                 Collections.singleton(superTypeV1), noPredecessor());
 
         revision1.finalizeDefinition();
-        
+
         // Build the second revision
         ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
         // The super type is not related to the previous super type
         ProviderRecordType newSuperTypeV2 = revision2.newRecordType("NewSuperType", noInternalName(), 2, Abstract.YES,
                 noSuperTypes(), noPredecessor());
-        
+
         newSuperTypeV2.newField("anotherField", StringType.unbounded(), Optionality.MANDATORY);
 
         ProviderRecordType subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
@@ -439,24 +437,18 @@ class ModelMergerTest {
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
-        String expected = "api test [] {\n"
-                + " abstract record NewSuperType(NewSuperType) {\n"
-                + "  optin anotherField(anotherField):string\n"
-                + " }\n"
-                + " record SubTypeA(SubTypeA) extends NewSuperType, SuperType {\n"
-                + "  inherited optin anotherField(anotherField):string\n"
-                + "  inherited optin inheritedField(inheritedField):string\n"
-                + "  optin addedField(addedField):string\n"
-                + " }\n"
-                + " abstract record SuperType(SuperType) {\n"
-                + "  optin inheritedField(inheritedField):string\n"
-                + " }\n"
-                + "}\n";
+        String expected = "api test [] {\n" + " abstract record NewSuperType(NewSuperType) {\n" +
+                "  optin anotherField(anotherField):string\n" + " }\n" +
+                " record SubTypeA(SubTypeA) extends NewSuperType, SuperType {\n" +
+                "  inherited optin anotherField(anotherField):string\n" +
+                "  inherited optin inheritedField(inheritedField):string\n" +
+                "  optin addedField(addedField):string\n" + " }\n" + " abstract record SuperType(SuperType) {\n" +
+                "  optin inheritedField(inheritedField):string\n" + " }\n" + "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
     }
-    
+
     /**
      * Test case: When a field is restored to a previous state in a revision
      * history, the existing field can be reused in the merge (e.g., type change
@@ -536,8 +528,8 @@ class ModelMergerTest {
         ProviderField exceptionField2V2 = exceptionType2V2.newField("e2", StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderOperation operation1V2 = revision2.newOperation("method1", noInternalName(), recordTypeV2,
-                recordTypeV2, operation1V1);
+        ProviderOperation operation1V2 = revision2.newOperation("method1", noInternalName(), recordTypeV2, recordTypeV2,
+                operation1V1);
 
         operation1V2.addThrownException(exceptionType2V2);
 
@@ -552,19 +544,18 @@ class ModelMergerTest {
 
         ProviderRecordType recordTypeV3 = revision3.newRecordType("RecordType", noInternalName(), 0, recordTypeV2);
 
-        ProviderRecordType exceptionType2V3 = revision3.newExceptionType("E2", noInternalName(), 2,
-                exceptionType2V2);
+        ProviderRecordType exceptionType2V3 = revision3.newExceptionType("E2", noInternalName(), 2, exceptionType2V2);
 
         exceptionType2V3.newField("e2", noInternalName(), StringType.unbounded(), Optionality.MANDATORY,
                 exceptionField2V2);
 
-        ProviderOperation operation1V3 = revision3.newOperation("method1", noInternalName(), recordTypeV3,
-                recordTypeV3, operation1V2);
+        ProviderOperation operation1V3 = revision3.newOperation("method1", noInternalName(), recordTypeV3, recordTypeV3,
+                operation1V2);
 
         operation1V3.addThrownException(exceptionType2V3);
 
-        ProviderOperation operation3V3 = revision3.newOperation("method3", noInternalName(), recordTypeV3,
-                recordTypeV3, operation3V2);
+        ProviderOperation operation3V3 = revision3.newOperation("method3", noInternalName(), recordTypeV3, recordTypeV3,
+                operation3V2);
 
         operation3V3.addThrownException(exceptionType2V3);
 
@@ -576,7 +567,8 @@ class ModelMergerTest {
 
         String expected = "api test [] {\n" + " record RecordType(RecordType) {\n" + " }\n" + " exception E2(E2) {\n" +
                 "  optin e2(e2):string\n" + " }\n" + " exception E1(E1) {\n" + "  optin e1(e1):string\n" + " }\n" +
-                " operation method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                " operation method1(method1) (RecordType@revision 0) : " +
+                "RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
                 " operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
                 " operation method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" + "}\n";
 
