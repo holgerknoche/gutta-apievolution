@@ -39,8 +39,8 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * Creates a new record type from the given data.
      *
      * @param publicName   The public name of this record type
-     * @param internalName The internal name of this record type, if any.
-     *                     If {@code null}, the public name is assumed
+     * @param internalName The internal name of this record type, if any. If
+     *                     {@code null}, the public name is assumed
      * @param typeId       The type id of this record type
      * @param owner        The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
@@ -145,7 +145,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public boolean isConcrete() {
         return !(this.isAbstract());
     }
-    
+
     /**
      * Returns whether this record type is an exception.
      *
@@ -154,7 +154,12 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public boolean isException() {
         return (this.recordKind == RecordKind.EXCEPTION);
     }
-    
+
+    /**
+     * Returns the kind of this record type.
+     * 
+     * @return see above
+     */
     public RecordKind getRecordKind() {
         return this.recordKind;
     }
@@ -176,7 +181,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public Set<R> getSubTypes() {
         return Collections.unmodifiableSet(this.subTypes);
     }
-    
+
     /**
      * Returns whether this record type has at least one supertype.
      *
@@ -228,31 +233,34 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public Iterator<F> iterator() {
         return new ConcatenatedIterator<>(this.inheritedFields, this.declaredFields);
     }
-    
+
     /**
-     * Returns the set of all subtypes of this record type, including the type itself, that match the given predicate.
-     * @param selectionPredicate A predicate determining the types to be included in the set 
+     * Returns the set of all subtypes of this record type, including the type
+     * itself, that match the given predicate.
+     * 
+     * @param selectionPredicate A predicate determining the types to be included in
+     *                           the set
      * @return see above
      */
     public Set<R> collectAllSubtypes(Predicate<R> selectionPredicate) {
-        Set<R> subTypes = new HashSet<>();        
-        
+        Set<R> subTypes = new HashSet<>();
+
         this.collectAllSubtypesInternal(subTypes, selectionPredicate);
-        
+
         return subTypes;
     }
-    
+
     @SuppressWarnings("unchecked")
     void collectAllSubtypesInternal(Set<R> knownSubtypes, Predicate<R> selectionPredicate) {
         if (knownSubtypes.contains(this)) {
             return;
         }
-        
+
         R currentType = (R) this;
         if (selectionPredicate.test(currentType)) {
             knownSubtypes.add(currentType);
         }
-        
+
         this.subTypes.forEach(type -> type.collectAllSubtypesInternal(knownSubtypes, selectionPredicate));
     }
 
@@ -265,20 +273,18 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         if (types.isEmpty()) {
             return Collections.emptySet();
         } else {
-            return types.stream()
-                    .map(RecordType::getTypeId)
-                    .collect(Collectors.toSet());
+            return types.stream().map(RecordType::getTypeId).collect(Collectors.toSet());
         }
     }
-    
+
     private Set<Integer> subTypeIds() {
         return this.typeIdSet(this.subTypes);
     }
-    
+
     private Set<Integer> superTypeIds() {
         return this.typeIdSet(this.superTypes);
     }
-    
+
     /**
      * Compares this record type's state against the state of the given member.
      *
@@ -291,7 +297,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
                 this.subTypeIds().equals(that.subTypeIds()) && this.abstractFlag == that.abstractFlag &&
                 this.superTypeIds().equals(that.superTypeIds());
     }
-    
+
     @Override
     public final <X> X accept(TypeVisitor<X> visitor) {
         return visitor.handleRecordType(this);

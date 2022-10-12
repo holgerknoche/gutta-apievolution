@@ -1,13 +1,13 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.Optionality;
+import org.junit.jupiter.api.Test;
+
 import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
 import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import gutta.apievolution.core.apimodel.AtomicType;
-import gutta.apievolution.core.apimodel.Optionality;
-import org.junit.jupiter.api.Test;
 
 /**
  * Test cases for the {@link RevisionHistory} class.

@@ -1,9 +1,9 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.Set;
+
 import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-
-import java.util.Set;
 
 class TestRecordType extends RecordType<TestApiDefinition, TestRecordType, TestField> implements TestUserDefinedType {
         

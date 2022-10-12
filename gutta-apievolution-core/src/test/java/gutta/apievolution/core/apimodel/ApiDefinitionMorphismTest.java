@@ -1,17 +1,17 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.CheckResult;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Map;
+
 import static gutta.apievolution.core.util.MapUtil.mapOf;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import gutta.apievolution.core.util.CheckResult;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Map;
 
 class ApiDefinitionMorphismTest {
     
@@ -39,7 +39,8 @@ class ApiDefinitionMorphismTest {
         TestOperation operationB = new TestOperation("opB", definitionB, recordTypeB1, recordTypeB2);
         
         // Create an API morphism from A to B with an incompatible type mapping
-        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA1, recordTypeB1, recordTypeA2, recordTypeB2));
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = 
+                new TypeMap<>(mapOf(recordTypeA1, recordTypeB1, recordTypeA2, recordTypeB2));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
@@ -110,7 +111,8 @@ class ApiDefinitionMorphismTest {
         TestField fieldB = new TestField("fieldB", recordTypeB, recordTypeB2);
         
         // Create an API morphism from A to B with an incompatible type mapping
-        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap =
+                new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
         TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
@@ -119,7 +121,9 @@ class ApiDefinitionMorphismTest {
         CheckResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(singletonList("Type 'TypeA2' of mapped field 'fieldA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'."), result.getMessages());
+        assertEquals(
+                singletonList("Type 'TypeA2' of mapped field 'fieldA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'."),
+                result.getMessages());
     }
     
     /**
@@ -180,7 +184,8 @@ class ApiDefinitionMorphismTest {
         TestField fieldB = new TestField("fieldB", recordTypeB1, recordTypeB);
         
         // Create an API morphism from A to B with an incompatible type mapping
-        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap =
+                new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
         TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
@@ -189,7 +194,11 @@ class ApiDefinitionMorphismTest {
         CheckResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(singletonList("Record type 'TypeA1' containing field 'fieldA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."), result.getMessages());
+        assertEquals(
+                singletonList(
+                        "Record type 'TypeA1' containing field 'fieldA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."
+                        ),
+                result.getMessages());
     }
     
     /**
@@ -254,7 +263,11 @@ class ApiDefinitionMorphismTest {
         CheckResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(singletonList("Enum type 'TypeA1' containing member 'memberA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."), result.getMessages());
+        assertEquals(
+                singletonList(
+                        "Enum type 'TypeA1' containing member 'memberA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."
+                        ),
+                result.getMessages());
     }
         
     /**
@@ -313,7 +326,8 @@ class ApiDefinitionMorphismTest {
         TestOperation operationB = new TestOperation("opB", definitionB, recordTypeB1, recordTypeB2);
         
         // Create an API morphism from A to B with an incompatible type mapping
-        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
+        TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = 
+                new TypeMap<>(mapOf(recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
         TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), emptyMap(), operationMap);
@@ -322,8 +336,10 @@ class ApiDefinitionMorphismTest {
         CheckResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("Parameter type 'TypeA2' of mapped operation 'opA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'.",
-                "Return type 'TypeA1' of mapped operation 'opA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."), result.getMessages());
+        assertEquals(Arrays.asList(
+                "Parameter type 'TypeA2' of mapped operation 'opA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'.",
+                "Return type 'TypeA1' of mapped operation 'opA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'."),
+                result.getMessages());
     }
     
     /**

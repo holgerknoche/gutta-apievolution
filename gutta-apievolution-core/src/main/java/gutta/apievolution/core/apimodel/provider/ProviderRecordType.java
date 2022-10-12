@@ -1,8 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -14,6 +11,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+
 /**
  * Provider-specific implementation of a {@link RecordType}.
  */
@@ -23,17 +25,18 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
     private final ProviderRecordType predecessor;
 
     private ProviderRecordType successor;
-           
+
     /**
      * Creates a new record type from the given data.
      *
      * @param publicName   The record type's public name
-     * @param internalName The record type's internal name, if any. If {@code null}, the
-     *                     public name is assumed
+     * @param internalName The record type's internal name, if any. If {@code null},
+     *                     the public name is assumed
      * @param typeId       The record type's type id
      * @param owner        The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
-     * @param exception    Denotes whether this type is an ordinary record or an exception
+     * @param exception    Denotes whether this type is an ordinary record or an
+     *                     exception
      * @param superTypes   This type's supertypes, if any
      * @param predecessor  The type's predecessor, if any
      */
@@ -68,23 +71,54 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
     }
 
     // Element creators
-    
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName  The field's public name
+     * @param type        The field's type
+     * @param optionality The field's optionality
+     * @return The created field
+     */
     public ProviderField newField(String publicName, Type type, Optionality optionality) {
         return new ProviderField(publicName, noInternalName(), this, type, optionality, Inherited.NO,
                 noDeclaredPredecessors(), noPredecessor());
     }
-    
-    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality, ProviderField predecessor) {
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName   The field's public name
+     * @param internalName The field's internal name
+     * @param type         The field's type
+     * @param optionality  The field's optionality
+     * @param predecessor  The field's predecessor, if any
+     * @return The created field
+     */
+    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
+            ProviderField predecessor) {
         return new ProviderField(publicName, internalName, this, type, optionality, Inherited.NO,
                 noDeclaredPredecessors(), predecessor);
     }
-    
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName           The field's public name
+     * @param internalName         The field's internal name
+     * @param type                 The field's type
+     * @param optionality          The field's optionality
+     * @param inherited            Denotes whether this field is inherited
+     * @param declaredPredecessors The field's declared predecessors, if any
+     * @param predecessor          The field's predecessor, if any
+     * @return The created field
+     */
     public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
             Inherited inherited, List<ProviderField> declaredPredecessors, ProviderField predecessor) {
         return new ProviderField(publicName, internalName, this, type, optionality, inherited, declaredPredecessors,
                 predecessor);
     }
-    
+
     @Override
     public String toString() {
         return this.getInternalName() + "@" + this.getOwner().toString();

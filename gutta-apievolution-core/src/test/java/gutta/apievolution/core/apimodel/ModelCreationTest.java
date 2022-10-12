@@ -1,10 +1,10 @@
 package gutta.apievolution.core.apimodel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test cases for API model creation.

@@ -1,12 +1,12 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
-
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.Operation;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of an {@link Operation}.

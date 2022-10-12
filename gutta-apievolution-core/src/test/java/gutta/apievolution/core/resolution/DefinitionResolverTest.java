@@ -1,12 +1,5 @@
 package gutta.apievolution.core.resolution;
 
-import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.ListType;
@@ -29,6 +22,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for definition resolution.
@@ -398,16 +398,19 @@ class DefinitionResolverTest {
         DefinitionResolutionException exception;
         
         // The field must be mapped, so not mapping it must fail
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
         assertTrue(exception.getMessage().contains("Non-optional field") && exception.getMessage().contains("is not mapped"));
         
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.MANDATORY));
         // The field cannot be considered optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for fully optional
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
         assertTrue(exception.getMessage().contains("are not compatible"));
     }
     
@@ -490,10 +493,12 @@ class DefinitionResolverTest {
         assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, null));
         
         // Optional fields can only be considered optional by the consumer
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
         assertTrue(exception.getMessage().contains("are not compatible"));        
         // Same for optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Optional must work
         assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPTIONAL));
@@ -517,10 +522,12 @@ class DefinitionResolverTest {
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.MANDATORY));
         // No optionality is allowed for mandatory in-out fields
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for fully optional
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPTIONAL));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPTIONAL));
         assertTrue(exception.getMessage().contains("are not compatible"));
     }
     
@@ -551,10 +558,12 @@ class DefinitionResolverTest {
         assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, null));
         
         // Optional fields can only be considered optional by the consumer
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.MANDATORY));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.MANDATORY));
         assertTrue(exception.getMessage().contains("are not compatible"));        
         // Same for optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class,
+                () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Optional must work
         assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPTIONAL));

@@ -1,10 +1,5 @@
 package gutta.apievolution.core.resolution;
 
-import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
-import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
-import static gutta.apievolution.core.util.MapUtil.composeMaps;
-import static gutta.apievolution.core.util.MapUtil.invertMap;
-
 import gutta.apievolution.core.apimodel.ApiDefinitionMorphism;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
@@ -30,6 +25,11 @@ import gutta.apievolution.core.util.CheckResult;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+
+import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
+import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
+import static gutta.apievolution.core.util.MapUtil.composeMaps;
+import static gutta.apievolution.core.util.MapUtil.invertMap;
 
 /**
  * This class represents a map from a consumer revision to a specific provider

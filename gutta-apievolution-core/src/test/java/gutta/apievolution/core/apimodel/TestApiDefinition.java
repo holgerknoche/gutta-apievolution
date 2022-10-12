@@ -1,8 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
-import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
-
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
 
 class TestApiDefinition extends ApiDefinition<TestApiDefinition, TestOperation> {
 

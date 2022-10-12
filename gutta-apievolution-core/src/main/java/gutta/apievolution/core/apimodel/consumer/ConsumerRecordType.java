@@ -37,10 +37,26 @@ public class ConsumerRecordType extends RecordType<ConsumerApiDefinition, Consum
 
     // Element creators
     
+    /**
+     * Creates a new field in this record type.
+     * @param publicName The field's public name
+     * @param type The field's type
+     * @param optionality The field's optionality
+     * @return The created field
+     */
     public ConsumerField newField(String publicName, Type type, Optionality optionality) {
         return new ConsumerField(publicName, noInternalName(), this, type, optionality, Inherited.NO);
     }
     
+    /**
+     * Creates a new field in this record type.
+     * @param publicName The field's public type
+     * @param internalName The field's internal type
+     * @param type The field's type
+     * @param optionality The field's optionality
+     * @param inherited Denotes whether this field is inherited
+     * @return The created field
+     */
     public ConsumerField newField(String publicName, String internalName, Type type, Optionality optionality,
             Inherited inherited) {
         return new ConsumerField(publicName, internalName, this, type, optionality, inherited);

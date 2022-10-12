@@ -9,8 +9,9 @@ import java.util.Map;
  * This class represents a map from a distinct provider revision to a merged
  * revision.
  */
-public class ToMergedModelMap extends ApiDefinitionMorphism<ProviderApiDefinition, ProviderApiDefinition, ProviderUserDefinedType, ProviderUserDefinedType, 
-    ProviderField, ProviderField, ProviderEnumMember, ProviderEnumMember, ProviderOperation, ProviderOperation> {
+public class ToMergedModelMap extends ApiDefinitionMorphism<ProviderApiDefinition, ProviderApiDefinition,
+    ProviderUserDefinedType, ProviderUserDefinedType, ProviderField, ProviderField, ProviderEnumMember,
+    ProviderEnumMember, ProviderOperation, ProviderOperation> {
 
     ToMergedModelMap(TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
             Map<ProviderField, ProviderField> fieldMap,

@@ -1,7 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
-
 import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -9,6 +7,8 @@ import gutta.apievolution.core.apimodel.Type;
 
 import java.util.List;
 import java.util.Optional;
+
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of a {@link Field}.

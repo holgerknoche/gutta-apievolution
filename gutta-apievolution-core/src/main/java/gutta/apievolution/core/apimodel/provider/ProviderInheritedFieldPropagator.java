@@ -1,9 +1,9 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
-
 import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.InheritedFieldPropagator;
+
+import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
 
 class ProviderInheritedFieldPropagator
         extends InheritedFieldPropagator<ProviderRecordType, ProviderField> {

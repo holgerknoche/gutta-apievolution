@@ -1,11 +1,5 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
-import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
-import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -15,6 +9,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
+
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test cases for provider inheritance.

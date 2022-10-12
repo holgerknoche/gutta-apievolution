@@ -25,11 +25,22 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
     }
 
     // Element creators
-        
+
+    /**
+     * Creates a new member in this enum type.
+     * @param publicName The member's public name
+     * @return The created enum member
+     */
     public ConsumerEnumMember newEnumMember(String publicName) {
         return this.newEnumMember(publicName, noInternalName());
     }
     
+    /**
+     * Creates a new member in this enum type.
+     * @param publicName The member's public name
+     * @param internalName The member's internal name
+     * @return The created enum member
+     */
     public ConsumerEnumMember newEnumMember(String publicName, String internalName) {
         return new ConsumerEnumMember(publicName, internalName, this);
     }
