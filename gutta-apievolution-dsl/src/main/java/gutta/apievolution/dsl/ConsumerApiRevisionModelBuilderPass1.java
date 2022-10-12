@@ -1,7 +1,5 @@
 package gutta.apievolution.dsl;
 
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.QualifiedName;
@@ -16,6 +14,8 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 
 class ConsumerApiRevisionModelBuilderPass1
         extends ApiRevisionModelBuilderPass1<ConsumerApiDefinition, ConsumerRecordType, ConsumerField, ConsumerEnumType,

@@ -1,7 +1,5 @@
 package gutta.apievolution.dsl;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.QualifiedName;
@@ -18,6 +16,9 @@ import org.antlr.v4.runtime.Token;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 
 class ProviderApiRevisionModelBuilderPass1
         extends

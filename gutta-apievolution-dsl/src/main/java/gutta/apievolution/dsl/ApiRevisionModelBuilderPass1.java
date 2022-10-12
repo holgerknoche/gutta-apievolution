@@ -1,10 +1,5 @@
 package gutta.apievolution.dsl;
 
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_ABSTRACT;
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_MANDATORY;
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIN;
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIONAL;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
@@ -24,6 +19,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_ABSTRACT;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_MANDATORY;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIN;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIONAL;
 
 abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>

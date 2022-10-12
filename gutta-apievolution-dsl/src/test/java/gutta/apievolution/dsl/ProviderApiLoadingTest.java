@@ -1,13 +1,5 @@
 package gutta.apievolution.dsl;
 
-import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
-import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
-import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.Inherited;
@@ -26,6 +18,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProviderApiLoadingTest {
 

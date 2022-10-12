@@ -1,7 +1,5 @@
 package gutta.apievolution.dsl;
 
-import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-
 import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.Type;
@@ -21,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
 
 /**
  * Specific revision model builder for consumer API definitions.
