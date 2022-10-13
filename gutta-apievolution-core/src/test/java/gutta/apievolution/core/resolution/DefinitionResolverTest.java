@@ -151,7 +151,7 @@ class DefinitionResolverTest {
         DefinitionResolutionException exception = assertThrows(DefinitionResolutionException.class,
                 () -> resolver.resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi));
 
-        assertTrue(exception.getMessage().contains("do not match"));
+        assertTrue(exception.getMessage().contains("is mapped to incompatible type"));
     }
 
     @Test
@@ -305,7 +305,7 @@ class DefinitionResolverTest {
                 () -> new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
                         consumerDefinition));
         
-        assertTrue(exception.getMessage().contains("do not match"));
+        assertTrue(exception.getMessage().contains("mapped to incompatible type"));
     }
         
     private DefinitionResolution runOptionalityTest(Optionality providerOptionality, Optionality consumerOptionality, Usage desiredUsage) {

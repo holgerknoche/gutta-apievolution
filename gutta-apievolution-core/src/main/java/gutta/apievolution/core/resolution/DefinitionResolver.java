@@ -2,8 +2,24 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ModelMerger;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
+import gutta.apievolution.core.util.CheckResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,9 +66,12 @@ public class DefinitionResolver {
         ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
 
         // Perform consistency checks on the maps between consumer API and provider revision
-        consumerToProviderMap.checkConsistency();
-        providerToConsumerMap.checkConsistency();
-
+        CheckResult c2pResult = consumerToProviderMap.checkConsistency();
+        c2pResult.throwOnError(DefinitionResolutionException::new);
+        
+        CheckResult p2cResult = providerToConsumerMap.checkConsistency();
+        p2cResult.throwOnError(DefinitionResolutionException::new);
+        
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
 
         // Compose the two maps to create a consumer -> provider-internal map
