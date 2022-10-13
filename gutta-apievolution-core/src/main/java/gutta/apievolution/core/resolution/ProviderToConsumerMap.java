@@ -35,12 +35,14 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
     ProviderEnumMember, ConsumerEnumMember,
     ProviderOperation, ConsumerOperation> {
 
-    public ProviderToConsumerMap(TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType,
+    public ProviderToConsumerMap(ProviderApiDefinition sourceDefinition, ConsumerApiDefinition targetDefinition,
+            TypeMap<ProviderUserDefinedType, ConsumerUserDefinedType> providerToConsumerType,
             Map<ProviderField, ConsumerField> providerToConsumerField,
             Map<ProviderEnumMember, ConsumerEnumMember> providerToConsumerMember,
             Map<ProviderOperation, ConsumerOperation> providerToConsumerOperation) {
         
-        super(providerToConsumerType, providerToConsumerField, providerToConsumerMember, providerToConsumerOperation);
+        super(sourceDefinition, targetDefinition, providerToConsumerType, providerToConsumerField,
+                providerToConsumerMember, providerToConsumerOperation);
     }
 
     Collection<Type> providerTypes() {

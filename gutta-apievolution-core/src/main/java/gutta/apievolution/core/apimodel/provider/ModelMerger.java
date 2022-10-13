@@ -230,7 +230,7 @@ public class ModelMerger {
 
         protected final TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap;
 
-        private final ProviderApiDefinition mergedDefinition;
+        protected final ProviderApiDefinition mergedDefinition;
 
         private final Set<MemberName> knownMemberNames = new HashSet<>();
 
@@ -589,7 +589,8 @@ public class ModelMerger {
         public ToMergedModelMap getToMergedModelMap() {
             TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> restrictedTypeLookup = 
                     this.typeMap.restrictTo(this.referenceRevision);
-            return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap, this.operationMap);
+            return new ToMergedModelMap(this.referenceRevision, this.mergedDefinition, restrictedTypeLookup, this.fieldMap, 
+                    this.enumMemberMap, this.operationMap);
         }
 
     }

@@ -74,8 +74,8 @@ public class DefinitionResolver {
         Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = this.createOperationMapping(consumerApi,
                 providerApi);
 
-        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember,
-                consumerToProviderOperation);
+        return new ConsumerToProviderMap(consumerApi, providerApi, consumerToProviderType, consumerToProviderField,
+                consumerToProviderMember, consumerToProviderOperation);
     }
 
     private Map<ConsumerUserDefinedType, ProviderUserDefinedType> createTypeMapping(ProviderApiDefinition providerApi,

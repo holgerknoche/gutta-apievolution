@@ -27,6 +27,10 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>,
     O1 extends Operation<?, O1, ?>, O2 extends Operation<?, O2, ?>> {
 
+    protected final A1 sourceDefinition;
+    
+    protected final A2 targetDefinition;
+    
     protected final TypeMap<T1, T2> typeMap;
 
     protected final Map<F1, F2> fieldMap;
@@ -37,19 +41,39 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Creates a new morphism from the given data.
+     * @param sourceDefinition The source definition of the morphism
+     * @param targetDefinition The target definition of the morphism
      * @param typeMap The type map on user-defined maps to use
      * @param fieldMap The field map to use
      * @param memberMap The enum member map to use
      * @param operationMap The operation map to use
      */
-    protected ApiDefinitionMorphism(TypeMap<T1, T2> typeMap, Map<F1, F2> fieldMap, Map<M1, M2> memberMap,
-            Map<O1, O2> operationMap) {
+    protected ApiDefinitionMorphism(A1 sourceDefinition, A2 targetDefinition, TypeMap<T1, T2> typeMap, Map<F1, F2> fieldMap,
+            Map<M1, M2> memberMap, Map<O1, O2> operationMap) {
+        this.sourceDefinition = sourceDefinition;
+        this.targetDefinition = targetDefinition;
         this.typeMap = typeMap;
         this.fieldMap = fieldMap;
         this.memberMap = memberMap;
         this.operationMap = operationMap;
     }
 
+    /**
+     * Returns the source definition of this morphism.
+     * @return see above
+     */
+    public A1 getSourceDefinition() {
+        return sourceDefinition;
+    }
+    
+    /**
+     * Returns the target definition of this morphism.
+     * @return see above
+     */
+    public A2 getTargetDefinition() {
+        return targetDefinition;
+    }
+    
     /**
      * Maps the given type.
      * @param <T> The expected type of type

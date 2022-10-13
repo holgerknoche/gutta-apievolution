@@ -1,6 +1,7 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.ApiDefinitionMorphism;
+import gutta.apievolution.core.apimodel.EnumMember;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -9,6 +10,7 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeMap;
 import gutta.apievolution.core.apimodel.TypeVisitor;
 import gutta.apievolution.core.apimodel.Usage;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
@@ -24,6 +26,7 @@ import gutta.apievolution.core.util.CheckResult;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
@@ -40,20 +43,23 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     ConsumerUserDefinedType, ProviderUserDefinedType, ConsumerField, ProviderField, ConsumerEnumMember, 
     ProviderEnumMember, ConsumerOperation, ProviderOperation> {
 
-    public ConsumerToProviderMap(Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
+    public ConsumerToProviderMap(ConsumerApiDefinition sourceDefinition, ProviderApiDefinition targetDefinition,
+            Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
             Map<ConsumerField, ProviderField> consumerToProviderField,
             Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
             Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
         
-        this(new TypeMap<>(consumerToProviderType), consumerToProviderField, 
+        this(sourceDefinition, targetDefinition, new TypeMap<>(consumerToProviderType), consumerToProviderField, 
                 consumerToProviderMember, consumerToProviderOperation);
     }
     
-    private ConsumerToProviderMap(TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap,
+    private ConsumerToProviderMap(ConsumerApiDefinition sourceDefinition, ProviderApiDefinition targetDefinition,
+            TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap,
             Map<ConsumerField, ProviderField> consumerToProviderField,
             Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember,
             Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation) {
-        super(typeMap, consumerToProviderField, consumerToProviderMember, consumerToProviderOperation);
+        super(sourceDefinition, targetDefinition, typeMap, consumerToProviderField, consumerToProviderMember,
+                consumerToProviderOperation);
     }
     
     /**
@@ -75,7 +81,8 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         Map<ConsumerOperation, ProviderOperation> composedOperationMap = composeMaps(this.operationMap,
                 operation -> toMergedModelMap.mapOperation(operation).orElse(null));
 
-        return new ConsumerToProviderMap(composedTypeMap, composedFieldMap, composedMemberMap, composedOperationMap);
+        return new ConsumerToProviderMap(this.sourceDefinition, toMergedModelMap.getTargetDefinition(), 
+                composedTypeMap, composedFieldMap, composedMemberMap, composedOperationMap);
     }
 
     /**
@@ -94,7 +101,8 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         Map<ProviderOperation, ConsumerOperation> invertedOperationMap = invertMap(this.operationMap,
                 this::onAmbiguousOperation);
 
-        return new ProviderToConsumerMap(invertedTypeMap, invertedFieldMap, invertedMemberMap, invertedOperationMap);
+        return new ProviderToConsumerMap(this.targetDefinition, this.sourceDefinition, invertedTypeMap,
+                invertedFieldMap, invertedMemberMap, invertedOperationMap);
     }
 
     private void onAmbiguousType(Type type) {
@@ -116,19 +124,97 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     protected CheckResult checkConsistency() {
         CheckResult superResult = super.checkConsistency();
         
-        this.checkTypeAssociation(this.typeMap, this.fieldMap);
+        CheckResult ownResult = new CheckResult();
+        // Make sure that all elements are mapped
+        this.checkAllElementsAreMapped(ownResult);
+        // Check optionalities of fields
+        this.checkFieldOptionalities(ownResult);
+                
+        // Join with own result
+        return superResult.joinWith(ownResult);
+    }
+    
+    private void checkAllElementsAreMapped(CheckResult result) {
+        MemberMapChecker memberMapChecker = new MemberMapChecker(result);
         
-        // TODO Join with own result
-        return superResult;
+        // Check that all UDTs as well as their elements are mapped
+        List<UserDefinedType<ConsumerApiDefinition>> udts = this.sourceDefinition.getUserDefinedTypes();
+        for (UserDefinedType<ConsumerApiDefinition> udt : udts) {
+            if (!this.mapUserDefinedType((ConsumerUserDefinedType) udt).isPresent()) {
+                result.addErrorMessage("User-defined type '" + udt + "' is not mapped.");
+            }
+            
+            memberMapChecker.checkUDT(udt);
+        }
+        
+        // Check that all operations are mapped
+        for (ConsumerOperation operation : this.sourceDefinition.getOperations()) {
+            if (!this.mapOperation(operation).isPresent()) {
+                result.addErrorMessage("Operation '" + operation + "' is not mapped."); 
+            }
+        }
+    }
+        
+    private void checkFieldOptionalities(CheckResult result) {
+        this.fieldMap.forEach(
+                (sourceField, targetField) -> this.ensureCompatibleOptionality(sourceField, targetField, result)
+        );
     }
 
-    private void checkTypeAssociation(TypeMap<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType,
-            Map<ConsumerField, ProviderField> consumerToProviderField) {
-        ConsumerTypeConsistencyChecker checker = new ConsumerTypeConsistencyChecker();
-
-        consumerToProviderType.forEach(checker::checkConsistency);
+    private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, CheckResult result) {
+        if (!this.isOptionalityCompatible(sourceField, targetField)) {
+            result.addErrorMessage("Optionalities of " + sourceField + " and " + targetField + " are not compatible.");
+        }
     }
-
+        
+    private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
+        Optionality consumerOptionality = ownField.getOptionality();
+        Optionality providerOptionality = foreignField.getOptionality();
+        
+        // The consumer usage is the one that counts
+        Usage usage = ownField.getOwner().getUsage();
+        
+        switch (usage) {
+        case INPUT:
+            // For types only used as input, the consumer can be more strict than the
+            // provider. Furthermore, opt-in and optional are equivalent.
+            if (providerOptionality == MANDATORY) {
+                return (consumerOptionality == MANDATORY);
+            } else {
+                return true;
+            }
+            
+        case OUTPUT:
+            // For types only used as output, the consumer can be more permissive than
+            // the provider. Furthermore, opt-in and mandatory are equivalent.
+            if (providerOptionality == OPTIONAL) {
+                return (consumerOptionality == OPTIONAL);
+            } else {
+                return true;
+            }
+            
+        case IN_OUT:
+            // If the type is used for both input and output, we have a mixture of the previous cases
+            if (providerOptionality == MANDATORY) {
+                // The type is used as input and therefore, mandatory fields must be provided
+                return (consumerOptionality == MANDATORY);
+            } else if (providerOptionality == OPTIONAL) {
+                // The type is used as output and therefore, optional fields cannot be expected
+                return (consumerOptionality == OPTIONAL);
+            } else {
+                // Opt-in on the provider side is compatible with all optionalities on the consumer side
+                return true;
+            }
+            
+        case NONE:
+            // If the type is not used at all, anything goes
+            return true;
+            
+        default:
+            throw new IllegalArgumentException("Unsupported usage " + usage + ".");
+        }
+    }
+    
     Collection<Type> consumerTypes() {
         return Collections.unmodifiableSet(this.typeMap.sourceTypes());
     }
@@ -152,118 +238,41 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
         return this.operationMap.get(consumerOperation);
     }
-
-    private class ConsumerTypeConsistencyChecker implements TypeVisitor<Void> {
-
-        private Type foreignType;
-
-        public void checkConsistency(Type ownType, Type foreignType) {
-            this.foreignType = foreignType;
-            ownType.accept(this);
-        }
-
-        @Override
-        public Void handleEnumType(EnumType<?, ?, ?> enumType) {
-            // No specific checks as of now
-            return null;
-        }
-
-        @SuppressWarnings("unchecked")
-        private <T extends Type> T resolveForeignType(Type ownType) {
-            return (T) ConsumerToProviderMap.this.typeMap.mapType(ownType);
-        }
-
-        private ProviderField resolveForeignField(ConsumerField ownField) {
-            return ConsumerToProviderMap.this.fieldMap.get(ownField);
-        }
-
-        private Type determineMatchingProviderType(Type consumerType) {
-            // TODO
-            return null;
-        }
-
-        @Override
-        public Void handleRecordType(RecordType<?, ?, ?> recordType) {
-            // Assert that the types of the fields are compatible
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
-                ConsumerField ownField = (ConsumerField) field;
-                ProviderField foreignField = this.resolveForeignField(ownField);
-                this.checkField(ownField, foreignField);
-            }
-
-            return null;
-        }
-
-        private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
-            Optionality consumerOptionality = ownField.getOptionality();
-            Optionality providerOptionality = foreignField.getOptionality();
-            
-            // The consumer usage is the one that counts
-            Usage usage = ownField.getOwner().getUsage();
-            
-            switch (usage) {
-            case INPUT:
-                // For types only used as input, the consumer can be more strict than the
-                // provider. Furthermore, opt-in and optional are equivalent.
-                if (providerOptionality == MANDATORY) {
-                    return (consumerOptionality == MANDATORY);
-                } else {
-                    return true;
-                }
-                
-            case OUTPUT:
-                // For types only used as output, the consumer can be more permissive than
-                // the provider. Furthermore, opt-in and mandatory are equivalent.
-                if (providerOptionality == OPTIONAL) {
-                    return (consumerOptionality == OPTIONAL);
-                } else {
-                    return true;
-                }
-                
-            case IN_OUT:
-                // If the type is used for both input and output, we have a mixture of the previous cases
-                if (providerOptionality == MANDATORY) {
-                    // The type is used as input and therefore, mandatory fields must be provided
-                    return (consumerOptionality == MANDATORY);
-                } else if (providerOptionality == OPTIONAL) {
-                    // The type is used as output and therefore, optional fields cannot be expected
-                    return (consumerOptionality == OPTIONAL);
-                } else {
-                    // Opt-in on the provider side is compatible with all optionalities on the consumer side
-                    return true;
-                }
-                
-            case NONE:
-                // If the type is not used at all, anything goes
-                return true;
-                
-            default:
-                throw new IllegalArgumentException("Unsupported usage " + usage + ".");
-            }
+    
+    private class MemberMapChecker implements TypeVisitor<Void> {
+        
+        private final CheckResult result;
+        
+        public MemberMapChecker(CheckResult result) {
+            this.result = result;
         }
         
-        private void checkField(ConsumerField ownField, ProviderField foreignField) {
-            // Make sure that the optionalities are compatible
-            boolean optionalityIsCompatible = this.isOptionalityCompatible(ownField, foreignField);
-            if (!optionalityIsCompatible) {
-                throw new DefinitionResolutionException(
-                        "Optionalities of " + ownField + " and " + foreignField + " are not compatible.");
+        public void checkUDT(Type type) {
+            type.accept(this);
+        }
+        
+        @Override
+        public Void handleEnumType(EnumType<?, ?, ?> enumType) {
+            for (EnumMember<?, ?> member : enumType) {
+                if (mapConsumerMember((ConsumerEnumMember) member) == null) {
+                    this.result.addErrorMessage("Enum member '" + member + "' is not mapped.");
+                }
             }
             
-            // Make sure that the types match
-            Type ownType = ownField.getType();
-            Type foreignType = foreignField.getType();
-
-            // The foreign type must be matched against the provider image of the
-            // current type
-            Type expectedType = ConsumerToProviderMap.this.typeMap.mapType(ownType);
-
-            if (!foreignType.equals(expectedType)) {
-                throw new DefinitionResolutionException("Types of " + ownField + " (" + ownType + ") and of " +
-                        foreignField + " (" + foreignType + ") do not match.");
-            }
+            return null;
         }
-
+        
+        @Override
+        public Void handleRecordType(RecordType<?, ?, ?> recordType) {
+            for (Field<?, ?> field : recordType) {
+                if (mapField((ConsumerField) field) == null) {
+                    this.result.addErrorMessage("Field '" +  field + "' is not mapped.");
+                }
+            }
+            
+            return null;
+        }
+        
     }
 
 }

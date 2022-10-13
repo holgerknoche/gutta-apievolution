@@ -13,12 +13,13 @@ public class ToMergedModelMap extends ApiDefinitionMorphism<ProviderApiDefinitio
     ProviderUserDefinedType, ProviderUserDefinedType, ProviderField, ProviderField, ProviderEnumMember,
     ProviderEnumMember, ProviderOperation, ProviderOperation> {
 
-    ToMergedModelMap(TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
+    ToMergedModelMap(ProviderApiDefinition sourceDefinition, ProviderApiDefinition targetDefinition,
+            TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
             Map<ProviderField, ProviderField> fieldMap,
             Map<ProviderEnumMember, ProviderEnumMember> enumMemberMap,
             Map<ProviderOperation, ProviderOperation> operationMap) {
         
-        super(typeMap, fieldMap, enumMemberMap, operationMap);
+        super(sourceDefinition, targetDefinition, typeMap, fieldMap, enumMemberMap, operationMap);
     }
 
 }

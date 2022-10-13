@@ -44,7 +44,8 @@ class ApiDefinitionMorphismTest {
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), operationMap);
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, fieldMap,
+                emptyMap(), operationMap);
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -78,7 +79,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA1, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, fieldMap,
+                emptyMap(), emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -115,7 +117,8 @@ class ApiDefinitionMorphismTest {
                 new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, fieldMap,
+                emptyMap(), emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -151,7 +154,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA, recordTypeB));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, fieldMap,
+                emptyMap(), emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -188,7 +192,8 @@ class ApiDefinitionMorphismTest {
                 new TypeMap<>(mapOf(recordTypeA, recordTypeB, recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestField, TestField> fieldMap = mapOf(fieldA, fieldB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, fieldMap, emptyMap(), emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, fieldMap,
+                emptyMap(), emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -224,7 +229,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(emptyMap());
         Map<TestEnumMember, TestEnumMember> memberMap = mapOf(memberA, memberB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), memberMap, emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, emptyMap(),
+                memberMap, emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -257,7 +263,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(enumTypeA, enumTypeB2));
         Map<TestEnumMember, TestEnumMember> memberMap = mapOf(memberA, memberB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), memberMap, emptyMap());
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, emptyMap(),
+                memberMap, emptyMap());
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -295,7 +302,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA1, recordTypeB1));
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), emptyMap(), operationMap);
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, emptyMap(),
+                emptyMap(), operationMap);
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -330,7 +338,8 @@ class ApiDefinitionMorphismTest {
                 new TypeMap<>(mapOf(recordTypeA1, recordTypeB2, recordTypeA2, recordTypeB1));
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), emptyMap(), operationMap);
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, emptyMap(),
+                emptyMap(), operationMap);
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -367,7 +376,8 @@ class ApiDefinitionMorphismTest {
         TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap = new TypeMap<>(mapOf(recordTypeA2, recordTypeB2));
         Map<TestOperation, TestOperation> operationMap = mapOf(operationA, operationB);
         
-        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(typeMap, emptyMap(), emptyMap(), operationMap);
+        TestApiDefinitionMorphism morphism = new TestApiDefinitionMorphism(definitionA, definitionB, typeMap, emptyMap(),
+                emptyMap(), operationMap);
         
         // Check the consistency of the morphism
         CheckResult result = morphism.checkConsistency();
@@ -380,11 +390,12 @@ class ApiDefinitionMorphismTest {
         TestApiDefinition, TestUserDefinedType, TestUserDefinedType, TestField, TestField, TestEnumMember, 
         TestEnumMember, TestOperation, TestOperation> {
 
-        public TestApiDefinitionMorphism(TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap,
+        public TestApiDefinitionMorphism(TestApiDefinition sourceDefinition, TestApiDefinition targetDefinition,
+                TypeMap<TestUserDefinedType, TestUserDefinedType> typeMap,
                 Map<TestField, TestField> fieldMap, Map<TestEnumMember, TestEnumMember> memberMap,
                 Map<TestOperation, TestOperation> operationMap) {
             
-            super(typeMap, fieldMap, memberMap, operationMap);
+            super(sourceDefinition, targetDefinition, typeMap, fieldMap, memberMap, operationMap);
         }
         
     }
