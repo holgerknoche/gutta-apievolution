@@ -98,17 +98,19 @@ class JavaModelBuilder {
         @Override
         public JavaType handleProviderRecordType(ProviderRecordType recordType) {
             JavaRecordLikeType targetClass = (JavaRecordLikeType) this.knownClasses.get(recordType);
-
-            recordType.getSuperType().ifPresent(superType -> {
+            
+            Set<ProviderRecordType> recordSuperTypes = recordType.getSuperTypes();
+            
+            if (!recordSuperTypes.isEmpty()) {                
                 if (recordType.isException()) {
-                    JavaException superException = (JavaException) this.knownClasses.get(superType);
-                    ((JavaException) targetClass).setSuperType(superException);
-                } else {
-                    JavaInterface superInterface = (JavaInterface) this.knownClasses.get(superType);
-                    ((JavaInterface) targetClass).setSuperType(superInterface);
+                    ((JavaException) targetClass).setSuperTypes(
+                            this.<JavaException>convertSuperTypes(recordSuperTypes));
+                } else {                    
+                    ((JavaInterface) targetClass).setSuperTypes(
+                            this.<JavaInterface>convertSuperTypes(recordSuperTypes));
                 }
-            });
-
+            }
+            
             for (ProviderField field : recordType.getDeclaredFields()) {
                 JavaType fieldType = this.resolveType(field.getType());
                 JavaProperty javaProperty = new JavaProperty(field.getInternalName(), fieldType);
@@ -117,7 +119,15 @@ class JavaModelBuilder {
 
             return targetClass;
         }
-
+        
+        @SuppressWarnings("unchecked")
+        private <T extends JavaRecordLikeType> Set<T> convertSuperTypes(Set<ProviderRecordType> superTypes) {
+            return superTypes.stream()
+                    .map(this.knownClasses::get)
+                    .map(value -> (T) value)
+                    .collect(Collectors.toSet());
+        }
+        
         @Override
         public JavaType handleProviderEnumType(ProviderEnumType enumType) {
             // Otherwise, create and register a new one

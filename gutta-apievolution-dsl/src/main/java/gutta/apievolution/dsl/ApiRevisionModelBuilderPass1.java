@@ -1,6 +1,16 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.ApiDefinition;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.RecordKind;
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.dsl.parser.ApiRevisionLexer;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
@@ -10,7 +20,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_ABSTRACT;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_MANDATORY;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIN;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIONAL;
 
 abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R extends RecordType<A, R, F>,
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
@@ -55,7 +68,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
         QualifiedName name = this.buildQualifiedName(ctx.name);
 
         this.currentRevision = this.createRevision(ctx, name, this.handleAnnotations(ctx.annotations),
-                this.previousRevision);
+                this.previousRevision.orElse(null));
 
         // Process sub elements
         ctx.elements.forEach(element -> element.accept(this));
@@ -64,10 +77,10 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract A createRevision(ApiRevisionParser.ApiDefinitionContext context, QualifiedName name,
-            Set<Annotation> annotations, Optional<A> predecessor);
+            Set<Annotation> annotations, A predecessor);
 
     private RecordTypeModifiers determineModifiers(final ApiRevisionParser.RecordTypeContext context) {
-        Optional<Boolean> abstractFlag = Optional.empty();
+        Optional<Abstract> abstractFlag = Optional.empty();
         Optional<Optionality> optionality = Optional.empty();
 
         // Process given modifiers
@@ -76,7 +89,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
 
             switch (modifierToken.getType()) {
             case K_ABSTRACT:
-                abstractFlag = setOnce(abstractFlag, Boolean.TRUE, modifierToken,
+                abstractFlag = setOnce(abstractFlag, Abstract.YES, modifierToken,
                         () -> "Abstract modifier may only be specified once.");
                 break;
 
@@ -101,7 +114,7 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
         }
 
         // Use defaults, if necessary
-        return new RecordTypeModifiers(abstractFlag.orElse(Boolean.FALSE), optionality.orElse(Optionality.MANDATORY));
+        return new RecordTypeModifiers(abstractFlag.orElse(Abstract.NO), optionality.orElse(Optionality.MANDATORY));
     }
 
     @Override
@@ -109,16 +122,17 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
-        Optional<String> internalName = this.determineInternalName(ctx.as);
+        String internalName = this.determineInternalName(ctx.as);
 
         // Handle modifiers, if any
         RecordTypeModifiers modifiers = this.determineModifiers(ctx);
 
         // Determine whether we have an exception or a record
-        boolean exception = (ApiRevisionLexer.K_EXCEPTION == ctx.refToken.getType());
+        RecordKind recordKind = (ApiRevisionLexer.K_EXCEPTION == ctx.refToken.getType()) ? RecordKind.EXCEPTION :
+            RecordKind.RECORD;
 
         R recordType = this.createRecordType(ctx, name, internalName, this.getNextTypeId(), this.currentRevision,
-                modifiers.isAbstract(), exception);
+                modifiers.isAbstract(), recordKind);
 
         this.registerNewRecordType(recordType);
 
@@ -126,15 +140,15 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract R createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-            final Optional<String> internalName, int typeId, final A currentRevision, final boolean abstractFlag,
-            boolean exception);
+            final String internalName, int typeId, final A currentRevision, final Abstract abstractFlag,
+            RecordKind recordKind);
 
     @Override
     public Void visitEnumType(ApiRevisionParser.EnumTypeContext ctx) {
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
-        Optional<String> internalName = this.determineInternalName(ctx.as);
+        String internalName = this.determineInternalName(ctx.as);
 
         E enumType = this.createEnumType(ctx, name, internalName, this.getNextTypeId(), this.currentRevision);
         this.registerNewEnumType(enumType);
@@ -143,20 +157,20 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract E createEnumType(ApiRevisionParser.EnumTypeContext context, String name,
-            Optional<String> internalName, int typeId, A owner);
+            String internalName, int typeId, A owner);
 
     private static class RecordTypeModifiers {
 
-        private final boolean abstractFlag;
+        private final Abstract abstractFlag;
 
         private final Optionality optionality;
 
-        public RecordTypeModifiers(final boolean abstractFlag, final Optionality optionality) {
+        public RecordTypeModifiers(final Abstract abstractFlag, final Optionality optionality) {
             this.abstractFlag = abstractFlag;
             this.optionality = optionality;
         }
 
-        public boolean isAbstract() {
+        public Abstract isAbstract() {
             return this.abstractFlag;
         }
 

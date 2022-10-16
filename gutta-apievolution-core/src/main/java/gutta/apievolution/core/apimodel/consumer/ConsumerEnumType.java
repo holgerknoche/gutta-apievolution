@@ -1,30 +1,50 @@
 package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumType;
-import gutta.apievolution.core.apimodel.TypeVisitor;
 
-import java.util.Optional;
+import static gutta.apievolution.core.apimodel.Conventions.*;
 
 /**
  * Consumer-specific implementation of an {@link EnumType}.
  */
 public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEnumType, ConsumerEnumMember>
         implements ConsumerUserDefinedType {
-
+    
     /**
      * Creates a new enum type from the given data.
      *
      * @param publicName   The enum type's public name
-     * @param internalName The enum type's internal name, if any. Otherwise, the
+     * @param internalName The enum type's internal name, if any. If {@code null} the
      *                     public name is assumed
      * @param typeId       The enum type's type id
      * @param owner        The API definition that owns this enum type
      */
-    public ConsumerEnumType(final String publicName, final Optional<String> internalName, final int typeId,
+    ConsumerEnumType(final String publicName, final String internalName, final int typeId,
             final ConsumerApiDefinition owner) {
         super(publicName, internalName, typeId, owner);
     }
 
+    // Element creators
+
+    /**
+     * Creates a new member in this enum type.
+     * @param publicName The member's public name
+     * @return The created enum member
+     */
+    public ConsumerEnumMember newEnumMember(String publicName) {
+        return this.newEnumMember(publicName, noInternalName());
+    }
+    
+    /**
+     * Creates a new member in this enum type.
+     * @param publicName The member's public name
+     * @param internalName The member's internal name
+     * @return The created enum member
+     */
+    public ConsumerEnumMember newEnumMember(String publicName, String internalName) {
+        return new ConsumerEnumMember(publicName, internalName, this);
+    }
+    
     @Override
     public int hashCode() {
         return super.hashCode();
@@ -43,11 +63,6 @@ public class ConsumerEnumType extends EnumType<ConsumerApiDefinition, ConsumerEn
 
     boolean stateEquals(ConsumerEnumType that) {
         return super.stateEquals(that);
-    }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.handleEnumType(this);
     }
 
     @Override

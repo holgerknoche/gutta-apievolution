@@ -205,5 +205,7 @@ public class ProviderCodeGenerationMojoTest {
         assertEquals(expectedSuperTypeMethods, actualSuperTypeMethods);
         assertEquals(expectedSubTypeMethods, actualSubTypeMethods);
     }
+    
+    // TODO Currently missing: Multiple inheritance for interface, (illegal) multiple inheritance for exception
 
 }

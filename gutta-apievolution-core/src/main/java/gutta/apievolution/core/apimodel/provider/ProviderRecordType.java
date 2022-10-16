@@ -1,9 +1,20 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Inherited;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.RecordKind;
 import gutta.apievolution.core.apimodel.RecordType;
-import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.Type;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of a {@link RecordType}.
@@ -11,81 +22,47 @@ import java.util.Optional;
 public class ProviderRecordType extends RecordType<ProviderApiDefinition, ProviderRecordType, ProviderField>
         implements RevisionedElement<ProviderRecordType>, ProviderUserDefinedType {
 
-    private final Optional<ProviderRecordType> predecessor;
+    private final ProviderRecordType predecessor;
 
-    private Optional<ProviderRecordType> successor;
-
-    /**
-     * Creates a new record type from the given data.
-     *
-     * @param publicName   The record type's public name
-     * @param internalName The record type's internal name, if any. Otherwise, the
-     *                     public name is assumed
-     * @param typeId       The record type's type id
-     * @param owner        The API definition that owns this record type
-     * @param abstractFlag Denotes whether this type is abstract
-     * @param predecessor  The type's predecessor, if any
-     */
-    public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
-            final ProviderApiDefinition owner, final boolean abstractFlag,
-            final Optional<ProviderRecordType> predecessor) {
-        this(publicName, internalName, typeId, owner, abstractFlag, false, Optional.empty(), predecessor);
-    }
+    private ProviderRecordType successor;
 
     /**
      * Creates a new record type from the given data.
      *
      * @param publicName   The record type's public name
-     * @param internalName The record type's internal name, if any. Otherwise, the
-     *                     public name is assumed
+     * @param internalName The record type's internal name, if any. If {@code null},
+     *                     the public name is assumed
      * @param typeId       The record type's type id
      * @param owner        The API definition that owns this record type
      * @param abstractFlag Denotes whether this type is abstract
-     * @param superType    This type's supertype, if any
+     * @param exception    Denotes whether this type is an ordinary record or an
+     *                     exception
+     * @param superTypes   This type's supertypes, if any
      * @param predecessor  The type's predecessor, if any
      */
-    public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
-            final ProviderApiDefinition owner, final boolean abstractFlag, final Optional<ProviderRecordType> superType,
-            final Optional<ProviderRecordType> predecessor) {
-        this(publicName, internalName, typeId, owner, abstractFlag, false, superType, predecessor);
-    }
-
-    /**
-     * Creates a new record type from the given data.
-     *
-     * @param publicName   The record type's public name
-     * @param internalName The record type's internal name, if any. Otherwise, the
-     *                     public name is assumed
-     * @param typeId       The record type's type id
-     * @param owner        The API definition that owns this record type
-     * @param abstractFlag Denotes whether this type is abstract
-     * @param exception    Denotes whether this type is an exception
-     * @param superType    This type's supertype, if any
-     * @param predecessor  The type's predecessor, if any
-     */
-    public ProviderRecordType(final String publicName, final Optional<String> internalName, final int typeId,
-            final ProviderApiDefinition owner, final boolean abstractFlag, boolean exception,
-            final Optional<ProviderRecordType> superType, final Optional<ProviderRecordType> predecessor) {
-        super(publicName, internalName, typeId, owner, abstractFlag, exception, superType);
+    ProviderRecordType(final String publicName, final String internalName, final int typeId,
+            final ProviderApiDefinition owner, final Abstract abstractFlag, RecordKind recordKind,
+            final Set<ProviderRecordType> superTypes, final ProviderRecordType predecessor) {
+        super(publicName, internalName, typeId, owner, abstractFlag, recordKind, superTypes);
 
         this.predecessor = predecessor;
-        this.successor = Optional.empty();
+        this.successor = null;
 
-        predecessor.ifPresent(recordType -> recordType.setSuccessor(this));
+        ifPresent(predecessor, recordType -> recordType.setSuccessor(this));
     }
 
     @Override
     public Optional<ProviderRecordType> getPredecessor() {
-        return this.predecessor;
+        return Optional.ofNullable(this.predecessor);
     }
 
     @Override
     public Optional<ProviderRecordType> getSuccessor() {
-        return this.successor;
+        return Optional.ofNullable(this.successor);
     }
 
     private void setSuccessor(final ProviderRecordType successor) {
-        this.successor = Optional.of(successor);
+        this.successor = successor;
     }
 
     @Override
@@ -93,9 +70,53 @@ public class ProviderRecordType extends RecordType<ProviderApiDefinition, Provid
         return visitor.handleProviderRecordType(this);
     }
 
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.handleRecordType(this);
+    // Element creators
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName  The field's public name
+     * @param type        The field's type
+     * @param optionality The field's optionality
+     * @return The created field
+     */
+    public ProviderField newField(String publicName, Type type, Optionality optionality) {
+        return new ProviderField(publicName, noInternalName(), this, type, optionality, Inherited.NO,
+                noDeclaredPredecessors(), noPredecessor());
+    }
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName   The field's public name
+     * @param internalName The field's internal name
+     * @param type         The field's type
+     * @param optionality  The field's optionality
+     * @param predecessor  The field's predecessor, if any
+     * @return The created field
+     */
+    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
+            ProviderField predecessor) {
+        return new ProviderField(publicName, internalName, this, type, optionality, Inherited.NO,
+                noDeclaredPredecessors(), predecessor);
+    }
+
+    /**
+     * Creates a new field in this record type.
+     * 
+     * @param publicName           The field's public name
+     * @param internalName         The field's internal name
+     * @param type                 The field's type
+     * @param optionality          The field's optionality
+     * @param inherited            Denotes whether this field is inherited
+     * @param declaredPredecessors The field's declared predecessors, if any
+     * @param predecessor          The field's predecessor, if any
+     * @return The created field
+     */
+    public ProviderField newField(String publicName, String internalName, Type type, Optionality optionality,
+            Inherited inherited, List<ProviderField> declaredPredecessors, ProviderField predecessor) {
+        return new ProviderField(publicName, internalName, this, type, optionality, inherited, declaredPredecessors,
+                predecessor);
     }
 
     @Override

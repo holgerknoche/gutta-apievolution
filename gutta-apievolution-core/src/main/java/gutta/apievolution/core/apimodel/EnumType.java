@@ -11,7 +11,7 @@ import java.util.*;
  * @param <M> The concrete type of the enum members
  */
 public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>>
-        extends UserDefinedType<A> implements Iterable<M> {
+        extends AbstractUserDefinedType<A> implements Iterable<M> {
 
     private final List<M> declaredMembers;
 
@@ -24,11 +24,11 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
      *
      * @param publicName   The public name of the enum type
      * @param internalName The internal name of the enum type, if applicable.
-     *                     Otherwise, the public name is assumed
+     *                     If {@code null} the public name is assumed
      * @param typeId       The enum type's type id
      * @param owner        The API definition that owns this enum type
      */
-    protected EnumType(final String publicName, final Optional<String> internalName, final int typeId, final A owner) {
+    protected EnumType(final String publicName, final String internalName, final int typeId, final A owner) {
         super(publicName, internalName, typeId, owner);
 
         this.declaredMembers = new ArrayList<>();
@@ -58,6 +58,11 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
         this.declaredMembers.add(member);
         this.publicNameLookup.put(member.getPublicName(), member);
         this.internalNameLookup.put(member.getInternalName(), member);
+    }
+    
+    @Override
+    public boolean isEnum() {
+        return true;
     }
 
     @Override
@@ -98,6 +103,11 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
      */
     protected boolean stateEquals(EnumType<A, E, M> that) {
         return super.stateEquals(that) && this.declaredMembers.equals(that.declaredMembers);
+    }
+    
+    @Override
+    public final <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.handleEnumType(this);
     }
 
 }

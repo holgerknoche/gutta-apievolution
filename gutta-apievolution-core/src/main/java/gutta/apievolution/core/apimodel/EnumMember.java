@@ -1,7 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.Optional;
-
 /**
  * An enum member represents a particular value of an {@link EnumType}.
  *
@@ -18,11 +16,11 @@ public abstract class EnumMember<E extends EnumType<?, E, M>, M extends EnumMemb
      *
      * @param publicName   The public name of the enum member
      * @param internalName The internal name of the enum member, if applicable.
-     *                     Otherwise, the public name is assumed
+     *                     If {@code null} the public name is assumed
      * @param owner        The enum type that owns this member
      */
     @SuppressWarnings("unchecked")
-    protected EnumMember(final String publicName, final Optional<String> internalName, final E owner) {
+    protected EnumMember(final String publicName, final String internalName, final E owner) {
         super(publicName, internalName);
 
         this.owner = owner;

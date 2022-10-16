@@ -1,5 +1,7 @@
 package gutta.apievolution.javacodegen;
 
+import java.util.Set;
+
 /**
  * Representation of a Java exception for code generation.
  */
@@ -13,7 +15,7 @@ public class JavaException
     }
 
     /**
-     * Returns the supertype of this interface, if present.
+     * Returns the supertype of this exception, if present.
      * 
      * @return The supertype or {@code null}
      */
@@ -21,8 +23,15 @@ public class JavaException
         return this.superType;
     }
 
-    void setSuperType(JavaException superType) {
-        this.superType = superType;
+    void setSuperTypes(Set<JavaException> superTypes) {
+        if (superTypes.isEmpty()) {
+            this.superType = null;
+        } else if (superTypes.size() == 1) {
+            this.superType = superTypes.iterator().next();
+        } else {
+            throw new UnsupportedOperationException(
+                    "More than one supertype on an exception is not supported.");
+        }
     }
 
     @Override

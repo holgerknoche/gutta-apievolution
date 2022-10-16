@@ -5,6 +5,8 @@ package gutta.apievolution.core.resolution;
  */
 public class DefinitionResolutionException extends RuntimeException {
 
+    private static final long serialVersionUID = 2593920809495503550L;
+
     DefinitionResolutionException(String message) {
         super(message);
     }

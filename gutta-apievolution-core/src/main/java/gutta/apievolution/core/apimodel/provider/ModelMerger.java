@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import static gutta.apievolution.core.apimodel.Conventions.*;
 import static gutta.apievolution.core.apimodel.provider.ProviderTypeTools.isTypeChange;
 
 /**
@@ -57,13 +58,13 @@ public class ModelMerger {
             throw new ModelMergeException("No or empty revision history given.");
         }
 
-        QualifiedName mergedDefinitionName = this.determineHistoryName(revisionHistory);
+        String mergedDefinitionName = this.determineHistoryName(revisionHistory);
         Set<Annotation> mergedAnnotations = this.mergeAnnotations(revisionHistory);
 
-        return new ProviderApiDefinition(mergedDefinitionName, mergedAnnotations, 0, Optional.empty());
+        return new ProviderApiDefinition(mergedDefinitionName, mergedAnnotations, 0, null);
     }
 
-    private QualifiedName determineHistoryName(RevisionHistory revisionHistory) {
+    private String determineHistoryName(RevisionHistory revisionHistory) {
         ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
         QualifiedName nameCandidate = revisions.previous().getName();
 
@@ -74,7 +75,7 @@ public class ModelMerger {
             }
         }
 
-        return nameCandidate;
+        return nameCandidate.toString();
     }
 
     private Set<Annotation> mergeAnnotations(RevisionHistory revisionHistory) {
@@ -106,7 +107,8 @@ public class ModelMerger {
         // First, merge the user-defined types and create a type lookup for the second
         // pass
         RevisionMergePass1 pass1 = new RevisionMergePass1();
-        ProviderTypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
+        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeLookup = 
+                pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
 
         // Then, convert the remaining elements using the previously created type lookup
         RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup, mergedDefinition);
@@ -134,7 +136,8 @@ public class ModelMerger {
 
         private ProviderApiDefinition mergedDefinition;
 
-        public ProviderTypeLookup createTypeLookup(RevisionHistory revisionHistory,
+        public TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> 
+                createTypeLookup(RevisionHistory revisionHistory,
                 Set<ProviderApiDefinition> supportedRevisions, ProviderApiDefinition mergedDefinition) {
             // Ensure that the revision history is consistent
             revisionHistory.checkConsistency();
@@ -147,10 +150,10 @@ public class ModelMerger {
                 currentRevision.forEach(element -> element.accept(this));
             }
 
-            return new ProviderTypeLookup(this.udtLookup);
+            return new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(this.udtLookup);
         }
 
-        @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+        @SuppressWarnings("unchecked")
         private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType> 
             Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
 
@@ -175,11 +178,6 @@ public class ModelMerger {
             return this.handleUserDefinedType(recordType, this::convertRecordType);
         }
 
-        private Optional<String> determineInternalName(UserDefinedType<ProviderApiDefinition> inType) {
-            return (inType.getPublicName().equals(inType.getInternalName())) ? Optional.empty() :
-                    Optional.of(inType.getInternalName());
-        }
-
         private void assertUniqueInternalName(UserDefinedType<ProviderApiDefinition> type) {
             if (this.knownTypeNames.contains(type.getInternalName())) {
                 throw new ModelMergeException("Duplicate internal name '" + type.getInternalName() + "'.");
@@ -189,9 +187,15 @@ public class ModelMerger {
         }
 
         private ProviderRecordType convertRecordType(ProviderRecordType inType) {
-            return new ProviderRecordType(inType.getPublicName(), this.determineInternalName(inType),
-                    inType.getTypeId(), this.mergedDefinition, inType.isAbstract(), inType.isException(),
-                    Optional.empty(), Optional.empty());
+            Abstract abstractness = (inType.isAbstract()) ? Abstract.YES : Abstract.NO;
+            
+            if (inType.isException()) {
+                return this.mergedDefinition.newExceptionType(inType.getPublicName(), inType.getInternalName(),
+                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+            } else {
+                return this.mergedDefinition.newRecordType(inType.getPublicName(), inType.getInternalName(),
+                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+            }
         }
 
         @Override
@@ -200,8 +204,7 @@ public class ModelMerger {
         }
 
         private ProviderEnumType convertEnumType(ProviderEnumType inType) {
-            return new ProviderEnumType(inType.getPublicName(), this.determineInternalName(inType), inType.getTypeId(),
-                    this.mergedDefinition, Optional.empty());
+            return this.mergedDefinition.newEnumType(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(), null);
         }
 
     }
@@ -209,7 +212,8 @@ public class ModelMerger {
     @FunctionalInterface
     private interface MergePass2Creator {
 
-        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, 
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition);
 
     }
@@ -224,9 +228,9 @@ public class ModelMerger {
 
         private final Set<ProviderApiDefinition> supportedRevisions;
 
-        protected final ProviderTypeLookup typeLookup;
+        protected final TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap;
 
-        private final ProviderApiDefinition mergedDefinition;
+        protected final ProviderApiDefinition mergedDefinition;
 
         private final Set<MemberName> knownMemberNames = new HashSet<>();
 
@@ -240,10 +244,11 @@ public class ModelMerger {
 
         private ProviderEnumType currentEnumType;
 
-        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition) {
             this.supportedRevisions = supportedRevisions;
-            this.typeLookup = typeLookup;
+            this.typeMap = typeMap;
             this.mergedDefinition = mergedDefinition;
         }
 
@@ -252,31 +257,21 @@ public class ModelMerger {
         }
 
         protected <T extends Type> T lookupType(T inType) {
-            return this.typeLookup.lookupType(inType);
+            return this.typeMap.mapType(inType);
         }
 
         @Override
         public Void handleProviderRecordType(ProviderRecordType recordType) {
-            this.currentRecordType = this.typeLookup.lookupType(recordType);
+            this.currentRecordType = this.typeMap.mapType(recordType);
 
-            // Set supertype, if applicable
-            recordType.getSuperType().ifPresent(originalSuperType -> {
-                ProviderRecordType superType = this.typeLookup.lookupType(originalSuperType);
+            // Set supertypes, if applicable
+            recordType.getSuperTypes().forEach(originalSuperType -> {
+                ProviderRecordType superType = this.typeMap.mapType(originalSuperType);
 
-                // If the current record already has a supertype, make sure that it is the
-                // same as the one we would add
-                if (this.currentRecordType.getSuperType().isPresent()) {
-                    if (!this.currentRecordType.getSuperType().get().equals(superType)) {
-                        throw new ModelMergeException("Inconsistent supertype for " + this.currentRecordType + ".");
-                    }
-                } else {
-                    this.currentRecordType.setSuperType(superType);
-                }
+                this.currentRecordType.addSuperType(superType);
             });
 
-            for (ProviderField field : recordType.getDeclaredFields()) {
-                field.accept(this);
-            }
+            recordType.getDeclaredFields().forEach(field -> field.accept(this));
 
             this.currentRecordType = null;
             return null;
@@ -284,7 +279,7 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderEnumType(ProviderEnumType enumType) {
-            this.currentEnumType = this.typeLookup.lookupType(enumType);
+            this.currentEnumType = this.typeMap.mapType(enumType);
 
             for (ProviderEnumMember member : enumType.getDeclaredMembers()) {
                 member.accept(this);
@@ -329,9 +324,6 @@ public class ModelMerger {
         }
 
         private ProviderField reuseOrCreateField(ProviderField originalField) {
-            Optional<String> internalName = (originalField.getPublicName().equals(originalField.getInternalName())) ?
-                    Optional.empty() :
-                    Optional.of(originalField.getInternalName());
             Optionality optionality = this.determineOptionalityForField(originalField);
             Type type = this.lookupType(originalField.getType());
 
@@ -349,10 +341,12 @@ public class ModelMerger {
                     originalField.getInternalName());
             this.assertUniqueMemberName(memberName);
 
-            ProviderField newField = new ProviderField(originalField.getPublicName(), internalName,
-                    this.currentRecordType, type, optionality, originalField.isInherited(), Collections.emptyList(),
-                    Optional.empty());
-
+            
+            Inherited inherited = (originalField.isInherited()) ? Inherited.YES : Inherited.NO;            
+            ProviderField newField = this.currentRecordType.newField(originalField.getPublicName(),
+                    originalField.getInternalName(), type, optionality, inherited, noDeclaredPredecessors(),
+                    noPredecessor());
+            
             this.knownMemberNames.add(memberName);
             this.mappedFields.put(originalField, newField);
 
@@ -406,15 +400,14 @@ public class ModelMerger {
 
             ProviderEnumMember mappedMember;
             if (!optionalMappedPredecessor.isPresent()) {
-                Optional<String> internalName = enumMember.getOptionalInternalName();
+                String internalName = enumMember.getInternalName();
 
                 // Ensure that the internal name is unique
                 MemberName memberName = new MemberName(enumMember.getOwner().getInternalName(),
                         enumMember.getInternalName());
                 this.assertUniqueMemberName(memberName);
 
-                mappedMember = new ProviderEnumMember(enumMember.getPublicName(), internalName, this.currentEnumType,
-                        Optional.empty());
+                mappedMember = this.currentEnumType.newEnumMember(enumMember.getPublicName(), internalName, noPredecessor());
 
                 this.mappedMembers.put(enumMember, mappedMember);
             } else {
@@ -453,8 +446,8 @@ public class ModelMerger {
                 ProviderRecordType mappedParameterType = this.lookupType(operation.getParameterType());
 
                 mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(),
-                        operation.getOptionalInternalName(), this.mergedDefinition, mappedReturnType,
-                        mappedParameterType, Optional.empty());
+                        operation.getInternalName(), this.mergedDefinition, mappedReturnType,
+                        mappedParameterType, null);
 
                 // Add exceptions to the operation
                 operation.getThrownExceptions()
@@ -563,9 +556,10 @@ public class ModelMerger {
 
         private final Map<ProviderOperation, ProviderOperation> operationMap = new HashMap<>();
 
-        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, ProviderTypeLookup typeLookup,
+        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, 
+                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition, ProviderApiDefinition referenceRevision) {
-            super(supportedRevisions, typeLookup, mergedDefinition);
+            super(supportedRevisions, typeMap, mergedDefinition);
 
             this.referenceRevision = referenceRevision;
         }
@@ -593,8 +587,10 @@ public class ModelMerger {
         }
 
         public ToMergedModelMap getToMergedModelMap() {
-            ProviderTypeLookup restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
-            return new ToMergedModelMap(restrictedTypeLookup, this.fieldMap, this.enumMemberMap, this.operationMap);
+            TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> restrictedTypeLookup = 
+                    this.typeMap.restrictTo(this.referenceRevision);
+            return new ToMergedModelMap(this.referenceRevision, this.mergedDefinition, restrictedTypeLookup, this.fieldMap, 
+                    this.enumMemberMap, this.operationMap);
         }
 
     }

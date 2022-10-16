@@ -1,7 +1,9 @@
 package gutta.apievolution.dsl;
 
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.RecordKind;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
@@ -14,6 +16,9 @@ import org.antlr.v4.runtime.Token;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 
 class ProviderApiRevisionModelBuilderPass1
         extends
@@ -48,14 +53,14 @@ class ProviderApiRevisionModelBuilderPass1
     @Override
     protected ProviderApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
             final QualifiedName name, final Set<Annotation> annotations,
-            final Optional<ProviderApiDefinition> predecessor) {
+            final ProviderApiDefinition predecessor) {
         return new ProviderApiDefinition(name, annotations, this.revision, predecessor);
     }
 
     @Override
     protected ProviderRecordType createRecordType(final ApiRevisionParser.RecordTypeContext context, final String name,
-            final Optional<String> internalName, final int typeId, final ProviderApiDefinition currentRevision,
-            final boolean abstractFlag, boolean exception) {
+            final String internalName, final int typeId, final ProviderApiDefinition currentRevision,
+            final Abstract abstractFlag, RecordKind recordKind) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderRecordType> predecessor;
@@ -79,14 +84,14 @@ class ProviderApiRevisionModelBuilderPass1
         }
 
         predecessor.ifPresent(record -> {
-            if (record.isException() != exception) {
+            if (record.getRecordKind() != recordKind) {
                 throw new APIResolutionException(context.refToken,
                         "The predecessor of an exception may not be a record (or vice versa).");
             }
         });
-
-        return new ProviderRecordType(name, internalName, typeId, currentRevision, abstractFlag, exception,
-                Optional.empty(), predecessor);
+        
+        return currentRevision.newRecordOrExceptionType(name, internalName, typeId, abstractFlag, recordKind,
+                noSuperTypes(), predecessor.orElse(noPredecessor()));
     }
 
     private Optional<ProviderRecordType> resolvePredecessorRecord(final String name, final boolean explicitReference,
@@ -97,7 +102,7 @@ class ProviderApiRevisionModelBuilderPass1
 
     @Override
     protected ProviderEnumType createEnumType(final ApiRevisionParser.EnumTypeContext context, final String name,
-            final Optional<String> internalName, final int typeId, final ProviderApiDefinition owner) {
+            final String internalName, final int typeId, final ProviderApiDefinition owner) {
         // Resolve predecessor, if applicable
         PredecessorType predecessorType = this.determinePredecessorType(context.replaces);
         Optional<ProviderEnumType> predecessor;
@@ -120,7 +125,7 @@ class ProviderApiRevisionModelBuilderPass1
             break;
         }
 
-        return new ProviderEnumType(name, internalName, typeId, owner, predecessor);
+        return owner.newEnumType(name, internalName, typeId, predecessor.orElse(noPredecessor()));
     }
 
     private Optional<ProviderEnumType> resolvePredecessorEnum(final String name, final boolean explicitReference,

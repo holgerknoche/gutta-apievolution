@@ -1,10 +1,23 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.Inherited;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.StringType;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ModelMergerTest {
@@ -14,11 +27,11 @@ class ModelMergerTest {
      */
     @Test
     void testAnnotationMerging() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                new HashSet<>(Arrays.asList(new Annotation("a", "b"), new Annotation("b", "c"))), 0, Optional.empty());
+        ProviderApiDefinition revision1 = new ProviderApiDefinition("a.b",
+                new HashSet<>(Arrays.asList(new Annotation("a", "b"), new Annotation("b", "c"))), 0, null);
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("a.b"),
-                new HashSet<>(Arrays.asList(new Annotation("b", "x"), new Annotation("c", "d"))), 1, Optional.empty());
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("a.b",
+                new HashSet<>(Arrays.asList(new Annotation("b", "x"), new Annotation("c", "d"))), 1, null);
 
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         ProviderApiDefinition mergedRevision = new ModelMerger().createMergedDefinition(revisionHistory);
@@ -36,32 +49,24 @@ class ModelMergerTest {
      */
     @Test
     void testFieldMerging() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 1);
 
-        ProviderRecordType testTypeV1 = new ProviderRecordType("Test", Optional.empty(), 0, revision1, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType testTypeV1 = revision1.newRecordType("Test", 0);
 
-        ProviderField unchangedFieldV1 = new ProviderField("unchangedField", Optional.empty(), testTypeV1,
-                StringType.unbounded(), Optionality.MANDATORY);
-
-        new ProviderField("typeChangeField", Optional.empty(), testTypeV1, AtomicType.INT_32, Optionality.MANDATORY);
-
-        new ProviderField("deletedField", Optional.empty(), testTypeV1, StringType.unbounded(), Optionality.MANDATORY);
-
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.empty());
-
-        ProviderRecordType testTypeV2 = new ProviderRecordType("Test", Optional.empty(), 0, revision2, false,
-                Optional.empty(), Optional.of(testTypeV1));
-
-        new ProviderField("typeChangeField", Optional.of("newTypeChangeField"), testTypeV2, AtomicType.INT_64,
+        ProviderField unchangedFieldV1 = testTypeV1.newField("unchangedField", StringType.unbounded(),
                 Optionality.MANDATORY);
+        testTypeV1.newField("typeChangeField", AtomicType.INT_32, Optionality.MANDATORY);
+        testTypeV1.newField("deletedField", StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderField("unchangedField", Optional.empty(), testTypeV2, StringType.unbounded(), Optionality.MANDATORY,
-                false, Collections.emptyList(), Optional.of(unchangedFieldV1));
+        ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 2);
 
-        new ProviderField("addedField", Optional.empty(), testTypeV2, StringType.unbounded(), Optionality.MANDATORY);
+        ProviderRecordType testTypeV2 = revision2.newRecordType("Test", noInternalName(), 0, testTypeV1);
+
+        testTypeV2.newField("typeChangeField", "newTypeChangeField", AtomicType.INT_64, Optionality.MANDATORY,
+                noPredecessor());
+        testTypeV2.newField("unchangedField", noInternalName(), StringType.unbounded(), Optionality.MANDATORY,
+                unchangedFieldV1);
+        testTypeV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
 
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -88,25 +93,19 @@ class ModelMergerTest {
      */
     @Test
     void testEnumMemberMerging() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 1);
 
-        ProviderEnumType testEnumV1 = new ProviderEnumType("Test", Optional.empty(), 0, revision1, Optional.empty());
+        ProviderEnumType testEnumV1 = revision1.newEnumType("Test", 0);
 
-        ProviderEnumMember unchangedMember = new ProviderEnumMember("UNCHANGED", Optional.empty(), testEnumV1,
-                Optional.empty());
+        ProviderEnumMember unchangedMember = testEnumV1.newEnumMember("UNCHANGED");
+        testEnumV1.newEnumMember("DELETED");
 
-        new ProviderEnumMember("DELETED", Optional.empty(), testEnumV1, Optional.empty());
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 2, revision1);
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.of(revision1));
+        ProviderEnumType testEnumV2 = revision2.newEnumType("Test", noInternalName(), 0, testEnumV1);
 
-        ProviderEnumType testEnumV2 = new ProviderEnumType("Test", Optional.empty(), 0, revision2,
-                Optional.of(testEnumV1));
-
-        new ProviderEnumMember("UNCHANGED", Optional.empty(), testEnumV2, Optional.of(unchangedMember));
-
-        new ProviderEnumMember("ADDED", Optional.empty(), testEnumV2, Optional.empty());
+        testEnumV2.newEnumMember("UNCHANGED", noInternalName(), unchangedMember);
+        testEnumV2.newEnumMember("ADDED");
 
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -125,56 +124,39 @@ class ModelMergerTest {
      * a map from a given revision of the history to the respective elements of the
      * merged revision.
      */
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void testMappingMerge() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 1);
 
-        ProviderRecordType testTypeV1 = new ProviderRecordType("Test", Optional.empty(), 0, revision1, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType testTypeV1 = revision1.newRecordType("Test", 0);
 
-        ProviderField unchangedFieldV1 = new ProviderField("unchangedField", Optional.empty(), testTypeV1,
-                StringType.unbounded(), Optionality.MANDATORY);
+        ProviderField unchangedFieldV1 = testTypeV1.newField("unchangedField", StringType.unbounded(),
+                Optionality.MANDATORY);
+        ProviderField typeChangeFieldV1 = testTypeV1.newField("typeChangeField", AtomicType.INT_32,
+                Optionality.MANDATORY);
+        ProviderField deletedFieldV1 = testTypeV1.newField("deletedField", StringType.unbounded(),
+                Optionality.MANDATORY);
 
-        ProviderField typeChangeFieldV1 = new ProviderField("typeChangeField", Optional.empty(), testTypeV1,
-                AtomicType.INT_32, Optionality.MANDATORY);
+        ProviderEnumType testEnumV1 = revision1.newEnumType("Test", 0);
 
-        ProviderField deletedFieldV1 = new ProviderField("deletedField", Optional.empty(), testTypeV1,
-                StringType.unbounded(), Optionality.MANDATORY);
+        ProviderEnumMember unchangedMemberV1 = testEnumV1.newEnumMember("UNCHANGED");
+        ProviderEnumMember deletedMemberV1 = testEnumV1.newEnumMember("DELETED");
 
-        ProviderEnumType testEnumV1 = new ProviderEnumType("Test", Optional.empty(), 0, revision1, Optional.empty());
+        ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 2);
 
-        ProviderEnumMember unchangedMemberV1 = new ProviderEnumMember("UNCHANGED", Optional.empty(), testEnumV1,
-                Optional.empty());
+        ProviderRecordType testTypeV2 = revision2.newRecordType("Test", "TestInternal", 0, testTypeV1);
 
-        ProviderEnumMember deletedMemberV1 = new ProviderEnumMember("DELETED", Optional.empty(), testEnumV1,
-                Optional.empty());
+        ProviderField typeChangeFieldV2 = testTypeV2.newField("typeChangeField", "newTypeChangeField",
+                AtomicType.INT_64, Optionality.MANDATORY, noPredecessor());
+        ProviderField unchangedFieldV2 = testTypeV2.newField("unchangedField", noInternalName(), StringType.unbounded(),
+                Optionality.MANDATORY, Inherited.NO, Collections.singletonList(unchangedFieldV1), unchangedFieldV1);
+        ProviderField addedFieldV2 = testTypeV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.empty());
+        ProviderEnumType testEnumV2 = revision2.newEnumType("Test", noInternalName(), 0, testEnumV1);
 
-        ProviderRecordType testTypeV2 = new ProviderRecordType("Test", Optional.of("TestInternal"), 0, revision2, false,
-                Optional.empty(), Optional.of(testTypeV1));
-
-        ProviderField typeChangeFieldV2 = new ProviderField("typeChangeField", Optional.of("newTypeChangeField"),
-                testTypeV2, AtomicType.INT_64, Optionality.MANDATORY);
-
-        ProviderField unchangedFieldV2 = new ProviderField("unchangedField", Optional.empty(), testTypeV2,
-                StringType.unbounded(), Optionality.MANDATORY, false, Collections.singletonList(unchangedFieldV1),
-                Optional.of(unchangedFieldV1));
-
-        ProviderField addedFieldV2 = new ProviderField("addedField", Optional.empty(), testTypeV2,
-                StringType.unbounded(), Optionality.MANDATORY);
-
-        ProviderEnumType testEnumV2 = new ProviderEnumType("Test", Optional.empty(), 0, revision2,
-                Optional.of(testEnumV1));
-
-        ProviderEnumMember unchangedMemberV2 = new ProviderEnumMember("UNCHANGED", Optional.empty(), testEnumV2,
-                Optional.of(unchangedMemberV1));
-
-        ProviderEnumMember addedMemberV2 = new ProviderEnumMember("ADDED", Optional.empty(), testEnumV2,
-                Optional.empty());
+        ProviderEnumMember unchangedMemberV2 = testEnumV2.newEnumMember("UNCHANGED", noInternalName(),
+                unchangedMemberV1);
+        ProviderEnumMember addedMemberV2 = testEnumV2.newEnumMember("ADDED");
 
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
@@ -261,37 +243,31 @@ class ModelMergerTest {
      */
     @Test
     void testNoTypeChangeOnRecordTypeEvolution() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType extendedTypeV1 = new ProviderRecordType("ExtendedType", Optional.empty(), 0, revision1,
-                false, Optional.empty(), Optional.empty());
+        ProviderRecordType extendedTypeV1 = revision1.newRecordType("ExtendedType", 0);
 
-        new ProviderField("field1", Optional.empty(), extendedTypeV1, StringType.bounded(10), Optionality.MANDATORY);
+        extendedTypeV1.newField("field1", StringType.bounded(10), Optionality.MANDATORY);
 
-        ProviderRecordType usingTypeV1 = new ProviderRecordType("UsingType", Optional.empty(), 1, revision1, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType usingTypeV1 = revision1.newRecordType("UsingType", 1);
 
-        ProviderField usingFieldV1 = new ProviderField("usingField", Optional.empty(), usingTypeV1, extendedTypeV1,
-                Optionality.MANDATORY);
+        ProviderField usingFieldV1 = usingTypeV1.newField("usingField", extendedTypeV1, Optionality.MANDATORY);
 
         revision1.finalizeDefinition();
 
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType extendedTypeV2 = new ProviderRecordType("ExtendedType", Optional.empty(), 0, revision2,
-                false, Optional.empty(), Optional.of(extendedTypeV1));
+        ProviderRecordType extendedTypeV2 = revision2.newRecordType("ExtendedType", noInternalName(), 0,
+                extendedTypeV1);
 
         // Type change on field 1
-        ProviderField changedFieldV2 = new ProviderField("field1", Optional.of("fieldX"), extendedTypeV2,
-                StringType.bounded(20), Optionality.MANDATORY);
+        ProviderField changedFieldV2 = extendedTypeV2.newField("field1", "fieldX", StringType.bounded(20),
+                Optionality.MANDATORY, noPredecessor());
 
-        ProviderRecordType usingTypeV2 = new ProviderRecordType("UsingType", Optional.empty(), 1, revision2, false,
-                Optional.empty(), Optional.of(usingTypeV1));
+        ProviderRecordType usingTypeV2 = revision2.newRecordType("UsingType", noInternalName(), 1, usingTypeV1);
 
-        ProviderField usingFieldV2 = new ProviderField("usingField", Optional.empty(), usingTypeV2, extendedTypeV2,
-                Optionality.MANDATORY, false, Collections.emptyList(), Optional.of(usingFieldV1));
+        ProviderField usingFieldV2 = usingTypeV2.newField("usingField", noInternalName(), extendedTypeV2,
+                Optionality.MANDATORY, usingFieldV1);
 
         revision2.finalizeDefinition();
 
@@ -299,20 +275,16 @@ class ModelMergerTest {
         // types (and thus the case that
         // the type of a field is compared against its pre-predecessor during the type
         // change check)
-        ProviderApiDefinition revision3 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.of(revision2));
+        ProviderApiDefinition revision3 = new ProviderApiDefinition("test", noAnnotations(), 2, revision2);
 
-        ProviderRecordType extendedTypeV3 = new ProviderRecordType("ExtendedType", Optional.empty(), 0, revision3,
-                false, Optional.empty(), Optional.of(extendedTypeV2));
+        ProviderRecordType extendedTypeV3 = revision3.newRecordType("ExtendedType", noInternalName(), 0,
+                extendedTypeV2);
 
-        new ProviderField("field1", Optional.of("fieldX"), extendedTypeV3, StringType.bounded(20),
-                Optionality.MANDATORY, false, Collections.emptyList(), Optional.of(changedFieldV2));
+        extendedTypeV3.newField("field1", "fieldX", StringType.bounded(20), Optionality.MANDATORY, changedFieldV2);
 
-        ProviderRecordType usingTypeV3 = new ProviderRecordType("UsingType", Optional.empty(), 1, revision3, false,
-                Optional.empty(), Optional.of(usingTypeV2));
+        ProviderRecordType usingTypeV3 = revision3.newRecordType("UsingType", noInternalName(), 1, usingTypeV2);
 
-        new ProviderField("usingField", Optional.empty(), usingTypeV3, extendedTypeV3, Optionality.MANDATORY, false,
-                Collections.emptyList(), Optional.of(usingFieldV2));
+        usingTypeV3.newField("usingField", noInternalName(), extendedTypeV3, Optionality.MANDATORY, usingFieldV2);
 
         revision3.finalizeDefinition();
 
@@ -335,36 +307,29 @@ class ModelMergerTest {
     @Test
     void newestInternalNameIsUsed() {
         // Build the first revision
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType recordTypeV1 = new ProviderRecordType("TypeA", Optional.of("A1"), 0, revision1, false,
-                Optional.empty());
+        ProviderRecordType recordTypeV1 = revision1.newRecordType("TypeA", "A1", 0, noPredecessor());
 
-        ProviderField providerFieldV1 = new ProviderField("fieldA", Optional.of("a1"), recordTypeV1,
-                StringType.unbounded(), Optionality.MANDATORY);
+        ProviderField providerFieldV1 = recordTypeV1.newField("fieldA", "a1", StringType.unbounded(),
+                Optionality.MANDATORY, noPredecessor());
 
-        ProviderEnumType enumTypeV1 = new ProviderEnumType("EnumA", Optional.of("E1"), 1, revision1, Optional.empty());
+        ProviderEnumType enumTypeV1 = revision1.newEnumType("EnumA", "E1", 1, noPredecessor());
 
-        ProviderEnumMember enumMemberV1 = new ProviderEnumMember("MEMBER_A", Optional.of("M1"), enumTypeV1,
-                Optional.empty());
+        ProviderEnumMember enumMemberV1 = enumTypeV1.newEnumMember("MEMBER_A", "M1", noPredecessor());
 
         revision1.finalizeDefinition();
 
         // Build the second revision
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType recordTypeV2 = new ProviderRecordType("TypeA", Optional.of("A2"), 0, revision2, false,
-                Optional.of(recordTypeV1));
+        ProviderRecordType recordTypeV2 = revision2.newRecordType("TypeA", "A2", 0, recordTypeV1);
 
-        new ProviderField("fieldA", Optional.of("a2"), recordTypeV2, StringType.unbounded(), Optionality.MANDATORY,
-                false, Collections.emptyList(), Optional.of(providerFieldV1));
+        recordTypeV2.newField("fieldA", "a2", StringType.unbounded(), Optionality.MANDATORY, providerFieldV1);
 
-        ProviderEnumType enumTypeV2 = new ProviderEnumType("EnumA", Optional.of("E2"), 1, revision2,
-                Optional.of(enumTypeV1));
+        ProviderEnumType enumTypeV2 = revision2.newEnumType("EnumA", "E2", 1, enumTypeV1);
 
-        new ProviderEnumMember("MEMBER_A", Optional.of("M2"), enumTypeV2, Optional.of(enumMemberV1));
+        enumTypeV2.newEnumMember("MEMBER_A", "M2", enumMemberV1);
 
         revision2.finalizeDefinition();
 
@@ -389,36 +354,33 @@ class ModelMergerTest {
     }
 
     /**
-     * Test case: Inherited fields are handled correctly in the merge.
+     * Test case: Inherited fields are handled correctly in the merge (simple case).
      */
     @Test
     void mergeWithInheritedFields() {
         // Build the first revision
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType superTypeV1 = new ProviderRecordType("SuperType", Optional.empty(), 0, revision1, true,
-                Optional.empty());
+        ProviderRecordType superTypeV1 = revision1.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), noPredecessor());
 
-        new ProviderField("inheritedField", Optional.empty(), superTypeV1, StringType.unbounded(),
-                Optionality.MANDATORY);
+        superTypeV1.newField("inheritedField", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType subTypeAV1 = new ProviderRecordType("SubTypeA", Optional.empty(), 1, revision1, false,
-                Optional.of(superTypeV1), Optional.empty());
+        ProviderRecordType subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV1), noPredecessor());
 
         revision1.finalizeDefinition();
 
         // Build the second revision
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType superTypeV2 = new ProviderRecordType("SuperType", Optional.empty(), 0, revision2, true,
-                Optional.of(superTypeV1));
+        ProviderRecordType superTypeV2 = revision2.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), superTypeV1);
 
-        ProviderRecordType subTypeAV2 = new ProviderRecordType("SubTypeA", Optional.empty(), 1, revision2, false,
-                Optional.of(superTypeV2), Optional.of(subTypeAV1));
+        ProviderRecordType subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV2), subTypeAV1);
 
-        new ProviderField("addedField", Optional.empty(), subTypeAV2, StringType.unbounded(), Optionality.MANDATORY);
+        subTypeAV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
 
         revision2.finalizeDefinition();
 
@@ -437,6 +399,57 @@ class ModelMergerTest {
     }
 
     /**
+     * Test case: Inherited fields are handled correctly when a super type is
+     * changed.
+     */
+    @Test
+    void mergeWithChangeOfSupertype() {
+        // Build the first revision
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+
+        ProviderRecordType superTypeV1 = revision1.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), noPredecessor());
+
+        superTypeV1.newField("inheritedField", StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV1), noPredecessor());
+
+        revision1.finalizeDefinition();
+
+        // Build the second revision
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
+
+        // The super type is not related to the previous super type
+        ProviderRecordType newSuperTypeV2 = revision2.newRecordType("NewSuperType", noInternalName(), 2, Abstract.YES,
+                noSuperTypes(), noPredecessor());
+
+        newSuperTypeV2.newField("anotherField", StringType.unbounded(), Optionality.MANDATORY);
+
+        ProviderRecordType subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(newSuperTypeV2), subTypeAV1);
+
+        subTypeAV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
+
+        revision2.finalizeDefinition();
+
+        // Merge the revisions and inspect the merged revision
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        String expected = "api test [] {\n" + " abstract record NewSuperType(NewSuperType) {\n" +
+                "  optin anotherField(anotherField):string\n" + " }\n" +
+                " record SubTypeA(SubTypeA) extends NewSuperType, SuperType {\n" +
+                "  inherited optin anotherField(anotherField):string\n" +
+                "  inherited optin inheritedField(inheritedField):string\n" +
+                "  optin addedField(addedField):string\n" + " }\n" + " abstract record SuperType(SuperType) {\n" +
+                "  optin inheritedField(inheritedField):string\n" + " }\n" + "}\n";
+
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+
+    /**
      * Test case: When a field is restored to a previous state in a revision
      * history, the existing field can be reused in the merge (e.g., type change
      * from string to int and back should result in only two fields in the merge).
@@ -444,37 +457,31 @@ class ModelMergerTest {
     @Test
     void existingPredecessorReuse() {
         // Revision 1
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType recordTypeV1 = new ProviderRecordType("TestType", Optional.empty(), 0, revision1, false,
-                Optional.empty());
+        ProviderRecordType recordTypeV1 = revision1.newRecordType("TestType", 0);
 
-        new ProviderField("field", Optional.empty(), recordTypeV1, StringType.unbounded(), Optionality.MANDATORY);
+        recordTypeV1.newField("field", StringType.unbounded(), Optionality.MANDATORY);
 
         revision1.finalizeDefinition();
 
         // Revision 2: Change the field type to int32
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType recordTypeV2 = new ProviderRecordType("TestType", Optional.empty(), 0, revision2, false,
-                Optional.of(recordTypeV1));
+        ProviderRecordType recordTypeV2 = revision2.newRecordType("TestType", noInternalName(), 0, recordTypeV1);
 
         // We need an internal name due to the type change
-        new ProviderField("field", Optional.of("fieldInt"), recordTypeV2, AtomicType.INT_32, Optionality.MANDATORY);
+        recordTypeV2.newField("field", "fieldInt", AtomicType.INT_32, Optionality.MANDATORY, noPredecessor());
 
         revision2.finalizeDefinition();
 
         // Revision 3: Change the field type back to string
-        ProviderApiDefinition revision3 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.of(revision2));
+        ProviderApiDefinition revision3 = new ProviderApiDefinition("test", noAnnotations(), 2, revision2);
 
-        ProviderRecordType recordTypeV3 = new ProviderRecordType("TestType", Optional.empty(), 0, revision3, false,
-                Optional.of(recordTypeV2));
+        ProviderRecordType recordTypeV3 = revision3.newRecordType("TestType", noInternalName(), 0, recordTypeV2);
 
         // No internal name, this should work as the field is reused
-        new ProviderField("field", Optional.empty(), recordTypeV3, StringType.unbounded(), Optionality.MANDATORY);
+        recordTypeV3.newField("field", StringType.unbounded(), Optionality.MANDATORY);
 
         revision3.finalizeDefinition();
 
@@ -490,77 +497,65 @@ class ModelMergerTest {
     }
 
     /**
-     * Test case: Merge a model with service operations and exceptions.
+     * Test case: Merge a model with operations and exceptions.
      */
     @Test
-    void mergeModelWithServices() {
+    void mergeModelWithOperations() {
         // Revision 1
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType recordTypeV1 = new ProviderRecordType("RecordType", Optional.empty(), 0, revision1, false,
-                Optional.empty());
+        ProviderRecordType recordTypeV1 = revision1.newRecordType("RecordType", 0);
 
-        ProviderRecordType exceptionType1V1 = new ProviderRecordType("E1", Optional.empty(), 1, revision1, false, true,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType exceptionType1V1 = revision1.newExceptionType("E1", 1);
 
-        ProviderField exceptionField1V1 = new ProviderField("e1", Optional.empty(), exceptionType1V1,
-                StringType.unbounded(), Optionality.MANDATORY);
+        exceptionType1V1.newField("e1", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderOperation operation1V1 = new ProviderOperation("method1", Optional.empty(), revision1, recordTypeV1,
-                recordTypeV1, Optional.empty());
+        ProviderOperation operation1V1 = revision1.newOperation("method1", recordTypeV1, recordTypeV1);
 
         operation1V1.addThrownException(exceptionType1V1);
 
-        new ProviderOperation("method2", Optional.empty(), revision1, recordTypeV1, recordTypeV1, Optional.empty());
+        revision1.newOperation("method2", recordTypeV1, recordTypeV1);
 
         revision1.finalizeDefinition();
 
         // Revision 2: Remove method2, add method3 and replace an exception on method 1
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType recordTypeV2 = new ProviderRecordType("RecordType", Optional.empty(), 0, revision2, false,
-                Optional.of(recordTypeV1));
+        ProviderRecordType recordTypeV2 = revision2.newRecordType("RecordType", noInternalName(), 0, recordTypeV1);
 
-        ProviderRecordType exceptionType2V2 = new ProviderRecordType("E2", Optional.empty(), 2, revision2, false, true,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType exceptionType2V2 = revision2.newExceptionType("E2", 2);
 
-        ProviderField exceptionField2V2 = new ProviderField("e2", Optional.empty(), exceptionType2V2,
-                StringType.unbounded(), Optionality.MANDATORY);
+        ProviderField exceptionField2V2 = exceptionType2V2.newField("e2", StringType.unbounded(),
+                Optionality.MANDATORY);
 
-        ProviderOperation operation1V2 = new ProviderOperation("method1", Optional.empty(), revision2, recordTypeV2,
-                recordTypeV2, Optional.of(operation1V1));
+        ProviderOperation operation1V2 = revision2.newOperation("method1", noInternalName(), recordTypeV2, recordTypeV2,
+                operation1V1);
 
         operation1V2.addThrownException(exceptionType2V2);
 
-        ProviderOperation operation3V2 = new ProviderOperation("method3", Optional.empty(), revision2, recordTypeV2,
-                recordTypeV2, Optional.empty());
+        ProviderOperation operation3V2 = revision2.newOperation("method3", recordTypeV2, recordTypeV2);
 
         revision2.finalizeDefinition();
 
         // Revision 3: Add an exception to method 3, exists mainly to detect errors with
         // respect to indirect
         // predecessors (which do not exist in revision history of length 2)
-        ProviderApiDefinition revision3 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 2,
-                Optional.empty());
+        ProviderApiDefinition revision3 = new ProviderApiDefinition("test", noAnnotations(), 2, revision2);
 
-        ProviderRecordType recordTypeV3 = new ProviderRecordType("RecordType", Optional.empty(), 0, revision3, false,
-                Optional.of(recordTypeV2));
+        ProviderRecordType recordTypeV3 = revision3.newRecordType("RecordType", noInternalName(), 0, recordTypeV2);
 
-        ProviderRecordType exceptionType2V3 = new ProviderRecordType("E2", Optional.empty(), 2, revision3, false, true,
-                Optional.empty(), Optional.of(exceptionType2V2));
+        ProviderRecordType exceptionType2V3 = revision3.newExceptionType("E2", noInternalName(), 2, exceptionType2V2);
 
-        new ProviderField("e2", Optional.empty(), exceptionType2V3, StringType.unbounded(), Optionality.MANDATORY,
-                false, Collections.emptyList(), Optional.of(exceptionField2V2));
+        exceptionType2V3.newField("e2", noInternalName(), StringType.unbounded(), Optionality.MANDATORY,
+                exceptionField2V2);
 
-        ProviderOperation operation1V3 = new ProviderOperation("method1", Optional.empty(), revision3, recordTypeV3,
-                recordTypeV3, Optional.of(operation1V2));
+        ProviderOperation operation1V3 = revision3.newOperation("method1", noInternalName(), recordTypeV3, recordTypeV3,
+                operation1V2);
 
         operation1V3.addThrownException(exceptionType2V3);
 
-        ProviderOperation operation3V3 = new ProviderOperation("method3", Optional.empty(), revision3, recordTypeV3,
-                recordTypeV3, Optional.of(operation3V2));
+        ProviderOperation operation3V3 = revision3.newOperation("method3", noInternalName(), recordTypeV3, recordTypeV3,
+                operation3V2);
 
         operation3V3.addThrownException(exceptionType2V3);
 
@@ -572,7 +567,8 @@ class ModelMergerTest {
 
         String expected = "api test [] {\n" + " record RecordType(RecordType) {\n" + " }\n" + " exception E2(E2) {\n" +
                 "  optin e2(e2):string\n" + " }\n" + " exception E1(E1) {\n" + "  optin e1(e1):string\n" + " }\n" +
-                " operation method1(method1) (RecordType@revision 0) : RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
+                " operation method1(method1) (RecordType@revision 0) : " +
+                "RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
                 " operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
                 " operation method2(method2) (RecordType@revision 0) : RecordType@revision 0\n" + "}\n";
 

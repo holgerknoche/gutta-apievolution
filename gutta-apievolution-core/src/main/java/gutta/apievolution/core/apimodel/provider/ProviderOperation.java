@@ -3,9 +3,10 @@ package gutta.apievolution.core.apimodel.provider;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.Operation;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+
+import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
 
 /**
  * Provider-specific implementation of an {@link Operation}.
@@ -13,62 +14,45 @@ import java.util.Set;
 public class ProviderOperation extends Operation<ProviderApiDefinition, ProviderOperation, ProviderRecordType>
         implements RevisionedElement<ProviderOperation>, ProviderApiDefinitionElement {
 
-    private final Optional<ProviderOperation> predecessor;
+    private final ProviderOperation predecessor;
 
-    private Optional<ProviderOperation> successor;
-
-    /**
-     * Creates a new service operation from the given data.
-     *
-     * @param publicName    The operation's public name
-     * @param internalName  The operation's internal name, if any. Otherwise, the
-     *                      public name is assumed
-     * @param owner         The service that owns this operation
-     * @param returnType    The operation's return type
-     * @param parameterType The operation's parameter type
-     * @param predecessor   The operation's predecessor, if any
-     */
-    public ProviderOperation(final String publicName, final Optional<String> internalName,
-            final ProviderApiDefinition owner, final ProviderRecordType returnType,
-            final ProviderRecordType parameterType, final Optional<ProviderOperation> predecessor) {
-        this(Collections.emptySet(), publicName, internalName, owner, returnType, parameterType, predecessor);
-    }
-
+    private ProviderOperation successor;
+    
     /**
      * Creates a new service operation from the given data.
      *
      * @param annotations   The annotations on this operation
      * @param publicName    The operation's public name
-     * @param internalName  The operation's internal name, if any. Otherwise, the
+     * @param internalName  The operation's internal name, if any. If {@code null} the
      *                      public name is assumed
      * @param owner         The service that owns this operation
      * @param returnType    The operation's return type
      * @param parameterType The operation's parameter type
      * @param predecessor   The operation's predecessor, if any
      */
-    public ProviderOperation(Set<Annotation> annotations, final String publicName, final Optional<String> internalName,
+    ProviderOperation(Set<Annotation> annotations, final String publicName, final String internalName,
             final ProviderApiDefinition owner, final ProviderRecordType returnType,
-            final ProviderRecordType parameterType, final Optional<ProviderOperation> predecessor) {
+            final ProviderRecordType parameterType, final ProviderOperation predecessor) {
         super(annotations, publicName, internalName, owner, returnType, parameterType);
 
         this.predecessor = predecessor;
-        this.successor = Optional.empty();
+        this.successor = null;
 
-        predecessor.ifPresent(operation -> operation.setSuccessor(this));
+        ifPresent(predecessor, operation -> operation.setSuccessor(this));
     }
 
     @Override
     public Optional<ProviderOperation> getPredecessor() {
-        return this.predecessor;
+        return Optional.ofNullable(this.predecessor);
     }
 
     @Override
     public Optional<ProviderOperation> getSuccessor() {
-        return this.successor;
+        return Optional.ofNullable(this.successor);
     }
 
     private void setSuccessor(final ProviderOperation successor) {
-        this.successor = Optional.of(successor);
+        this.successor = successor;
     }
 
     @Override

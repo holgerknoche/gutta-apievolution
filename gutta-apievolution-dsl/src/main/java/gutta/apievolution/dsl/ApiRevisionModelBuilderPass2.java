@@ -58,7 +58,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
         // Resolve super type, if applicable
         Optional<String> optionalSuperTypeName = this.optionalIdentifierAsText(ctx.superType);
         Optional<R> optionalSuperType = this.resolveRecord(optionalSuperTypeName, () -> ctx.superType.start);
-        optionalSuperType.ifPresent(recordType::setSuperType);
+        optionalSuperType.ifPresent(recordType::addSuperType);
 
         this.currentRecordType = recordType;
         ctx.fields.forEach(field -> field.accept(this));
@@ -113,7 +113,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
         Optionality optionality = this.determineFieldModifiers(ctx.modifier);
 
         // Determine internal name
-        Optional<String> internalName = this.determineInternalName(ctx.as);
+        String internalName = this.determineInternalName(ctx.as);
 
         F field = this.createField(ctx, name, internalName, type, optionality, this.currentRecordType);
         this.registerNewField(field);
@@ -122,7 +122,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract F createField(final ApiRevisionParser.FieldContext context, final String name,
-            final Optional<String> internalName, Type type, Optionality optionality, final R owner);
+            final String internalName, Type type, Optionality optionality, final R owner);
 
     private Optionality determineFieldModifiers(final ApiRevisionParser.FieldModifierContext context) {
         if (context == null) {
@@ -179,7 +179,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
-        Optional<String> internalName = this.determineInternalName(ctx.as);
+        String internalName = this.determineInternalName(ctx.as);
 
         M enumMember = this.createEnumMember(ctx, name, internalName, this.currentEnumType);
         this.registerNewEnumMember(enumMember);
@@ -188,7 +188,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract M createEnumMember(ApiRevisionParser.EnumMemberContext context, String name,
-            Optional<String> internalName, E owner);
+            String internalName, E owner);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -196,7 +196,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
         String name = this.identifierAsText(ctx.name);
 
         // Determine internal name
-        Optional<String> internalName = this.determineInternalName(ctx.as);
+        String internalName = this.determineInternalName(ctx.as);
 
         // Determine return and parameter types
         R returnType = (R) this.resolveType(ctx.resultType);
@@ -214,7 +214,7 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
     }
 
     protected abstract O createOperation(ApiRevisionParser.OperationContext context, String name,
-            Optional<String> internalName, A owner, R returnType, R parameterType);
+            String internalName, A owner, R returnType, R parameterType);
 
     private Type resolveType(final ApiRevisionParser.TypeReferenceContext context) {
         return new TypeResolver().visit(context);

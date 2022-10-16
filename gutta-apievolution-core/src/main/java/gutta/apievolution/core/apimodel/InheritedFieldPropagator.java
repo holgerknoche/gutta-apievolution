@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -26,33 +25,33 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
         this.processedTypes = new HashSet<>();
 
         // Iterate over "leaf types" with super types
-        recordTypes.stream().filter(type -> !type.hasSubTypes()).filter(RecordType::hasSuperType)
+        recordTypes.stream().filter(type -> !type.hasSubTypes()).filter(RecordType::hasSuperTypes)
                 .forEach(this::propagateFields);
     }
 
-    private void propagateFields(R recordType) {
-        this.propagateFields(recordType, new ArrayList<>());
-    }
-
-    private void propagateFields(R targetType, List<F> inheritedFields) {
-        // Collect fields from the supertype, if present
-        Optional<R> optionalSuperType = targetType.getSuperType();
-        optionalSuperType.ifPresent(superType -> {
-            this.propagateFields(superType, inheritedFields);
-        });
+    private List<F> propagateFields(R recordType) {
+        // Collect fields from the supertypes
+        Set<R> superTypes = recordType.getSuperTypes();
+        List<F> inheritedFields = new ArrayList<>();
+        
+        for (R superType : superTypes) {
+            List<F> newFields = this.propagateFields(superType);
+            inheritedFields.addAll(newFields);
+        }
 
         // If the current type has not yet been processed, add the inherited types to
-        // the
-        // current type
-        if (!this.processedTypes.contains(targetType)) {
+        // the current type
+        if (!this.processedTypes.contains(recordType)) {
             for (F inheritedField : inheritedFields) {
-                this.createInheritedField(inheritedField, targetType);
+                this.createInheritedField(inheritedField, recordType);
             }
-            this.processedTypes.add(targetType);
+            this.processedTypes.add(recordType);
         }
 
         // Add the current type's declared field to the inherited types
-        inheritedFields.addAll(targetType.getDeclaredFields());
+        inheritedFields.addAll(recordType.getDeclaredFields());
+        
+        return inheritedFields;
     }
 
     /**

@@ -1,5 +1,8 @@
 package gutta.apievolution.javacodegen;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Representation of a Java interface for code generation.
  *
@@ -9,23 +12,23 @@ package gutta.apievolution.javacodegen;
 public class JavaInterface
         extends JavaRecordLikeType {
 
-    private JavaInterface superType;
+    private Set<JavaInterface> superTypes;
 
     JavaInterface(String packageName, String name) {
         super(packageName, name);
     }
 
     /**
-     * Returns the supertype of this interface, if present.
+     * Returns the supertypes of this interface, if any.
      * 
-     * @return The supertype or {@code null}
+     * @return The (possible empty) set of super types
      */
-    public JavaInterface getSuperType() {
-        return this.superType;
+    public Set<JavaInterface> getSuperTypes() {
+        return this.superTypes;
     }
 
-    void setSuperType(JavaInterface superType) {
-        this.superType = superType;
+    void setSuperTypes(Set<JavaInterface> superTypes) {
+        this.superTypes = (superTypes == null) ? Collections.emptySet() : superTypes;
     }
 
     @Override

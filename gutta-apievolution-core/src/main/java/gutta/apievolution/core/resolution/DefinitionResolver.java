@@ -2,8 +2,24 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ModelMerger;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
+import gutta.apievolution.core.util.CheckResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,11 +66,16 @@ public class DefinitionResolver {
         ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
 
         // Perform consistency checks on the maps between consumer API and provider revision
-        consumerToProviderMap.checkConsistency();
-        providerToConsumerMap.checkConsistency();
-
+        CheckResult c2pResult = consumerToProviderMap.checkConsistency();
+        c2pResult.throwOnError(DefinitionResolutionException::new);
+        
+        CheckResult p2cResult = providerToConsumerMap.checkConsistency();
+        p2cResult.throwOnError(DefinitionResolutionException::new);
+        
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
-
+        CheckResult toMergedModelResult = toMergedModelMap.checkConsistency();
+        toMergedModelResult.throwOnError(DefinitionResolutionException::new);
+        
         // Compose the two maps to create a consumer -> provider-internal map
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
         ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();
@@ -64,7 +85,8 @@ public class DefinitionResolver {
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
             ProviderApiDefinition providerApi) {
-        Map<Type, Type> consumerToProviderType = this.createTypeMapping(providerApi, consumerApi);
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType = 
+                this.createTypeMapping(providerApi, consumerApi);
 
         Map<ConsumerField, ProviderField> consumerToProviderField = this.createFieldMapping(consumerApi,
                 consumerToProviderType);
@@ -73,20 +95,21 @@ public class DefinitionResolver {
         Map<ConsumerOperation, ProviderOperation> consumerToProviderOperation = this.createOperationMapping(consumerApi,
                 providerApi);
 
-        return new ConsumerToProviderMap(consumerToProviderType, consumerToProviderField, consumerToProviderMember,
-                consumerToProviderOperation);
+        return new ConsumerToProviderMap(consumerApi, providerApi, consumerToProviderType, consumerToProviderField,
+                consumerToProviderMember, consumerToProviderOperation);
     }
 
-    private Map<Type, Type> createTypeMapping(ProviderApiDefinition providerApi, ConsumerApiDefinition consumerApi) {
-        Map<Type, Type> consumerToProviderType = new HashMap<>();
+    private Map<ConsumerUserDefinedType, ProviderUserDefinedType> createTypeMapping(ProviderApiDefinition providerApi,
+            ConsumerApiDefinition consumerApi) {
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerType : consumerApi.getUserDefinedTypes()) {
             String publicTypeName = consumerType.getPublicName();
-            Type providerType = providerApi.resolveUserDefinedType(publicTypeName)
+            UserDefinedType<ProviderApiDefinition> providerType = providerApi.resolveUserDefinedType(publicTypeName)
                     .orElseThrow(() -> new DefinitionResolutionException(
                             "No matching type for " + consumerType + " (" + publicTypeName + ")."));
             this.assertMatchingType(consumerType, providerType);
-            consumerToProviderType.put(consumerType, providerType);
+            consumerToProviderType.put((ConsumerUserDefinedType) consumerType, (ProviderUserDefinedType) providerType);
         }
 
         return consumerToProviderType;
@@ -104,7 +127,7 @@ public class DefinitionResolver {
     }
 
     private Map<ConsumerField, ProviderField> createFieldMapping(ConsumerApiDefinition consumerApi,
-            Map<Type, Type> consumerToProviderType) {
+            Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType) {
         Map<ConsumerField, ProviderField> consumerToProviderField = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {
@@ -133,7 +156,7 @@ public class DefinitionResolver {
     }
 
     private Map<ConsumerEnumMember, ProviderEnumMember> createMemberMapping(ConsumerApiDefinition consumerApi,
-            Map<Type, Type> consumerToProviderType) {
+            Map<ConsumerUserDefinedType, ProviderUserDefinedType> consumerToProviderType) {
         Map<ConsumerEnumMember, ProviderEnumMember> consumerToProviderMember = new HashMap<>();
 
         for (UserDefinedType<ConsumerApiDefinition> consumerUDT : consumerApi.getUserDefinedTypes()) {

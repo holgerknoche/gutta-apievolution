@@ -1,15 +1,10 @@
 package gutta.apievolution.core.apimodel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Collections;
-import java.util.Optional;
-
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import org.junit.jupiter.api.Test;
 
-import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test cases for API model creation.
@@ -24,24 +19,19 @@ class ModelCreationTest {
         // Create an API definition with four types, one used only for input, one only
         // for output, one for both and one
         // not at all
-        ProviderApiDefinition apiDefinition = new ProviderApiDefinition(QualifiedName.of("test"),
-                Collections.emptySet(), 1, Optional.empty());
+        ProviderApiDefinition apiDefinition = ProviderApiDefinition.create("test", 1);
 
-        ProviderRecordType parameterType = new ProviderRecordType("ParameterType", Optional.empty(), 0, apiDefinition,
-                false, Optional.empty(), Optional.empty());
+        ProviderRecordType parameterType = apiDefinition.newRecordType("ParameterType", 0);
 
-        ProviderRecordType returnType = new ProviderRecordType("ReturnType", Optional.empty(), 0, apiDefinition, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType returnType = apiDefinition.newRecordType("ReturnType", 0);
 
-        ProviderRecordType inoutType = new ProviderRecordType("InOutType", Optional.empty(), 0, apiDefinition, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType inoutType = apiDefinition.newRecordType("InOutType", 0);
 
-        ProviderRecordType unusedType = new ProviderRecordType("UnusedType", Optional.empty(), 0, apiDefinition, false,
-                Optional.empty(), Optional.empty());
+        ProviderRecordType unusedType = apiDefinition.newRecordType("UnusedType", 0);
 
-        new ProviderOperation("op1", Optional.empty(), apiDefinition, returnType, parameterType, Optional.empty());
+        apiDefinition.newOperation("op1", returnType, parameterType);
 
-        new ProviderOperation("op2", Optional.empty(), apiDefinition, inoutType, inoutType, Optional.empty());
+        apiDefinition.newOperation("op2", inoutType, inoutType);
 
         // Assert that the usages on the types are set accordingly
         assertEquals(Usage.NONE, unusedType.getUsage());

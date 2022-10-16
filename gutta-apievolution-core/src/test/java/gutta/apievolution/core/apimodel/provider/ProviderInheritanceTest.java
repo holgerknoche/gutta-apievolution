@@ -1,15 +1,19 @@
 package gutta.apievolution.core.apimodel.provider;
 
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Inherited;
 import gutta.apievolution.core.apimodel.Optionality;
-import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.StringType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
+import static gutta.apievolution.core.apimodel.Conventions.noAnnotations;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -22,25 +26,25 @@ class ProviderInheritanceTest {
      */
     @Test
     void basicInheritanceTest() {
-        ProviderApiDefinition definition = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(),
-                0, Optional.empty());
+        ProviderApiDefinition definition = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType typeA = new ProviderRecordType("TypeA", Optional.empty(), 0, definition, true,
-                Optional.empty());
+        ProviderRecordType typeA = definition.newRecordType("TypeA", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), noPredecessor());
 
-        new ProviderField("fieldA", Optional.empty(), typeA, StringType.unbounded(), Optionality.MANDATORY);
+        typeA.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType typeB = new ProviderRecordType("TypeB", Optional.empty(), 1, definition, false,
-                Optional.of(typeA), Optional.empty());
+        ProviderRecordType typeB = definition.newRecordType("TypeB", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(typeA), noPredecessor());
 
-        new ProviderField("fieldB", Optional.empty(), typeB, StringType.unbounded(), Optionality.MANDATORY);
+        typeB.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType typeC = new ProviderRecordType("TypeC", Optional.empty(), 2, definition, false,
-                Optional.of(typeB), Optional.empty());
+        ProviderRecordType typeC = definition.newRecordType("TypeC", noInternalName(), 2, Abstract.NO,
+                Collections.singleton(typeB), noPredecessor());
 
-        new ProviderField("fieldC", Optional.empty(), typeC, StringType.unbounded(), Optionality.MANDATORY);
+        typeC.newField("fieldC", StringType.unbounded(), Optionality.MANDATORY);
 
-        new ProviderRecordType("TypeD", Optional.empty(), 3, definition, false, Optional.of(typeB), Optional.empty());
+        definition.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Collections.singleton(typeB),
+                noPredecessor());
 
         // Finalize the API definition
         definition.finalizeDefinition();
@@ -66,38 +70,33 @@ class ProviderInheritanceTest {
      */
     @Test
     void moveAttributesUp() {
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType typeA1 = new ProviderRecordType("TypeA", Optional.empty(), 0, revision1, false,
-                Optional.empty());
+        ProviderRecordType typeA1 = revision1.newRecordType("TypeA", 0);
 
-        ProviderField fieldA1 = new ProviderField("fieldA", Optional.empty(), typeA1, StringType.unbounded(),
+        ProviderField fieldA1 = typeA1.newField("fieldA", StringType.unbounded(),
                 Optionality.MANDATORY);
 
-        ProviderRecordType typeB1 = new ProviderRecordType("TypeB", Optional.empty(), 1, revision1, false,
-                Optional.empty());
+        ProviderRecordType typeB1 = revision1.newRecordType("TypeB", 1);
 
-        ProviderField fieldB1 = new ProviderField("fieldB", Optional.empty(), typeB1, StringType.unbounded(),
+        ProviderField fieldB1 = typeB1.newField("fieldB", StringType.unbounded(),
                 Optionality.MANDATORY);
 
         revision1.finalizeDefinition();
 
         // Create revision 2
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType typeC = new ProviderRecordType("TypeC", Optional.empty(), 2, revision2, true,
-                Optional.empty());
+        ProviderRecordType typeC = revision2.newRecordType("TypeC", noInternalName(), 2, Abstract.YES,
+                noSuperTypes(), noPredecessor());
 
-        new ProviderField("fieldC", Optional.empty(), typeC, StringType.unbounded(), Optionality.MANDATORY, false,
-                Arrays.asList(fieldA1, fieldB1), Optional.empty());
+        typeC.newField("fieldC", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, Inherited.NO,
+                Arrays.asList(fieldA1, fieldB1), noPredecessor());
 
-        new ProviderRecordType("TypeA", Optional.empty(), 0, revision2, false, Optional.of(typeC), Optional.of(typeA1));
-
-        new ProviderRecordType("TypeB", Optional.empty(), 1, revision2, false, Optional.of(typeC), Optional.of(typeB1));
-
-        new ProviderRecordType("TypeD", Optional.empty(), 3, revision2, false, Optional.of(typeC), Optional.empty());
+        revision2.newRecordType("TypeA", noInternalName(), 0, Abstract.NO, Collections.singleton(typeC), typeA1);
+        revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Collections.singleton(typeC), typeB1);
+        revision2.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Collections.singleton(typeC),
+                noPredecessor());
 
         // Finalize the API definition
         revision2.finalizeDefinition();
@@ -121,41 +120,36 @@ class ProviderInheritanceTest {
     @Test
     void moveAttributeDown() {
         // Create the first revision, in which the field is inherited in all subtypes
-        ProviderApiDefinition revision1 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 0,
-                Optional.empty());
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
 
-        ProviderRecordType superTypeV1 = new ProviderRecordType("SuperType", Optional.empty(), 0, revision1, true,
-                Optional.empty());
+        ProviderRecordType superTypeV1 = revision1.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), noPredecessor());
 
-        new ProviderField("fieldA", Optional.empty(), superTypeV1, StringType.unbounded(), Optionality.MANDATORY);
+        superTypeV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
 
-        ProviderRecordType subTypeAV1 = new ProviderRecordType("SubTypeA", Optional.empty(), 1, revision1, false,
-                Optional.of(superTypeV1), Optional.empty());
-
-        ProviderRecordType subTypeBV1 = new ProviderRecordType("SubTypeB", Optional.empty(), 2, revision1, false,
-                Optional.of(superTypeV1), Optional.empty());
+        ProviderRecordType subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV1), noPredecessor());
+        ProviderRecordType subTypeBV1 = revision1.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO,
+                Collections.singleton(superTypeV1), noPredecessor());
 
         revision1.finalizeDefinition();
 
         // Create the second revision, in which the inherited field is removed and
-        // pushed down to one of the
-        // subtypes
-        ProviderApiDefinition revision2 = new ProviderApiDefinition(QualifiedName.of("test"), Collections.emptySet(), 1,
-                Optional.of(revision1));
+        // pushed down to one of the subtypes
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
-        ProviderRecordType superTypeV2 = new ProviderRecordType("SuperType", Optional.empty(), 0, revision2, true,
-                Optional.of(superTypeV1));
+        ProviderRecordType superTypeV2 = revision2.newRecordType("SuperType", noInternalName(), 0, Abstract.YES,
+                noSuperTypes(), superTypeV1);
 
-        ProviderRecordType subTypeAV2 = new ProviderRecordType("SubTypeA", Optional.empty(), 1, revision2, false,
-                Optional.of(superTypeV2), Optional.of(subTypeAV1));
+        ProviderRecordType subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO,
+                Collections.singleton(superTypeV2), subTypeAV1);
 
         ProviderField previousField = subTypeAV1.resolveField("fieldA").orElseThrow(NoSuchElementException::new);
 
-        new ProviderField("fieldA", Optional.empty(), subTypeAV2, StringType.unbounded(), Optionality.MANDATORY, false,
-                Collections.emptyList(), Optional.of(previousField));
+        subTypeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, previousField);
 
-        new ProviderRecordType("SubTypeB", Optional.empty(), 2, revision2, false, Optional.of(superTypeV2),
-                Optional.of(subTypeBV1));
+        revision2.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Collections.singleton(superTypeV2),
+                subTypeBV1);
 
         revision2.finalizeDefinition();
 
