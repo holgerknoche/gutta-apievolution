@@ -265,7 +265,7 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         @Override
         public Void handleRecordType(RecordType<?, ?, ?> recordType) {
             for (Field<?, ?> field : recordType) {
-                if (mapField((ConsumerField) field) == null) {
+                if (!mapField((ConsumerField) field).isPresent()) {
                     this.result.addErrorMessage("Field '" +  field + "' is not mapped.");
                 }
             }
