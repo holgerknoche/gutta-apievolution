@@ -2,6 +2,7 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.StringType;
+import gutta.apievolution.core.apimodel.Usage;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumType;
@@ -197,6 +198,217 @@ class ConsumerToProviderMapTest {
         CheckResult result = map.checkConsistency();
         assertTrue(result.hasError());
         assertEquals(Arrays.asList("Operation 'op' is not mapped."), result.getMessages());
+    }
+    
+    @Test
+    void mandatoryFieldForInput() {
+        CheckResult result;
+        
+        // When the consumer considers an input field mandatory, it can be of any optionality
+        // on the provider side
+        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.MANDATORY);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.OPTIONAL);
+        assertFalse(result.hasError());
+    }
+    
+    @Test
+    void optInFieldForInput() {
+        CheckResult result;
+        
+        // When the consumer considers an input field opt-in, it may not be mandatory on the
+        // provider side
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.MANDATORY);
+        assertTrue(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.OPTIONAL);
+        assertFalse(result.hasError());
+    }
+    
+    @Test
+    void optionalFieldForInput() {
+        CheckResult result;
+        
+        // When the consumer considers an input field optional, it may not be mandatory on the
+        // provider side
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.MANDATORY);
+        assertTrue(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
+        assertFalse(result.hasError());
+    }
+    
+    @Test
+    void mandatoryFieldForOutput() {
+        CheckResult result;
+        
+        // When the consumer considers an output field mandatory, it may not be optional on
+        // the provider side
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.MANDATORY);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.OPTIONAL);
+        assertTrue(result.hasError());
+    }
+    
+    @Test
+    void optInFieldForOutput() {
+        CheckResult result;
+        
+        // When the consumer considers an output field opt-in, it may not be optional on the
+        // provider side
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.MANDATORY);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.OPTIONAL);
+        assertTrue(result.hasError());
+    }
+    
+    @Test
+    void optionalFieldForOutput() {
+        CheckResult result;
+        
+        // When the consumer considers an output field optional, it may be of any optionality
+        // on the provider side
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.MANDATORY);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
+        assertFalse(result.hasError());
+    }
+    
+    @Test
+    void mandatoryFieldForInOut() {
+        CheckResult result;
+        
+        // When the consumer considers an in-out field mandatory, it must be at mandatory or
+        // opt-in on the provider side
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.MANDATORY, Optionality.MANDATORY);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.MANDATORY, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.MANDATORY, Optionality.OPTIONAL);
+        assertTrue(result.hasError());
+    }
+    
+    @Test
+    void optInFieldForInOut() {
+        CheckResult result;
+        
+        // When the consumer considers an in-out field opt-in, it must be opt-in on the
+        // provider side
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPT_IN, Optionality.MANDATORY);
+        assertTrue(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPT_IN, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPT_IN, Optionality.OPTIONAL);
+        assertTrue(result.hasError());
+    }
+    
+    @Test
+    void optionalFieldForInOut() {
+        CheckResult result;
+        
+        // When the consumer considers an in-out field optional, it must be optional or opt-in
+        // on the provider side
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPTIONAL, Optionality.MANDATORY);
+        assertTrue(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPTIONAL, Optionality.OPT_IN);
+        assertFalse(result.hasError());
+        result = runOptionalityTest(Usage.IN_OUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
+        assertFalse(result.hasError());
+    }
+    
+    private CheckResult runOptionalityTest(Usage consumerUsage, Optionality consumerOptionality,
+            Optionality providerOptionality) {
+        // Create the consumer definition
+        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        
+        ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
+        ConsumerField consumerField = consumerRecord.newField("field", consumerRecord, consumerOptionality);
+        
+        ConsumerRecordType consumerDummy = consumerDefinition.newRecordType("Dummy", 1);
+        
+        ConsumerRecordType consumerParameterType;
+        ConsumerRecordType consumerResultType;
+        switch (consumerUsage) {
+        case INPUT:
+            consumerParameterType = consumerRecord;
+            consumerResultType = consumerDummy;
+            break;
+            
+        case OUTPUT:
+            consumerParameterType = consumerDummy;
+            consumerResultType = consumerRecord;
+            break;
+            
+        case IN_OUT:
+            consumerParameterType = consumerRecord;
+            consumerResultType = consumerRecord;
+            break;
+        
+        case NONE:
+        default:
+            consumerParameterType = consumerDummy;
+            consumerResultType = consumerDummy;
+            break;
+        }
+        
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("op", consumerResultType, consumerParameterType);
+        
+        consumerDefinition.finalizeDefinition();
+        
+        // Create the provider definition
+        ProviderApiDefinition providerDefinition = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", 0);
+        ProviderField providerField = providerRecord.newField("field", providerRecord, providerOptionality);
+        
+        ProviderRecordType providerDummy = providerDefinition.newRecordType("Dummy", 1);
+        
+        ProviderRecordType providerParameterType;
+        ProviderRecordType providerResultType;
+        switch (consumerUsage) {
+        case INPUT:
+            providerParameterType = providerRecord;
+            providerResultType = providerDummy;
+            break;
+            
+        case OUTPUT:
+            providerParameterType = providerDummy;
+            providerResultType = providerRecord;
+            break;
+            
+        case IN_OUT:
+            providerParameterType = providerRecord;
+            providerResultType = providerRecord;
+            break;
+        
+        case NONE:
+        default:
+            providerParameterType = providerDummy;
+            providerResultType = providerDummy;
+            break;
+        }
+        
+        ProviderOperation providerOperation = providerDefinition.newOperation("op", providerResultType, providerParameterType);
+        
+        providerDefinition.finalizeDefinition();
+        
+        ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition,
+                mapOf(consumerRecord, providerRecord, consumerDummy, providerDummy),
+                mapOf(consumerField, providerField),
+                emptyMap(),
+                mapOf(consumerOperation, providerOperation));
+        
+        return map.checkConsistency();
     }
     
 }
