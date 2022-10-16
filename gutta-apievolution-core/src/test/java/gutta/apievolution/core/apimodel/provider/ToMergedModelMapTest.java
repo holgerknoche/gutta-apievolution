@@ -112,6 +112,9 @@ class ToMergedModelMapTest {
                 result.getMessages());
     }
 
+    /**
+     * An inconsistent super type mapping is detected and reported.
+     */
     @Test
     void inconsistentSuperType() {
         ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
