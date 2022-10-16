@@ -33,28 +33,4 @@ public class ToMergedModelMap extends ApiDefinitionMorphism<ProviderApiDefinitio
         return superResult.joinWith(ownResult);
     }
     
-    private void checkSuperTypeConsistency(CheckResult result) {
-        this.typeMap.forEach((sourceType, targetType) -> this.checkSuperTypeAssociation(sourceType, targetType, result));
-    }
-
-    private void checkSuperTypeAssociation(ProviderUserDefinedType sourceType, ProviderUserDefinedType targetType,
-            CheckResult result) {
-        if (sourceType.isRecord()) {
-            // Check: For each supertype, the image must be in the target super types
-            ProviderRecordType sourceRecord = (ProviderRecordType) sourceType;
-            ProviderRecordType targetRecord = (ProviderRecordType) targetType;
-            
-            for (ProviderRecordType sourceSuperType : sourceRecord.getSuperTypes()) {
-                ProviderRecordType mappedSuperType = (ProviderRecordType) this.mapUserDefinedType(sourceSuperType).orElse(null);
-                
-                if (mappedSuperType == null) {
-                    result.addErrorMessage("Supertype '" + sourceSuperType +  "' of '" + sourceRecord + "' is not mapped.");
-                } else if (!targetRecord.getSuperTypes().contains(mappedSuperType)) {
-                    result.addErrorMessage("Mapped supertype '" + mappedSuperType + "' of '" + sourceRecord + 
-                            "' is not a supertype of '" + targetRecord + "'.");
-                }
-            }
-        }
-    }
-    
 }

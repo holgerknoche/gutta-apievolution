@@ -1,5 +1,6 @@
 package gutta.apievolution.core.resolution;
 
+import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.StringType;
 import gutta.apievolution.core.apimodel.Usage;
@@ -21,9 +22,13 @@ import gutta.apievolution.core.util.CheckResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
 import static gutta.apievolution.core.util.MapUtil.mapOf;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -100,6 +105,9 @@ class ConsumerToProviderMapTest {
         assertEquals(Arrays.asList("User-defined type 'TestRecord' is not mapped."), result.getMessages());
     }
 
+    /**
+     * Test case: A missing mapping for an enum type is detected and reported.
+     */
     @Test
     void missingMappingForConsumerEnum() {
         // Create the consumer definition
@@ -122,6 +130,9 @@ class ConsumerToProviderMapTest {
         assertEquals(Arrays.asList("User-defined type 'TestEnum' is not mapped."), result.getMessages());
     }
     
+    /**
+     * A missing mapping for a field is detected and reported.
+     */
     @Test
     void missingMappingForConsumerField() {
         // Create the consumer definition
@@ -148,6 +159,9 @@ class ConsumerToProviderMapTest {
         assertEquals(Arrays.asList("Field 'field' is not mapped."), result.getMessages());
     }
     
+    /**
+     * A missing mapping of an enum member is detected and reported.
+     */
     @Test
     void missingMappingForConsumerEnumMember() {
         // Create the consumer definition
@@ -174,6 +188,9 @@ class ConsumerToProviderMapTest {
         assertEquals(Arrays.asList("Enum member 'TEST' is not mapped."), result.getMessages());
     }
     
+    /**
+     * A missing mapping of an operation is detected an reported.
+     */
     @Test
     void missingMappingForConsumerOperation() {
         // Create the consumer definition
@@ -200,6 +217,46 @@ class ConsumerToProviderMapTest {
         assertEquals(Arrays.asList("Operation 'op' is not mapped."), result.getMessages());
     }
     
+    /**
+     * Test case: An inconsistent super type mapping is detected and reported.
+     */
+    @Test
+    void inconsistentSuperType() {
+     // Create the consumer definition
+        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        
+        ConsumerRecordType consumerSuperType = consumerDefinition.newRecordType("SuperType", 0);
+        ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", noInternalName(), 1,
+                Abstract.NO, Collections.singleton(consumerSuperType));
+        
+        consumerDefinition.finalizeDefinition();
+        
+        // Create the provider definition
+        ProviderApiDefinition providerDefinition = ProviderApiDefinition.create("test", 0);
+       
+        ProviderRecordType providerSuperType = providerDefinition.newRecordType("SuperType", 0);
+        ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", noInternalName(), 1,
+                Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
+        ProviderRecordType providerDummy = providerDefinition.newRecordType("Dummy", 2);
+        
+        
+        providerDefinition.finalizeDefinition();
+        
+        ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
+                mapOf(consumerRecord, providerRecord, consumerSuperType, providerDummy),
+                emptyMap(),
+                emptyMap(),
+                emptyMap());
+        
+        CheckResult result = map.checkConsistency();
+        assertTrue(result.hasError());
+        assertEquals(asList("Mapped supertype 'Dummy@revision 0' of 'TestRecord' is not a supertype of 'TestRecord@revision 0'."),
+                result.getMessages());
+    }
+    
+    /**
+     * Test case: Mappings of an input field considered mandatory by the consumer.
+     */
     @Test
     void mandatoryFieldForInput() {
         CheckResult result;
@@ -214,6 +271,9 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an input field considered opt-in by the consumer.
+     */
     @Test
     void optInFieldForInput() {
         CheckResult result;
@@ -228,6 +288,9 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an input field considered optional by the consumer.
+     */
     @Test
     void optionalFieldForInput() {
         CheckResult result;
@@ -242,6 +305,9 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an output field considered mandatory by the consumer.
+     */
     @Test
     void mandatoryFieldForOutput() {
         CheckResult result;
@@ -256,6 +322,9 @@ class ConsumerToProviderMapTest {
         assertTrue(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an output field considered opt-in by the consumer.
+     */
     @Test
     void optInFieldForOutput() {
         CheckResult result;
@@ -270,6 +339,9 @@ class ConsumerToProviderMapTest {
         assertTrue(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an output field considered optional by the consumer.
+     */
     @Test
     void optionalFieldForOutput() {
         CheckResult result;
@@ -284,6 +356,9 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an in-out field considered mandatory by the consumer.
+     */
     @Test
     void mandatoryFieldForInOut() {
         CheckResult result;
@@ -298,6 +373,9 @@ class ConsumerToProviderMapTest {
         assertTrue(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an in-out field considered opt-in by the consumer.
+     */
     @Test
     void optInFieldForInOut() {
         CheckResult result;
@@ -312,6 +390,9 @@ class ConsumerToProviderMapTest {
         assertTrue(result.hasError());
     }
     
+    /**
+     * Test case: Mappings of an in-out field considered optional by the consumer.
+     */
     @Test
     void optionalFieldForInOut() {
         CheckResult result;

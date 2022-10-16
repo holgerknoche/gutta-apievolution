@@ -127,6 +127,8 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         CheckResult ownResult = new CheckResult();
         // Make sure that all elements are mapped
         this.checkAllElementsAreMapped(ownResult);
+        // Make sure that supertypes are mapped consistently
+        this.checkSuperTypeConsistency(ownResult);
         // Check optionalities of fields
         this.checkFieldOptionalities(ownResult);
                 

@@ -218,6 +218,32 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
                         "' instead of '" + expectedType + "'.");
     }
 
+    protected void checkSuperTypeConsistency(CheckResult result) {
+        this.typeMap.forEach((sourceType, targetType) -> this.checkSuperTypeAssociation(sourceType, targetType, result));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void checkSuperTypeAssociation(T1 sourceType, T2 targetType,
+            CheckResult result) {
+        if (sourceType.isRecord()) {
+            // Check: For each supertype, the image must be in the target super types
+            RecordType<?, ?, ?> sourceRecord = (RecordType<?, ?, ?>) sourceType;
+            RecordType<?, ?, ?> targetRecord = (RecordType<?, ?, ?>) targetType;
+            
+            for (RecordType<?, ?, ?> sourceSuperType : sourceRecord.getSuperTypes()) {
+                RecordType<?, ?, ?> mappedSuperType = 
+                        (RecordType<?, ?, ?>) this.mapUserDefinedType((T1) sourceSuperType).orElse(null);
+                
+                if (mappedSuperType == null) {
+                    result.addErrorMessage("Supertype '" + sourceSuperType +  "' of '" + sourceRecord + "' is not mapped.");
+                } else if (!targetRecord.getSuperTypes().contains(mappedSuperType)) {
+                    result.addErrorMessage("Mapped supertype '" + mappedSuperType + "' of '" + sourceRecord + 
+                            "' is not a supertype of '" + targetRecord + "'.");
+                }
+            }
+        }
+    }
+    
     private interface ConsistencyCheckErrorMessageProvider<E> {
 
         String createMessage(E sourceElement, Type sourceType, Type mappedType, Type expectedMappedType);
