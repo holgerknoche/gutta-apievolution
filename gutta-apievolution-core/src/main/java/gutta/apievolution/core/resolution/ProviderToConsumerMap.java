@@ -96,7 +96,7 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         
         if (consumerField == null && providerOptionality == Optionality.MANDATORY && usage != Usage.OUTPUT) {
             // Report an error if a mandatory field is not mapped and is not used only for output
-            result.addErrorMessage("Non-optional field " + providerField + " is not mapped.");
+            result.addErrorMessage("Mandatory field " + providerField + " is not mapped.");
         }
     }
 
