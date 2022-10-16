@@ -73,7 +73,9 @@ public class DefinitionResolver {
         p2cResult.throwOnError(DefinitionResolutionException::new);
         
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
-
+        CheckResult toMergedModelResult = toMergedModelMap.checkConsistency();
+        toMergedModelResult.throwOnError(DefinitionResolutionException::new);
+        
         // Compose the two maps to create a consumer -> provider-internal map
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
         ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();

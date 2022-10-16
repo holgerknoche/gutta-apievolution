@@ -59,6 +59,11 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
         this.publicNameLookup.put(member.getPublicName(), member);
         this.internalNameLookup.put(member.getInternalName(), member);
     }
+    
+    @Override
+    public boolean isEnum() {
+        return true;
+    }
 
     @Override
     public Iterator<M> iterator() {

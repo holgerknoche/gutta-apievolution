@@ -34,5 +34,21 @@ public interface UserDefinedType<A extends ApiDefinition<A, ?>> extends Type {
      * @return see above
      */
     A getOwner();
+    
+    /**
+     * Denotes whether this type is a record type.
+     * @return see above
+     */
+    default boolean isRecord() {
+        return false;
+    }
+    
+    /**
+     * Denotes whether this type is an enum type.
+     * @return see above
+     */
+    default boolean isEnum() {
+        return false;
+    }
 
 }
