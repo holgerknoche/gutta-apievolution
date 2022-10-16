@@ -400,7 +400,7 @@ class DefinitionResolverTest {
         // The field must be mapped, so not mapping it must fail
         exception = assertThrows(DefinitionResolutionException.class,
                 () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
-        assertTrue(exception.getMessage().contains("Non-optional field") && exception.getMessage().contains("is not mapped"));
+        assertTrue(exception.getMessage().contains("Mandatory field") && exception.getMessage().contains("is not mapped"));
         
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.MANDATORY));
@@ -517,7 +517,7 @@ class DefinitionResolverTest {
         
         // Mandatory fields must be mapped        
         exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, null));
-        assertTrue(exception.getMessage().contains("Non-optional field") && exception.getMessage().contains("is not mapped"));
+        assertTrue(exception.getMessage().contains("Mandatory field") && exception.getMessage().contains("is not mapped"));
         
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.MANDATORY));
