@@ -218,6 +218,10 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
                         "' instead of '" + expectedType + "'.");
     }
 
+    /**
+     * Check the consistency of supertypes mapped by this morphism.
+     * @param result The result to store potential violations in
+     */
     protected void checkSuperTypeConsistency(CheckResult result) {
         this.typeMap.forEach((sourceType, targetType) -> this.checkSuperTypeAssociation(sourceType, targetType, result));
     }
