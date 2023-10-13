@@ -151,6 +151,7 @@
         <module>gutta-apievolution-repository</module>
         <module>gutta-apievolution-fixedformat</module>
         <module>gutta-apievolution-jmh</module>
+        <module>gutta-apievolution-inprocess</module>
     </modules>
 
 </project>

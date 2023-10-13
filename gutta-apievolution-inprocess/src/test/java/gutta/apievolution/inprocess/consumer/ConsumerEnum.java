@@ -1,0 +1,5 @@
+package gutta.apievolution.inprocess.consumer;
+
+public enum ConsumerEnum {
+	VALUE_A, VALUE_B
+}
