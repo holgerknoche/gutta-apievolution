@@ -15,8 +15,7 @@ import java.util.stream.Stream;
 /**
  * Utility class for loading provider API definitions.
  */
-public class ProviderApiLoader
-        extends ApiDefinitionLoader {
+public class ProviderApiLoader extends ApiDefinitionLoader {
 
     /**
      * Loads an API definition from the given input stream.
@@ -155,7 +154,18 @@ public class ProviderApiLoader
         List<InputStream> inputStreams = Stream.of(fileNames).map(classLoader::getResourceAsStream)
                 .collect(Collectors.toList());
 
-        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
+        try {
+            return new RevisionHistory(
+                    loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
+        } finally {
+            for (InputStream inputStream : inputStreams) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    throw new ApiLoadException("Error closing input stream '" + inputStream + "'.", e);
+                }
+            }
+        }
     }
 
     /**
@@ -168,7 +178,18 @@ public class ProviderApiLoader
         List<InputStream> inputStreams = Stream.of(apis).map(in -> new ByteArrayInputStream(in.getBytes()))
                 .collect(Collectors.toList());
 
-        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), false, inputStreams));
+        try {
+            return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), false, inputStreams));
+        } finally {
+            for (InputStream inputStream : inputStreams) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // We do not expect any exceptions here, as closing a byte array input stream
+                    // should not fail
+                }
+            }
+        }
     }
 
 }
