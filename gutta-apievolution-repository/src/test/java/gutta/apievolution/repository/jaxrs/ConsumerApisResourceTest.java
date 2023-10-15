@@ -3,12 +3,12 @@ package gutta.apievolution.repository.jaxrs;
 import gutta.apievolution.repository.ConsumerApisService;
 import gutta.apievolution.repository.PersistentConsumerApiDefinition;
 import gutta.apievolution.repository.PersistentProviderApiDefinition;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.ws.rs.core.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

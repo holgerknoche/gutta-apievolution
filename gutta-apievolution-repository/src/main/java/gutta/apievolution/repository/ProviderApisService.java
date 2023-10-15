@@ -5,15 +5,15 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.APIParseException;
 import gutta.apievolution.dsl.APIResolutionException;
 import gutta.apievolution.dsl.ProviderApiLoader;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 /**
  * Service for accessing and managing provider API definitions.

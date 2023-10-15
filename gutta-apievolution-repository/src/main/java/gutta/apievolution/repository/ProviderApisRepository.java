@@ -1,5 +1,12 @@
 package gutta.apievolution.repository;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 
 import java.time.LocalDateTime;
@@ -7,13 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 
 /**
  * JPA Repository for managing persistent provider API definitions.
