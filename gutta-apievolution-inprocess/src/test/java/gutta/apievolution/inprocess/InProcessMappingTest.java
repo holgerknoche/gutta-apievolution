@@ -29,11 +29,11 @@ class InProcessMappingTest {
         Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
 
         // Resolve consumer definition against the provider history
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(providerRevisionHistory, supportedRevisions,
-                consumerApiDefinition);
+        ResolvedConsumerApiDefinition resolvedApiDefinition = ResolvedConsumerApiDefinition.create(consumerApiDefinition,
+                providerRevisionHistory, supportedRevisions);
 
-        // TODO Pass the resolution to the API resolver
-        ConsumerApi consumerApi = ApiResolver.resolveApi(consumerApiDefinition, ConsumerApi.class);
+        // Resolve a proxy for the consumer API
+        ConsumerApi consumerApi = ApiResolver.resolveApi(resolvedApiDefinition, ConsumerApi.class);
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
