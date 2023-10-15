@@ -75,6 +75,7 @@ public abstract class ProviderOperationProxy<P, R>
      * Invokes the underlying service method using the given data.
      * 
      * @param consumerApiId      The consumer API ID that was used for the request
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The provider revision referenced by the consumer
      *                           API
      * @param requestJson        The request in JSON format

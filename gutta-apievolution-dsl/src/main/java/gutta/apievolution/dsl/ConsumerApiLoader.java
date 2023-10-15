@@ -16,6 +16,7 @@ public class ConsumerApiLoader
      * Loads an API definition from the given string.
      *
      * @param input              The string to read the definition from
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The revision number referenced in the provider
      *                           history
      * @return The loaded API definition
@@ -61,6 +62,7 @@ public class ConsumerApiLoader
      *
      * @param fileName           The file name of the file to load the definition
      *                           from
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The provider revision referenced by this definition
      * @return The loaded API definition
      */

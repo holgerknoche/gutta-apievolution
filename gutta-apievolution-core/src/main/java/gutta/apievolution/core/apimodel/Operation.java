@@ -1,6 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A service operation represents a callable entity within a service. It may

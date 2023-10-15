@@ -1,6 +1,13 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * An API definition is the root element of the API model. It serves as the

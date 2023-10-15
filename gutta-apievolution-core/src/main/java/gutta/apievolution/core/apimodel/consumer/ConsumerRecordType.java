@@ -9,7 +9,7 @@ import gutta.apievolution.core.apimodel.Type;
 
 import java.util.Set;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 
 /**
  * Consumer-specific implementation of a {@link RecordType}.

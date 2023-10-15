@@ -1,17 +1,17 @@
 package gutta.apievolution.core.apimodel.consumer;
 
-import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
-import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.RecordKind;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 
 /**
  * Consumer-specific implementation of an {@link ApiDefinition}.
@@ -27,6 +27,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
      *
      * @param name               The API definition's name
      * @param annotations        The annotations on this API definition, if any
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The referenced revision number
      */
     public ConsumerApiDefinition(String name, Set<Annotation> annotations, String referencedApiName,
@@ -42,6 +43,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
      * 
      * @param name               The API definition's name
      * @param annotations        The annotations on this API definition, if any
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The referenced revision number
      */
     public ConsumerApiDefinition(QualifiedName name, Set<Annotation> annotations, String referencedApiName,

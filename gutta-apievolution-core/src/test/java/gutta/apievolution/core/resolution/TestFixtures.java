@@ -1,8 +1,8 @@
 package gutta.apievolution.core.resolution;
 
-import java.util.Collections;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+
+import java.util.Collections;
 
 /**
  * This class contains methods for creating common test fixtures. 
