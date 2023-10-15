@@ -191,7 +191,7 @@ class ApiMappingScriptGeneratorTest {
     
     private ApiMappingScript createMappingScript(String providerApi, String consumerApi, MappingDirection mappingDirection) {
         ProviderApiDefinition providerDefinition = ProviderApiLoader.loadFromString(0, providerApi, false, Optional.empty());
-        ConsumerApiDefinition consumerDefinition = ConsumerApiLoader.loadFromString(consumerApi, 0);
+        ConsumerApiDefinition consumerDefinition = ConsumerApiLoader.loadFromString(consumerApi, providerDefinition.getName().toString(), 0);
         
         RevisionHistory revisionHistory = new RevisionHistory(providerDefinition);
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, Collections.singleton(0), consumerDefinition);

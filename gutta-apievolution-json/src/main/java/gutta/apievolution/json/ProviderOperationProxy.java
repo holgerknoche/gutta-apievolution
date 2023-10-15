@@ -80,11 +80,11 @@ public abstract class ProviderOperationProxy<P, R>
      * @param requestJson        The request in JSON format
      * @return The response in JSON format
      */
-    public String invokeService(String consumerApiId, int referencedRevision, String requestJson) {
+    public String invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, String requestJson) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         // We currently use the file name as the API id
-        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedRevision);
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory,
                 this.supportedRevisions, consumerApi);
 

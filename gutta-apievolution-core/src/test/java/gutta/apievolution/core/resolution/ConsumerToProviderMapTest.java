@@ -45,7 +45,7 @@ class ConsumerToProviderMapTest {
     @Test
     void consistentMapping() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         ConsumerField consumerField = consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
@@ -86,7 +86,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerRecord() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         consumerDefinition.newRecordType("TestRecord", 0);
         
@@ -111,7 +111,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerEnum() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         consumerDefinition.newEnumType("TestEnum", 0);
         
@@ -136,7 +136,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerField() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
@@ -165,7 +165,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerEnumMember() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerEnumType consumerEnum = consumerDefinition.newEnumType("TestEnum", 0);
         consumerEnum.newEnumMember("TEST");
@@ -194,7 +194,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerOperation() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         consumerDefinition.newOperation("op", consumerRecord, consumerRecord);
@@ -223,7 +223,7 @@ class ConsumerToProviderMapTest {
     @Test
     void inconsistentSuperType() {
      // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerSuperType = consumerDefinition.newRecordType("SuperType", 0);
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", noInternalName(), 1,
@@ -410,7 +410,7 @@ class ConsumerToProviderMapTest {
     private CheckResult runOptionalityTest(Usage consumerUsage, Optionality consumerOptionality,
             Optionality providerOptionality) {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         ConsumerField consumerField = consumerRecord.newField("field", consumerRecord, consumerOptionality);

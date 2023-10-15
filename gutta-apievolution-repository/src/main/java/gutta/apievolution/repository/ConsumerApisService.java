@@ -59,7 +59,8 @@ public class ConsumerApisService {
         PersistentProviderApiDefinition persistentProviderApi = persistentConsumerApi.getReferencedRevision();
 
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader
-                .loadFromString(persistentConsumerApi.getDefinitionText(), persistentProviderApi.getRevisionNumber());
+                .loadFromString(persistentConsumerApi.getDefinitionText(), persistentProviderApi.getHistoryName(),
+                		persistentProviderApi.getRevisionNumber());
 
         String historyName = persistentProviderApi.getHistoryName();
         RevisionHistory revisionHistory = this.providerApisService.readRevisionHistory(historyName);
@@ -117,14 +118,7 @@ public class ConsumerApisService {
     @Transactional
     public PersistentConsumerApiDefinition saveConsumerApi(String referencedHistory, int referencedRevisionNumber,
             String consumerName, String apiDefinition) {
-        // Parse the given API definition
-        ConsumerApiDefinition consumerDefinition;
-        try {
-            consumerDefinition = ConsumerApiLoader.loadFromString(apiDefinition, referencedRevisionNumber);
-        } catch (APIParseException e) {
-            throw new ApiProcessingException("Error processing API definition: " + e.getMessage(), e);
-        }
-
+    	
         // Try to load the referenced provider API definition
         PersistentProviderApiDefinition referencedDefinition = this.providerApisService
                 .readApiRevision(referencedHistory, referencedRevisionNumber)
@@ -134,6 +128,14 @@ public class ConsumerApisService {
                 referencedDefinition.getRevisionNumber(), referencedDefinition.getDefinitionText(), true,
                 Optional.empty());
 
+        // Parse the given client API definition
+        ConsumerApiDefinition consumerDefinition;
+        try {
+            consumerDefinition = ConsumerApiLoader.loadFromString(apiDefinition, referencedDefinition.getHistoryName(), referencedRevisionNumber);
+        } catch (APIParseException e) {
+            throw new ApiProcessingException("Error processing API definition: " + e.getMessage(), e);
+        }
+        
         // Attempt to resolve the two revisions against each other
         try {
             RevisionHistory revisionHistory = new RevisionHistory(referencedRevision);

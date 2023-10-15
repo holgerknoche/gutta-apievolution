@@ -36,9 +36,9 @@ class TestApiDefinitionLoader {
         }
     }
 
-    public static ConsumerApiDefinition loadConsumerApi(String fileName, int referencedRevision) {
+    public static ConsumerApiDefinition loadConsumerApi(String fileName, String referencedApiName, int referencedRevision) {
         try (InputStream inputStream = TestApiDefinitionLoader.class.getClassLoader().getResourceAsStream(fileName)) {
-            return ConsumerApiLoader.loadFromStream(inputStream, referencedRevision);
+            return ConsumerApiLoader.loadFromStream(inputStream, referencedApiName, referencedRevision);
         } catch (IOException e) {
             throw new ApiLoadFailedException(e);
         }

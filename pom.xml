@@ -35,7 +35,7 @@
                     <executions>
                         <execution>
                             <id>checkstyle</id>
-                            <phase>compile</phase>
+                            <phase>package</phase>
                             <goals>
                                 <goal>check</goal>
                             </goals>

@@ -41,7 +41,7 @@ class DefinitionResolverTest {
     @Test
     void matchingBasicTypeFields() {
         // Consumer API definition
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
         ConsumerRecordType consumerType = consumerApi.newRecordType("TestType", 0);
 
@@ -98,7 +98,7 @@ class DefinitionResolverTest {
      */
     @Test
     void testMissingMappingForMandatoryField() {
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
         ConsumerRecordType consumerType = consumerApi.newRecordType("Test", 1);
 
@@ -137,7 +137,7 @@ class DefinitionResolverTest {
         providerType.newField("testField", AtomicType.INT_32, Optionality.MANDATORY);
 
         // Consumer definition
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
         ConsumerRecordType consumerType = consumerApi.newRecordType("TestType", 0);
 
@@ -157,7 +157,7 @@ class DefinitionResolverTest {
     @Test
     void mapEnumMembers() {
         // Consumer API definition
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
         ConsumerEnumType consumerEnum = consumerApi.newEnumType("TestEnum", 0);
 
@@ -194,7 +194,7 @@ class DefinitionResolverTest {
      */
     @Test
     void mapServicesAndOperations() {
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
         ConsumerRecordType consumerRecord = consumerApi.newRecordType("RecordType", "ConsumerRecordType", 0,
                 Abstract.NO, noSuperTypes());
@@ -241,7 +241,7 @@ class DefinitionResolverTest {
     @Test
     void mapListFields() {
         // Create a consumer API with an bounded and unbounded list field
-        ConsumerApiDefinition consumerApi = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
         ConsumerRecordType consumerRecordA = consumerApi.newRecordType("A", 0);
         ConsumerRecordType consumerRecordB = consumerApi.newRecordType("B", 1);
         consumerRecordB.newField("boundedListField", ListType.bounded(consumerRecordA, 10), Optionality.MANDATORY);
@@ -287,7 +287,7 @@ class DefinitionResolverTest {
         providerDefinition.finalizeDefinition();
         
         // Construct a consumer API with a field of type "B".
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerTypeA = consumerDefinition.newRecordType("A", 0);
         consumerDefinition.newRecordType("B", 1);
@@ -343,7 +343,7 @@ class DefinitionResolverTest {
         providerDefinition.finalizeDefinition();
         
         // Create a consumer API with a matching type
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerTypeWithField = consumerDefinition.newRecordType("A", 0);
         

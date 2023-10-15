@@ -49,7 +49,7 @@ class ProviderToConsumerMapTest {
         providerDefinition.finalizeDefinition();
         
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("Test", 0);
         ConsumerField consumerField = consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
@@ -86,7 +86,7 @@ class ProviderToConsumerMapTest {
         providerDefinition.finalizeDefinition();
         
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("Test", 0);
         

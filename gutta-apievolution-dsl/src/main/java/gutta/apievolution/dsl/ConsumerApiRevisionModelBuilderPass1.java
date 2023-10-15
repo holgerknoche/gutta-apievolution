@@ -21,10 +21,13 @@ class ConsumerApiRevisionModelBuilderPass1
         extends ApiRevisionModelBuilderPass1<ConsumerApiDefinition, ConsumerRecordType, ConsumerField, ConsumerEnumType,
                 ConsumerEnumMember, ConsumerOperation> {
 
+    private String referencedApiName;
+    
     private int referencedRevision;
 
     public ConsumerApiDefinition buildConsumerRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
-            int referencedRevision) {
+            String referencedApiName, int referencedRevision) {
+        this.referencedApiName = referencedApiName;
         this.referencedRevision = referencedRevision;
         return this.buildApiDefinition(apiRevisionSpec, Optional.empty());
     }
@@ -33,7 +36,7 @@ class ConsumerApiRevisionModelBuilderPass1
     protected ConsumerApiDefinition createRevision(final ApiRevisionParser.ApiDefinitionContext context,
             final QualifiedName name, final Set<Annotation> annotations,
             final ConsumerApiDefinition predecessor) {
-        return new ConsumerApiDefinition(name, annotations, this.referencedRevision);
+        return new ConsumerApiDefinition(name, annotations, this.referencedApiName, this.referencedRevision);
     }
 
     @Override
