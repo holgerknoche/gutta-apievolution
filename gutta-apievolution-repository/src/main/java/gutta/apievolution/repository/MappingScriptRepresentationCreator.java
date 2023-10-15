@@ -5,8 +5,7 @@ import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptCodec;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
-
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Representation creator for fixed-format mapping scripts. 

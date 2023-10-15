@@ -9,14 +9,14 @@ import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.APIParseException;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 /**
  * Service for accessing and managing consumer API definitions.
@@ -90,16 +90,16 @@ public class ConsumerApisService {
         if (format == null) {
             return Optional.empty();
         }
-        
+
         switch (format) {
         case "json":
             return Optional.of(new JsonMappingRepresentationCreator());
-            
+
         case "mappingscript":
             return Optional.of(new MappingScriptRepresentationCreator());
-            
+
         default:
-            return Optional.empty();    
+            return Optional.empty();
         }
     }
 

@@ -15,10 +15,10 @@ import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+import jakarta.ws.rs.core.MediaType;
 
 import java.io.IOException;
 import java.util.Collection;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Representation creator for JSON representation mapping, represented as JSON.
