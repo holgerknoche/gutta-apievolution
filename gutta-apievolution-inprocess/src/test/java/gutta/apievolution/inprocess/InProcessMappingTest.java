@@ -1,21 +1,20 @@
 package gutta.apievolution.inprocess;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 class InProcessMappingTest {
 
@@ -28,12 +27,13 @@ class InProcessMappingTest {
                 "apis/provider-revision-2.api");
         Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
 
-        // Resolve consumer definition against the provider history
-        ResolvedConsumerApiDefinition resolvedApiDefinition = ResolvedConsumerApiDefinition.create(consumerApiDefinition,
-                providerRevisionHistory, supportedRevisions);
-
-        // Resolve a proxy for the consumer API
-        ConsumerApi consumerApi = ApiResolver.resolveApi(resolvedApiDefinition, ConsumerApi.class);
+        // Create an API resolution context and an API resolver 
+        ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
+                supportedRevisions, new DefaultTypeToClassMapper("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
+        ApiResolver apiResolver = new ApiResolver(resolutionContext);
+        
+        // Resolve the API
+        ConsumerApi consumerApi = apiResolver.resolveApi(ConsumerApi.class);
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
@@ -47,5 +47,5 @@ class InProcessMappingTest {
         // assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A),
         // result.getResultList());
     }
-
+    
 }

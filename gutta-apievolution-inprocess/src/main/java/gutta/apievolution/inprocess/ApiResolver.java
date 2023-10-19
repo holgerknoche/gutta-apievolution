@@ -1,38 +1,45 @@
 package gutta.apievolution.inprocess;
 
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.resolution.DefinitionResolution;
+
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ApiResolver {
 
-    private static final ConcurrentMap<Class<?>, Object> API_CACHE = new ConcurrentHashMap<>();
-
-    private static final ApiResolver RESOLVER_INSTANCE = configureResolverInstance();
+    private final ApiResolutionContext apiResolutionContext;
 
     private final ProxyFactory proxyFactory;
 
-    ApiResolver(ProxyFactory proxyFactory) {
+    private final ConcurrentMap<Class<?>, Object> apiCache = new ConcurrentHashMap<>();
+
+    public ApiResolver(ApiResolutionContext resolutionContext) {
+        this(resolutionContext, new DynamicProxyFactory());
+    }
+
+    public ApiResolver(ApiResolutionContext resolutionContext, ProxyFactory proxyFactory) {
+        this.apiResolutionContext = resolutionContext;
         this.proxyFactory = proxyFactory;
     }
 
-    private static ApiResolver configureResolverInstance() {
-        return new ApiResolver(new DynamicProxyFactory());
-    }
-
     @SuppressWarnings("unchecked")
-    public static <T> T resolveApi(ResolvedConsumerApiDefinition consumerApiDefinition, Class<T> apiType) {
-        return (T) API_CACHE.computeIfAbsent(apiType, type -> RESOLVER_INSTANCE.createApi(consumerApiDefinition, type));
+    public <T> T resolveApi(Class<T> apiType) {
+        return (T) this.apiCache.computeIfAbsent(apiType, type -> this.createApi(type));
     }
 
-    private <T> T createApi(ResolvedConsumerApiDefinition consumerApiDefinition, Class<T> apiType) {
+    private <T> T createApi(Class<T> apiType) {
         // Locate API provider for the provider API object and attempt to retrieve the
         // API object for the requested version
+        ConsumerApiDefinition consumerApiDefinition = this.apiResolutionContext.getConsumerApiDefinition();
         Object providerApi = this.createProviderApi(consumerApiDefinition.getReferencedApiName(),
                 consumerApiDefinition.getReferencedRevision());
 
         // Create a proxy to adapt the provider API to the client API
-        return this.proxyFactory.createProxy(providerApi, consumerApiDefinition, apiType);
+        DefinitionResolution definitionResolution = this.apiResolutionContext.getDefinitionResolution();
+        TypeToClassMap typeToClassMap = this.apiResolutionContext.getTypeToClassMap();
+        return this.proxyFactory.createProxy(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
     }
 
     private Object createProviderApi(String providerApiName, int providerApiRevision) {
