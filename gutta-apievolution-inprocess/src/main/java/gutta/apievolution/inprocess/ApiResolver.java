@@ -2,6 +2,7 @@ package gutta.apievolution.inprocess;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.inprocess.dynproxy.DynamicProxyFactory;
 
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
