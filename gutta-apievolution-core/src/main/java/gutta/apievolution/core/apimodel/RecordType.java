@@ -207,6 +207,25 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public Set<R> getSubTypes() {
         return Collections.unmodifiableSet(this.subTypes);
     }
+    
+    /**
+     * Returns the subtypes of this record type, optionally including this type.
+     * 
+     * @param inclusive Flag whether to include this type in the result
+     * @return see above
+     */
+    @SuppressWarnings("unchecked")
+    public Set<R> getSubTypes(Inclusive inclusive) {
+        if (inclusive == Inclusive.YES) {
+            Set<R> types = new HashSet<>(this.subTypes.size() + 1);
+            types.add((R) this);
+            types.addAll(this.subTypes);
+            
+            return types;
+        } else {
+            return this.getSubTypes();
+        }
+    }
 
     /**
      * Returns whether this record type has at least one supertype.

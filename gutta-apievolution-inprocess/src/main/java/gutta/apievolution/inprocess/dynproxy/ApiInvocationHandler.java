@@ -6,6 +6,7 @@ import gutta.apievolution.core.apimodel.BoundedStringType;
 import gutta.apievolution.core.apimodel.EnumMember;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Inclusive;
 import gutta.apievolution.core.apimodel.ListType;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.StringType;
@@ -32,7 +33,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -92,13 +92,11 @@ class ApiInvocationHandler implements InvocationHandler {
         }
 
         // The type of the parameter object may be a specialization of the formal type,
-        // so we need to find the closest
-        // match for the runtime type in the definition. Note that the immediate type of
-        // the argument does not have to
+        // so we need to find the closest match for the runtime type in the definition.
+        // Note that the immediate type of the argument does not have to
         // be a representation of a definition type: If the representation is an
-        // interface (which it has to be if the
-        // type is also used as a return type), we will receive an object that
-        // implements this interface.
+        // interface (which it has to be if the type is also used as a return type),
+        // we will receive an object that implements this interface.
         ConsumerRecordType formalConsumerParameterType = consumerOperation.getParameterType();
 
         if (arguments.length != 1) {
@@ -129,8 +127,7 @@ class ApiInvocationHandler implements InvocationHandler {
             // TODO Map declared exceptions if applicable
             throw new RuntimeException(e);
         } catch (IllegalAccessException | IllegalArgumentException e) {
-            // TODO Use an appropriate exception
-            throw new RuntimeException(e);
+            throw new InvalidInvocationException("Error invoking proxy method.", e);
         }
 
         if (providerResult == null) {
@@ -152,19 +149,14 @@ class ApiInvocationHandler implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     private <T extends Type> T findConsumerTypeMatching(Class<?> type, ConsumerRecordType upperBound) {
-        Set<ConsumerRecordType> subTypes = upperBound.getSubTypes();
-        Set<ConsumerRecordType> subTypesIncludingBound = new HashSet<>(subTypes.size() + 1);
-        subTypesIncludingBound.add(upperBound);
-        subTypesIncludingBound.addAll(subTypes);
-
-        Set<Class<?>> acceptableClasses = subTypesIncludingBound.stream().map(this.typeToClassMap::consumerTypeToClass)
+        Set<ConsumerRecordType> subTypes = upperBound.getSubTypes(Inclusive.YES);
+        Set<Class<?>> acceptableClasses = subTypes.stream().map(this.typeToClassMap::consumerTypeToClass)
                 .collect(Collectors.toSet());
 
         // Find a supertype in the set of acceptable classes. Currently, we just work
-        // with the first acceptable
-        // class we encounter. In certain situations, it would be more predictable if we
-        // retrieved all candidates
-        // and selected the most specific one
+        // with the first acceptable class we encounter. In certain situations, it 
+        // would be more predictable if we retrieved all candidates and selected the
+        // most specific one
         Class<?> matchingClass = findSupertypeIn(type, acceptableClasses);
         if (matchingClass == null) {
             return null;

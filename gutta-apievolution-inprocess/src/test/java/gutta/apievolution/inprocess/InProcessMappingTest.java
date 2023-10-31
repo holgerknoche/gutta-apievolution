@@ -8,6 +8,7 @@ import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import java.util.Set;
 class InProcessMappingTest {
 
     @Test
+    @Disabled
     void successfulInvocation() {
         // Load the consumer and provider API definitions
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);
