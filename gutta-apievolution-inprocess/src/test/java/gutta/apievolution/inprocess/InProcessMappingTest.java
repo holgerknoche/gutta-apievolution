@@ -1,8 +1,13 @@
 package gutta.apievolution.inprocess;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
@@ -10,12 +15,6 @@ import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 class InProcessMappingTest {
 
@@ -31,7 +30,7 @@ class InProcessMappingTest {
 
         // Create an API resolution context and an API resolver 
         ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
-                supportedRevisions, new DefaultTypeToClassMapper("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
+                supportedRevisions, new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
         ApiResolver apiResolver = new ApiResolver(resolutionContext);
         
         // Resolve the API

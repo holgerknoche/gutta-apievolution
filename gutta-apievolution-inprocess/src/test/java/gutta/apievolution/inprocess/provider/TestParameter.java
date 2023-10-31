@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface TestParameter {
 
-	String getField1();
+	String getFieldA();
 	
 	String getField2();
 	

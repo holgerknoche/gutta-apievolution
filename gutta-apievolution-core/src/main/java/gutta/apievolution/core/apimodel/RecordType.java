@@ -190,6 +190,16 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     }
 
     /**
+     * Determines whether this record type is a supertype of the given type.
+     * 
+     * @param type The potential subtype
+     * @return {@code True} if this type is a supertype of the given type, {@code false} otherwise
+     */
+    public boolean isSupertypeOf(R type) {
+        return (this.equals(type)) || this.subTypes.contains(type);
+    }
+    
+    /**
      * Returns the subtypes of this record type.
      * 
      * @return see above

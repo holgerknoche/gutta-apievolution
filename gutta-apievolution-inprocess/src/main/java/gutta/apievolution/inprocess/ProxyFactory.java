@@ -6,6 +6,6 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 public interface ProxyFactory {
 
     <T> T createProxy(Object providerApi, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
-            TypeToClassMap typeToClassMap, Class<T> consumerApiType);
+            UDTToClassMap typeToClassMap, Class<T> consumerApiType);
 
 }

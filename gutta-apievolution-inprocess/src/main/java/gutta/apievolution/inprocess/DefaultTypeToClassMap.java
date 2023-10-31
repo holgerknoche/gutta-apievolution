@@ -1,33 +1,33 @@
 package gutta.apievolution.inprocess;
 
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 
-public class DefaultTypeToClassMapper implements TypeToClassMap {
+public class DefaultTypeToClassMap implements UDTToClassMap {
 
-    private String consumerPackageName;
+    private final String consumerPackageName;
     
-    private String providerPackageName;
+    private final String providerPackageName;
 
-    public DefaultTypeToClassMapper(ConsumerApiDefinition consumerApiDefinition) {
+    public DefaultTypeToClassMap(ConsumerApiDefinition consumerApiDefinition) {
         this.consumerPackageName = consumerApiDefinition.getName().toString();
         this.providerPackageName = consumerApiDefinition.getReferencedApiName();
     }
     
-    public DefaultTypeToClassMapper(String consumerPackageName, String providerPackageName) {
+    public DefaultTypeToClassMap(String consumerPackageName, String providerPackageName) {
         this.consumerPackageName = consumerPackageName;
         this.providerPackageName = providerPackageName;
     }
     
     @Override
-    public <T> Class<T> consumerRecordTypeToClass(ConsumerRecordType type) {
+    public <T> Class<T> consumerTypeToClass(UserDefinedType<ConsumerApiDefinition> type) {
         String className = this.consumerPackageName + "." + type.getInternalName();
         return this.resolveClass(className);
     }
 
     @Override
-    public <T> Class<T> providerRecordTypeToClass(ProviderRecordType type) {
+    public <T> Class<T> providerTypeToClass(UserDefinedType<ProviderApiDefinition> type) {
         String className = this.providerPackageName + "." + type.getInternalName();
         return this.resolveClass(className);
     }

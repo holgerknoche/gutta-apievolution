@@ -13,10 +13,10 @@ public class ApiResolutionContext {
 
     private final DefinitionResolution definitionResolution;
 
-    private final TypeToClassMap typeToClassMap;
+    private final UDTToClassMap typeToClassMap;
     
     public ApiResolutionContext(ConsumerApiDefinition consumerApiDefinition, RevisionHistory revisionHistory,
-            Set<Integer> supportedRevisions, TypeToClassMap typeToClassMap) {
+            Set<Integer> supportedRevisions, UDTToClassMap typeToClassMap) {
 
         this.consumerApiDefinition = consumerApiDefinition;
         this.typeToClassMap = typeToClassMap;
@@ -33,7 +33,7 @@ public class ApiResolutionContext {
         return this.definitionResolution;
     }
     
-    public TypeToClassMap getTypeToClassMap() {
+    public UDTToClassMap getTypeToClassMap() {
         return this.typeToClassMap;
     }
 

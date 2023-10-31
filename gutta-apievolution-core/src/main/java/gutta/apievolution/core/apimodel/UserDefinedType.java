@@ -50,5 +50,10 @@ public interface UserDefinedType<A extends ApiDefinition<A, ?>> extends Type {
     default boolean isEnum() {
         return false;
     }
+    
+    @Override
+    default boolean isUserDefined() {
+        return true;
+    }
 
 }

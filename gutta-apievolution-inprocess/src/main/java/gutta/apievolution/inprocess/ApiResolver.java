@@ -39,7 +39,7 @@ public class ApiResolver {
 
         // Create a proxy to adapt the provider API to the client API
         DefinitionResolution definitionResolution = this.apiResolutionContext.getDefinitionResolution();
-        TypeToClassMap typeToClassMap = this.apiResolutionContext.getTypeToClassMap();
+        UDTToClassMap typeToClassMap = this.apiResolutionContext.getTypeToClassMap();
         return this.proxyFactory.createProxy(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
     }
 
