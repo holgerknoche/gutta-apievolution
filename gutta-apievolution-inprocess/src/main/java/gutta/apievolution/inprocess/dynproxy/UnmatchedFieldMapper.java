@@ -1,16 +1,10 @@
 package gutta.apievolution.inprocess.dynproxy;
 
-import java.lang.reflect.Method;
-
-class UnmatchedFieldMapper extends ReflectiveFieldMapper {
-
-    public UnmatchedFieldMapper(Method fieldAccessor) {
-        super(fieldAccessor);
-    }
+class UnmatchedFieldMapper implements FieldMapper {
     
     @Override
-    protected Object mapValue(Object value) {
-        // Always return null, as the field cannot be present
+    public Object mapField(Object targetObject) {
+        // Always null, as the field is unmatched
         return null;
     }
 

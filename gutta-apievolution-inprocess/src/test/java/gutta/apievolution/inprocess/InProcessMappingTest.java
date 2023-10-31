@@ -19,7 +19,6 @@ import gutta.apievolution.inprocess.consumer.ConsumerResult;
 class InProcessMappingTest {
 
     @Test
-    @Disabled
     void successfulInvocation() {
         // Load the consumer and provider API definitions
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);

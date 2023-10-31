@@ -3,19 +3,22 @@ package gutta.apievolution.inprocess.dynproxy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-abstract class ReflectiveFieldMapper implements FieldMapper {
+class ReflectiveFieldMapper implements FieldMapper {
 
     private final Method fieldAccessor;
+    
+    private final ValueMapper valueMapper;
 
-    protected ReflectiveFieldMapper(Method fieldAccessor) {
+    protected ReflectiveFieldMapper(Method fieldAccessor, ValueMapper valueMapper) {
         this.fieldAccessor = fieldAccessor;
+        this.valueMapper = valueMapper;
     }
 
     @Override
     public final Object mapField(Object targetObject) {
         Object value = this.determineFieldValue(targetObject);
 
-        return this.mapValue(value);
+        return this.valueMapper.mapValue(value);
     }
 
     private Object determineFieldValue(Object targetObject) {
@@ -25,7 +28,5 @@ abstract class ReflectiveFieldMapper implements FieldMapper {
             throw new InvalidInvocationException("Error invoking field accessor.", e);
         }
     }
-
-    protected abstract Object mapValue(Object value);
 
 }

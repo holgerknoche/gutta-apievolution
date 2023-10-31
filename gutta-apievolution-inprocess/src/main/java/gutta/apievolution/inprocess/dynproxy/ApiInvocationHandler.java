@@ -1,6 +1,25 @@
 package gutta.apievolution.inprocess.dynproxy;
 
-import static java.lang.reflect.Proxy.newProxyInstance;
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.BoundedListType;
+import gutta.apievolution.core.apimodel.BoundedStringType;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UnboundedListType;
+import gutta.apievolution.core.apimodel.UnboundedStringType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
+import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.inprocess.TypeClassMap;
+import gutta.apievolution.inprocess.UDTToClassMap;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -13,20 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gutta.apievolution.core.apimodel.Field;
-import gutta.apievolution.core.apimodel.ListType;
-import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.UserDefinedType;
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
-import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
-import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
-import gutta.apievolution.core.apimodel.provider.ProviderOperation;
-import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.inprocess.TypeClassMap;
-import gutta.apievolution.inprocess.UDTToClassMap;
+import static java.lang.reflect.Proxy.newProxyInstance;
 
 class ApiInvocationHandler implements InvocationHandler {
 
@@ -209,27 +215,30 @@ class ApiInvocationHandler implements InvocationHandler {
             throw new InvalidApiException("Accessor '" + accessor + "' has an unexpected return type (expected '" + expectedClass + "'.");
         }        
         
-        FieldMapper fieldMapper = this.createMapperForProviderField(field, accessor, consumerClass, providerClass);
+        FieldMapper fieldMapper = this.createMapperForProviderField(field, consumerClass, providerClass);
         fieldMappers.put(accessor, fieldMapper);
     }
     
-    private FieldMapper createMapperForProviderField(ProviderField providerField, Method accessor, Class<?> consumerClass, Class<?> providerClass) {
+    private FieldMapper createMapperForProviderField(ProviderField providerField, Class<?> consumerClass, Class<?> providerClass) {
         ConsumerField consumerField = this.definitionResolution.mapProviderField(providerField);
 
         if (consumerField == null) {
             // The provider field may be unmatched
-            return new UnmatchedFieldMapper(accessor);
+            return new UnmatchedFieldMapper();
         }
 
         Type targetType = providerField.getType();
-        if (targetType instanceof UserDefinedType) {
-            // TODO
-            return null;
-        } else if (targetType instanceof ListType) {
-            return new ListTypeFieldMapper(accessor);
-        } else {
-            return new BasicTypeFieldMapper(accessor);
-        }
+        Type sourceType = this.definitionResolution.mapProviderType(targetType);
+                
+        ValueMapper valueMapper = this.createValueMapper(sourceType, targetType);
+        
+        Method sourceAccessor = this.findAccessorForField(consumerField, consumerClass)
+                .orElseThrow(() -> new InvalidApiException("No accessor for field '" + consumerField + "' on class '" + consumerClass.getName() + "'."));
+        return new ReflectiveFieldMapper(sourceAccessor, valueMapper);
+    }
+    
+    private ValueMapper createValueMapper(Type sourceType, Type targetType) {
+        return targetType.accept(new ValueMapperCreator());
     }
 
     private Optional<Method> findAccessorForField(Field<?, ?> field, Class<?> type) {
@@ -263,6 +272,45 @@ class ApiInvocationHandler implements InvocationHandler {
         String remainder = (fieldName.length() == 1) ? "" : fieldName.substring(1);
 
         return "get" + Character.toUpperCase(firstChar) + remainder;
+    }
+    
+    private static class ValueMapperCreator implements TypeVisitor<ValueMapper> {
+                
+        @Override
+        public ValueMapper handleAtomicType(AtomicType atomicType) {
+            return new BasicTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleBoundedStringType(BoundedStringType boundedStringType) {
+            return new BasicTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleUnboundedStringType(UnboundedStringType unboundedStringType) {
+            return new BasicTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleBoundedListType(BoundedListType boundedListType) {
+            return new ListTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleUnboundedListType(UnboundedListType unboundedListType) {
+            return new ListTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleEnumType(EnumType<?, ?, ?> enumType) {
+            return new EnumTypeValueMapper();
+        }
+        
+        @Override
+        public ValueMapper handleRecordType(RecordType<?, ?, ?> recordType) {
+            return new RecordTypeValueMapper();
+        }
+        
     }
 
 }
