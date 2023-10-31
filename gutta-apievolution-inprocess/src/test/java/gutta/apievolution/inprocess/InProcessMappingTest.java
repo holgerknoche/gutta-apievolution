@@ -1,12 +1,5 @@
 package gutta.apievolution.inprocess;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
@@ -15,6 +8,13 @@ import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InProcessMappingTest {
 

@@ -1,11 +1,18 @@
 package gutta.apievolution.inprocess.dynproxy;
 
+import java.util.Map;
+
 class EnumTypeValueMapper implements ValueMapper {
+
+    private final Map<Enum<?>, Enum<?>> memberMap;
+
+    public EnumTypeValueMapper(Map<Enum<?>, Enum<?>> memberMap) {
+        this.memberMap = memberMap;
+    }
 
     @Override
     public Object mapValue(Object value) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.memberMap.get(value);
     }
 
 }

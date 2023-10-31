@@ -3,17 +3,24 @@ package gutta.apievolution.inprocess.dynproxy;
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
+import gutta.apievolution.core.apimodel.EnumMember;
 import gutta.apievolution.core.apimodel.EnumType;
 import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.ListType;
 import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.StringType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeVisitor;
 import gutta.apievolution.core.apimodel.UnboundedListType;
 import gutta.apievolution.core.apimodel.UnboundedStringType;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
@@ -274,41 +281,85 @@ class ApiInvocationHandler implements InvocationHandler {
         return "get" + Character.toUpperCase(firstChar) + remainder;
     }
     
-    private static class ValueMapperCreator implements TypeVisitor<ValueMapper> {
-                
+    private class ValueMapperCreator implements TypeVisitor<ValueMapper> {
+                        
         @Override
         public ValueMapper handleAtomicType(AtomicType atomicType) {
             return new BasicTypeValueMapper();
         }
         
+        private ValueMapper handleStringType(StringType type) {
+            return new BasicTypeValueMapper();
+        }
+        
         @Override
         public ValueMapper handleBoundedStringType(BoundedStringType boundedStringType) {
-            return new BasicTypeValueMapper();
+            return this.handleStringType(boundedStringType);
         }
         
         @Override
         public ValueMapper handleUnboundedStringType(UnboundedStringType unboundedStringType) {
-            return new BasicTypeValueMapper();
+            return this.handleStringType(unboundedStringType);
+        }
+        
+        private ValueMapper handleListType(ListType listType) {
+            Type elementType = listType.getElementType();
+            ValueMapper elementMapper = elementType.accept(this);
+            return new ListTypeValueMapper(elementMapper);
         }
         
         @Override
         public ValueMapper handleBoundedListType(BoundedListType boundedListType) {
-            return new ListTypeValueMapper();
+            return this.handleListType(boundedListType);
         }
         
         @Override
         public ValueMapper handleUnboundedListType(UnboundedListType unboundedListType) {
-            return new ListTypeValueMapper();
+            return this.handleListType(unboundedListType);
         }
         
         @Override
-        public ValueMapper handleEnumType(EnumType<?, ?, ?> enumType) {
-            return new EnumTypeValueMapper();
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        public ValueMapper handleEnumType(EnumType<?, ?, ?> targetType) {
+            EnumType<?, ?, ?> sourceType = this.determineOpposingType(targetType);
+            Class sourceClass = typeToClassMap.typeToClass(sourceType);
+            Class targetClass = typeToClassMap.typeToClass(targetType);
+            
+            Map<Enum<?>, Enum<?>> memberMap = new HashMap<>();
+            for (EnumMember<?, ?> targetMember : targetType.getDeclaredMembers()) {
+                String targetName = targetMember.getInternalName();                
+                Enum<?> targetValue = Enum.valueOf(targetClass, targetName);
+                
+                EnumMember<?, ?> sourceMember = this.determineOpposingMember(targetMember);
+                String sourceName = sourceMember.getInternalName();
+                Enum<?> sourceValue = Enum.valueOf(sourceClass, sourceName);
+                
+                memberMap.put(sourceValue, targetValue);
+            }
+            
+            return new EnumTypeValueMapper(memberMap);
         }
         
         @Override
         public ValueMapper handleRecordType(RecordType<?, ?, ?> recordType) {
             return new RecordTypeValueMapper();
+        }
+        
+        @SuppressWarnings("unchecked")
+        private <T extends Type> T determineOpposingType(UserDefinedType<?> type) {
+            if (type instanceof ConsumerUserDefinedType) {
+                return (T) definitionResolution.mapConsumerType(type);
+            } else {
+                return (T) definitionResolution.mapProviderType(type);
+            }
+        }
+        
+        private EnumMember<?, ?> determineOpposingMember(EnumMember<?, ?> member) {
+            if (member instanceof ConsumerEnumMember) {
+                return definitionResolution.mapConsumerEnumMember((ConsumerEnumMember) member);
+            } else {
+                return definitionResolution.mapProviderEnumMember((ProviderEnumMember) member);
+            }
         }
         
     }
