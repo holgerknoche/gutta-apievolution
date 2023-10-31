@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class InProcessMappingTest {
 
     @Test
@@ -45,7 +43,6 @@ class InProcessMappingTest {
         // assertEquals(ConsumerEnum.VALUE_A, result.getResultEnum());
         // assertEquals("someValue", result.getRetField());
         // assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A),
-        // result.getResultList());
     }
     
 }
