@@ -9,12 +9,18 @@ api test.provider {
         string testField replaces renamedField as fieldA
         TestEnum testEnum
         TestEnum* testList
+        TestRecord testRecord
+    }
+    
+    record TestRecord as ProviderRecord {
+    	int32 field
     }
 
     record TestResult {
         string resultField replaces renamedField as retField
         TestEnum resultEnum
         TestEnum* resultList
+        TestRecord resultRecord
     }
     
     operation testOperation(TestParameter): TestResult

@@ -10,12 +10,18 @@ api test.provider {
         optin string deletedField as field2
         TestEnum testEnum
         TestEnum* testList
+        TestRecord testRecord
+    }
+    
+    record TestRecord as ProviderRecord {
+    	int32 field
     }
 
     record TestResult {
         string renamedField as resultField
         TestEnum resultEnum
         TestEnum* resultList
+        TestRecord resultRecord
     }
     
     operation testOperation(TestParameter): TestResult

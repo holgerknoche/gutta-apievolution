@@ -12,4 +12,6 @@ public interface TestParameter {
 	
 	List<ProviderEnum> getTestList();
 	
+	ProviderRecord getTestRecord();
+	
 }

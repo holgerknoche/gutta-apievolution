@@ -10,4 +10,6 @@ public interface ConsumerResult {
 	
 	List<ConsumerEnum> getResultList();
 	
+	ConsumerRecord getResultRecord();
+	
 }

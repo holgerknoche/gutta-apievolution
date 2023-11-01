@@ -9,6 +9,8 @@ public class ConsumerParameter {
 	private ConsumerEnum testEnum;
 	
 	private List<ConsumerEnum> testList;
+	
+	private ConsumerRecord testRecord;
 
 	public String getTestField() {
 		return testField;
@@ -33,5 +35,13 @@ public class ConsumerParameter {
 	public void setTestList(List<ConsumerEnum> testList) {
 		this.testList = testList;
 	}
+	
+	public ConsumerRecord getTestRecord() {
+        return testRecord;
+    }
+	
+	public void setTestRecord(ConsumerRecord testRecord) {
+        this.testRecord = testRecord;
+    }
 
 }
