@@ -4,18 +4,18 @@ import java.util.List;
 
 public class TestResult {
 
-	private String resultField;
+	private String retField;
 
 	private ProviderEnum resultEnum;
 
 	private List<ProviderEnum> resultList;
 
-	public String getResultField() {
-		return resultField;
+	public String getRetField() {
+		return retField;
 	}
 
-	public void setResultField(String resultField) {
-		this.resultField = resultField;
+	public void setRetField(String retField) {
+		this.retField = retField;
 	}
 
 	public ProviderEnum getResultEnum() {

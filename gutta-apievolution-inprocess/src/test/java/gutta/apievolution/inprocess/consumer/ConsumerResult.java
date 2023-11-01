@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ConsumerResult {
 
-	String getRetField();
+	String getResultField();
 	
 	ConsumerEnum getResultEnum();
 	

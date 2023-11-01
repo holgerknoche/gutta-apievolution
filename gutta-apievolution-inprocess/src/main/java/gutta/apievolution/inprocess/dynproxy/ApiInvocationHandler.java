@@ -29,12 +29,10 @@ import gutta.apievolution.core.apimodel.UnboundedStringType;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
-import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
-import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.resolution.DefinitionResolution;
@@ -113,7 +111,7 @@ class ApiInvocationHandler implements InvocationHandler {
 
         ProviderRecordType actualProviderParameterType = (ProviderRecordType) this.definitionResolution
                 .mapConsumerType(actualConsumerParameterType);
-        Map<Method, FieldMapper> parameterFieldMappers = this.createMappersFor(actualConsumerParameterType, actualProviderParameterType);
+        Map<Method, FieldMapper> parameterFieldMappers = this.createMappersFor(actualConsumerParameterType, actualProviderParameterType, true);
         RecordInvocationHandler parameterInvocationHandler = new RecordInvocationHandler(parameterObject, parameterFieldMappers);
 
         Class<?> actualProviderParameterClass = this.typeToClassMap.providerTypeToClass(actualProviderParameterType);
@@ -144,9 +142,9 @@ class ApiInvocationHandler implements InvocationHandler {
 
             ConsumerRecordType actualConsumerResultType = (ConsumerRecordType) this.definitionResolution
                     .mapProviderType(actualProviderResultType);
-            Map<Method, FieldMapper> resultFieldMappers = this.createMappersFor(null, null);
+            Map<Method, FieldMapper> resultFieldMappers = this.createMappersFor(actualProviderResultType, actualConsumerResultType, false);
             RecordInvocationHandler resultInvocationHandler = new RecordInvocationHandler(providerResult, resultFieldMappers);
-            
+
             Class<?> actualConsumerResultClass = this.typeToClassMap.consumerTypeToClass(actualConsumerResultType);
             Class<?>[] resultTypes = new Class<?>[] { actualConsumerResultClass };
             return newProxyInstance(this.getClass().getClassLoader(), resultTypes, resultInvocationHandler);
@@ -208,48 +206,54 @@ class ApiInvocationHandler implements InvocationHandler {
         return null;
     }
 
-    private Map<Method, FieldMapper> createMappersFor(ConsumerRecordType sourceType, ProviderRecordType targetType) {
-        Class<?> consumerClass = this.typeToClassMap.consumerTypeToClass(sourceType);
-        Class<?> providerClass = this.typeToClassMap.providerTypeToClass(targetType);
+    private Map<Method, FieldMapper> createMappersFor(RecordType<?, ?, ?> sourceType, RecordType<?, ?, ?> targetType,
+            boolean allowUnmatchedFields) {
+        Class<?> sourceClass = this.typeToClassMap.typeToClass(sourceType);
+        Class<?> targetClass = this.typeToClassMap.typeToClass(targetType);
 
         Map<Method, FieldMapper> fieldMappers = new HashMap<>();
-        targetType.getFields().forEach(field -> this.registerMapperForProviderField(field, consumerClass, providerClass, fieldMappers));
+        targetType.getFields()
+                .forEach(field -> this.registerMapperForField(field, sourceClass, targetClass, allowUnmatchedFields, fieldMappers));
 
         return fieldMappers;
     }
 
-    private void registerMapperForProviderField(ProviderField field, Class<?> consumerClass, Class<?> providerClass,
+    private void registerMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, boolean allowUnmatched,
             Map<Method, FieldMapper> fieldMappers) {
-        // Find a potential accessor method on the provider class
-        Method accessor = this.findAccessorForField(field, providerClass).orElseThrow(
-                () -> new InvalidApiException("No accessor for field '" + field + "' on class '" + providerClass.getName() + "'."));
+        // Find a potential accessor method on the target class
+        Method accessor = this.findAccessorForField(targetField, targetClass).orElseThrow(
+                () -> new InvalidApiException("No accessor for field '" + targetField + "' on class '" + targetClass.getName() + "'."));
 
         // Ensure that the accessor method has the expected type
-        Type expectedType = field.getType();
+        Type expectedType = targetField.getType();
         Class<?> expectedClass = this.typeToClassMap.typeToClass(expectedType);
         if (!expectedClass.equals(accessor.getReturnType())) {
             throw new InvalidApiException("Accessor '" + accessor + "' has an unexpected return type (expected '" + expectedClass + "'.");
         }
 
-        FieldMapper fieldMapper = this.createMapperForProviderField(field, consumerClass, providerClass);
+        FieldMapper fieldMapper = this.createMapperForField(targetField, sourceClass, targetClass, allowUnmatched);
         fieldMappers.put(accessor, fieldMapper);
     }
 
-    private FieldMapper createMapperForProviderField(ProviderField providerField, Class<?> consumerClass, Class<?> providerClass) {
-        ConsumerField consumerField = this.definitionResolution.mapProviderField(providerField);
+    private FieldMapper createMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, boolean allowUnmatched) {
+        Field<?, ?> sourceField = this.definitionResolution.mapField(targetField);
 
-        if (consumerField == null) {
-            // The provider field may be unmatched
-            return new UnmatchedFieldMapper();
+        if (sourceField == null) {
+            if (allowUnmatched) {
+                // Provider fields may be unmatched
+                return new UnmatchedFieldMapper();
+            } else {
+                throw new InvalidApiException("Field '" + targetField + "' is unmatched, but must not be.");
+            }
         }
 
-        Type targetType = providerField.getType();
+        Type targetType = targetField.getType();
         Type sourceType = this.definitionResolution.mapProviderType(targetType);
 
         ValueMapper valueMapper = this.createValueMapper(sourceType, targetType);
 
-        Method sourceAccessor = this.findAccessorForField(consumerField, consumerClass).orElseThrow(
-                () -> new InvalidApiException("No accessor for field '" + consumerField + "' on class '" + consumerClass.getName() + "'."));
+        Method sourceAccessor = this.findAccessorForField(sourceField, sourceClass).orElseThrow(
+                () -> new InvalidApiException("No accessor for field '" + sourceField + "' on class '" + sourceClass.getName() + "'."));
         return new ReflectiveFieldMapper(sourceAccessor, valueMapper);
     }
 

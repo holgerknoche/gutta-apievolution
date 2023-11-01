@@ -1,5 +1,13 @@
 package gutta.apievolution.inprocess;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
@@ -8,17 +16,10 @@ import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 class InProcessMappingTest {
 
     @Test
-    @Disabled
     void successfulInvocation() {
         // Load the consumer and provider API definitions
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);
@@ -42,9 +43,9 @@ class InProcessMappingTest {
 
         ConsumerResult result = consumerApi.testOperation(parameter);
 
-        // assertEquals(ConsumerEnum.VALUE_A, result.getResultEnum());
-        // assertEquals("someValue", result.getRetField());
-        // assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A),
+        assertEquals(ConsumerEnum.VALUE_A, result.getResultEnum());
+        assertEquals("someValue", result.getResultField());
+        assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A), result.getResultList());
     }
     
 }

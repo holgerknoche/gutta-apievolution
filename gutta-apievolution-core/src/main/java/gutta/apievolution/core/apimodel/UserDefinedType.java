@@ -55,5 +55,9 @@ public interface UserDefinedType<A extends ApiDefinition<A, ?>> extends Type {
     default boolean isUserDefined() {
         return true;
     }
+    
+    boolean isProviderType();
+    
+    boolean isConsumerType();
 
 }

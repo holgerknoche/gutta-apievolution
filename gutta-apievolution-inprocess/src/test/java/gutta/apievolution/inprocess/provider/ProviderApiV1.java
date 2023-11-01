@@ -10,7 +10,7 @@ public class ProviderApiV1 {
         TestResult result = new TestResult();
         
         result.setResultEnum(parameter.getTestEnum());
-        result.setResultField(parameter.getFieldA());
+        result.setRetField(parameter.getFieldA());
         result.setResultList(reverse(parameter.getTestList()));
         
         return result;
