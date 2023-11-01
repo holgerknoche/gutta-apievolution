@@ -79,7 +79,7 @@ public class DefinitionResolution {
     public Collection<Type> providerTypes() {
         return this.providerToConsumerMap.providerTypes();
     }
-    
+
     /**
      * Returns a collection of all mapped provider operations.
      *
@@ -99,16 +99,24 @@ public class DefinitionResolution {
         return this.providerTypeMap.get(internalName);
     }
 
+    /**
+     * Maps a given type (consumer or provider) to its corresponding type on the
+     * opposing side.
+     * 
+     * @param <T>  The expected kind of type
+     * @param type The type to map
+     * @return The opposing type, if it exists
+     */
     @SuppressWarnings("unchecked")
     public <T extends Type> T mapType(Type type) {
         Type candidate = this.mapConsumerType(type);
         if (candidate != null) {
             return (T) candidate;
         }
-        
+
         return (T) this.mapProviderType(type);
     }
-    
+
     /**
      * Maps a given consumer type to the corresponding provider type.
      *
@@ -129,6 +137,13 @@ public class DefinitionResolution {
         return this.providerToConsumerMap.mapProviderType(providerType);
     }
 
+    /**
+     * Maps a given field (consumer or provider) to its corresponding field on the
+     * opposing side.
+     * 
+     * @param field The field to map
+     * @return The corresponding field, if it exists
+     */
     public Field<?, ?> mapField(Field<?, ?> field) {
         if (field instanceof ConsumerField) {
             return this.mapConsumerField((ConsumerField) field);
@@ -136,7 +151,7 @@ public class DefinitionResolution {
             return this.mapProviderField((ProviderField) field);
         }
     }
-    
+
     /**
      * Maps a given provider field to the corresponding consumer field.
      *
@@ -146,7 +161,7 @@ public class DefinitionResolution {
     public ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerMap.mapProviderField(providerField);
     }
-    
+
     /**
      * Maps a given provider enum member to the corresponding consumer enum member.
      *
@@ -186,5 +201,5 @@ public class DefinitionResolution {
     public ProviderOperation mapConsumerOperation(ConsumerOperation consumerOperation) {
         return this.consumerToProviderMap.mapConsumerOperation(consumerOperation);
     }
-           
+
 }

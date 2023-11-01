@@ -56,8 +56,18 @@ public interface UserDefinedType<A extends ApiDefinition<A, ?>> extends Type {
         return true;
     }
     
+    /**
+     * Denotes whether this type is a provider type.
+     *  
+     * @return see above
+     */
     boolean isProviderType();
     
+    /**
+     * Denotes whether this type is a consumer type.
+     * 
+     * @return see above
+     */
     boolean isConsumerType();
 
 }
