@@ -16,16 +16,20 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
+import gutta.apievolution.core.resolution.DefinitionResolution;
 
 public class TypeClassMap {
     
     private final UDTToClassMap udtToClassMap;
     
     private final Map<Class<?>, Type> consumerTypeLookup;
+    
+    private final Map<Class<?>, Type> providerTypeLookup;
         
-    public TypeClassMap(UDTToClassMap udtToClassMap, ConsumerApiDefinition apiDefinition) {
+    public TypeClassMap(UDTToClassMap udtToClassMap, ConsumerApiDefinition apiDefinition, DefinitionResolution definitionResolution) {
         this.udtToClassMap = udtToClassMap;
-        this.consumerTypeLookup = createConsumerTypeLookup(udtToClassMap, apiDefinition);        
+        this.consumerTypeLookup = createConsumerTypeLookup(udtToClassMap, apiDefinition);
+        this.providerTypeLookup = createProviderTypeLookup(udtToClassMap, apiDefinition, definitionResolution);
     }
 
     private static Map<Class<?>, Type> createConsumerTypeLookup(UDTToClassMap typeMap, ConsumerApiDefinition apiDefinition) {
@@ -43,8 +47,39 @@ public class TypeClassMap {
         return lookup;
     }
     
+    private static Map<Class<?>, Type> createProviderTypeLookup(UDTToClassMap typeMap, ConsumerApiDefinition apiDefinition,
+            DefinitionResolution definitionResolution) {
+        
+        List<UserDefinedType<ConsumerApiDefinition>> userDefinedTypes = apiDefinition.getUserDefinedTypes();
+        Map<Class<?>, Type> lookup = new HashMap<>(userDefinedTypes.size());
+        
+        for (UserDefinedType<ConsumerApiDefinition> consumerType : userDefinedTypes) {
+            ProviderUserDefinedType providerType = (ProviderUserDefinedType) definitionResolution.mapConsumerType(consumerType);
+            Class<?> representingClass = typeMap.providerTypeToClass(providerType);
+            
+            if (representingClass != null) {
+                lookup.put(representingClass, providerType);
+            }
+        }
+        
+        return lookup;
+    }
+    
+    public Type classToType(Class<?> type) {
+        Type candidate = this.classToConsumerType(type);
+        if (candidate != null) {
+            return candidate;
+        }
+        
+        return this.classToProviderType(type);
+    }
+    
     public Type classToConsumerType(Class<?> type) {
         return this.consumerTypeLookup.get(type);                
+    }
+    
+    public Type classToProviderType(Class<?> type) {
+        return this.providerTypeLookup.get(type);
     }
     
     @SuppressWarnings("unchecked")

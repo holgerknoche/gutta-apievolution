@@ -1,5 +1,17 @@
 package gutta.apievolution.inprocess.dynproxy;
 
+import static java.lang.reflect.Proxy.newProxyInstance;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -29,18 +41,6 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.inprocess.TypeClassMap;
 import gutta.apievolution.inprocess.UDTToClassMap;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.lang.reflect.Proxy.newProxyInstance;
-
 class ApiInvocationHandler implements InvocationHandler {
 
     private final Object providerApi;
@@ -56,7 +56,7 @@ class ApiInvocationHandler implements InvocationHandler {
         this.providerApi = providerApi;
         this.consumerApiDefinition = consumerApiDefinition;
         this.definitionResolution = definitionResolution;
-        this.typeToClassMap = new TypeClassMap(typeToClassMap, consumerApiDefinition);
+        this.typeToClassMap = new TypeClassMap(typeToClassMap, consumerApiDefinition, definitionResolution);
     }
 
     @Override
@@ -135,38 +135,54 @@ class ApiInvocationHandler implements InvocationHandler {
             return null;
         } else {
             // Map the result to the consumer's expectation
-            ConsumerRecordType consumerResultType = consumerOperation.getReturnType();
-            Class<?> consumerResultClass = this.typeToClassMap.consumerTypeToClass(consumerResultType);
+            ProviderRecordType formalProviderResultType = providerOperation.getReturnType();
+            ProviderRecordType actualProviderResultType = this.findProviderTypeMatching(providerResult.getClass(),
+                    formalProviderResultType);
+            if (actualProviderResultType == null) {
+                throw new InvalidInvocationException("No matching type for class '" + parameterObject.getClass() + "'.");
+            }
 
+            ConsumerRecordType actualConsumerResultType = (ConsumerRecordType) this.definitionResolution
+                    .mapProviderType(actualProviderResultType);
             Map<Method, FieldMapper> resultFieldMappers = this.createMappersFor(null, null);
             RecordInvocationHandler resultInvocationHandler = new RecordInvocationHandler(providerResult, resultFieldMappers);
-            Class<?>[] resultTypes = new Class<?>[] { consumerResultClass };
-            Object resultProxy = newProxyInstance(this.getClass().getClassLoader(), resultTypes, resultInvocationHandler);
-
-            return resultProxy;
+            
+            Class<?> actualConsumerResultClass = this.typeToClassMap.consumerTypeToClass(actualConsumerResultType);
+            Class<?>[] resultTypes = new Class<?>[] { actualConsumerResultClass };
+            return newProxyInstance(this.getClass().getClassLoader(), resultTypes, resultInvocationHandler);
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T extends Type> T findConsumerTypeMatching(Class<?> type, ConsumerRecordType upperBound) {
         Set<ConsumerRecordType> subTypes = upperBound.getSubTypes(Inclusive.YES);
-        Set<Class<?>> acceptableClasses = subTypes.stream().map(this.typeToClassMap::consumerTypeToClass)
-                .collect(Collectors.toSet());
+        Set<Class<?>> acceptableClasses = subTypes.stream().map(this.typeToClassMap::consumerTypeToClass).collect(Collectors.toSet());
 
+        return this.findMatchingType(type, acceptableClasses);
+    }
+
+    private <T extends Type> T findProviderTypeMatching(Class<?> type, ProviderRecordType upperBound) {
+        Set<ProviderRecordType> subTypes = upperBound.getSubTypes(Inclusive.YES);
+        Set<Class<?>> acceptableClasses = subTypes.stream().map(this.typeToClassMap::providerTypeToClass).collect(Collectors.toSet());
+
+        return this.findMatchingType(type, acceptableClasses);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Type> T findMatchingType(Class<?> type, Set<Class<?>> acceptableClasses) {
         // Find a supertype in the set of acceptable classes. Currently, we just work
-        // with the first acceptable class we encounter. In certain situations, it 
+        // with the first acceptable class we encounter. In certain situations, it
         // would be more predictable if we retrieved all candidates and selected the
         // most specific one
         Class<?> matchingClass = findSupertypeIn(type, acceptableClasses);
         if (matchingClass == null) {
             return null;
         } else {
-            return (T) this.typeToClassMap.classToConsumerType(matchingClass);
+            return (T) this.typeToClassMap.classToType(matchingClass);
         }
     }
 
-    private static Class<?> findSupertypeIn(Class<?> seed, Set<Class<?>> desiredClasses) {
-        if (desiredClasses.contains(seed)) {
+    private static Class<?> findSupertypeIn(Class<?> seed, Set<Class<?>> acceptableClasses) {
+        if (acceptableClasses.contains(seed)) {
             // If the current type is one of the desired ones, we have found a match
             return seed;
         }
@@ -174,7 +190,7 @@ class ApiInvocationHandler implements InvocationHandler {
         // First, try to find a match in the superclass (if any)
         Class<?> superClass = seed.getSuperclass();
         if (superClass != null) {
-            Class<?> candidate = findSupertypeIn(superClass, desiredClasses);
+            Class<?> candidate = findSupertypeIn(superClass, acceptableClasses);
             if (candidate != null) {
                 return candidate;
             }
@@ -182,7 +198,7 @@ class ApiInvocationHandler implements InvocationHandler {
 
         // If no match is found in the superclass, try the implemented interfaces
         for (Class<?> implementedInterface : seed.getInterfaces()) {
-            Class<?> candidate = findSupertypeIn(implementedInterface, desiredClasses);
+            Class<?> candidate = findSupertypeIn(implementedInterface, acceptableClasses);
             if (candidate != null) {
                 return candidate;
             }
@@ -202,7 +218,8 @@ class ApiInvocationHandler implements InvocationHandler {
         return fieldMappers;
     }
 
-    private void registerMapperForProviderField(ProviderField field, Class<?> consumerClass, Class<?> providerClass, Map<Method, FieldMapper> fieldMappers) {
+    private void registerMapperForProviderField(ProviderField field, Class<?> consumerClass, Class<?> providerClass,
+            Map<Method, FieldMapper> fieldMappers) {
         // Find a potential accessor method on the provider class
         Method accessor = this.findAccessorForField(field, providerClass).orElseThrow(
                 () -> new InvalidApiException("No accessor for field '" + field + "' on class '" + providerClass.getName() + "'."));
@@ -212,12 +229,12 @@ class ApiInvocationHandler implements InvocationHandler {
         Class<?> expectedClass = this.typeToClassMap.typeToClass(expectedType);
         if (!expectedClass.equals(accessor.getReturnType())) {
             throw new InvalidApiException("Accessor '" + accessor + "' has an unexpected return type (expected '" + expectedClass + "'.");
-        }        
-        
+        }
+
         FieldMapper fieldMapper = this.createMapperForProviderField(field, consumerClass, providerClass);
         fieldMappers.put(accessor, fieldMapper);
     }
-    
+
     private FieldMapper createMapperForProviderField(ProviderField providerField, Class<?> consumerClass, Class<?> providerClass) {
         ConsumerField consumerField = this.definitionResolution.mapProviderField(providerField);
 
@@ -228,14 +245,14 @@ class ApiInvocationHandler implements InvocationHandler {
 
         Type targetType = providerField.getType();
         Type sourceType = this.definitionResolution.mapProviderType(targetType);
-                
+
         ValueMapper valueMapper = this.createValueMapper(sourceType, targetType);
-        
-        Method sourceAccessor = this.findAccessorForField(consumerField, consumerClass)
-                .orElseThrow(() -> new InvalidApiException("No accessor for field '" + consumerField + "' on class '" + consumerClass.getName() + "'."));
+
+        Method sourceAccessor = this.findAccessorForField(consumerField, consumerClass).orElseThrow(
+                () -> new InvalidApiException("No accessor for field '" + consumerField + "' on class '" + consumerClass.getName() + "'."));
         return new ReflectiveFieldMapper(sourceAccessor, valueMapper);
     }
-    
+
     private ValueMapper createValueMapper(Type sourceType, Type targetType) {
         return targetType.accept(new ValueMapperCreator());
     }
@@ -272,71 +289,71 @@ class ApiInvocationHandler implements InvocationHandler {
 
         return "get" + Character.toUpperCase(firstChar) + remainder;
     }
-    
+
     private class ValueMapperCreator implements TypeVisitor<ValueMapper> {
-                        
+
         @Override
         public ValueMapper handleAtomicType(AtomicType atomicType) {
             return new BasicTypeValueMapper();
         }
-        
+
         private ValueMapper handleStringType(StringType type) {
             return new BasicTypeValueMapper();
         }
-        
+
         @Override
         public ValueMapper handleBoundedStringType(BoundedStringType boundedStringType) {
             return this.handleStringType(boundedStringType);
         }
-        
+
         @Override
         public ValueMapper handleUnboundedStringType(UnboundedStringType unboundedStringType) {
             return this.handleStringType(unboundedStringType);
         }
-        
+
         private ValueMapper handleListType(ListType listType) {
             Type elementType = listType.getElementType();
             ValueMapper elementMapper = elementType.accept(this);
             return new ListTypeValueMapper(elementMapper);
         }
-        
+
         @Override
         public ValueMapper handleBoundedListType(BoundedListType boundedListType) {
             return this.handleListType(boundedListType);
         }
-        
+
         @Override
         public ValueMapper handleUnboundedListType(UnboundedListType unboundedListType) {
             return this.handleListType(unboundedListType);
         }
-        
+
         @Override
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public ValueMapper handleEnumType(EnumType<?, ?, ?> targetType) {
             EnumType<?, ?, ?> sourceType = this.determineOpposingType(targetType);
             Class sourceClass = typeToClassMap.typeToClass(sourceType);
             Class targetClass = typeToClassMap.typeToClass(targetType);
-            
+
             Map<Enum<?>, Enum<?>> memberMap = new HashMap<>();
             for (EnumMember<?, ?> targetMember : targetType.getDeclaredMembers()) {
-                String targetName = targetMember.getInternalName();                
+                String targetName = targetMember.getInternalName();
                 Enum<?> targetValue = Enum.valueOf(targetClass, targetName);
-                
+
                 EnumMember<?, ?> sourceMember = this.determineOpposingMember(targetMember);
                 String sourceName = sourceMember.getInternalName();
                 Enum<?> sourceValue = Enum.valueOf(sourceClass, sourceName);
-                
+
                 memberMap.put(sourceValue, targetValue);
             }
-            
+
             return new EnumTypeValueMapper(memberMap);
         }
-        
+
         @Override
         public ValueMapper handleRecordType(RecordType<?, ?, ?> recordType) {
             return new RecordTypeValueMapper();
         }
-        
+
         @SuppressWarnings("unchecked")
         private <T extends Type> T determineOpposingType(UserDefinedType<?> type) {
             if (type instanceof ConsumerUserDefinedType) {
@@ -345,7 +362,7 @@ class ApiInvocationHandler implements InvocationHandler {
                 return (T) definitionResolution.mapProviderType(type);
             }
         }
-        
+
         private EnumMember<?, ?> determineOpposingMember(EnumMember<?, ?> member) {
             if (member instanceof ConsumerEnumMember) {
                 return definitionResolution.mapConsumerEnumMember((ConsumerEnumMember) member);
@@ -353,7 +370,7 @@ class ApiInvocationHandler implements InvocationHandler {
                 return definitionResolution.mapProviderEnumMember((ProviderEnumMember) member);
             }
         }
-        
+
     }
 
 }
