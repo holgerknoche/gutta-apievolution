@@ -12,7 +12,7 @@ public class ApiResolver {
 
     private final ApiResolutionContext apiResolutionContext;
 
-    private final ProxyFactory proxyFactory;
+    private final MappingStrategy mappingStrategy;
 
     private final ConcurrentMap<Class<?>, Object> apiCache = new ConcurrentHashMap<>();
 
@@ -20,7 +20,7 @@ public class ApiResolver {
         this(resolutionContext, new DynamicProxyFactory());
     }
 
-    public ApiResolver(ApiResolutionContext resolutionContext, ProxyFactory proxyFactory) {
+    public ApiResolver(ApiResolutionContext resolutionContext, MappingStrategy mappingStrategy) {
         this.apiResolutionContext = resolutionContext;
         this.proxyFactory = proxyFactory;
     }
@@ -40,7 +40,7 @@ public class ApiResolver {
         // Create a proxy to adapt the provider API to the client API
         DefinitionResolution definitionResolution = this.apiResolutionContext.getDefinitionResolution();
         UDTToClassMap typeToClassMap = this.apiResolutionContext.getTypeToClassMap();
-        return this.proxyFactory.createProxy(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
+        return this.mappingStrategy.createProxy(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
     }
 
     private Object createProviderApi(String providerApiName, int providerApiRevision) {
