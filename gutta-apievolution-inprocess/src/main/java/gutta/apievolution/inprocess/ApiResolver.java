@@ -22,7 +22,7 @@ public class ApiResolver {
 
     public ApiResolver(ApiResolutionContext resolutionContext, MappingStrategy mappingStrategy) {
         this.apiResolutionContext = resolutionContext;
-        this.proxyFactory = proxyFactory;
+        this.mappingStrategy = mappingStrategy;
     }
 
     @SuppressWarnings("unchecked")

@@ -2,7 +2,7 @@ package gutta.apievolution.inprocess.dynproxy;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.inprocess.ProxyFactory;
+import gutta.apievolution.inprocess.MappingStrategy;
 import gutta.apievolution.inprocess.UDTToClassMap;
 
 import java.lang.reflect.Proxy;
@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
 //   an object that is indistinguishable from the consumer perspective may not be equal due
 //   to fields only visible to the provider
 
-public class DynamicProxyFactory implements ProxyFactory {
+public class DynamicProxyFactory implements MappingStrategy {
 
     @Override
     @SuppressWarnings("unchecked")
