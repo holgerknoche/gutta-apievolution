@@ -1,17 +1,5 @@
 package gutta.apievolution.inprocess.dynproxy;
 
-import static java.lang.reflect.Proxy.newProxyInstance;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.BoundedListType;
 import gutta.apievolution.core.apimodel.BoundedStringType;
@@ -38,6 +26,18 @@ import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.inprocess.TypeClassMap;
 import gutta.apievolution.inprocess.UDTToClassMap;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.lang.reflect.Proxy.newProxyInstance;
 
 class ApiInvocationHandler implements InvocationHandler {
 
@@ -111,16 +111,11 @@ class ApiInvocationHandler implements InvocationHandler {
 
         ProviderRecordType actualProviderParameterType = (ProviderRecordType) this.definitionResolution
                 .mapConsumerType(actualConsumerParameterType);
-        Map<Method, FieldMapper> parameterFieldMappers = this.createMappersFor(actualConsumerParameterType, actualProviderParameterType, true);
-        RecordInvocationHandler parameterInvocationHandler = new RecordInvocationHandler(parameterObject, parameterFieldMappers);
-
-        Class<?> actualProviderParameterClass = this.typeToClassMap.providerTypeToClass(actualProviderParameterType);
-        Class<?>[] parameterTypes = new Class<?>[] { actualProviderParameterClass };
-        Object parameterProxy = newProxyInstance(this.getClass().getClassLoader(), parameterTypes, parameterInvocationHandler);
-
+        Object parameterRepresentation = this.createParameterRepresentation(actualConsumerParameterType, actualProviderParameterType, parameterObject);
+        
         Object providerResult;
         try {
-            providerResult = providerMethod.invoke(this.providerApi, parameterProxy);
+            providerResult = providerMethod.invoke(this.providerApi, parameterRepresentation);
         } catch (InvocationTargetException e) {
             // TODO Map declared exceptions if applicable
             throw new RuntimeException(e);
@@ -142,15 +137,28 @@ class ApiInvocationHandler implements InvocationHandler {
 
             ConsumerRecordType actualConsumerResultType = (ConsumerRecordType) this.definitionResolution
                     .mapProviderType(actualProviderResultType);
-            Map<Method, FieldMapper> resultFieldMappers = this.createMappersFor(actualProviderResultType, actualConsumerResultType, false);
-            RecordInvocationHandler resultInvocationHandler = new RecordInvocationHandler(providerResult, resultFieldMappers);
-
-            Class<?> actualConsumerResultClass = this.typeToClassMap.consumerTypeToClass(actualConsumerResultType);
-            Class<?>[] resultTypes = new Class<?>[] { actualConsumerResultClass };
-            return newProxyInstance(this.getClass().getClassLoader(), resultTypes, resultInvocationHandler);
+            return this.createResultRepresentation(actualProviderResultType, actualConsumerResultType, providerResult);
         }
     }
 
+    protected Object createParameterRepresentation(ConsumerRecordType actualConsumerParameterType, ProviderRecordType actualProviderParameterType, Object parameterObject) {
+        Map<Method, FieldMapper> parameterFieldMappers = this.createMappersFor(actualConsumerParameterType, actualProviderParameterType, true);
+        RecordInvocationHandler parameterInvocationHandler = new RecordInvocationHandler(parameterObject, parameterFieldMappers);
+
+        Class<?> actualProviderParameterClass = this.typeToClassMap.providerTypeToClass(actualProviderParameterType);
+        Class<?>[] parameterTypes = new Class<?>[] { actualProviderParameterClass };
+        return newProxyInstance(this.getClass().getClassLoader(), parameterTypes, parameterInvocationHandler);
+    }
+    
+    protected Object createResultRepresentation(ProviderRecordType actualProviderResultType, ConsumerRecordType actualConsumerResultType, Object resultObject) {
+        Map<Method, FieldMapper> resultFieldMappers = this.createMappersFor(actualProviderResultType, actualConsumerResultType, false);
+        RecordInvocationHandler resultInvocationHandler = new RecordInvocationHandler(resultObject, resultFieldMappers);
+
+        Class<?> actualConsumerResultClass = this.typeToClassMap.consumerTypeToClass(actualConsumerResultType);
+        Class<?>[] resultTypes = new Class<?>[] { actualConsumerResultClass };
+        return newProxyInstance(this.getClass().getClassLoader(), resultTypes, resultInvocationHandler);
+    }
+    
     private <T extends Type> T findConsumerTypeMatching(Class<?> type, ConsumerRecordType upperBound) {
         Set<ConsumerRecordType> subTypes = upperBound.getSubTypes(Inclusive.YES);
         Set<Class<?>> acceptableClasses = subTypes.stream().map(this.typeToClassMap::consumerTypeToClass).collect(Collectors.toSet());
