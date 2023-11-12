@@ -14,7 +14,7 @@ public interface ProviderUserDefinedType extends ProviderApiDefinitionElement, U
     
     @Override
     default boolean isProviderType() {
-        return false;
+        return true;
     }
     
 }

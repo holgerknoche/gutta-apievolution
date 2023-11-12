@@ -2,6 +2,8 @@ package gutta.apievolution.inprocess.dynproxy;
 
 import java.util.Map;
 
+import gutta.apievolution.inprocess.ValueMapper;
+
 class EnumTypeValueMapper implements ValueMapper {
 
     private final Map<Enum<?>, Enum<?>> memberMap;

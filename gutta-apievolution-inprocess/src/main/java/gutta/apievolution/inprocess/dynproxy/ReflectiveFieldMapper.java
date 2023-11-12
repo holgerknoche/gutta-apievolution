@@ -3,6 +3,9 @@ package gutta.apievolution.inprocess.dynproxy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import gutta.apievolution.inprocess.InvalidInvocationException;
+import gutta.apievolution.inprocess.ValueMapper;
+
 class ReflectiveFieldMapper implements FieldMapper {
 
     private final Method fieldAccessor;

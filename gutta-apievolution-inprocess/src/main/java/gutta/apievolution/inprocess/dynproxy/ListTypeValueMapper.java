@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import gutta.apievolution.inprocess.ValueMapper;
+
 class ListTypeValueMapper implements ValueMapper {
 
     private final ValueMapper elementMapper;

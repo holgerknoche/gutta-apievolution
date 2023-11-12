@@ -46,6 +46,7 @@ class InProcessMappingTest {
         assertEquals(ConsumerEnum.VALUE_A, result.getResultEnum());
         assertEquals("someValue", result.getResultField());
         assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A), result.getResultList());
+        // TODO Add result record
     }
     
 }

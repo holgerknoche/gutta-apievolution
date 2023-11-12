@@ -1,5 +1,7 @@
 package gutta.apievolution.inprocess.dynproxy;
 
+import gutta.apievolution.inprocess.ValueMapper;
+
 class BasicTypeValueMapper implements ValueMapper {
     
     @Override

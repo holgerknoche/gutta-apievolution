@@ -3,9 +3,9 @@ package gutta.apievolution.inprocess;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
-public interface MappingStrategy {
+public interface ApiMappingStrategy {
 
-    <T> T createProxy(Object providerApi, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
+    <T> T mapApi(Object providerApiObject, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
             UDTToClassMap typeToClassMap, Class<T> consumerApiType);
 
 }

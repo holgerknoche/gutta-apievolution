@@ -10,7 +10,7 @@ public class TestResult {
 
 	private List<ProviderEnum> resultList;
 	
-	private TestResult resultRecord;
+	private ProviderRecord resultRecord;
 
 	public String getRetField() {
 		return retField;
@@ -36,11 +36,11 @@ public class TestResult {
 		this.resultList = resultList;
 	}
 
-    public TestResult getResultRecord() {
+    public ProviderRecord getResultRecord() {
         return resultRecord;
     }
 
-    public void setResultRecord(TestResult resultRecord) {
+    public void setResultRecord(ProviderRecord resultRecord) {
         this.resultRecord = resultRecord;
     }	
 

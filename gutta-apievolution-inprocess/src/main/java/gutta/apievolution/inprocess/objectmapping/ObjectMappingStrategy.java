@@ -1,15 +1,17 @@
 package gutta.apievolution.inprocess.objectmapping;
 
+import java.lang.reflect.InvocationHandler;
+
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.inprocess.MappingStrategy;
-import gutta.apievolution.inprocess.UDTToClassMap;
+import gutta.apievolution.inprocess.AbstractProxyApiMappingStrategy;
+import gutta.apievolution.inprocess.TypeClassMap;
 
-public class ObjectMappingStrategy implements MappingStrategy {
+public class ObjectMappingStrategy extends AbstractProxyApiMappingStrategy {
 
     @Override
-    public <T> T createProxy(Object providerApi, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
-            UDTToClassMap typeToClassMap, Class<T> consumerApiType) {
+    protected InvocationHandler createApiInvocationHandler(Object providerApiObject, ConsumerApiDefinition consumerApiDefinition,
+            DefinitionResolution definitionResolution, TypeClassMap typeClassMap) {
         // TODO Auto-generated method stub
         return null;
     }

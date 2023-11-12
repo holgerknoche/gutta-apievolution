@@ -2,7 +2,7 @@ package gutta.apievolution.inprocess;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.inprocess.dynproxy.DynamicProxyFactory;
+import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,17 +12,17 @@ public class ApiResolver {
 
     private final ApiResolutionContext apiResolutionContext;
 
-    private final MappingStrategy mappingStrategy;
+    private final ApiMappingStrategy apiMappingStrategy;
 
     private final ConcurrentMap<Class<?>, Object> apiCache = new ConcurrentHashMap<>();
 
     public ApiResolver(ApiResolutionContext resolutionContext) {
-        this(resolutionContext, new DynamicProxyFactory());
+        this(resolutionContext, new DynamicProxyApiMappingStrategy());
     }
 
-    public ApiResolver(ApiResolutionContext resolutionContext, MappingStrategy mappingStrategy) {
+    public ApiResolver(ApiResolutionContext resolutionContext, ApiMappingStrategy apiMappingStrategy) {
         this.apiResolutionContext = resolutionContext;
-        this.mappingStrategy = mappingStrategy;
+        this.apiMappingStrategy = apiMappingStrategy;
     }
 
     @SuppressWarnings("unchecked")
@@ -40,7 +40,7 @@ public class ApiResolver {
         // Create a proxy to adapt the provider API to the client API
         DefinitionResolution definitionResolution = this.apiResolutionContext.getDefinitionResolution();
         UDTToClassMap typeToClassMap = this.apiResolutionContext.getTypeToClassMap();
-        return this.mappingStrategy.createProxy(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
+        return this.apiMappingStrategy.mapApi(providerApi, consumerApiDefinition, definitionResolution, typeToClassMap, apiType);
     }
 
     private Object createProviderApi(String providerApiName, int providerApiRevision) {

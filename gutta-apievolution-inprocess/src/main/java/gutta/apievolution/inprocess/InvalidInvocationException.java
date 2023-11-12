@@ -1,6 +1,6 @@
-package gutta.apievolution.inprocess.dynproxy;
+package gutta.apievolution.inprocess;
 
-class InvalidInvocationException extends RuntimeException {
+public class InvalidInvocationException extends RuntimeException {
     
     private static final long serialVersionUID = 5903893641519255033L;
 
