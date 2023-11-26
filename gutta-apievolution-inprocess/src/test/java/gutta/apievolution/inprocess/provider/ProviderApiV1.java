@@ -12,6 +12,7 @@ public class ProviderApiV1 {
         result.setResultEnum(parameter.getTestEnum());
         result.setRetField(parameter.getFieldA());
         result.setResultList(reverse(parameter.getTestList()));
+        result.setResultRecord(new ProviderRecordImpl(42));
         
         return result;
     }

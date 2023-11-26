@@ -5,8 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
@@ -16,11 +20,19 @@ import gutta.apievolution.inprocess.consumer.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.ConsumerResult;
+import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 
 class InProcessMappingTest {
 
-    @Test
-    void successfulInvocation() {
+    static Stream<Arguments> mappingStrategies() {
+        return Stream.of(
+                Arguments.of(new DynamicProxyApiMappingStrategy())
+                );
+    }
+    
+    @ParameterizedTest
+    @MethodSource("mappingStrategies")
+    void successfulInvocation(ApiMappingStrategy mappingStrategy) {
         // Load the consumer and provider API definitions
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);
 
@@ -28,11 +40,12 @@ class InProcessMappingTest {
                 "apis/provider-revision-2.api");
         Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
 
-        // Create an API resolution context and an API resolver 
+        // Create an API resolution context and an API resolver
         ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
-                supportedRevisions, new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
-        ApiResolver apiResolver = new ApiResolver(resolutionContext);
-        
+                supportedRevisions,
+                new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
+        ApiResolver apiResolver = new ApiResolver(resolutionContext, mappingStrategy);
+
         // Resolve the API
         ConsumerApi consumerApi = apiResolver.resolveApi(ConsumerApi.class);
 
@@ -46,7 +59,13 @@ class InProcessMappingTest {
         assertEquals(ConsumerEnum.VALUE_A, result.getResultEnum());
         assertEquals("someValue", result.getResultField());
         assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A), result.getResultList());
-        // TODO Add result record
+        assertEquals(42, result.getResultRecord().getField());
     }
-    
+
+    @ParameterizedTest
+    @MethodSource("mappingStrategies")
+    void invocationWithMappedException(ApiMappingStrategy mappingStrategy) {
+        // TODO Exception mapping
+    }
+
 }
