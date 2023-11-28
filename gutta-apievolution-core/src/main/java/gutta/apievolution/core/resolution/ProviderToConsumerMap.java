@@ -68,9 +68,26 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         CheckResult superResult = super.checkConsistency();
         
         CheckResult ownResult = new CheckResult();
+        this.ensureRequiredTypesAreMapped(ownResult);
         this.ensureMandatoryFieldsAreMapped(ownResult);
         
         return superResult.joinWith(ownResult);
+    }
+    
+    private void ensureRequiredTypesAreMapped(CheckResult result) {
+        // Make sure that all types which are referenced by a mapped operation are also mapped.
+        // Consistency of parameter and result types is already ensured by the API morphism property,
+        // so we only have to check the exception types
+        // TODO: Does the morphism property include subtypes or do we have to check those as well?
+        for (ProviderOperation operation : this.providerOperations()) {
+            for (ProviderRecordType providerExceptionType : operation.getThrownExceptions()) {
+                ConsumerRecordType consumerExceptionType = (ConsumerRecordType) this.mapProviderType(providerExceptionType);
+                
+                if (consumerExceptionType == null) {
+                    throw new DefinitionResolutionException("Unmapped exception type '" + providerExceptionType + "' on operation '" + operation + "'.");
+                }
+            }
+        }
     }
     
     private void ensureMandatoryFieldsAreMapped(CheckResult result) {
