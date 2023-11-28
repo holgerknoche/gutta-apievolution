@@ -329,7 +329,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     private Set<Integer> superTypeIds() {
         return this.typeIdSet(this.superTypes);
     }
-
+    
     /**
      * Compares this record type's state against the state of the given member.
      *

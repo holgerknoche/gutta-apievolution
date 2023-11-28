@@ -2,7 +2,7 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.ApiDefinitionMorphism;
 import gutta.apievolution.core.apimodel.TypeMap;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.Map;
 
@@ -24,10 +24,10 @@ public class ToMergedModelMap extends ApiDefinitionMorphism<ProviderApiDefinitio
     }
 
     @Override
-    public CheckResult checkConsistency() {
-        CheckResult superResult = super.checkConsistency();
+    public ValidationResult checkConsistency() {
+        ValidationResult superResult = super.checkConsistency();
         
-        CheckResult ownResult = new CheckResult();
+        ValidationResult ownResult = new ValidationResult();
         this.checkSuperTypeConsistency(ownResult);
         
         return superResult.joinWith(ownResult);

@@ -9,8 +9,11 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.validation.ValidationMessage;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,15 +32,22 @@ public class DefinitionResolution {
     private final Map<String, Type> consumerTypeMap;
 
     private final Map<String, Type> providerTypeMap;
+    
+    private final List<ValidationMessage> validationMessages;
 
-    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap) {
+    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap, List<ValidationMessage> validationMessages) {
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
+        this.validationMessages = validationMessages;
 
         this.consumerTypeMap = createTypeMap(consumerToProviderMap.consumerTypes());
         this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
     }
 
+    public List<ValidationMessage> getValidationMessages() {
+        return Collections.unmodifiableList(this.validationMessages);
+    }
+    
     private static Map<String, Type> createTypeMap(Collection<Type> types) {
         return types.stream().filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
                 .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));

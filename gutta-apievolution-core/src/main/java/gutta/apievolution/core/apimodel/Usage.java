@@ -4,6 +4,8 @@ package gutta.apievolution.core.apimodel;
  * Enumeration of usage types of an element within an API definition.
  */
 public enum Usage {
+    // TODO Rename INPUT and OUTPUT to INPUT_ONLY and OUTPUT_ONLY
+    
     /**
      * The element is not used at all.
      */

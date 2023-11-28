@@ -2,7 +2,6 @@ package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.AtomicType;
-import gutta.apievolution.core.apimodel.BasicType;
 import gutta.apievolution.core.apimodel.ListType;
 import gutta.apievolution.core.apimodel.NumericType;
 import gutta.apievolution.core.apimodel.Optionality;
@@ -17,11 +16,13 @@ import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.core.validation.ValidationMessage;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
@@ -30,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static java.util.Collections.*;
 
 /**
  * Test cases for definition resolution.
@@ -74,13 +77,11 @@ class DefinitionResolverTest {
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
-                consumerApi);
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
         String expected = "TestType -> TestType@revision 0\n" + " int32Field -> int32Field@TestType@revision 0\n" +
                 " int64Field -> int64Field@TestType@revision 0\n" + " unboundedStringField -> unboundedStringField@TestType@revision 0\n" +
-                " boundedStringField -> boundedStringField@TestType@revision 0\n" +
-                " unboundedListField -> unboundedListField@TestType@revision 0\n" +
+                " boundedStringField -> boundedStringField@TestType@revision 0\n" + " unboundedListField -> unboundedListField@TestType@revision 0\n" +
                 " boundedListField -> boundedListField@TestType@revision 0\n" + " numericField -> numericField@TestType@revision 0\n";
 
         String actual = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
@@ -99,6 +100,8 @@ class DefinitionResolverTest {
 
         consumerType.newField("optionalField", AtomicType.INT_32, Optionality.OPTIONAL);
 
+        consumerApi.newOperation("operation", consumerType, consumerType);
+
         // Define a provider API with a mandatory field
         ProviderApiDefinition revision = ProviderApiDefinition.create("test", 0);
 
@@ -106,6 +109,8 @@ class DefinitionResolverTest {
 
         recordType.newField("mandatoryField", AtomicType.INT_32, Optionality.MANDATORY);
         recordType.newField("optionalField", AtomicType.INT_32, Optionality.OPTIONAL);
+
+        revision.newOperation("operation", recordType, recordType);
 
         // Resolve the consumer definition against the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision);
@@ -174,8 +179,7 @@ class DefinitionResolverTest {
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
-                consumerApi);
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
         String expected = "TestEnum -> TestEnum\n" + " MEMBER_A -> MEMBER_A\n" + " MEMBER_B -> MEMBER_B\n";
 
@@ -193,8 +197,7 @@ class DefinitionResolverTest {
 
         ConsumerRecordType consumerRecord = consumerApi.newRecordType("RecordType", "ConsumerRecordType", 0, Abstract.NO, noSuperTypes());
 
-        ConsumerRecordType consumerException = consumerApi.newExceptionType("ExceptionType", "ConsumerExceptionType", 1, Abstract.NO,
-                noSuperTypes());
+        ConsumerRecordType consumerException = consumerApi.newExceptionType("ExceptionType", "ConsumerExceptionType", 1, Abstract.NO, noSuperTypes());
 
         ConsumerOperation consumerOperation = consumerApi.newOperation("operation", "consumerOperation", consumerRecord, consumerRecord);
 
@@ -207,8 +210,7 @@ class DefinitionResolverTest {
 
         ProviderRecordType providerException = providerApi.newExceptionType("ExceptionType", "ProviderExceptionType", 1, noPredecessor());
 
-        ProviderOperation providerOperation = providerApi.newOperation("operation", "providerOperation", providerRecord, providerRecord,
-                noPredecessor());
+        ProviderOperation providerOperation = providerApi.newOperation("operation", "providerOperation", providerRecord, providerRecord, noPredecessor());
 
         providerOperation.addThrownException(providerException);
         providerApi.finalizeDefinition();
@@ -216,12 +218,10 @@ class DefinitionResolverTest {
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
-                consumerApi);
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
         String expectedResolution = "ExceptionType(ConsumerExceptionType) -> ProviderExceptionType@revision 0\n" +
-                "RecordType(ConsumerRecordType) -> ProviderRecordType@revision 0\n" +
-                "operation(consumerOperation) -> operation(providerOperation)\n";
+                "RecordType(ConsumerRecordType) -> ProviderRecordType@revision 0\n" + "operation(consumerOperation) -> operation(providerOperation)\n";
 
         assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
     }
@@ -250,8 +250,7 @@ class DefinitionResolverTest {
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions,
-                consumerApi);
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
         String expectedResolution = "A -> A@revision 0\n" + "B -> B@revision 0\n" + " boundedListField -> boundedListField@B@revision 0\n" +
                 " unboundedListField -> unboundedListField@B@revision 0\n";
@@ -379,33 +378,28 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map a mandatory field that is used for input only in different
-     * consumer constructs.
+     * Test case: Map a mandatory field that is used for input only in different consumer constructs.
      */
     @Test
     void mapMandatoryInputField() {
         DefinitionResolutionException exception;
 
         // The field must be mapped, so not mapping it must fail
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, null));
         assertTrue(exception.getMessage().contains("Mandatory field") && exception.getMessage().contains("is not mapped"));
 
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.MANDATORY));
         // The field cannot be considered optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for fully optional
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInputOnly(Optionality.MANDATORY, Optionality.OPTIONAL));
         assertTrue(exception.getMessage().contains("are not compatible"));
     }
 
     /**
-     * Test case: Map an opt-in field that is used for input only in different
-     * consumer constructs.
+     * Test case: Map an opt-in field that is used for input only in different consumer constructs.
      */
     @Test
     void mapOptInInputField() {
@@ -421,8 +415,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map an optional field that is used for input only in different
-     * consumer constructs.
+     * Test case: Map an optional field that is used for input only in different consumer constructs.
      */
     @Test
     void mapOptionalInputField() {
@@ -442,8 +435,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map a mandatory field that is used for output only in different
-     * consumer constructs.
+     * Test case: Map a mandatory field that is used for output only in different consumer constructs.
      */
     @Test
     void mapMandatoryOutputField() {
@@ -461,8 +453,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map an opt-in field that is used for output only in different
-     * consumer constructs.
+     * Test case: Map an opt-in field that is used for output only in different consumer constructs.
      */
     @Test
     void mapOptInOutputField() {
@@ -478,8 +469,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map an optional field that is used for output only in different
-     * consumer constructs.
+     * Test case: Map an optional field that is used for output only in different consumer constructs.
      */
     @Test
     void mapOptionalOutputField() {
@@ -489,12 +479,10 @@ class DefinitionResolverTest {
         assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, null));
 
         // Optional fields can only be considered optional by the consumer
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.MANDATORY));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Optional must work
         assertNotNull(this.runOptionalityTestForOutputOnly(Optionality.OPTIONAL, Optionality.OPTIONAL));
@@ -505,8 +493,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map a mandatory field that is used for both input and output in
-     * different consumer constructs.
+     * Test case: Map a mandatory field that is used for both input and output in different consumer constructs.
      */
     @Test
     void mapMandatoryInOutField() {
@@ -519,18 +506,15 @@ class DefinitionResolverTest {
         // Mapping mandatory to mandatory must work
         assertNotNull(this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.MANDATORY));
         // No optionality is allowed for mandatory in-out fields
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for fully optional
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPTIONAL));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.MANDATORY, Optionality.OPTIONAL));
         assertTrue(exception.getMessage().contains("are not compatible"));
     }
 
     /**
-     * Test case: Map an opt-in field that is used for both input and output in
-     * different consumer constructs.
+     * Test case: Map an opt-in field that is used for both input and output in different consumer constructs.
      */
     @Test
     void mapOptInInOutField() {
@@ -547,8 +531,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: Map an optional field that is used for both input and output in
-     * different consumer constructs.
+     * Test case: Map an optional field that is used for both input and output in different consumer constructs.
      */
     @Test
     void mapOptionalInOutField() {
@@ -558,20 +541,17 @@ class DefinitionResolverTest {
         assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, null));
 
         // Optional fields can only be considered optional by the consumer
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.MANDATORY));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.MANDATORY));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Same for optional-for-input
-        exception = assertThrows(DefinitionResolutionException.class,
-                () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPT_IN));
+        exception = assertThrows(DefinitionResolutionException.class, () -> this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPT_IN));
         assertTrue(exception.getMessage().contains("are not compatible"));
         // Optional must work
         assertNotNull(this.runOptionalityTestForInOut(Optionality.OPTIONAL, Optionality.OPTIONAL));
     }
 
     /**
-     * Test case: The return type of a mapped provider operation is not mapped,
-     * which leads to an error.
+     * Test case: The return type of a mapped provider operation is not mapped, which leads to an error.
      */
     @Test
     void unmappedReturnTypeOfMappedProviderOperation() {
@@ -596,10 +576,9 @@ class DefinitionResolverTest {
                 () -> new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi));
         assertTrue(exception.getMessage().contains("No matching type for ConsumerResult"));
     }
-    
+
     /**
-     * Test case: The parameter type of a mapped provider operation is not mapped,
-     * which leads to an error.
+     * Test case: The parameter type of a mapped provider operation is not mapped, which leads to an error.
      */
     @Test
     void unmappedParameterTypeOfMappedProviderOperation() {
@@ -626,7 +605,7 @@ class DefinitionResolverTest {
     }
 
     /**
-     * Test case: An exception type of a mapped provider operation is not mapped, which leads to an error.
+     * Test case: An exception type of a mapped provider operation is not mapped, which leads to a warning.
      */
     @Test
     void unmappedExceptionTypeOfMappedProviderOperation() {
@@ -641,7 +620,7 @@ class DefinitionResolverTest {
 
         ProviderRecordType providerResultType = providerApi.newRecordType("Result", 0);
         ProviderRecordType providerParameterType = providerApi.newRecordType("Parameter", 1);
-        
+
         ProviderRecordType providerExceptionType = providerApi.newExceptionType("ProviderException", 2);
         providerExceptionType.newField("exceptionField", AtomicType.INT_32, Optionality.MANDATORY);
 
@@ -651,14 +630,15 @@ class DefinitionResolverTest {
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
-        DefinitionResolutionException exception = assertThrows(DefinitionResolutionException.class,
-                () -> new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi));
-        
-        assertTrue(exception.getMessage().contains("Unmapped exception type"));
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
+
+        List<ValidationMessage> validationMessages = resolution.getValidationMessages();
+        assertEquals(singletonList(ValidationMessage.warning("Unmapped exception type 'ProviderException@revision 0' on operation 'operation'.")),
+                validationMessages);
     }
-    
+
     /**
      * TODO Test case: A consumer type unrelated to any mapped operation results in a warning.
      */
-    
+
 }

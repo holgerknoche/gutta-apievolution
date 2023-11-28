@@ -19,7 +19,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,21 +66,26 @@ public class DefinitionResolver {
         ProviderToConsumerMap providerToConsumerMap = consumerToProviderMap.invert();
 
         // Perform consistency checks on the maps between consumer API and provider revision
-        CheckResult c2pResult = consumerToProviderMap.checkConsistency();
+        ValidationResult c2pResult = consumerToProviderMap.checkConsistency();
         c2pResult.throwOnError(DefinitionResolutionException::new);
         
-        CheckResult p2cResult = providerToConsumerMap.checkConsistency();
+        ValidationResult p2cResult = providerToConsumerMap.checkConsistency();
         p2cResult.throwOnError(DefinitionResolutionException::new);
         
         ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
-        CheckResult toMergedModelResult = toMergedModelMap.checkConsistency();
+        ValidationResult toMergedModelResult = toMergedModelMap.checkConsistency();
         toMergedModelResult.throwOnError(DefinitionResolutionException::new);
         
         // Compose the two maps to create a consumer -> provider-internal map
         ConsumerToProviderMap consumerToRepresentationMap = consumerToProviderMap.compose(toMergedModelMap);
         ProviderToConsumerMap representationToConsumerMap = consumerToRepresentationMap.invert();
 
-        return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap);
+        ValidationResult joinedValidationResult = new ValidationResult()
+                .joinWith(c2pResult)
+                .joinWith(p2cResult)
+                .joinWith(toMergedModelResult);
+        
+        return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap, joinedValidationResult.getMessages());
     }
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,

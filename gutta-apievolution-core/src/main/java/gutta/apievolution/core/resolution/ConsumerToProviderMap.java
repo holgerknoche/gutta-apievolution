@@ -22,7 +22,7 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -121,10 +121,10 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
-    protected CheckResult checkConsistency() {
-        CheckResult superResult = super.checkConsistency();
+    protected ValidationResult checkConsistency() {
+        ValidationResult superResult = super.checkConsistency();
         
-        CheckResult ownResult = new CheckResult();
+        ValidationResult ownResult = new ValidationResult();
         // Make sure that all elements are mapped
         this.checkAllElementsAreMapped(ownResult);
         // Make sure that supertypes are mapped consistently
@@ -136,7 +136,7 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         return superResult.joinWith(ownResult);
     }
     
-    private void checkAllElementsAreMapped(CheckResult result) {
+    private void checkAllElementsAreMapped(ValidationResult result) {
         MemberMapChecker memberMapChecker = new MemberMapChecker(result);
         
         // Check that all UDTs as well as their elements are mapped
@@ -157,13 +157,13 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         }
     }
         
-    private void checkFieldOptionalities(CheckResult result) {
+    private void checkFieldOptionalities(ValidationResult result) {
         this.fieldMap.forEach(
                 (sourceField, targetField) -> this.ensureCompatibleOptionality(sourceField, targetField, result)
         );
     }
 
-    private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, CheckResult result) {
+    private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, ValidationResult result) {
         if (!this.isOptionalityCompatible(sourceField, targetField)) {
             result.addErrorMessage("Optionalities of " + sourceField + " and " + targetField + " are not compatible.");
         }
@@ -243,9 +243,9 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     
     private class MemberMapChecker implements TypeVisitor<Void> {
         
-        private final CheckResult result;
+        private final ValidationResult result;
         
-        public MemberMapChecker(CheckResult result) {
+        public MemberMapChecker(ValidationResult result) {
             this.result = result;
         }
         
