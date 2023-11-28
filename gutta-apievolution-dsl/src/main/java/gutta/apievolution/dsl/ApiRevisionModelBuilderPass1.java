@@ -36,6 +36,10 @@ abstract class ApiRevisionModelBuilderPass1<A extends ApiDefinition<A, O>, R ext
     private A currentRevision;
 
     protected Optional<A> previousRevision;
+    
+    protected ApiRevisionModelBuilderPass1(String sourceName) {
+        super(sourceName);
+    }
 
     protected A buildApiDefinition(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec,
             final Optional<A> optionalPredecessor) {

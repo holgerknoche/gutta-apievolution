@@ -1,14 +1,28 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.ApiDefinition;
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.ListType;
+import gutta.apievolution.core.apimodel.NumericType;
+import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.StringType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.dsl.parser.ApiRevisionBaseVisitor;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
-import java.util.*;
+import java.util.Optional;
 import java.util.function.Supplier;
 
-import static gutta.apievolution.dsl.parser.ApiRevisionLexer.*;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_MANDATORY;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIN;
+import static gutta.apievolution.dsl.parser.ApiRevisionLexer.K_OPTIONAL;
 
 /**
  * Abstract superclass for both consumer and provider API revision model
@@ -33,6 +47,10 @@ abstract class ApiRevisionModelBuilderPass2<A extends ApiDefinition<A, O>, R ext
 
     protected E currentEnumType;
 
+    public ApiRevisionModelBuilderPass2(String sourceName) {
+        super(sourceName);
+    }
+    
     protected void augmentRevision(final ApiRevisionParser.ApiDefinitionContext apiRevisionSpec, A apiDefinition,
             final Optional<A> optionalPredecessor) {
         this.currentRevision = apiDefinition;
