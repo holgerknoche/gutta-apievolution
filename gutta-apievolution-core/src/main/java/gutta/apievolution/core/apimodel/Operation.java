@@ -102,7 +102,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
     /**
      * Returns the user-defined types reachable by this operation.
      * 
-     * @return
+     * @return see above
      */
     public Set<UserDefinedType<A>> getReachableUserDefinedTypes() {
         Set<UserDefinedType<A>> udts = new HashSet<>();

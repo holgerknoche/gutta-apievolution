@@ -44,6 +44,11 @@ public class DefinitionResolution {
         this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
     }
 
+    /**
+     * Returns the validation messages that occured during the resolution. 
+     * 
+     * @return see above
+     */
     public List<ValidationMessage> getValidationMessages() {
         return Collections.unmodifiableList(this.validationMessages);
     }

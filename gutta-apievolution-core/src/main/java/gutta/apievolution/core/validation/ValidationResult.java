@@ -34,7 +34,7 @@ public class ValidationResult {
     }
 
     /**
-     * Adds an error message to this check result.
+     * Adds an error message to this validation result.
      * 
      * @param message The error message to add
      */
@@ -44,12 +44,17 @@ public class ValidationResult {
         this.lastErrorMessage = message;
     }
 
+    /**
+     * Adds a warning message to this validation result.
+     * 
+     * @param message The error message to add
+     */
     public void addWarningMessage(String message) {
         this.messages.add(ValidationMessage.warning(message));
     }
     
     /**
-     * Adds an informational message to this check result.
+     * Adds an informational message to this validation result.
      * 
      * @param message The message to add
      */
