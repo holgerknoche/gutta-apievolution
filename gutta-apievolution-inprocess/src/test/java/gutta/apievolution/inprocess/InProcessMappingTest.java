@@ -1,16 +1,5 @@
 package gutta.apievolution.inprocess;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
@@ -19,7 +8,21 @@ import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
+import gutta.apievolution.inprocess.consumer.dynproxy.MappedConsumerException;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
+import gutta.apievolution.inprocess.dynproxy.MappedException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InProcessMappingTest {
     
@@ -50,11 +53,12 @@ class InProcessMappingTest {
     @ParameterizedTest
     @MethodSource("mappingStrategies")
     void invocationWithMappedException(ApiMappingStrategy mappingStrategy) {
-        // TODO Exception mapping
         ConsumerApi consumerApi = this.loadAndResolveApi(mappingStrategy);
-        ConsumerResult result = consumerApi.operationWithMappedException(new ConsumerParameter());
         
-        System.out.println(result);        
+        MappedException exception = assertThrows(MappedException.class, () -> consumerApi.operationWithMappedException(new ConsumerParameter()));
+        MappedConsumerException exceptionData = exception.getDataAs(MappedConsumerException.class).orElseThrow(NoSuchElementException::new);
+        
+        assertEquals("testException", exceptionData.getExceptionField());
     }
 
     private ConsumerApi loadAndResolveApi(ApiMappingStrategy mappingStrategy) {
