@@ -9,7 +9,7 @@ public abstract class AbstractApiInvocationHandler implements InvocationHandler 
 
     private final MethodMappingStrategy methodMappingStrategy;
 
-    private final TypeMappingStrategy typeMappingStrategy;
+    protected final TypeMappingStrategy typeMappingStrategy;
 
     protected AbstractApiInvocationHandler(Object providerApi, MethodMappingStrategy methodMappingStrategy,
             TypeMappingStrategy typeMappingStrategy) {
@@ -29,11 +29,17 @@ public abstract class AbstractApiInvocationHandler implements InvocationHandler 
         ApiMethodInvoker methodInvoker = this.methodMappingStrategy.createMethodInvoker(this.providerApi.getClass(), method,
                 this.typeMappingStrategy);
 
-        return methodInvoker.invokeApiMethod(this.providerApi, parameterObject);
+        try {
+            return methodInvoker.invokeApiMethod(this.providerApi, parameterObject);
+        } catch (Exception e) {
+            return this.handleExceptionOnApiInvocation(e);
+        }
     }
 
     protected Object getProviderApi() {
         return this.providerApi;
     }
+    
+    protected abstract Object handleExceptionOnApiInvocation(Exception exception);
 
 }

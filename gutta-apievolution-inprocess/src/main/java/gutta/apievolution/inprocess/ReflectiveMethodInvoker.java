@@ -14,17 +14,20 @@ public class ReflectiveMethodInvoker extends AbstractApiMethodInvoker {
     }
 
     @Override
-    public Object invokeMethod(Object apiObject, Object parameterObject) {
+    public Object invokeMethod(Object apiObject, Object parameterObject) throws Exception {
         try {
             return this.apiMethod.invoke(apiObject, parameterObject);
-        } catch (InvocationTargetException e) {            
-            // TODO Map the thrown exception if appropriate
-            throw new InvalidInvocationException("Error invoking API method.", e);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+
+            if (cause instanceof Exception) {
+                throw (Exception) cause;
+            } else {
+                throw new InvalidInvocationException("Error invoking API method.", e);
+            }                       
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new InvalidInvocationException("Error invoking API method.", e);
         }
-    }
+    }    
     
-    
-
 }

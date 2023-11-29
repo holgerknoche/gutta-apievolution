@@ -30,11 +30,10 @@ public class ProviderApiV1 {
     }
     
     public TestResult operationWithMappedException(TestParameter parameter) throws ProviderException {
-//        ProviderException exception = new ProviderException();
-//        exception.setExceptionField("testException");
-//        
-//        throw exception;
-        return null;
+        ProviderException exception = new ProviderException();
+        exception.setExceptionField("testException");
+        
+        throw exception;
     }
     
 

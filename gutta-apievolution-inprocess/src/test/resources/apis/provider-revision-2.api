@@ -23,7 +23,7 @@ api test.provider {
         TestRecord resultRecord
     }
     
-    exception TestException {
+    exception TestException as ProviderException {
         string exceptionField
     }
     

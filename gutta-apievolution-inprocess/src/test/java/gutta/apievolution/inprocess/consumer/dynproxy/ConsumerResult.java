@@ -1,4 +1,4 @@
-package gutta.apievolution.inprocess.consumer;
+package gutta.apievolution.inprocess.consumer.dynproxy;
 
 import java.util.List;
 

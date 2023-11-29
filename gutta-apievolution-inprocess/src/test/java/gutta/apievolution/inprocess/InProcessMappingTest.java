@@ -15,10 +15,10 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
-import gutta.apievolution.inprocess.consumer.ConsumerApi;
-import gutta.apievolution.inprocess.consumer.ConsumerEnum;
-import gutta.apievolution.inprocess.consumer.ConsumerParameter;
-import gutta.apievolution.inprocess.consumer.ConsumerResult;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerApi;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerEnum;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerParameter;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 
 class InProcessMappingTest {
@@ -68,7 +68,7 @@ class InProcessMappingTest {
         // Create an API resolution context and an API resolver
         ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
                 supportedRevisions,
-                new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer", "gutta.apievolution.inprocess.provider"));
+                new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer.dynproxy", "gutta.apievolution.inprocess.provider"));
         ApiResolver apiResolver = new ApiResolver(resolutionContext, mappingStrategy);
 
         // Resolve the API
