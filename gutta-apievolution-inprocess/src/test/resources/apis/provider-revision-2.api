@@ -23,6 +23,12 @@ api test.provider {
         TestRecord resultRecord
     }
     
+    exception TestException {
+        string exceptionField
+    }
+    
     operation testOperation(TestParameter): TestResult
+    
+    operation operationWithMappedException(TestParameter): TestResult throws TestException
 
 }

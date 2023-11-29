@@ -24,5 +24,7 @@ api test.customer {
     }
     
     operation testOperation(TestParameter): TestResult
+    
+    operation operationWithMappedException(TestParameter): TestResult
 
 }
