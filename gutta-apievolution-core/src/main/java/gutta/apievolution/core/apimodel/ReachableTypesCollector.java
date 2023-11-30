@@ -57,8 +57,10 @@ class ReachableTypesCollector<A extends ApiDefinition<A, ?>> implements TypeVisi
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void addTypesReachableFromSupertypes(RecordType<?, ?, ?> recordType, boolean inclusive) {
         if (inclusive) {
+            this.targetSet.add((UserDefinedType<A>) recordType);
             this.addTypesReachableFromFields(recordType);
         }
         
@@ -67,8 +69,10 @@ class ReachableTypesCollector<A extends ApiDefinition<A, ?>> implements TypeVisi
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void addTypesReachableFromSubtypes(RecordType<?, ?, ?> recordType, boolean inclusive) {
         if (inclusive) {
+            this.targetSet.add((UserDefinedType<A>) recordType);
             this.addTypesReachableFromFields(recordType);
         }
         

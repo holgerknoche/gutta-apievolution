@@ -638,7 +638,25 @@ class DefinitionResolverTest {
     }
 
     /**
-     * TODO Test case: A consumer type unrelated to any mapped operation results in a warning.
+     * Test case: A consumer type unrelated to any mapped operation results in a warning.
      */
+    @Test
+    void unrelatedRecordTypeInConsumerDefinition() {
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);        
+        consumerApi.newRecordType("unrelated", 0);        
+        consumerApi.finalizeDefinition();
+        
+        ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
+        providerApi.newRecordType("unrelated", 0);
+        providerApi.finalizeDefinition();
+        
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
+
+        List<ValidationMessage> validationMessages = resolution.getValidationMessages();
+        assertEquals(singletonList(ValidationMessage.warning("Type 'unrelated' is not related to any operation.")), validationMessages);
+    }
 
 }

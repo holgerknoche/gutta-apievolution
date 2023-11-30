@@ -22,7 +22,6 @@ import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,20 +71,14 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         ValidationResult ownResult = new ValidationResult();
         this.checkForUnmappedTypes(ownResult);
         
-        Set<UserDefinedType<?>> reachableTypes = this.determineReachableTypes();
+        Set<UserDefinedType<ProviderApiDefinition>> reachableTypes = this.determineReachableTypes();
         this.checkForUnmappedFields(ownResult, reachableTypes);
         
         return superResult.joinWith(ownResult);
     }
     
-    private Set<UserDefinedType<?>> determineReachableTypes() {
-        Set<UserDefinedType<?>> reachableTypes = new HashSet<>();
-        
-        for (ProviderOperation operation : this.providerOperations()) {
-            reachableTypes.addAll(operation.getReachableUserDefinedTypes());
-        }
-        
-        return reachableTypes;
+    private Set<UserDefinedType<ProviderApiDefinition>> determineReachableTypes() {
+        return determineReachableTypes(this.providerOperations());
     }
     
     private void checkForUnmappedTypes(ValidationResult result) {
@@ -104,7 +97,7 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         }
     }
     
-    private void checkForUnmappedFields(ValidationResult result, Set<UserDefinedType<?>> reachableTypes) {
+    private void checkForUnmappedFields(ValidationResult result, Set<UserDefinedType<ProviderApiDefinition>> reachableTypes) {
         for (UserDefinedType<?> udt : reachableTypes) {
             if (udt instanceof ProviderRecordType) {
                 ProviderRecordType providerType = (ProviderRecordType) udt;

@@ -2,8 +2,11 @@ package gutta.apievolution.core.apimodel;
 
 import gutta.apievolution.core.validation.ValidationResult;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -235,6 +238,16 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
                 }
             }
         }
+    }
+    
+    protected static <A extends ApiDefinition<A, O>, O extends Operation<A, O, ?>> Set<UserDefinedType<A>> determineReachableTypes(Collection<O> operations) {
+        Set<UserDefinedType<A>> reachableTypes = new HashSet<>();
+        
+        for (O operation : operations) {
+            reachableTypes.addAll(operation.getReachableUserDefinedTypes());
+        }
+        
+        return reachableTypes;
     }
 
     private interface ConsistencyCheckErrorMessageProvider<E> {

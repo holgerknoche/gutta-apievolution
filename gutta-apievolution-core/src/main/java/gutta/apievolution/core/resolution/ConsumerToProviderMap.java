@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
 import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
@@ -129,13 +130,15 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         this.checkAllElementsAreMapped(ownResult);
         // Make sure that supertypes are mapped consistently
         this.checkSuperTypeConsistency(ownResult);
+        // Check for types unrelated to any operation
+        this.checkForUnrelatedTypes(ownResult);
         // Check optionalities of fields
         this.checkFieldOptionalities(ownResult);
                 
         // Join with own result
         return superResult.joinWith(ownResult);
     }
-    
+         
     private void checkAllElementsAreMapped(ValidationResult result) {
         MemberMapChecker memberMapChecker = new MemberMapChecker(result);
         
@@ -155,6 +158,20 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
                 result.addErrorMessage("Operation '" + operation + "' is not mapped."); 
             }
         }
+    }
+    
+    private Set<UserDefinedType<ConsumerApiDefinition>> determineReachableTypes() {
+        return determineReachableTypes(this.consumerOperations());
+    }
+    
+    private void checkForUnrelatedTypes(ValidationResult result) {
+        Set<UserDefinedType<ConsumerApiDefinition>> reachableTypes = this.determineReachableTypes();
+        
+        for (Type type : this.consumerTypes()) {
+            if (type.isUserDefined() && !(reachableTypes.contains(type))) {
+                result.addWarningMessage("Type '" + type + "' is not related to any operation.");
+            }
+        }        
     }
         
     private void checkFieldOptionalities(ValidationResult result) {

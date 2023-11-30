@@ -142,6 +142,8 @@ class ConsumerToProviderMapTest {
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
         
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
+        
         consumerDefinition.finalizeDefinition();
         
         // Create the provider definition
@@ -149,11 +151,13 @@ class ConsumerToProviderMapTest {
        
         ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", 0);
         
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
         Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, emptyMap(), emptyMap(), mapOf(consumerOperation, providerOperation));
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
@@ -171,6 +175,11 @@ class ConsumerToProviderMapTest {
         ConsumerEnumType consumerEnum = consumerDefinition.newEnumType("TestEnum", 0);
         consumerEnum.newEnumMember("TEST");
         
+        // Establish connection to an operation
+        ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("Record", 1);
+        ConsumerField consumerField = consumerRecord.newField("field", consumerEnum, Optionality.MANDATORY);
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
+        
         consumerDefinition.finalizeDefinition();
         
         // Create the provider definition
@@ -178,11 +187,16 @@ class ConsumerToProviderMapTest {
        
         ProviderEnumType providerEnum = providerDefinition.newEnumType("TestEnum", 0);
         
+        // Establish connection to an operation
+        ProviderRecordType providerRecord = providerDefinition.newRecordType("Record", 1);
+        ProviderField providerField = providerRecord.newField("field", providerEnum, Optionality.MANDATORY);
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
-        Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerEnum, providerEnum);
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerEnum, providerEnum, consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, mapOf(consumerField, providerField), emptyMap(), mapOf(consumerOperation, providerOperation));
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
@@ -198,7 +212,12 @@ class ConsumerToProviderMapTest {
         ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
-        consumerDefinition.newOperation("op", consumerRecord, consumerRecord);
+        
+        // Unmapped operation
+        consumerDefinition.newOperation("unmapped", consumerRecord, consumerRecord);        
+        
+        // Mapped operation to avoid warnings due to unmapped types
+        ConsumerOperation mappedConsumerOperation = consumerDefinition.newOperation("mapped", consumerRecord, consumerRecord);
         
         consumerDefinition.finalizeDefinition();
         
@@ -207,15 +226,17 @@ class ConsumerToProviderMapTest {
        
         ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", 0);
         
+        ProviderOperation mappedProviderOperation = providerDefinition.newOperation("mapped", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
         Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, emptyMap(), emptyMap(), mapOf(mappedConsumerOperation, mappedProviderOperation));
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList(ValidationMessage.error("Operation 'op' is not mapped.")), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Operation 'unmapped' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -230,6 +251,8 @@ class ConsumerToProviderMapTest {
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", noInternalName(), 1,
                 Abstract.NO, Collections.singleton(consumerSuperType));
         
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
+        
         consumerDefinition.finalizeDefinition();
         
         // Create the provider definition
@@ -240,6 +263,7 @@ class ConsumerToProviderMapTest {
                 Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
         ProviderRecordType providerDummy = providerDefinition.newRecordType("Dummy", 2);
         
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
         
         providerDefinition.finalizeDefinition();
         
@@ -247,7 +271,7 @@ class ConsumerToProviderMapTest {
                 mapOf(consumerRecord, providerRecord, consumerSuperType, providerDummy),
                 emptyMap(),
                 emptyMap(),
-                emptyMap());
+                mapOf(consumerOperation, providerOperation));
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
