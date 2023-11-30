@@ -15,7 +15,6 @@ import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
 import gutta.apievolution.inprocess.consumer.dynproxy.MappedConsumerException;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 import gutta.apievolution.inprocess.dynproxy.MappedException;
-import gutta.apievolution.inprocess.dynproxy.UnmappedException;
 import gutta.apievolution.inprocess.provider.UnmappedTestException;
 
 /**
@@ -25,7 +24,7 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
     
     @Test
     void successfulInvocation() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
+        ConsumerApi consumerApi = this.loadAndResolveApi();
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
@@ -45,7 +44,7 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
      */
     @Test
     void invocationWithMappedException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
+        ConsumerApi consumerApi = this.loadAndResolveApi();
         
         MappedException exception = assertThrows(MappedException.class, () -> consumerApi.operationWithMappedException(new ConsumerParameter()));
         MappedConsumerException exceptionData = exception.getDataAs(MappedConsumerException.class).orElseThrow(NoSuchElementException::new);
@@ -58,7 +57,7 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
      */
     @Test
     void invocationWithUnmappedException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
+        ConsumerApi consumerApi = this.loadAndResolveApi();
         
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithUnmappedException(new ConsumerParameter()));
         assertEquals(UnmappedTestException.class, exception.getCause().getClass());
@@ -69,10 +68,14 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
      */
     @Test
     void invocationWithUnmodeledException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
+        ConsumerApi consumerApi = this.loadAndResolveApi();
         
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithRuntimeException(new ConsumerParameter()));
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
+    }
+    
+    private ConsumerApi loadAndResolveApi() {
+        return this.loadAndResolveApi(ConsumerApi.class, "gutta.apievolution.inprocess.consumer.dynproxy");
     }
     
     @Override

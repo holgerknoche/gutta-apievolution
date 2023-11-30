@@ -1,10 +1,10 @@
-package gutta.apievolution.inprocess.dynproxy;
+package gutta.apievolution.inprocess;
 
 public class UnmappedException extends RuntimeException {
 
     private static final long serialVersionUID = 6494415670059682176L;
 
-    UnmappedException(Throwable cause) {
+    public UnmappedException(Throwable cause) {
         super("An unmapped exception was thrown during an API invocation.", cause);
     }
     

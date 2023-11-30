@@ -19,7 +19,7 @@ public abstract class AbstractApiInvocationHandler implements InvocationHandler 
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] arguments) {
+    public Object invoke(Object proxy, Method method, Object[] arguments) throws Exception {
         if (arguments.length != 1) {
             throw new InvalidInvocationException("Method '" + method.getName() +
                     "' was invoked with invalid number of arguments (expected 1, but got " + arguments.length + ").");
@@ -40,6 +40,6 @@ public abstract class AbstractApiInvocationHandler implements InvocationHandler 
         return this.providerApi;
     }
     
-    protected abstract Object handleExceptionOnApiInvocation(Exception exception);
+    protected abstract Object handleExceptionOnApiInvocation(Exception exception) throws Exception;
 
 }

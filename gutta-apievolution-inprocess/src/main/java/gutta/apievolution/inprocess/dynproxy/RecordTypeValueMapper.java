@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 
+import gutta.apievolution.inprocess.FieldMapper;
 import gutta.apievolution.inprocess.ValueMapper;
 
 class RecordTypeValueMapper implements ValueMapper {

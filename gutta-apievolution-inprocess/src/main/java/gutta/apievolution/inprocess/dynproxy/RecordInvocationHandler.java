@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import gutta.apievolution.inprocess.FieldMapper;
 import gutta.apievolution.inprocess.InvalidApiException;
 
 class RecordInvocationHandler implements InvocationHandler {

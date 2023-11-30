@@ -4,7 +4,7 @@ public interface ConsumerApi {
 
     ConsumerResult testOperation(ConsumerParameter parameter);
     
-    ConsumerResult operationWithMappedException(ConsumerParameter parameter);
+    ConsumerResult operationWithMappedException(ConsumerParameter parameter) throws MappedConsumerException;
     
     ConsumerResult operationWithUnmappedException(ConsumerParameter parameter);
     

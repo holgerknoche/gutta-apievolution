@@ -3,6 +3,7 @@ package gutta.apievolution.inprocess.dynproxy;
 import gutta.apievolution.inprocess.AbstractApiInvocationHandler;
 import gutta.apievolution.inprocess.MethodMappingStrategy;
 import gutta.apievolution.inprocess.TypeMappingStrategy;
+import gutta.apievolution.inprocess.UnmappedException;
 import gutta.apievolution.inprocess.ValueMapper;
 
 class DynamicProxyInvocationHandler extends AbstractApiInvocationHandler {

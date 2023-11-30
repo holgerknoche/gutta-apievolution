@@ -30,7 +30,7 @@ class DynamicProxyMethodMappingStrategy extends AbstractMethodMappingStrategy {
 
     @Override
     protected void assertValidConsumerMethod(Method consumerMethod) {
-        super.assertValidProviderMethod(consumerMethod);
+        super.assertValidConsumerMethod(consumerMethod);
         
         Class<?> resultType = consumerMethod.getReturnType();
         if (!resultType.isInterface()) {

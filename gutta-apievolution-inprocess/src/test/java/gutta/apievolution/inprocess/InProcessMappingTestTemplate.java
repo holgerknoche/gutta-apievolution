@@ -11,7 +11,7 @@ import gutta.apievolution.dsl.ProviderApiLoader;
 
 abstract class InProcessMappingTestTemplate<S extends ApiMappingStrategy> {
 
-    protected <T> T loadAndResolveApi(Class<T> apiType) {
+    protected <T> T loadAndResolveApi(Class<T> apiType, String consumerPackageName) {
         // Load the consumer and provider API definitions
         ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);
 
@@ -22,7 +22,7 @@ abstract class InProcessMappingTestTemplate<S extends ApiMappingStrategy> {
         // Create an API resolution context and an API resolver
         ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
                 supportedRevisions,
-                new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer.dynproxy", "gutta.apievolution.inprocess.provider"));
+                new DefaultTypeToClassMap(consumerPackageName, "gutta.apievolution.inprocess.provider"));
         ApiResolver apiResolver = new ApiResolver(resolutionContext, this.apiMappingStrategy());
 
         // Resolve the API

@@ -1,15 +1,11 @@
 package gutta.apievolution.inprocess;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.Type;
-import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class AbstractTypeMappingStrategy implements TypeMappingStrategy {
     
@@ -73,43 +69,6 @@ public abstract class AbstractTypeMappingStrategy implements TypeMappingStrategy
         
         // If no match is found, return null
         return null;
-    }
-    
-    protected static boolean isProviderType(Type type) {
-        return (type instanceof UserDefinedType) && ((UserDefinedType<?>) type).isProviderType();
-    }
-    
-    protected static Optional<Method> findAccessorForField(Field<?, ?> field, Class<?> type) {
-        String fieldName = field.getInternalName();
-
-        // Try a "get" method first...
-        Optional<Method> optionalGetter = findMethod(type, getterNameFor(fieldName));
-        if (optionalGetter.isPresent()) {
-            return optionalGetter;
-        }
-
-        // ..., then try a method with the exact name (such as in records)
-        Optional<Method> optionalAccessor = findMethod(type, fieldName);
-        if (optionalAccessor.isPresent()) {
-            return optionalAccessor;
-        }
-
-        return Optional.empty();
-    }
-    
-    private static Optional<Method> findMethod(Class<?> type, String name, Class<?>... argumentTypes) {
-        try {
-            return Optional.of(type.getMethod(name, argumentTypes));
-        } catch (NoSuchMethodException e) {
-            return Optional.empty();
-        }
-    }
-    
-    private static String getterNameFor(String fieldName) {
-        char firstChar = fieldName.charAt(0);
-        String remainder = (fieldName.length() == 1) ? "" : fieldName.substring(1);
-
-        return "get" + Character.toUpperCase(firstChar) + remainder;
     }
 
 }

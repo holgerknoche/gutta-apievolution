@@ -1,4 +1,4 @@
-package gutta.apievolution.inprocess.dynproxy;
+package gutta.apievolution.inprocess;
 
 class UnmatchedFieldMapper implements FieldMapper {
     

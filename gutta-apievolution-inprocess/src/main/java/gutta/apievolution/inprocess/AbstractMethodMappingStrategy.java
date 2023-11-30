@@ -80,11 +80,17 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
     }
     
     protected void assertValidConsumerMethod(Method consumerMethod) {
-        // No assertions by default
+        // Assert that a consumer method has just a single parameter type
+        if (consumerMethod.getParameterCount() != 1) {
+            throw new InvalidApiException("Consumer method '" + consumerMethod + "' has an invalid number of parameters.");
+        }
     }
         
     protected void assertValidProviderMethod(Method providerMethod) {
-        // No assertions by default
+        // Assert that a provider method has just a single parameter type
+        if (providerMethod.getParameterCount() != 1) {
+            throw new InvalidApiException("Provider method '" + providerMethod + "' has an invalid number of parameters.");
+        }        
     }
 
 }

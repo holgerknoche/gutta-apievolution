@@ -1,10 +1,8 @@
-package gutta.apievolution.inprocess.dynproxy;
+package gutta.apievolution.inprocess;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import gutta.apievolution.inprocess.ValueMapper;
 
 class ListTypeValueMapper implements ValueMapper {
 
@@ -16,6 +14,10 @@ class ListTypeValueMapper implements ValueMapper {
     
     @Override
     public Object mapValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        
         List<?> sourceList = (List<?>) value;
         
         if (sourceList.isEmpty()) {
