@@ -1,9 +1,13 @@
 package gutta.apievolution.inprocess;
 
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.dsl.ConsumerApiLoader;
-import gutta.apievolution.dsl.ProviderApiLoader;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.junit.jupiter.api.Test;
+
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerParameter;
@@ -14,27 +18,14 @@ import gutta.apievolution.inprocess.dynproxy.MappedException;
 import gutta.apievolution.inprocess.dynproxy.UnmappedException;
 import gutta.apievolution.inprocess.provider.UnmappedTestException;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 /**
  * Test cases for the type mapping strategy using dynamic proxies.
  */
-class DynamicProxyMappingTest {    
+class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyApiMappingStrategy> {    
     
-    /**
-     * Test case: A successful invocation (i.e., one not throwing an exception) works as expected.
-     */
     @Test
     void successfulInvocation() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
@@ -54,7 +45,7 @@ class DynamicProxyMappingTest {
      */
     @Test
     void invocationWithMappedException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
         
         MappedException exception = assertThrows(MappedException.class, () -> consumerApi.operationWithMappedException(new ConsumerParameter()));
         MappedConsumerException exceptionData = exception.getDataAs(MappedConsumerException.class).orElseThrow(NoSuchElementException::new);
@@ -67,7 +58,7 @@ class DynamicProxyMappingTest {
      */
     @Test
     void invocationWithUnmappedException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
         
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithUnmappedException(new ConsumerParameter()));
         assertEquals(UnmappedTestException.class, exception.getCause().getClass());
@@ -78,28 +69,15 @@ class DynamicProxyMappingTest {
      */
     @Test
     void invocationWithUnmodeledException() {
-        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        ConsumerApi consumerApi = this.loadAndResolveApi(ConsumerApi.class);
         
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithRuntimeException(new ConsumerParameter()));
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
     }
-
-    private ConsumerApi loadAndResolveApi(ApiMappingStrategy mappingStrategy) {
-     // Load the consumer and provider API definitions
-        ConsumerApiDefinition consumerApiDefinition = ConsumerApiLoader.loadFromClasspath("apis/consumer-api.api", "test.provider", 0);
-
-        RevisionHistory providerRevisionHistory = ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api",
-                "apis/provider-revision-2.api");
-        Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
-
-        // Create an API resolution context and an API resolver
-        ApiResolutionContext resolutionContext = new ApiResolutionContext(consumerApiDefinition, providerRevisionHistory,
-                supportedRevisions,
-                new DefaultTypeToClassMap("gutta.apievolution.inprocess.consumer.dynproxy", "gutta.apievolution.inprocess.provider"));
-        ApiResolver apiResolver = new ApiResolver(resolutionContext, mappingStrategy);
-
-        // Resolve the API
-        return apiResolver.resolveApi(ConsumerApi.class);
+    
+    @Override
+    protected DynamicProxyApiMappingStrategy apiMappingStrategy() {
+        return new DynamicProxyApiMappingStrategy();
     }
 
 }
