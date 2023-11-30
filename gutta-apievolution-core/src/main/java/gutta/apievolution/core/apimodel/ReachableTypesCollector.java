@@ -1,5 +1,6 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,15 +13,20 @@ class ReachableTypesCollector<A extends ApiDefinition<A, ?>> implements TypeVisi
     private Inclusive inclusive;
     
     private Set<UserDefinedType<A>> targetSet;
-    
+            
     public void collectReachableTypesOf(UserDefinedType<A> type, Inclusive inclusive, Set<UserDefinedType<A>> targetSet) {
         this.targetSet = targetSet;
         this.inclusive = inclusive;
         
-        type.accept(this);
+        this.recurseOn(type);
     }
     
     private void recurseOn(Type type) {
+        if (this.targetSet.contains(type)) {
+            // Return immediately for types that have already been collected
+            return;
+        }
+        
         type.accept(this);
     }
     
