@@ -240,6 +240,16 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
         }
     }
     
+    /**
+     * Determines the user-defined types reachable from the given operations. This includes types that are used as return types, parameter types, or exceptions,
+     * as well as types reachable from those types (e.g., field types).
+     * 
+     * @param <A> The concrete type of API definition that is used
+     * @param <O> The concrete type of operation that is used
+     * 
+     * @param operations The operations to determine the types of
+     * @return The types reachable from the given operations
+     */
     protected static <A extends ApiDefinition<A, O>, O extends Operation<A, O, ?>> Set<UserDefinedType<A>> determineReachableTypes(Collection<O> operations) {
         Set<UserDefinedType<A>> reachableTypes = new HashSet<>();
         
