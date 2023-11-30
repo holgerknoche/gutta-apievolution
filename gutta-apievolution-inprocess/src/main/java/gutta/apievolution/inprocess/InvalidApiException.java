@@ -11,5 +11,5 @@ public class InvalidApiException extends RuntimeException {
     public InvalidApiException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

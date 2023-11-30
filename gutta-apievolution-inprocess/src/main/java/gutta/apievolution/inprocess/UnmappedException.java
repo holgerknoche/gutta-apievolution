@@ -7,11 +7,11 @@ public class UnmappedException extends RuntimeException {
     public UnmappedException(Throwable cause) {
         super("An unmapped exception was thrown during an API invocation.", cause);
     }
-    
+
     @Override
     public synchronized Throwable fillInStackTrace() {
         // No stack trace, as it is only confusing
         return this;
     }
-    
+
 }

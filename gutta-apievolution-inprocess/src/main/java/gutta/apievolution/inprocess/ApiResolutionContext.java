@@ -14,25 +14,25 @@ public class ApiResolutionContext {
     private final DefinitionResolution definitionResolution;
 
     private final UDTToClassMap typeToClassMap;
-    
-    public ApiResolutionContext(ConsumerApiDefinition consumerApiDefinition, RevisionHistory revisionHistory,
-            Set<Integer> supportedRevisions, UDTToClassMap typeToClassMap) {
+
+    public ApiResolutionContext(ConsumerApiDefinition consumerApiDefinition, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
+            UDTToClassMap typeToClassMap) {
 
         this.consumerApiDefinition = consumerApiDefinition;
         this.typeToClassMap = typeToClassMap;
-        
+
         DefinitionResolver definitionResolver = new DefinitionResolver();
         this.definitionResolution = definitionResolver.resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApiDefinition);
     }
-    
+
     public ConsumerApiDefinition getConsumerApiDefinition() {
         return this.consumerApiDefinition;
     }
-    
+
     public DefinitionResolution getDefinitionResolution() {
         return this.definitionResolution;
     }
-    
+
     public UDTToClassMap getTypeToClassMap() {
         return this.typeToClassMap;
     }

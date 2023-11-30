@@ -11,7 +11,7 @@ class DynamicProxyInvocationHandler extends AbstractApiInvocationHandler {
     DynamicProxyInvocationHandler(Object providerApi, MethodMappingStrategy methodMappingStrategy, TypeMappingStrategy typeMappingStrategy) {
         super(providerApi, methodMappingStrategy, typeMappingStrategy);
     }
-    
+
     @Override
     protected Object handleExceptionOnApiInvocation(Exception exception) {
         ValueMapper valueMapper = this.typeMappingStrategy.mapperFor(exception.getClass());
@@ -21,6 +21,6 @@ class DynamicProxyInvocationHandler extends AbstractApiInvocationHandler {
 
         Object mappedExceptionData = valueMapper.mapValue(exception);
         throw new MappedException(mappedExceptionData);
-    }    
-    
+    }
+
 }

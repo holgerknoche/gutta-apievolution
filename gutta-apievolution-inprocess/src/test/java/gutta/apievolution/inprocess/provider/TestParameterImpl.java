@@ -5,13 +5,13 @@ import java.util.List;
 public class TestParameterImpl implements TestParameter {
 
     private String fieldA;
-    
+
     private String field2;
-    
+
     private ProviderEnum testEnum;
-    
+
     private List<ProviderEnum> testList;
-    
+
     private ProviderRecord testRecord;
 
     public String getFieldA() {
@@ -52,6 +52,6 @@ public class TestParameterImpl implements TestParameter {
 
     public void setTestRecord(ProviderRecord testRecord) {
         this.testRecord = testRecord;
-    }            
+    }
 
 }

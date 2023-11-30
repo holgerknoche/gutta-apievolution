@@ -3,13 +3,13 @@ package gutta.apievolution.inprocess.consumer.objectmapping;
 import java.util.List;
 
 public class ConsumerResult {
-    
+
     private String resultField;
-    
+
     private ConsumerEnum resultEnum;
-    
+
     private List<ConsumerEnum> resultList;
-    
+
     private ConsumerRecord resultRecord;
 
     public String getResultField() {
@@ -42,6 +42,6 @@ public class ConsumerResult {
 
     public void setResultRecord(ConsumerRecord resultRecord) {
         this.resultRecord = resultRecord;
-    }	
-	
+    }
+
 }

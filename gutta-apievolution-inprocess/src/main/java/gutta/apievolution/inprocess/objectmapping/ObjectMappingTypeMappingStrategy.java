@@ -24,7 +24,7 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
     protected ValueMapper createMapperFor(Class<?> javaClass) {
         return new ValueMapperCreator(this).createMapperForClass(javaClass);
     }
-    
+
     private static class ValueMapperCreator extends AbstractValueMapperCreator<ObjectMappingTypeMappingStrategy> {
 
         public ValueMapperCreator(ObjectMappingTypeMappingStrategy typeMappingStrategy) {
@@ -40,7 +40,7 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
         protected Optional<Method> findTargetAccessor(Field<?, ?> targetField, Class<?> targetClass) {
             return this.findWriteAccessorForField(targetField, targetClass);
         }
-        
+
         @Override
         protected void validateTargetAccessor(Method accessor, Field<?, ?> targetField) {
             // Assert that the accessor has a void return type
@@ -53,12 +53,12 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
         protected Optional<Method> findSourceAccessor(Field<?, ?> sourceField, Class<?> sourceClass) {
             return this.findReadAccessorForField(sourceField, sourceClass);
         }
-        
+
         @Override
         protected Class<?> determineAppropriateTypeFor(Class<?> type) {
             return ImplementorSupport.determineMandatoryImplementorOf(type);
         }
-        
+
     }
 
 }

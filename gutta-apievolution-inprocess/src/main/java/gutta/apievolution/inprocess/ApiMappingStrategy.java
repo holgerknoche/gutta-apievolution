@@ -5,7 +5,7 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 
 public interface ApiMappingStrategy {
 
-    <T> T mapApi(Object providerApiObject, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
-            UDTToClassMap typeToClassMap, Class<T> consumerApiType);
+    <T> T mapApi(Object providerApiObject, ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution, UDTToClassMap typeToClassMap,
+            Class<T> consumerApiType);
 
 }

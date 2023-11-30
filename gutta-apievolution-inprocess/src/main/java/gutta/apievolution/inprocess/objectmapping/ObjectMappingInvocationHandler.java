@@ -16,9 +16,9 @@ class ObjectMappingInvocationHandler extends AbstractApiInvocationHandler {
     protected Object handleExceptionOnApiInvocation(Exception exception) throws Exception {
         ValueMapper exceptionMapper = this.typeMappingStrategy.mapperFor(exception.getClass());
         if (exceptionMapper == null) {
-           throw new UnmappedException(exception); 
+            throw new UnmappedException(exception);
         }
-        
+
         Exception mappedException = (Exception) exceptionMapper.mapValue(exception);
         throw mappedException;
     }

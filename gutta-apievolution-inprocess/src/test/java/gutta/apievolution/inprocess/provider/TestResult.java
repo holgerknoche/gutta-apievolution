@@ -4,37 +4,37 @@ import java.util.List;
 
 public class TestResult {
 
-	private String retField;
+    private String retField;
 
-	private ProviderEnum resultEnum;
+    private ProviderEnum resultEnum;
 
-	private List<ProviderEnum> resultList;
-	
-	private ProviderRecord resultRecord;
+    private List<ProviderEnum> resultList;
 
-	public String getRetField() {
-		return retField;
-	}
+    private ProviderRecord resultRecord;
 
-	public void setRetField(String retField) {
-		this.retField = retField;
-	}
+    public String getRetField() {
+        return retField;
+    }
 
-	public ProviderEnum getResultEnum() {
-		return resultEnum;
-	}
+    public void setRetField(String retField) {
+        this.retField = retField;
+    }
 
-	public void setResultEnum(ProviderEnum resultEnum) {
-		this.resultEnum = resultEnum;
-	}
+    public ProviderEnum getResultEnum() {
+        return resultEnum;
+    }
 
-	public List<ProviderEnum> getResultList() {
-		return resultList;
-	}
+    public void setResultEnum(ProviderEnum resultEnum) {
+        this.resultEnum = resultEnum;
+    }
 
-	public void setResultList(List<ProviderEnum> resultList) {
-		this.resultList = resultList;
-	}
+    public List<ProviderEnum> getResultList() {
+        return resultList;
+    }
+
+    public void setResultList(List<ProviderEnum> resultList) {
+        this.resultList = resultList;
+    }
 
     public ProviderRecord getResultRecord() {
         return resultRecord;
@@ -42,6 +42,6 @@ public class TestResult {
 
     public void setResultRecord(ProviderRecord resultRecord) {
         this.resultRecord = resultRecord;
-    }	
+    }
 
 }

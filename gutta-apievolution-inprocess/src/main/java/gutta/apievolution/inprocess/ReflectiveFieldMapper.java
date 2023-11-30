@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 class ReflectiveFieldMapper implements FieldMapper {
 
     private final Method fieldAccessor;
-    
+
     private final ValueMapper valueMapper;
 
     protected ReflectiveFieldMapper(Method fieldAccessor, ValueMapper valueMapper) {

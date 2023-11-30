@@ -1,12 +1,12 @@
 package gutta.apievolution.inprocess;
 
-import java.lang.reflect.Method;
-
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+
+import java.lang.reflect.Method;
 
 public abstract class AbstractMethodMappingStrategy implements MethodMappingStrategy {
 
@@ -18,7 +18,7 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
 
     protected AbstractMethodMappingStrategy(ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
             TypeClassMap typeToClassMap) {
-        
+
         this.consumerApiDefinition = consumerApiDefinition;
         this.definitionResolution = definitionResolution;
         this.typeToClassMap = typeToClassMap;
@@ -28,7 +28,7 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
     public ApiMethodInvoker createMethodInvoker(Class<?> apiType, Method method, TypeMappingStrategy typeMappingStrategy) {
         // Perform specific assertions on the consumer method
         this.assertValidConsumerMethod(method);
-        
+
         // Find the corresponding consumer and provider operations (in the model) for
         // the invoked method
         ConsumerOperation consumerOperation = this.findConsumerOperationFor(method);
@@ -42,8 +42,8 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
         return this.createMethodInvoker(method, consumerOperation, providerMethod, providerOperation, typeMappingStrategy);
     }
 
-    protected abstract ApiMethodInvoker createMethodInvoker(Method consumerMethod, ConsumerOperation consumerOperation,
-            Method providerMethod, ProviderOperation providerOperation, TypeMappingStrategy typeMappingStrategy);
+    protected abstract ApiMethodInvoker createMethodInvoker(Method consumerMethod, ConsumerOperation consumerOperation, Method providerMethod,
+            ProviderOperation providerOperation, TypeMappingStrategy typeMappingStrategy);
 
     private ConsumerOperation findConsumerOperationFor(Method method) {
         String methodName = method.getName();
@@ -72,25 +72,25 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
         if (!providerResultClass.equals(providerMethod.getReturnType())) {
             throw new InvalidApiException("Method '" + providerMethod + "' has an unexpected return type.");
         }
-        
+
         // Perform specific assertions on the provider method
         this.assertValidProviderMethod(providerMethod);
 
         return providerMethod;
     }
-    
+
     protected void assertValidConsumerMethod(Method consumerMethod) {
         // Assert that a consumer method has just a single parameter type
         if (consumerMethod.getParameterCount() != 1) {
             throw new InvalidApiException("Consumer method '" + consumerMethod + "' has an invalid number of parameters.");
         }
     }
-        
+
     protected void assertValidProviderMethod(Method providerMethod) {
         // Assert that a provider method has just a single parameter type
         if (providerMethod.getParameterCount() != 1) {
             throw new InvalidApiException("Provider method '" + providerMethod + "' has an invalid number of parameters.");
-        }        
+        }
     }
 
 }

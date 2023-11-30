@@ -34,8 +34,7 @@ public class ApiResolver {
         // Locate API provider for the provider API object and attempt to retrieve the
         // API object for the requested version
         ConsumerApiDefinition consumerApiDefinition = this.apiResolutionContext.getConsumerApiDefinition();
-        Object providerApi = this.createProviderApi(consumerApiDefinition.getReferencedApiName(),
-                consumerApiDefinition.getReferencedRevision());
+        Object providerApi = this.createProviderApi(consumerApiDefinition.getReferencedApiName(), consumerApiDefinition.getReferencedRevision());
 
         // Create a proxy to adapt the provider API to the client API
         DefinitionResolution definitionResolution = this.apiResolutionContext.getDefinitionResolution();
@@ -48,8 +47,8 @@ public class ApiResolver {
         Object providerApi = providerApiProvider.createApi(providerApiRevision);
 
         if (providerApi == null) {
-            throw new NoProviderApiException("Provider API provider for API '" + providerApiName +
-                    "' returned no valid API object for revision " + providerApiRevision + ".");
+            throw new NoProviderApiException(
+                    "Provider API provider for API '" + providerApiName + "' returned no valid API object for revision " + providerApiRevision + ".");
         }
 
         return providerApi;

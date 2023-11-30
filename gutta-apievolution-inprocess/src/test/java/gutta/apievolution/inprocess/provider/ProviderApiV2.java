@@ -6,5 +6,5 @@ class ProviderApiV2 {
         // TODO
         return null;
     }
-    
+
 }

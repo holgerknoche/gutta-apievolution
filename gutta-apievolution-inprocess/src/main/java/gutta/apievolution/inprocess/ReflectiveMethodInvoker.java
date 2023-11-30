@@ -9,7 +9,7 @@ public class ReflectiveMethodInvoker extends AbstractApiMethodInvoker {
 
     public ReflectiveMethodInvoker(TypeMappingStrategy typeMappingStrategy, Method apiMethod) {
         super(typeMappingStrategy);
-        
+
         this.apiMethod = apiMethod;
     }
 
@@ -24,10 +24,10 @@ public class ReflectiveMethodInvoker extends AbstractApiMethodInvoker {
                 throw (Exception) cause;
             } else {
                 throw new InvalidInvocationException("Error invoking API method.", e);
-            }                       
+            }
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new InvalidInvocationException("Error invoking API method.", e);
         }
-    }    
-    
+    }
+
 }

@@ -4,12 +4,12 @@ import java.util.List;
 
 public interface ConsumerResult {
 
-	String getResultField();
-	
-	ConsumerEnum getResultEnum();
-	
-	List<ConsumerEnum> getResultList();
-	
-	ConsumerRecord getResultRecord();
-	
+    String getResultField();
+
+    ConsumerEnum getResultEnum();
+
+    List<ConsumerEnum> getResultList();
+
+    ConsumerRecord getResultRecord();
+
 }
