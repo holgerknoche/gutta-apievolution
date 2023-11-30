@@ -8,6 +8,9 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.lang.reflect.Method;
 
+/**
+ * Abstract implementation of a {@link MethodMappingStrategy} that provides common functionality.
+ */
 public abstract class AbstractMethodMappingStrategy implements MethodMappingStrategy {
 
     private final ConsumerApiDefinition consumerApiDefinition;
@@ -16,6 +19,13 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
 
     private final TypeClassMap typeToClassMap;
 
+    /**
+     * Creates a new method mapping strategy using the given data.
+     * 
+     * @param consumerApiDefinition The consumer API definition to use
+     * @param definitionResolution  The resolution of the consumer API to the provider API
+     * @param typeToClassMap        A mapping of the API types to the classes representing them
+     */
     protected AbstractMethodMappingStrategy(ConsumerApiDefinition consumerApiDefinition, DefinitionResolution definitionResolution,
             TypeClassMap typeToClassMap) {
 
@@ -42,6 +52,16 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
         return this.createMethodInvoker(method, consumerOperation, providerMethod, providerOperation, typeMappingStrategy);
     }
 
+    /**
+     * Creates a method invoker using the given data.
+     * 
+     * @param consumerMethod      The invoked consumer method
+     * @param consumerOperation   The corresponding consumer operation
+     * @param providerMethod      The invoked provider method
+     * @param providerOperation   The corresponding provider operation
+     * @param typeMappingStrategy The type mapping strategy to use
+     * @return The created method invoker
+     */
     protected abstract ApiMethodInvoker createMethodInvoker(Method consumerMethod, ConsumerOperation consumerOperation, Method providerMethod,
             ProviderOperation providerOperation, TypeMappingStrategy typeMappingStrategy);
 
@@ -79,6 +99,12 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
         return providerMethod;
     }
 
+    /**
+     * Asserts that the given consumer method is valid. This method can be overriden by specific strategies, but must call the super implementation to ensure
+     * that all validations occur.
+     * 
+     * @param consumerMethod The consumer method to check
+     */
     protected void assertValidConsumerMethod(Method consumerMethod) {
         // Assert that a consumer method has just a single parameter type
         if (consumerMethod.getParameterCount() != 1) {
@@ -86,6 +112,12 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
         }
     }
 
+    /**
+     * Asserts that the given provide method is valid. This method can be overriden by specific strategies, but must call the super implementation to ensure
+     * that all validations occur.
+     * 
+     * @param providerMethod The provider method to check
+     */
     protected void assertValidProviderMethod(Method providerMethod) {
         // Assert that a provider method has just a single parameter type
         if (providerMethod.getParameterCount() != 1) {

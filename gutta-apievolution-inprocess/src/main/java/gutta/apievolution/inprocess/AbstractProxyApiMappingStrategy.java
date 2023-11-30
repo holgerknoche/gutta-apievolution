@@ -24,6 +24,15 @@ public abstract class AbstractProxyApiMappingStrategy implements ApiMappingStrat
         return (T) newProxyInstance(this.getClass().getClassLoader(), implementedInterfaces, invocationHandler);
     }
 
+    /**
+     * Creates a concrete invocation handler using the given data.
+     * 
+     * @param providerApiObject     The provider API object to invoke the methods on
+     * @param consumerApiDefinition The API definition used by the consumer
+     * @param definitionResolution  The resolution of the consumer API definition against the provider API
+     * @param typeClassMap          A mapping of the API types to their representing classes
+     * @return The created invocation handler
+     */
     protected abstract InvocationHandler createApiInvocationHandler(Object providerApiObject, ConsumerApiDefinition consumerApiDefinition,
             DefinitionResolution definitionResolution, TypeClassMap typeClassMap);
 
