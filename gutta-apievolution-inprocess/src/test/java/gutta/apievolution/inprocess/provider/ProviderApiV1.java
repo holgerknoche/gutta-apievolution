@@ -36,5 +36,12 @@ public class ProviderApiV1 {
         throw exception;
     }
     
+    public TestResult operationWithUnmappedException(TestParameter parameter) throws UnmappedTestException {
+        throw new UnmappedTestException();
+    }
+    
+    public TestResult operationWithRuntimeException(TestParameter parameter) {
+        throw new UnsupportedOperationException();
+    }
 
 }

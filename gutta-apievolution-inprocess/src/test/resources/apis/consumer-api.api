@@ -25,10 +25,14 @@ api test.customer {
     
     exception TestException as MappedConsumerException {
     	string exceptionField
-    }
+    }    
     
     operation testOperation(TestParameter): TestResult
     
     operation operationWithMappedException(TestParameter): TestResult throws TestException
+    
+    operation operationWithUnmappedException(TestParameter): TestResult
+    
+    operation operationWithRuntimeException(TestParameter): TestResult
 
 }

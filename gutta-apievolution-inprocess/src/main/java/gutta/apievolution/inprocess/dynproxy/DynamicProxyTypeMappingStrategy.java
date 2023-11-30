@@ -44,8 +44,13 @@ class DynamicProxyTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
         public ValueMapper createMapperForClass(Class<?> type) {
             Type sourceType = findTypeMatching(type);
-            if (sourceType == null || (!sourceType.isUserDefined())) {
-                // When invoked with a class, the input class must be a known user-defined type.
+            if (sourceType == null) {
+                // No mappers for unmapped types
+                return null;
+            }
+            
+            if (!sourceType.isUserDefined()) {
+                // When invoked with a class, the input class must be a user-defined type.
                 // Especially lists would be tricky due to type erasure
                 throw new IllegalArgumentException("Unmappable input class '" + type + "'.");
             }            

@@ -11,6 +11,9 @@ import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
 import gutta.apievolution.inprocess.consumer.dynproxy.MappedConsumerException;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 import gutta.apievolution.inprocess.dynproxy.MappedException;
+import gutta.apievolution.inprocess.dynproxy.UnmappedException;
+import gutta.apievolution.inprocess.provider.UnmappedTestException;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -21,8 +24,14 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Test cases for the type mapping strategy using dynamic proxies.
+ */
 class DynamicProxyMappingTest {    
     
+    /**
+     * Test case: A successful invocation (i.e., one not throwing an exception) works as expected.
+     */
     @Test
     void successfulInvocation() {
         ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
@@ -40,6 +49,9 @@ class DynamicProxyMappingTest {
         assertEquals(42, result.getResultRecord().getField());
     }
 
+    /**
+     * Test case: An invocation that throws a mapped exception works as expected, namely wrapping the mapped exception data in a {@link MappedException}.
+     */
     @Test
     void invocationWithMappedException() {
         ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
@@ -48,6 +60,28 @@ class DynamicProxyMappingTest {
         MappedConsumerException exceptionData = exception.getDataAs(MappedConsumerException.class).orElseThrow(NoSuchElementException::new);
         
         assertEquals("testException", exceptionData.getExceptionField());
+    }
+    
+    /**
+     * Test case: An invocation that throws an unmapped, but modeled exception works as expected, namely wrapping the exception in an {@link UnmappedException}. 
+     */
+    @Test
+    void invocationWithUnmappedException() {
+        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        
+        UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithUnmappedException(new ConsumerParameter()));
+        assertEquals(UnmappedTestException.class, exception.getCause().getClass());
+    }
+    
+    /**
+     * Test case: An invocation that throws an unmapped and unmodeled exception works as expected, namely wrapping the exception in an {@link UnmappedException}.
+     */
+    @Test
+    void invocationWithUnmodeledException() {
+        ConsumerApi consumerApi = this.loadAndResolveApi(new DynamicProxyApiMappingStrategy());
+        
+        UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithRuntimeException(new ConsumerParameter()));
+        assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
     }
 
     private ConsumerApi loadAndResolveApi(ApiMappingStrategy mappingStrategy) {

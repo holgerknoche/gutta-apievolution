@@ -15,29 +15,11 @@ class DynamicProxyInvocationHandler extends AbstractApiInvocationHandler {
     protected Object handleExceptionOnApiInvocation(Exception exception) {
         ValueMapper valueMapper = this.typeMappingStrategy.mapperFor(exception.getClass());
         if (valueMapper == null) {
-            return this.handleUnmappedException(exception);
+            throw new UnmappedException(exception);
         }
 
         Object mappedExceptionData = valueMapper.mapValue(exception);
         throw new MappedException(mappedExceptionData);
-    }
+    }    
     
-    private Object handleUnmappedException(Exception exception) {
-        if (exception instanceof RuntimeException) {
-            throw (RuntimeException) exception;
-        } else {
-            throw new UnmappedCheckedException(exception);
-        }
-    }
-    
-    static class UnmappedCheckedException extends RuntimeException {
-        
-        private static final long serialVersionUID = 1956489966858044004L;
-
-        public UnmappedCheckedException(Throwable cause) {
-            super("Unmapped checked exception thrown in API invocation.", cause);
-        }
-        
-    }
-
 }

@@ -28,8 +28,14 @@ api test.provider {
         string exceptionField
     }
     
+    exception UnmappedTestException {}
+    
     operation testOperation(TestParameter): TestResult
     
     operation operationWithMappedException(TestParameter): TestResult throws TestException
+    
+    operation operationWithUnmappedException(TestParameter): TestResult throws UnmappedTestException
+    
+    operation operationWithRuntimeException(TestParameter): TestResult
 
 }

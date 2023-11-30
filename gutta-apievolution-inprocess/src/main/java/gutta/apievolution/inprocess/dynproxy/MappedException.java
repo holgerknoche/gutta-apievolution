@@ -12,6 +12,12 @@ public class MappedException extends RuntimeException {
         this.exceptionData = exceptionData;
     }
     
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        // No stack trace, as it is only confusing
+        return this;
+    }
+    
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getDataAs(Class<T> type) {
         Class<?> actualType = this.exceptionData.getClass();
