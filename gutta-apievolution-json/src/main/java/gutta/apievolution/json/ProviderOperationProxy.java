@@ -75,16 +75,17 @@ public abstract class ProviderOperationProxy<P, R>
      * Invokes the underlying service method using the given data.
      * 
      * @param consumerApiId      The consumer API ID that was used for the request
+     * @param referencedApiName  The name of the referenced provider API
      * @param referencedRevision The provider revision referenced by the consumer
      *                           API
      * @param requestJson        The request in JSON format
      * @return The response in JSON format
      */
-    public String invokeService(String consumerApiId, int referencedRevision, String requestJson) {
+    public String invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, String requestJson) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         // We currently use the file name as the API id
-        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedRevision);
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory,
                 this.supportedRevisions, consumerApi);
 

@@ -1,32 +1,29 @@
 package gutta.apievolution.json;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.util.IntegerRange;
 import gutta.apievolution.dsl.ConsumerApiLoader;
+import gutta.apievolution.dsl.NamedInputStream;
 import gutta.apievolution.dsl.ProviderApiLoader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class TestApiDefinitionLoader {
 
     public static RevisionHistory loadRevisionHistory(String... fileNames) {
-        ClassLoader classLoader = TestApiDefinitionLoader.class.getClassLoader();
-        List<InputStream> streams = Stream.of(fileNames).map(classLoader::getResourceAsStream).filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
         try {
+        	List<NamedInputStream> streams = loadStreams(fileNames);
+        	
             List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader
                     .loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
             RevisionHistory revisionHistory = new RevisionHistory(apiDefinitions);
 
-            for (InputStream stream : streams) {
+            for (NamedInputStream stream : streams) {
                 stream.close();
             }
 
@@ -35,10 +32,26 @@ class TestApiDefinitionLoader {
             throw new ApiLoadFailedException(e);
         }
     }
+    
+    private static List<NamedInputStream> loadStreams(String... fileNames) throws IOException {
+    	ClassLoader classLoader = TestApiDefinitionLoader.class.getClassLoader();
+    	
+    	List<NamedInputStream> streams = new ArrayList<>(fileNames.length);
+    	for (String fileName : fileNames) {
+    		InputStream inputStream = classLoader.getResourceAsStream(fileName);
+    		
+    		if (inputStream != null) {
+    			streams.add(new NamedInputStream(fileName, inputStream));
+    		}
+    	}
+    	
+    	return streams;
+    		
+    }
 
-    public static ConsumerApiDefinition loadConsumerApi(String fileName, int referencedRevision) {
+    public static ConsumerApiDefinition loadConsumerApi(String fileName, String referencedApiName, int referencedRevision) {
         try (InputStream inputStream = TestApiDefinitionLoader.class.getClassLoader().getResourceAsStream(fileName)) {
-            return ConsumerApiLoader.loadFromStream(inputStream, referencedRevision);
+            return ConsumerApiLoader.loadFromStream(inputStream, fileName, referencedApiName, referencedRevision);
         } catch (IOException e) {
             throw new ApiLoadFailedException(e);
         }

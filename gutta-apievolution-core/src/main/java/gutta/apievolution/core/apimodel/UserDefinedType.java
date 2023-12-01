@@ -1,5 +1,8 @@
 package gutta.apievolution.core.apimodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Interface for user-defined types.
  * 
@@ -49,6 +52,37 @@ public interface UserDefinedType<A extends ApiDefinition<A, ?>> extends Type {
      */
     default boolean isEnum() {
         return false;
+    }
+    
+    @Override
+    default boolean isUserDefined() {
+        return true;
+    }
+    
+    /**
+     * Denotes whether this type is a provider type.
+     *  
+     * @return see above
+     */
+    boolean isProviderType();
+    
+    /**
+     * Denotes whether this type is a consumer type.
+     * 
+     * @return see above
+     */
+    boolean isConsumerType();
+    
+    /**
+     * Returns the set of user-defined types reachable by this type.
+     * 
+     * @param inclusive Flag whether to include this type itself in the result
+     * @return The (possibly empty) set of reachable user-defined types
+     */
+    default Set<UserDefinedType<A>> getReachableUserDefinedTypes(Inclusive inclusive) {
+        Set<UserDefinedType<A>> reachableTypes = new HashSet<>();
+        new ReachableTypesCollector<A>().collectReachableTypesOf(this, inclusive, reachableTypes);
+        return reachableTypes;
     }
 
 }

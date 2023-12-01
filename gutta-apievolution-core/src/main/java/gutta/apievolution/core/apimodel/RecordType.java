@@ -2,9 +2,20 @@ package gutta.apievolution.core.apimodel;
 
 import gutta.apievolution.core.util.ConcatenatedIterator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -179,12 +190,41 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     }
 
     /**
+     * Determines whether this record type is a supertype of the given type.
+     * 
+     * @param type The potential subtype
+     * @return {@code True} if this type is a supertype of the given type, {@code false} otherwise
+     */
+    public boolean isSupertypeOf(R type) {
+        return (this.equals(type)) || this.subTypes.contains(type);
+    }
+    
+    /**
      * Returns the subtypes of this record type.
      * 
      * @return see above
      */
     public Set<R> getSubTypes() {
         return Collections.unmodifiableSet(this.subTypes);
+    }
+    
+    /**
+     * Returns the subtypes of this record type, optionally including this type.
+     * 
+     * @param inclusive Flag whether to include this type in the result
+     * @return see above
+     */
+    @SuppressWarnings("unchecked")
+    public Set<R> getSubTypes(Inclusive inclusive) {
+        if (inclusive == Inclusive.YES) {
+            Set<R> types = new HashSet<>(this.subTypes.size() + 1);
+            types.add((R) this);
+            types.addAll(this.subTypes);
+            
+            return types;
+        } else {
+            return this.getSubTypes();
+        }
     }
 
     /**
@@ -289,7 +329,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     private Set<Integer> superTypeIds() {
         return this.typeIdSet(this.superTypes);
     }
-
+    
     /**
      * Compares this record type's state against the state of the given member.
      *

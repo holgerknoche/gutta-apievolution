@@ -1,0 +1,40 @@
+api test.provider {
+
+    enum TestEnum as ProviderEnum {
+        A as VALUE_1
+        B as VALUE_2
+    }
+
+    record TestParameter {
+        string testField replaces renamedField as fieldA
+        TestEnum testEnum
+        TestEnum* testList
+        TestRecord testRecord
+    }
+    
+    record TestRecord as ProviderRecord {
+    	int32 field
+    }
+
+    record TestResult {
+        string resultField replaces renamedField as retField
+        TestEnum resultEnum
+        TestEnum* resultList
+        TestRecord resultRecord
+    }
+    
+    exception TestException as ProviderException {
+        string exceptionField
+    }
+    
+    exception UnmappedTestException {}
+    
+    operation testOperation(TestParameter): TestResult
+    
+    operation operationWithMappedException(TestParameter): TestResult throws TestException
+    
+    operation operationWithUnmappedException(TestParameter): TestResult throws UnmappedTestException
+    
+    operation operationWithRuntimeException(TestParameter): TestResult
+
+}

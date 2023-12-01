@@ -18,11 +18,12 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class represents a map from a provider's internal representation to a
@@ -64,20 +65,48 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         return this.memberMap.get(providerEnumMember);
     }
 
-    protected CheckResult checkConsistency() {
-        CheckResult superResult = super.checkConsistency();
+    protected ValidationResult checkConsistency() {
+        ValidationResult superResult = super.checkConsistency();
         
-        CheckResult ownResult = new CheckResult();
-        this.ensureMandatoryFieldsAreMapped(ownResult);
+        ValidationResult ownResult = new ValidationResult();
+        this.checkForUnmappedTypes(ownResult);
+        
+        Set<UserDefinedType<ProviderApiDefinition>> reachableTypes = this.determineReachableTypes();
+        this.checkForUnmappedFields(ownResult, reachableTypes);
         
         return superResult.joinWith(ownResult);
     }
     
-    private void ensureMandatoryFieldsAreMapped(CheckResult result) {
-        for (UserDefinedType<?> udt : this.sourceDefinition.getUserDefinedTypes()) {
+    private Set<UserDefinedType<ProviderApiDefinition>> determineReachableTypes() {
+        return determineReachableTypes(this.providerOperations());
+    }
+    
+    private void checkForUnmappedTypes(ValidationResult result) {
+        // The API morphisms themselves already guarantee fundamental consistency of the type mapping, so we only have
+        // to check for warnings
+        
+        // All exception types of an operation should be mapped, but do not have to be
+        for (ProviderOperation operation : this.providerOperations()) {
+            for (ProviderRecordType providerExceptionType : operation.getThrownExceptions()) {
+                ConsumerRecordType consumerExceptionType = (ConsumerRecordType) this.mapProviderType(providerExceptionType);
+                
+                if (consumerExceptionType == null) {
+                    result.addWarningMessage("Unmapped exception type '" + providerExceptionType + "' on operation '" + operation + "'.");
+                }
+            }
+        }
+    }
+    
+    private void checkForUnmappedFields(ValidationResult result, Set<UserDefinedType<ProviderApiDefinition>> reachableTypes) {
+        for (UserDefinedType<?> udt : reachableTypes) {
             if (udt instanceof ProviderRecordType) {
                 ProviderRecordType providerType = (ProviderRecordType) udt;
                 ConsumerRecordType consumerType = (ConsumerRecordType) this.mapUserDefinedType(providerType).orElse(null);
+                
+                if (consumerType == null) {
+                    // No further checks for unmapped types
+                    continue;
+                }
                 
                 for (ProviderField field : providerType) {
                     this.ensureMandatoryFieldIsMapped(field, consumerType, result);
@@ -87,7 +116,7 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
     }
     
     private void ensureMandatoryFieldIsMapped(ProviderField providerField, ConsumerRecordType consumerType,
-            CheckResult result) {
+            ValidationResult result) {
         ConsumerField consumerField = this.mapProviderField(providerField);
         Optionality providerOptionality = providerField.getOptionality();
 

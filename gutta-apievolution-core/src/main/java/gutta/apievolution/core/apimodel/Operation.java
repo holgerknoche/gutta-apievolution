@@ -1,6 +1,9 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A service operation represents a callable entity within a service. It may
@@ -95,7 +98,33 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
     public Set<R> getThrownExceptions() {
         return this.thrownExceptions;
     }
+    
+    /**
+     * Returns the user-defined types reachable by this operation.
+     * 
+     * @return see above
+     */
+    public Set<UserDefinedType<A>> getReachableUserDefinedTypes() {
+        Set<UserDefinedType<A>> udts = new HashSet<>();
+     
+        // Add parameter and exception types if they are UDTs as well as all UDTs reachable by them
+        addIfUDT(this.getParameterType(), udts);
+        addIfUDT(this.getReturnType(), udts);
 
+        // Add all exception types including all types together with all UDTs reachable by them
+        this.getThrownExceptions().stream().forEach(exceptionType -> udts.addAll(exceptionType.getReachableUserDefinedTypes(Inclusive.YES)));
+        
+        return udts;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <X extends ApiDefinition<X, ?>> void addIfUDT(Type type, Set<UserDefinedType<X>> udts) {
+        if (type instanceof UserDefinedType) {
+            UserDefinedType<X> udt = (UserDefinedType<X>) type;
+            udts.addAll(udt.getReachableUserDefinedTypes(Inclusive.YES));
+        }
+    }
+    
     /**
      * Adds a thrown exception to this service operation.
      *

@@ -1,6 +1,12 @@
 package gutta.apievolution.dsl;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.ApiDefinition;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.dsl.parser.ApiRevisionBaseVisitor;
 import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
@@ -14,6 +20,12 @@ abstract class ApiRevisionModelBuilderPass<A extends ApiDefinition<A, O>, R exte
         F extends Field<R, F>, E extends EnumType<A, E, M>, M extends EnumMember<E, M>, O extends Operation<A, O, R>>
         extends ApiRevisionBaseVisitor<Void> {
 
+    protected final String sourceName;
+    
+    protected ApiRevisionModelBuilderPass(String sourceName) {
+        this.sourceName = sourceName;
+    }
+    
     private static String unquote(final String input) {
         int endIndex = (input.length() - 1);
 

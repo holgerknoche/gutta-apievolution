@@ -1,17 +1,17 @@
-package gutta.apievolution.core.util;
+package gutta.apievolution.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 /**
- * This class represents the result of a consistency check.
+ * This class represents the result of a validation of a structured element, e.g., an API model or a definition resolution.
  */
-public class CheckResult {
+public class ValidationResult {
 
     private boolean hasError = false;
 
-    private final List<String> messages = new ArrayList<>();
+    private final List<ValidationMessage> messages = new ArrayList<>();
 
     private String lastErrorMessage;
     
@@ -29,28 +29,37 @@ public class CheckResult {
      * 
      * @return see above
      */
-    public List<String> getMessages() {
+    public List<ValidationMessage> getMessages() {
         return this.messages;
     }
 
     /**
-     * Adds an error message to this check result.
+     * Adds an error message to this validation result.
      * 
      * @param message The error message to add
      */
     public void addErrorMessage(String message) {
         this.hasError = true;
-        this.messages.add(message);
+        this.messages.add(ValidationMessage.error(message));
         this.lastErrorMessage = message;
     }
 
     /**
-     * Adds a message to this check result.
+     * Adds a warning message to this validation result.
+     * 
+     * @param message The error message to add
+     */
+    public void addWarningMessage(String message) {
+        this.messages.add(ValidationMessage.warning(message));
+    }
+    
+    /**
+     * Adds an informational message to this validation result.
      * 
      * @param message The message to add
      */
-    public void addMessage(String message) {
-        this.messages.add(message);
+    public void addInfoMessage(String message) {
+        this.messages.add(ValidationMessage.info(message));
     }
 
     /**
@@ -60,7 +69,7 @@ public class CheckResult {
      * @param other The result to join with
      * @return The joined result
      */
-    public CheckResult joinWith(CheckResult other) {
+    public ValidationResult joinWith(ValidationResult other) {
         this.hasError = (this.hasError() || other.hasError());
         this.messages.addAll(other.getMessages());
         

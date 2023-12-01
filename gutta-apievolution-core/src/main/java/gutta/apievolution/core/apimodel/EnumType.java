@@ -1,6 +1,13 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * An enum type consists of a number of user-provided static values.
@@ -89,7 +96,7 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
     public Optional<M> findMemberByInternalName(String internalName) {
         return Optional.ofNullable(this.internalNameLookup.get(internalName));
     }
-
+    
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
         return super.hashCode() + this.declaredMembers.hashCode();
@@ -104,7 +111,7 @@ public abstract class EnumType<A extends ApiDefinition<A, ?>, E extends EnumType
     protected boolean stateEquals(EnumType<A, E, M> that) {
         return super.stateEquals(that) && this.declaredMembers.equals(that.declaredMembers);
     }
-    
+        
     @Override
     public final <R> R accept(TypeVisitor<R> visitor) {
         return visitor.handleEnumType(this);

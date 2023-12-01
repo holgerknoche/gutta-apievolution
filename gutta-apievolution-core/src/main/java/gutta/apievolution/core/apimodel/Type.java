@@ -22,5 +22,14 @@ public interface Type {
     default boolean isUnbounded() {
         return false;
     }
+    
+    /**
+     * Denotes whether this type is user-defined.
+     * 
+     * @return {@code True} if this is a user-defined type, otherwise {@code false}.
+     */
+    default boolean isUserDefined() {
+        return false;
+    }
 
 }

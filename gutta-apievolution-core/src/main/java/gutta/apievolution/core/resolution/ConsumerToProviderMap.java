@@ -22,12 +22,13 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ToMergedModelMap;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static gutta.apievolution.core.apimodel.Optionality.MANDATORY;
 import static gutta.apievolution.core.apimodel.Optionality.OPTIONAL;
@@ -121,22 +122,24 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
-    protected CheckResult checkConsistency() {
-        CheckResult superResult = super.checkConsistency();
+    protected ValidationResult checkConsistency() {
+        ValidationResult superResult = super.checkConsistency();
         
-        CheckResult ownResult = new CheckResult();
+        ValidationResult ownResult = new ValidationResult();
         // Make sure that all elements are mapped
         this.checkAllElementsAreMapped(ownResult);
         // Make sure that supertypes are mapped consistently
         this.checkSuperTypeConsistency(ownResult);
+        // Check for types unrelated to any operation
+        this.checkForUnrelatedTypes(ownResult);
         // Check optionalities of fields
         this.checkFieldOptionalities(ownResult);
                 
         // Join with own result
         return superResult.joinWith(ownResult);
     }
-    
-    private void checkAllElementsAreMapped(CheckResult result) {
+         
+    private void checkAllElementsAreMapped(ValidationResult result) {
         MemberMapChecker memberMapChecker = new MemberMapChecker(result);
         
         // Check that all UDTs as well as their elements are mapped
@@ -156,14 +159,28 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
             }
         }
     }
+    
+    private Set<UserDefinedType<ConsumerApiDefinition>> determineReachableTypes() {
+        return determineReachableTypes(this.consumerOperations());
+    }
+    
+    private void checkForUnrelatedTypes(ValidationResult result) {
+        Set<UserDefinedType<ConsumerApiDefinition>> reachableTypes = this.determineReachableTypes();
         
-    private void checkFieldOptionalities(CheckResult result) {
+        for (Type type : this.consumerTypes()) {
+            if (type.isUserDefined() && !(reachableTypes.contains(type))) {
+                result.addWarningMessage("Type '" + type + "' is not related to any operation.");
+            }
+        }        
+    }
+        
+    private void checkFieldOptionalities(ValidationResult result) {
         this.fieldMap.forEach(
                 (sourceField, targetField) -> this.ensureCompatibleOptionality(sourceField, targetField, result)
         );
     }
 
-    private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, CheckResult result) {
+    private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, ValidationResult result) {
         if (!this.isOptionalityCompatible(sourceField, targetField)) {
             result.addErrorMessage("Optionalities of " + sourceField + " and " + targetField + " are not compatible.");
         }
@@ -243,9 +260,9 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     
     private class MemberMapChecker implements TypeVisitor<Void> {
         
-        private final CheckResult result;
+        private final ValidationResult result;
         
-        public MemberMapChecker(CheckResult result) {
+        public MemberMapChecker(ValidationResult result) {
             this.result = result;
         }
         

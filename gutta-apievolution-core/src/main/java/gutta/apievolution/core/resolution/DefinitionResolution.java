@@ -1,12 +1,22 @@
 package gutta.apievolution.core.resolution;
 
-import gutta.apievolution.core.apimodel.*;
-import gutta.apievolution.core.apimodel.consumer.*;
-import gutta.apievolution.core.apimodel.provider.*;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
+import gutta.apievolution.core.apimodel.consumer.ConsumerField;
+import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
+import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderOperation;
+import gutta.apievolution.core.validation.ValidationMessage;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
 /**
  * A definition resolution represents the result of the resolution of a client
@@ -22,15 +32,27 @@ public class DefinitionResolution {
     private final Map<String, Type> consumerTypeMap;
 
     private final Map<String, Type> providerTypeMap;
+    
+    private final List<ValidationMessage> validationMessages;
 
-    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap) {
+    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap, List<ValidationMessage> validationMessages) {
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
+        this.validationMessages = validationMessages;
 
         this.consumerTypeMap = createTypeMap(consumerToProviderMap.consumerTypes());
         this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
     }
 
+    /**
+     * Returns the validation messages that occured during the resolution. 
+     * 
+     * @return see above
+     */
+    public List<ValidationMessage> getValidationMessages() {
+        return Collections.unmodifiableList(this.validationMessages);
+    }
+    
     private static Map<String, Type> createTypeMap(Collection<Type> types) {
         return types.stream().filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
                 .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));
@@ -72,7 +94,7 @@ public class DefinitionResolution {
     public Collection<Type> providerTypes() {
         return this.providerToConsumerMap.providerTypes();
     }
-    
+
     /**
      * Returns a collection of all mapped provider operations.
      *
@@ -90,6 +112,24 @@ public class DefinitionResolution {
      */
     public Type resolveProviderType(String internalName) {
         return this.providerTypeMap.get(internalName);
+    }
+
+    /**
+     * Maps a given type (consumer or provider) to its corresponding type on the
+     * opposing side.
+     * 
+     * @param <T>  The expected kind of type
+     * @param type The type to map
+     * @return The opposing type, if it exists
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Type> T mapType(Type type) {
+        Type candidate = this.mapConsumerType(type);
+        if (candidate != null) {
+            return (T) candidate;
+        }
+
+        return (T) this.mapProviderType(type);
     }
 
     /**
@@ -113,6 +153,21 @@ public class DefinitionResolution {
     }
 
     /**
+     * Maps a given field (consumer or provider) to its corresponding field on the
+     * opposing side.
+     * 
+     * @param field The field to map
+     * @return The corresponding field, if it exists
+     */
+    public Field<?, ?> mapField(Field<?, ?> field) {
+        if (field instanceof ConsumerField) {
+            return this.mapConsumerField((ConsumerField) field);
+        } else {
+            return this.mapProviderField((ProviderField) field);
+        }
+    }
+
+    /**
      * Maps a given provider field to the corresponding consumer field.
      *
      * @param providerField The provider field to map
@@ -121,7 +176,7 @@ public class DefinitionResolution {
     public ConsumerField mapProviderField(ProviderField providerField) {
         return this.providerToConsumerMap.mapProviderField(providerField);
     }
-    
+
     /**
      * Maps a given provider enum member to the corresponding consumer enum member.
      *

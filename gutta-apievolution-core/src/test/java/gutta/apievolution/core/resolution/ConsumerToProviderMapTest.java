@@ -18,7 +18,8 @@ import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationMessage;
+import gutta.apievolution.core.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ class ConsumerToProviderMapTest {
     @Test
     void consistentMapping() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         ConsumerField consumerField = consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
@@ -76,7 +77,7 @@ class ConsumerToProviderMapTest {
                 mapOf(consumerMember, providerMember),
                 mapOf(consumerOperation, providerOperation));
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertFalse(result.hasError());
     }
     
@@ -86,7 +87,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerRecord() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         consumerDefinition.newRecordType("TestRecord", 0);
         
@@ -100,9 +101,9 @@ class ConsumerToProviderMapTest {
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
                 emptyMap(), emptyMap(), emptyMap(), emptyMap());
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("User-defined type 'TestRecord' is not mapped."), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("User-defined type 'TestRecord' is not mapped.")), result.getMessages());
     }
 
     /**
@@ -111,7 +112,7 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerEnum() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         consumerDefinition.newEnumType("TestEnum", 0);
         
@@ -125,9 +126,9 @@ class ConsumerToProviderMapTest {
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
                 emptyMap(), emptyMap(), emptyMap(), emptyMap());
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("User-defined type 'TestEnum' is not mapped."), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("User-defined type 'TestEnum' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -136,10 +137,12 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerField() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         consumerRecord.newField("field", StringType.unbounded(), Optionality.OPT_IN);
+        
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
         
         consumerDefinition.finalizeDefinition();
         
@@ -148,15 +151,17 @@ class ConsumerToProviderMapTest {
        
         ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", 0);
         
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
         Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, emptyMap(), emptyMap(), mapOf(consumerOperation, providerOperation));
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("Field 'field' is not mapped."), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Field 'field' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -165,10 +170,15 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerEnumMember() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerEnumType consumerEnum = consumerDefinition.newEnumType("TestEnum", 0);
         consumerEnum.newEnumMember("TEST");
+        
+        // Establish connection to an operation
+        ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("Record", 1);
+        ConsumerField consumerField = consumerRecord.newField("field", consumerEnum, Optionality.MANDATORY);
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
         
         consumerDefinition.finalizeDefinition();
         
@@ -177,15 +187,20 @@ class ConsumerToProviderMapTest {
        
         ProviderEnumType providerEnum = providerDefinition.newEnumType("TestEnum", 0);
         
+        // Establish connection to an operation
+        ProviderRecordType providerRecord = providerDefinition.newRecordType("Record", 1);
+        ProviderField providerField = providerRecord.newField("field", providerEnum, Optionality.MANDATORY);
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
-        Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerEnum, providerEnum);
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerEnum, providerEnum, consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, mapOf(consumerField, providerField), emptyMap(), mapOf(consumerOperation, providerOperation));
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("Enum member 'TEST' is not mapped."), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Enum member 'TEST' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -194,10 +209,15 @@ class ConsumerToProviderMapTest {
     @Test
     void missingMappingForConsumerOperation() {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
-        consumerDefinition.newOperation("op", consumerRecord, consumerRecord);
+        
+        // Unmapped operation
+        consumerDefinition.newOperation("unmapped", consumerRecord, consumerRecord);        
+        
+        // Mapped operation to avoid warnings due to unmapped types
+        ConsumerOperation mappedConsumerOperation = consumerDefinition.newOperation("mapped", consumerRecord, consumerRecord);
         
         consumerDefinition.finalizeDefinition();
         
@@ -206,15 +226,17 @@ class ConsumerToProviderMapTest {
        
         ProviderRecordType providerRecord = providerDefinition.newRecordType("TestRecord", 0);
         
+        ProviderOperation mappedProviderOperation = providerDefinition.newOperation("mapped", providerRecord, providerRecord);
+        
         providerDefinition.finalizeDefinition();
         
         Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerRecord, providerRecord);
         ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
-                typeMap, emptyMap(), emptyMap(), emptyMap());
+                typeMap, emptyMap(), emptyMap(), mapOf(mappedConsumerOperation, mappedProviderOperation));
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList("Operation 'op' is not mapped."), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Operation 'unmapped' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -223,11 +245,13 @@ class ConsumerToProviderMapTest {
     @Test
     void inconsistentSuperType() {
      // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerSuperType = consumerDefinition.newRecordType("SuperType", 0);
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", noInternalName(), 1,
                 Abstract.NO, Collections.singleton(consumerSuperType));
+        
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerRecord, consumerRecord);
         
         consumerDefinition.finalizeDefinition();
         
@@ -239,6 +263,7 @@ class ConsumerToProviderMapTest {
                 Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
         ProviderRecordType providerDummy = providerDefinition.newRecordType("Dummy", 2);
         
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerRecord, providerRecord);
         
         providerDefinition.finalizeDefinition();
         
@@ -246,11 +271,11 @@ class ConsumerToProviderMapTest {
                 mapOf(consumerRecord, providerRecord, consumerSuperType, providerDummy),
                 emptyMap(),
                 emptyMap(),
-                emptyMap());
+                mapOf(consumerOperation, providerOperation));
         
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(asList("Mapped supertype 'Dummy@revision 0' of 'TestRecord' is not a supertype of 'TestRecord@revision 0'."),
+        assertEquals(asList(ValidationMessage.error("Mapped supertype 'Dummy@revision 0' of 'TestRecord' is not a supertype of 'TestRecord@revision 0'.")),
                 result.getMessages());
     }
     
@@ -259,7 +284,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void mandatoryFieldForInput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an input field mandatory, it can be of any optionality
         // on the provider side
@@ -276,7 +301,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optInFieldForInput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an input field opt-in, it may not be mandatory on the
         // provider side
@@ -293,7 +318,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optionalFieldForInput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an input field optional, it may not be mandatory on the
         // provider side
@@ -310,7 +335,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void mandatoryFieldForOutput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an output field mandatory, it may not be optional on
         // the provider side
@@ -327,7 +352,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optInFieldForOutput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an output field opt-in, it may not be optional on the
         // provider side
@@ -344,7 +369,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optionalFieldForOutput() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an output field optional, it may be of any optionality
         // on the provider side
@@ -361,7 +386,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void mandatoryFieldForInOut() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an in-out field mandatory, it must be at mandatory or
         // opt-in on the provider side
@@ -378,7 +403,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optInFieldForInOut() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an in-out field opt-in, it must be opt-in on the
         // provider side
@@ -395,7 +420,7 @@ class ConsumerToProviderMapTest {
      */
     @Test
     void optionalFieldForInOut() {
-        CheckResult result;
+        ValidationResult result;
         
         // When the consumer considers an in-out field optional, it must be optional or opt-in
         // on the provider side
@@ -407,10 +432,10 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
     }
     
-    private CheckResult runOptionalityTest(Usage consumerUsage, Optionality consumerOptionality,
+    private ValidationResult runOptionalityTest(Usage consumerUsage, Optionality consumerOptionality,
             Optionality providerOptionality) {
         // Create the consumer definition
-        ConsumerApiDefinition consumerDefinition = ConsumerApiDefinition.create("test", 0);
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
         
         ConsumerRecordType consumerRecord = consumerDefinition.newRecordType("TestRecord", 0);
         ConsumerField consumerField = consumerRecord.newField("field", consumerRecord, consumerOptionality);

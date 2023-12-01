@@ -2,6 +2,7 @@ package gutta.apievolution.javacodegen;
 
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.util.IntegerRange;
+import gutta.apievolution.dsl.NamedInputStream;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
@@ -66,14 +67,14 @@ public class ProviderCodeGenerationMojo
             this.getLog().debug("- " + file.getName());
         }
 
-        List<FileInputStream> streams = Stream.of(revisionFiles).map(this::toInputStream).collect(Collectors.toList());
+        List<NamedInputStream> streams = Stream.of(revisionFiles).map(this::toInputStream).collect(Collectors.toList());
 
         return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
     }
 
-    private FileInputStream toInputStream(File file) {
+    private NamedInputStream toInputStream(File file) {
         try {
-            return new FileInputStream(file);
+            return new NamedInputStream(file.getName(), new FileInputStream(file));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

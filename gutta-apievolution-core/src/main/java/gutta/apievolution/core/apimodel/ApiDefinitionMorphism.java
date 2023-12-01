@@ -1,9 +1,12 @@
 package gutta.apievolution.core.apimodel;
 
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationResult;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -21,16 +24,14 @@ import java.util.function.Function;
  * @param <O1> The type of operation from the first API definition
  * @param <O2> The type of operation from the second API definition
  */
-public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>,
-    T1 extends UserDefinedType<A1>, T2 extends UserDefinedType<A2>,
-    F1 extends Field<?, F1>, F2 extends Field<?, F2>,
-    M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>,
+public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, T1 extends UserDefinedType<A1>, 
+    T2 extends UserDefinedType<A2>, F1 extends Field<?, F1>, F2 extends Field<?, F2>, M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>,
     O1 extends Operation<?, O1, ?>, O2 extends Operation<?, O2, ?>> {
 
     protected final A1 sourceDefinition;
-    
+
     protected final A2 targetDefinition;
-    
+
     protected final TypeMap<T1, T2> typeMap;
 
     protected final Map<F1, F2> fieldMap;
@@ -41,15 +42,16 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Creates a new morphism from the given data.
+     * 
      * @param sourceDefinition The source definition of the morphism
      * @param targetDefinition The target definition of the morphism
-     * @param typeMap The type map on user-defined maps to use
-     * @param fieldMap The field map to use
-     * @param memberMap The enum member map to use
-     * @param operationMap The operation map to use
+     * @param typeMap          The type map on user-defined maps to use
+     * @param fieldMap         The field map to use
+     * @param memberMap        The enum member map to use
+     * @param operationMap     The operation map to use
      */
-    protected ApiDefinitionMorphism(A1 sourceDefinition, A2 targetDefinition, TypeMap<T1, T2> typeMap, Map<F1, F2> fieldMap,
-            Map<M1, M2> memberMap, Map<O1, O2> operationMap) {
+    protected ApiDefinitionMorphism(A1 sourceDefinition, A2 targetDefinition, TypeMap<T1, T2> typeMap, Map<F1, F2> fieldMap, Map<M1, M2> memberMap,
+            Map<O1, O2> operationMap) {
         this.sourceDefinition = sourceDefinition;
         this.targetDefinition = targetDefinition;
         this.typeMap = typeMap;
@@ -60,23 +62,26 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Returns the source definition of this morphism.
+     * 
      * @return see above
      */
     public A1 getSourceDefinition() {
         return sourceDefinition;
     }
-    
+
     /**
      * Returns the target definition of this morphism.
+     * 
      * @return see above
      */
     public A2 getTargetDefinition() {
         return targetDefinition;
     }
-    
+
     /**
      * Maps the given type.
-     * @param <T> The expected type of type
+     * 
+     * @param <T>        The expected type of type
      * @param sourceType The type to map
      * @return The mapped type, if it exists
      */
@@ -86,6 +91,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Explicitly maps a user-defined type.
+     * 
      * @param sourceType The type to map
      * @return The mapped type, if it exists
      */
@@ -95,6 +101,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Maps the given field.
+     * 
      * @param sourceField The field to map
      * @return The mapped field, if it exists
      */
@@ -104,6 +111,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Maps the given enum member.
+     * 
      * @param sourceMember The enum member to map
      * @return The mapped member, if it exists
      */
@@ -113,6 +121,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Maps the given operation.
+     * 
      * @param sourceOperation The operation to map
      * @return The mapped operation, if it exists
      */
@@ -122,10 +131,11 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
 
     /**
      * Checks this morphism for consistency.
+     * 
      * @return The result of the check
      */
-    protected CheckResult checkConsistency() {
-        CheckResult result = new CheckResult();
+    protected ValidationResult checkConsistency() {
+        ValidationResult result = new ValidationResult();
 
         this.checkFieldMapping(result);
         this.checkEnumMemberMapping(result);
@@ -134,9 +144,8 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
         return result;
     }
 
-    private <E> void ensureConsistentTypeMapping(E sourceElement, E targetElement, Function<E, Type> operation,
-            CheckResult result, BiFunction<E, Type, String> onUnmappedType,
-            ConsistencyCheckErrorMessageProvider<E> onIncompatibleType) {
+    private <E> void ensureConsistentTypeMapping(E sourceElement, E targetElement, Function<E, Type> operation, ValidationResult result,
+            BiFunction<E, Type, String> onUnmappedType, ConsistencyCheckErrorMessageProvider<E> onIncompatibleType) {
 
         Type sourceType = operation.apply(sourceElement);
         Type mappedSourceType = this.mapType(sourceType).orElse(null);
@@ -145,109 +154,112 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
         if (mappedSourceType == null) {
             result.addErrorMessage(onUnmappedType.apply(sourceElement, sourceType));
         } else if (!mappedSourceType.equals(targetType)) {
-            result.addErrorMessage(
-                    onIncompatibleType.createMessage(sourceElement, sourceType, mappedSourceType, targetType));
+            result.addErrorMessage(onIncompatibleType.createMessage(sourceElement, sourceType, mappedSourceType, targetType));
         }
     }
 
-    private void checkFieldMapping(CheckResult result) {
+    private void checkFieldMapping(ValidationResult result) {
         // Ensure that field types are mapped consistently by this morphism
-        this.fieldMap.forEach(
-                (sourceField, targetField) -> this.ensureConsistentFieldTypeMapping(sourceField, targetField, result));
+        this.fieldMap.forEach((sourceField, targetField) -> this.ensureConsistentFieldTypeMapping(sourceField, targetField, result));
     }
 
-    private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField,
-            CheckResult result) {
+    private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField, ValidationResult result) {
         // Make sure that the record type containing the member is mapped in a
         // compatible way
         this.ensureConsistentTypeMapping(sourceField, targetField, Field::getOwner, result,
-                (source, sourceType) -> "Record type '" + sourceType + "' containing field '" + source +
-                        "' is not mapped.",
-                (source, sourceType, mappedType, expectedType) -> "Record type '" + sourceType +
-                        "' containing field '" + source + "' is mapped to incompatible type '" + mappedType +
-                        "' instead of '" + expectedType + "'.");
+                (source, sourceType) -> "Record type '" + sourceType + "' containing field '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Record type '" + sourceType + "' containing field '" + source +
+                        "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
 
         // Make sure that the field type is mapped in a compatible way
         this.ensureConsistentTypeMapping(sourceField, targetField, Field::getType, result,
                 (source, sourceType) -> "Type '" + sourceType + "' of mapped field '" + source + "' is not mapped.",
-                (source, sourceType, mappedType, expectedType) -> "Type '" + sourceType + "' of mapped field '" +
-                        source + "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType +
-                        "'.");
+                (source, sourceType, mappedType, expectedType) -> "Type '" + sourceType + "' of mapped field '" + source +
+                        "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
     }
 
-    private void checkEnumMemberMapping(CheckResult result) {
-        this.memberMap.forEach((sourceMember, targetMember) -> this.ensureConsistentMemberTypeMapping(sourceMember,
-                targetMember, result));
+    private void checkEnumMemberMapping(ValidationResult result) {
+        this.memberMap.forEach((sourceMember, targetMember) -> this.ensureConsistentMemberTypeMapping(sourceMember, targetMember, result));
     }
 
-    private void ensureConsistentMemberTypeMapping(EnumMember<?, ?> sourceMember, EnumMember<?, ?> targetMember,
-            CheckResult result) {
+    private void ensureConsistentMemberTypeMapping(EnumMember<?, ?> sourceMember, EnumMember<?, ?> targetMember, ValidationResult result) {
         // Make sure that the enum type containing the member is mapped in a compatible
         // way
         this.ensureConsistentTypeMapping(sourceMember, targetMember, EnumMember::getOwner, result,
-                (source, sourceType) -> "Enum type '" + sourceType + "' containing member '" + source +
-                        "' is not mapped.",
-                (source, sourceType, mappedType, expectedType) -> "Enum type '" + sourceType + "' containing member '" +
-                        source + "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType +
-                        "'.");
+                (source, sourceType) -> "Enum type '" + sourceType + "' containing member '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Enum type '" + sourceType + "' containing member '" + source +
+                        "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
     }
 
-    private void checkOperationMapping(CheckResult result) {
+    private void checkOperationMapping(ValidationResult result) {
         // Ensure that operation parameter and result types are mapped consistently by
         // this morphism
-        this.operationMap.forEach((sourceOperation, targetOperation) -> this
-                .ensureConsistentOperationTypeMapping(sourceOperation, targetOperation, result));
+        this.operationMap.forEach((sourceOperation, targetOperation) -> this.ensureConsistentOperationTypeMapping(sourceOperation, targetOperation, result));
     }
 
-    private void ensureConsistentOperationTypeMapping(Operation<?, ?, ?> sourceOperation,
-            Operation<?, ?, ?> targetOperation, CheckResult result) {
+    private void ensureConsistentOperationTypeMapping(Operation<?, ?, ?> sourceOperation, Operation<?, ?, ?> targetOperation, ValidationResult result) {
         // Make sure that operation parameter and result types are mapped in a
         // compatible way
         this.ensureConsistentTypeMapping(sourceOperation, targetOperation, Operation::getParameterType, result,
-                (source, sourceType) -> "Parameter type '" + sourceType + "' of mapped operation '" + source +
-                        "' is not mapped.",
-                (source, sourceType, mappedType, expectedType) -> "Parameter type '" + sourceType +
-                        "' of mapped operation '" + source + "' is mapped to incompatible type '" + mappedType +
-                        "' instead of '" + expectedType + "'.");
+                (source, sourceType) -> "Parameter type '" + sourceType + "' of mapped operation '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Parameter type '" + sourceType + "' of mapped operation '" + source +
+                        "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
 
         this.ensureConsistentTypeMapping(sourceOperation, targetOperation, Operation::getReturnType, result,
-                (source, sourceType) -> "Return type '" + sourceType + "' of mapped operation '" + source +
-                        "' is not mapped.",
-                (source, sourceType, mappedType, expectedType) -> "Return type '" + sourceType +
-                        "' of mapped operation '" + source + "' is mapped to incompatible type '" + mappedType +
-                        "' instead of '" + expectedType + "'.");
+                (source, sourceType) -> "Return type '" + sourceType + "' of mapped operation '" + source + "' is not mapped.",
+                (source, sourceType, mappedType, expectedType) -> "Return type '" + sourceType + "' of mapped operation '" + source +
+                        "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
     }
 
     /**
      * Check the consistency of supertypes mapped by this morphism.
+     * 
      * @param result The result to store potential violations in
      */
-    protected void checkSuperTypeConsistency(CheckResult result) {
+    protected void checkSuperTypeConsistency(ValidationResult result) {
         this.typeMap.forEach((sourceType, targetType) -> this.checkSuperTypeAssociation(sourceType, targetType, result));
     }
 
     @SuppressWarnings("unchecked")
-    private void checkSuperTypeAssociation(T1 sourceType, T2 targetType,
-            CheckResult result) {
+    private void checkSuperTypeAssociation(T1 sourceType, T2 targetType, ValidationResult result) {
         if (sourceType.isRecord()) {
             // Check: For each supertype, the image must be in the target super types
             RecordType<?, ?, ?> sourceRecord = (RecordType<?, ?, ?>) sourceType;
             RecordType<?, ?, ?> targetRecord = (RecordType<?, ?, ?>) targetType;
-            
+
             for (RecordType<?, ?, ?> sourceSuperType : sourceRecord.getSuperTypes()) {
-                RecordType<?, ?, ?> mappedSuperType = 
-                        (RecordType<?, ?, ?>) this.mapUserDefinedType((T1) sourceSuperType).orElse(null);
-                
+                RecordType<?, ?, ?> mappedSuperType = (RecordType<?, ?, ?>) this.mapUserDefinedType((T1) sourceSuperType).orElse(null);
+
                 if (mappedSuperType == null) {
-                    result.addErrorMessage("Supertype '" + sourceSuperType +  "' of '" + sourceRecord + "' is not mapped.");
+                    result.addErrorMessage("Supertype '" + sourceSuperType + "' of '" + sourceRecord + "' is not mapped.");
                 } else if (!targetRecord.getSuperTypes().contains(mappedSuperType)) {
-                    result.addErrorMessage("Mapped supertype '" + mappedSuperType + "' of '" + sourceRecord + 
-                            "' is not a supertype of '" + targetRecord + "'.");
+                    result.addErrorMessage(
+                            "Mapped supertype '" + mappedSuperType + "' of '" + sourceRecord + "' is not a supertype of '" + targetRecord + "'.");
                 }
             }
         }
     }
     
+    /**
+     * Determines the user-defined types reachable from the given operations. This includes types that are used as return types, parameter types, or exceptions,
+     * as well as types reachable from those types (e.g., field types).
+     * 
+     * @param <A> The concrete type of API definition that is used
+     * @param <O> The concrete type of operation that is used
+     * 
+     * @param operations The operations to determine the types of
+     * @return The types reachable from the given operations
+     */
+    protected static <A extends ApiDefinition<A, O>, O extends Operation<A, O, ?>> Set<UserDefinedType<A>> determineReachableTypes(Collection<O> operations) {
+        Set<UserDefinedType<A>> reachableTypes = new HashSet<>();
+        
+        for (O operation : operations) {
+            reachableTypes.addAll(operation.getReachableUserDefinedTypes());
+        }
+        
+        return reachableTypes;
+    }
+
     private interface ConsistencyCheckErrorMessageProvider<E> {
 
         String createMessage(E sourceElement, Type sourceType, Type mappedType, Type expectedMappedType);

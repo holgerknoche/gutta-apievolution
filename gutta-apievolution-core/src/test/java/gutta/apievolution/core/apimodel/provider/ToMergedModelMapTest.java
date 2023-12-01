@@ -2,7 +2,8 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Abstract;
 import gutta.apievolution.core.apimodel.TypeMap;
-import gutta.apievolution.core.util.CheckResult;
+import gutta.apievolution.core.validation.ValidationMessage;
+import gutta.apievolution.core.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -37,7 +38,7 @@ class ToMergedModelMapTest {
         TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
         ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
     
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertFalse(result.hasError());
     }
 
@@ -60,7 +61,7 @@ class ToMergedModelMapTest {
         TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
         ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
     
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertFalse(result.hasError());
     }
     
@@ -85,7 +86,7 @@ class ToMergedModelMapTest {
                 superRecordA, superRecordB));
         ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
     
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertFalse(result.hasError());
     }
     
@@ -109,9 +110,9 @@ class ToMergedModelMapTest {
         TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
         ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
     
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(asList("Supertype 'SuperType@revision 0' of 'Test@revision 0' is not mapped."),
+        assertEquals(asList(ValidationMessage.error("Supertype 'SuperType@revision 0' of 'Test@revision 0' is not mapped.")),
                 result.getMessages());
     }
 
@@ -137,9 +138,9 @@ class ToMergedModelMapTest {
                 superRecordA, otherRecordB));
         ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
     
-        CheckResult result = map.checkConsistency();
+        ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(asList("Mapped supertype 'OtherType@revision 0' of 'Test@revision 0' is not a supertype of 'Test@revision 0'."),
+        assertEquals(asList(ValidationMessage.error("Mapped supertype 'OtherType@revision 0' of 'Test@revision 0' is not a supertype of 'Test@revision 0'.")),
                 result.getMessages());
     }
     

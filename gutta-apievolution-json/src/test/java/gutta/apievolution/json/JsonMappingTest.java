@@ -21,7 +21,7 @@ class JsonMappingTest {
      */
     @Test
     void testJsonConversation() {
-        TestRequestRouter requestRouter = new TestRequestRouter();
+        TestRequestRouter requestRouter = new TestRequestRouter("test.provider");
 
         TestOperationProviderProxy serviceProxy = new TestOperationProviderProxy();
         requestRouter.registerProviderService(serviceProxy);

@@ -1,12 +1,29 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.Annotation;
+import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.Inherited;
+import gutta.apievolution.core.apimodel.Optionality;
+import gutta.apievolution.core.apimodel.QualifiedName;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeMap;
+import gutta.apievolution.core.apimodel.Usage;
+import gutta.apievolution.core.apimodel.UserDefinedType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.apimodel.Conventions.noDeclaredPredecessors;
+import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
+import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static gutta.apievolution.core.apimodel.provider.ProviderTypeTools.isTypeChange;
 
 /**

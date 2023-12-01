@@ -2,7 +2,7 @@ package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumType;
 
-import static gutta.apievolution.core.apimodel.Conventions.*;
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 
 /**
  * Consumer-specific implementation of an {@link EnumType}.

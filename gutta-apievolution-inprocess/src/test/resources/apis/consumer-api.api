@@ -1,0 +1,38 @@
+api test.customer {
+
+    enum TestEnum as ConsumerEnum {
+        A as VALUE_A
+        B as VALUE_B
+    }
+
+    record TestParameter as ConsumerParameter {
+        string renamedField as testField
+        TestEnum testEnum
+        TestEnum* testList
+        TestRecord testRecord
+    }
+    
+    record TestRecord as ConsumerRecord {
+    	int32 field
+    }
+
+    record TestResult as ConsumerResult {
+        string renamedField as resultField
+        TestEnum resultEnum
+        TestEnum* resultList
+        TestRecord resultRecord
+    }
+    
+    exception TestException as MappedConsumerException {
+    	string exceptionField
+    }    
+    
+    operation testOperation(TestParameter): TestResult
+    
+    operation operationWithMappedException(TestParameter): TestResult throws TestException
+    
+    operation operationWithUnmappedException(TestParameter): TestResult
+    
+    operation operationWithRuntimeException(TestParameter): TestResult
+
+}
