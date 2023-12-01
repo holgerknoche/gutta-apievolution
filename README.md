@@ -12,5 +12,7 @@ This project currently consists of four components:
 1. the domain-specific language for specifying API definitions, contained in `gutta-apievolution-dsl`,
 1. a Maven plugin `gutta-apievolution-java-codegen-plugin`, which illustrates how code for the internal representation can be generated,
 1. `gutta-apievolution-json`, which shows how the approach can be applied to JSON-based communication,
-1. `gutta-apievolution-fixedformat`, which shows how the approach can be applied to fixed-format communication such as used by in-process COBOL communication
-1. and `gutta-apievolution-repository`, a simple repository implementation built with Quarkus.
+1. `gutta-apievolution-inprocess`, which shows how the approach can be applied to in-process invocations in Java
+1. `gutta-apievolution-fixedformat`, which shows how the approach can be applied to fixed-format communication such as used by in-process COBOL communication,
+1. `gutta-apievolution-repository`, a simple repository implementation built with Quarkus,
+1. and JMH benchmarks for performance impact evaluation in `gutta-apievolution-jmh`.
