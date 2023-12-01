@@ -16,6 +16,9 @@ import java.lang.reflect.InvocationHandler;
 //   an object that is indistinguishable from the consumer perspective may not be equal due
 //   to fields only visible to the provider
 
+/**
+ * The dynamic proxy API mapping strategy employs lazily created dynamic proxies for adapting provider types to the consumer's view.
+ */
 public class DynamicProxyApiMappingStrategy extends AbstractProxyApiMappingStrategy {
 
     @Override

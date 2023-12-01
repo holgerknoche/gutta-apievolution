@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A {@link TypeClassMap} provides a mapping from API types to implementation classes and vice versa.
+ */
 public class TypeClassMap {
 
     private final UDTToClassMap udtToClassMap;
@@ -26,7 +29,14 @@ public class TypeClassMap {
 
     private final Map<Class<?>, Type> providerTypeLookup;
 
-    public TypeClassMap(UDTToClassMap udtToClassMap, ConsumerApiDefinition apiDefinition, DefinitionResolution definitionResolution) {
+    /**
+     * Creates a new map using the given data.
+     * 
+     * @param udtToClassMap        The underlying mapping of user-defined types to implementation classes.
+     * @param apiDefinition        The consumer API definition that is used
+     * @param definitionResolution The resolution of the consumer API against the provider API
+     */
+    TypeClassMap(UDTToClassMap udtToClassMap, ConsumerApiDefinition apiDefinition, DefinitionResolution definitionResolution) {
         this.udtToClassMap = udtToClassMap;
         this.consumerTypeLookup = createConsumerTypeLookup(udtToClassMap, apiDefinition);
         this.providerTypeLookup = createProviderTypeLookup(udtToClassMap, apiDefinition, definitionResolution);
@@ -65,23 +75,36 @@ public class TypeClassMap {
         return lookup;
     }
 
-    public Type classToType(Class<?> type) {
-        Type candidate = this.classToConsumerType(type);
+    /**
+     * Returns the API type represented by the given class.
+     * 
+     * @param javaClass The class whose API counterpart is sought
+     * @return The API type represented by this class or {@code null} if the class does not represent an API type
+     */
+    public Type classToType(Class<?> javaClass) {
+        Type candidate = this.classToConsumerType(javaClass);
         if (candidate != null) {
             return candidate;
         }
 
-        return this.classToProviderType(type);
+        return this.classToProviderType(javaClass);
     }
 
-    public Type classToConsumerType(Class<?> type) {
+    private Type classToConsumerType(Class<?> type) {
         return this.consumerTypeLookup.get(type);
     }
 
-    public Type classToProviderType(Class<?> type) {
+    private Type classToProviderType(Class<?> type) {
         return this.providerTypeLookup.get(type);
     }
 
+    /**
+     * Returns the class representing the given API type.
+     * 
+     * @param <T>  The type of the class
+     * @param type The API type whose representation is sought
+     * @return The class representing the type
+     */
     @SuppressWarnings("unchecked")
     public <T> Class<T> typeToClass(Type type) {
         if (type instanceof ConsumerUserDefinedType) {
@@ -99,14 +122,9 @@ public class TypeClassMap {
         return new BasicTypeToClassMap().mapBasicTypeToClass(type);
     }
 
-    public <T> Class<T> consumerTypeToClass(Type type) {
-        return this.typeToClass(type);
-    }
-
-    public <T> Class<T> providerTypeToClass(Type type) {
-        return this.typeToClass(type);
-    }
-
+    /**
+     * Encoding of the mapping of basic types to classes.
+     */
     private static class BasicTypeToClassMap implements TypeVisitor<Class<?>> {
 
         private static final Class<?> INT32_REPRESENTATION = Integer.class;

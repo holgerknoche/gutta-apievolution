@@ -3,10 +3,19 @@ package gutta.apievolution.inprocess;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Specific implementation of a method invoker that uses reflection (based on {@link Method} invocations) for invoking API methods.
+ */
 public class ReflectiveMethodInvoker extends AbstractApiMethodInvoker {
 
     private final Method apiMethod;
 
+    /**
+     * Creates a new invoker using the given data.
+     * 
+     * @param typeMappingStrategy The type mapping strategy to use
+     * @param apiMethod           The API method to invoke
+     */
     public ReflectiveMethodInvoker(TypeMappingStrategy typeMappingStrategy, Method apiMethod) {
         super(typeMappingStrategy);
 

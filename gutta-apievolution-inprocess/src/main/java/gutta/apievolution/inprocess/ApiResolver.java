@@ -8,6 +8,9 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * An {@link ApiResolver} locates provider APIs and creates objects for accessing provider APIs from a consumer.
+ */
 public class ApiResolver {
 
     private final ApiResolutionContext apiResolutionContext;
@@ -16,15 +19,33 @@ public class ApiResolver {
 
     private final ConcurrentMap<Class<?>, Object> apiCache = new ConcurrentHashMap<>();
 
-    public ApiResolver(ApiResolutionContext resolutionContext) {
+    /**
+     * Creates a new API resolver using the given resolution context.
+     * 
+     * @param resolutionContext The resolution context to use
+     */
+    ApiResolver(ApiResolutionContext resolutionContext) {
         this(resolutionContext, new DynamicProxyApiMappingStrategy());
     }
 
-    public ApiResolver(ApiResolutionContext resolutionContext, ApiMappingStrategy apiMappingStrategy) {
+    /**
+     * Creates a new API resolver using the given data.
+     * 
+     * @param resolutionContext  The resolution context to use
+     * @param apiMappingStrategy The API mapping strategy to use
+     */
+    ApiResolver(ApiResolutionContext resolutionContext, ApiMappingStrategy apiMappingStrategy) {
         this.apiResolutionContext = resolutionContext;
         this.apiMappingStrategy = apiMappingStrategy;
     }
 
+    /**
+     * Resolves the API corresponding to the given consumer API type and returns an object for accessing this API.
+     * 
+     * @param <T>     The type of the consumer API
+     * @param apiType The desired consumer API type
+     * @return An object for accessing the API
+     */
     @SuppressWarnings("unchecked")
     public <T> T resolveApi(Class<T> apiType) {
         return (T) this.apiCache.computeIfAbsent(apiType, type -> this.createApi(type));

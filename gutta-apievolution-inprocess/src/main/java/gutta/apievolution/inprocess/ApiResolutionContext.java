@@ -7,7 +7,10 @@ import gutta.apievolution.core.resolution.DefinitionResolver;
 
 import java.util.Set;
 
-public class ApiResolutionContext {
+/**
+ * The API resolution context provides access to necessary data during the resolution of a consumer API.
+ */
+class ApiResolutionContext {
 
     private final ConsumerApiDefinition consumerApiDefinition;
 

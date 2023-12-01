@@ -74,7 +74,7 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
     private Method findProviderMethodFor(ProviderOperation providerOperation, Class<?> providerApiClass) {
         // Determine and validate the class representing the parameter type
         ProviderRecordType providerParameterType = providerOperation.getParameterType();
-        Class<?> providerParameterClass = this.typeToClassMap.providerTypeToClass(providerParameterType);
+        Class<?> providerParameterClass = this.typeToClassMap.typeToClass(providerParameterType);
 
         // Attempt to find a method with the expected signature
         String providerMethodName = providerOperation.getInternalName();
@@ -88,7 +88,7 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
 
         // Assert that the return type matches the expectation
         ProviderRecordType providerResultType = providerOperation.getReturnType();
-        Class<?> providerResultClass = this.typeToClassMap.providerTypeToClass(providerResultType);
+        Class<?> providerResultClass = this.typeToClassMap.typeToClass(providerResultType);
         if (!providerResultClass.equals(providerMethod.getReturnType())) {
             throw new InvalidApiException("Method '" + providerMethod + "' has an unexpected return type.");
         }

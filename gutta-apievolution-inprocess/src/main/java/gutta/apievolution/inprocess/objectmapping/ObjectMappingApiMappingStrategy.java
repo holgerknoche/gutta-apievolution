@@ -9,6 +9,9 @@ import gutta.apievolution.inprocess.TypeMappingStrategy;
 
 import java.lang.reflect.InvocationHandler;
 
+/**
+ * This mapping strategy creates actual consumer and provider objects, mapping values as appropriate.
+ */
 public class ObjectMappingApiMappingStrategy extends AbstractProxyApiMappingStrategy {
 
     @Override
