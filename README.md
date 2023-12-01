@@ -6,7 +6,7 @@ Core libraries of the GUTTA API evolution approach presented in our paper "Conti
 Please note that this is work-in-progress, as we are currently improving, documenting and consolidating our initial prototype.
 
 # Components
-This project currently consists of four components:
+This project currently consists of the following components:
 
 1. The core library `gutta-apievolution-core`, which contains the basic elements and algorithms for API our evolution approach,
 1. the domain-specific language for specifying API definitions, contained in `gutta-apievolution-dsl`,
