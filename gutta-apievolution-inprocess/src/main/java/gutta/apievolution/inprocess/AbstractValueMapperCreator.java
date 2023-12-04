@@ -277,7 +277,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             memberMap.put(sourceValue, targetValue);
         }
 
-        return new EnumTypeValueMapper(memberMap);
+        return new EnumTypeValueMapper(targetClass, memberMap);
     }
 
     @Override
