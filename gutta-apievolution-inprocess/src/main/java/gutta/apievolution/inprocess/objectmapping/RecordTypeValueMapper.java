@@ -1,10 +1,10 @@
 package gutta.apievolution.inprocess.objectmapping;
 
+import gutta.apievolution.inprocess.AbstractRecordTypeValueMapper;
 import gutta.apievolution.inprocess.FieldMapper;
 import gutta.apievolution.inprocess.ImplementedBy;
 import gutta.apievolution.inprocess.InvalidApiException;
 import gutta.apievolution.inprocess.InvalidInvocationException;
-import gutta.apievolution.inprocess.ValueMapper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -14,13 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-class RecordTypeValueMapper implements ValueMapper {
+class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
 
     private ObjectCreator<?> recordCreator;
 
     private final List<FieldValueTransferrer> transferrers;
 
     public RecordTypeValueMapper(Class<?> targetType, Map<Method, FieldMapper> fieldMappers) {
+        super(targetType);
+        
         this.recordCreator = new ObjectCreator<>(implementorOf(targetType));
 
         List<FieldValueTransferrer> transferrers = new ArrayList<>(fieldMappers.size());
@@ -43,11 +45,7 @@ class RecordTypeValueMapper implements ValueMapper {
     }
 
     @Override
-    public Object mapValue(Object value) {
-        if (value == null) {
-            return null;
-        }
-
+    protected Object mapRepresentableValue(Object value) {
         Object record = this.recordCreator.createObject();
         this.transferrers.forEach(transferrer -> transferrer.transferValue(value, record));
 
