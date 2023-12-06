@@ -4,7 +4,10 @@ import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerSubType;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerSuperType;
 import gutta.apievolution.inprocess.consumer.dynproxy.MappedConsumerException;
+import gutta.apievolution.inprocess.consumer.dynproxy.UnrepresentableConsumerSuperType;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 import gutta.apievolution.inprocess.dynproxy.MappedException;
 import gutta.apievolution.inprocess.provider.UnmappedTestException;
@@ -15,12 +18,16 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for the type mapping strategy using dynamic proxies.
  */
 class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyApiMappingStrategy> {
 
+    /**
+     * Test case: Successful invocation of an API method.
+     */
     @Test
     void successfulInvocation() {
         ConsumerApi consumerApi = this.loadAndResolveApi();
@@ -74,6 +81,30 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
     }
 
+    /**
+     * Test case: Invocation of a method that returns a representable subtype of the result type.
+     */
+    @Test
+    void invocationWithRepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSubType result = (ConsumerSubType) consumerApi.operationWithRepresentableSubtype(new ConsumerParameter());
+        
+        assertEquals(1234, result.getInheritedField());
+        assertEquals(5678, result.getSubField());
+    }
+    
+    /**
+     * Test case: Invocation of a method that returns an unrepresentable subtype of the result type.
+     */
+    @Test
+    void invocationWithUnrepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
+        assertTrue(result instanceof UnrepresentableConsumerSuperType);
+    }
+    
     private ConsumerApi loadAndResolveApi() {
         return this.loadAndResolveApi(ConsumerApi.class, "gutta.apievolution.inprocess.consumer.dynproxy");
     }

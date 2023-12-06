@@ -24,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMappingStrategy> {
 
+    /**
+     * Test case: Successful invocation of an API method.
+     */
     @Test
     void successfulInvocation() {
         ConsumerApi consumerApi = this.loadAndResolveApi();
@@ -76,6 +79,9 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
     }
     
+    /**
+     * Test case: Invocation of a method that returns a representable subtype of the result type.
+     */
     @Test
     void invocationWithRepresentableSubtype() {
         ConsumerApi consumerApi = this.loadAndResolveApi();
@@ -87,6 +93,9 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
         assertEquals(5678, result.getSubField());
     }
     
+    /**
+     * Test case: Invocation of a method that returns an unrepresentable subtype of the result type.
+     */
     @Test
     void invocationWithUnrepresentableSubtype() {
         ConsumerApi consumerApi = this.loadAndResolveApi();
