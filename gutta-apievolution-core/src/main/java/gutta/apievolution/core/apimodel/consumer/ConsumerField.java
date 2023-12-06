@@ -42,6 +42,7 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> impl
         }
     }
 
+    @Override
     protected boolean stateEquals(ConsumerField that) {
         return super.stateEquals(that);
     }

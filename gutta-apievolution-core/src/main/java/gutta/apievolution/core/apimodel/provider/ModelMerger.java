@@ -348,9 +348,11 @@ public class ModelMerger {
 
         private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Optionality optionality, Type type) {
             // See if the candidate actually matches with respect to the relevant properties
-            return matchCandidate.getPublicName().equals(originalField.getPublicName())
-                    && matchCandidate.getInternalName().equals(originalField.getInternalName()) && matchCandidate.getType().equals(type)
-                    && matchCandidate.getOptionality().equals(optionality) && matchCandidate.isInherited() == originalField.isInherited();
+            return matchCandidate.getPublicName().equals(originalField.getPublicName()) &&
+                    matchCandidate.getInternalName().equals(originalField.getInternalName()) &&
+                    matchCandidate.getType().equals(type) &&
+                    matchCandidate.getOptionality().equals(optionality) &&
+                    matchCandidate.isInherited() == originalField.isInherited();
         }
 
         protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {

@@ -92,6 +92,7 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
         }
     }
 
+    @Override
     protected boolean stateEquals(ProviderField that) {
         // No predecessors or successors to avoid cycles
         return super.stateEquals(that);

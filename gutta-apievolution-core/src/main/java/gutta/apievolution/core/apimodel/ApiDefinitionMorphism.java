@@ -24,7 +24,9 @@ import java.util.function.Function;
  * @param <O1> The type of operation from the first API definition
  * @param <O2> The type of operation from the second API definition
  */
-public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, T1 extends UserDefinedType<A1>, T2 extends UserDefinedType<A2>, F1 extends Field<?, F1>, F2 extends Field<?, F2>, M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>, O1 extends Operation<?, O1, ?>, O2 extends Operation<?, O2, ?>> {
+public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, T1 extends UserDefinedType<A1>,
+    T2 extends UserDefinedType<A2>, F1 extends Field<?, F1>, F2 extends Field<?, F2>, M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>,
+    O1 extends Operation<?, O1, ?>, O2 extends Operation<?, O2, ?>> {
 
     protected final A1 sourceDefinition;
 
