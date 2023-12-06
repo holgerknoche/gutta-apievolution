@@ -637,7 +637,10 @@ public class ModelMerger {
         }
 
     }
-    
+
+    /**
+     * This type groups a merged model definition with the corresponding map from a provider revision.
+     */
     public static class MergedDefinitionWithMap {
         
         public final ProviderApiDefinition mergedDefinition;

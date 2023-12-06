@@ -231,7 +231,13 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
     protected ValueMapper createMapperForType(Type type) {
         return type.accept(this);
     }
-    
+
+    /**
+     * Creates a mapper for the given unrepresentable type.
+     * 
+     * @param type The unrepresentable type to create a mapper for
+     * @return An appropriate value mapper or {@code null} if no mapper can be created
+     */
     protected ValueMapper createMapperForUnrepresentableType(Type type) {
         if (type instanceof RecordType) {
             RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
