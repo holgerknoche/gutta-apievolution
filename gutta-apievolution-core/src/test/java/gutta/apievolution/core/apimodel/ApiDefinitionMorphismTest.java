@@ -84,7 +84,7 @@ class ApiDefinitionMorphismTest {
         ValidationResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(singletonList(ValidationMessage.error("Type 'TypeA2' of mapped field 'fieldA' is not mapped.")), result.getMessages());
+        assertEquals(singletonList(ValidationMessage.error("Type 'TypeA2' of mapped field 'fieldA@TypeA1' is not mapped.")), result.getMessages());
     }
 
     /**
@@ -122,7 +122,7 @@ class ApiDefinitionMorphismTest {
 
         assertTrue(result.hasError());
         assertEquals(
-                singletonList(ValidationMessage.error("Type 'TypeA2' of mapped field 'fieldA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'.")),
+                singletonList(ValidationMessage.error("Type 'TypeA2' of mapped field 'fieldA@TypeA' is mapped to incompatible type 'TypeB1' instead of 'TypeB2'.")),
                 result.getMessages());
     }
 
@@ -157,7 +157,7 @@ class ApiDefinitionMorphismTest {
         ValidationResult result = morphism.checkConsistency();
 
         assertTrue(result.hasError());
-        assertEquals(singletonList(ValidationMessage.error("Record type 'TypeA1' containing field 'fieldA' is not mapped.")), result.getMessages());
+        assertEquals(singletonList(ValidationMessage.error("Record type 'TypeA1' containing field 'fieldA@TypeA1' is not mapped.")), result.getMessages());
     }
 
     /**
@@ -196,7 +196,7 @@ class ApiDefinitionMorphismTest {
         assertTrue(result.hasError());
         assertEquals(
                 singletonList(
-                        ValidationMessage.error("Record type 'TypeA1' containing field 'fieldA' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'.")),
+                        ValidationMessage.error("Record type 'TypeA1' containing field 'fieldA@TypeA1' is mapped to incompatible type 'TypeB2' instead of 'TypeB1'.")),
                 result.getMessages());
     }
 

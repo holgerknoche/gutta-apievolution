@@ -591,5 +591,6 @@ class ModelMergerTest {
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
     }
+        
 
 }

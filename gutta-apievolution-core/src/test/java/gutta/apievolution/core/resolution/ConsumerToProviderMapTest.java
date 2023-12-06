@@ -162,7 +162,7 @@ class ConsumerToProviderMapTest {
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList(ValidationMessage.error("Field 'field' is not mapped.")), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Field 'field@TestRecord' is not mapped.")), result.getMessages());
     }
     
     /**

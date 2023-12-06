@@ -149,18 +149,21 @@ public class DefinitionResolver {
 
             ConsumerRecordType consumerType = (ConsumerRecordType) consumerUDT;
             ProviderRecordType providerType = (ProviderRecordType) consumerToProviderType.get(consumerType);
-            for (ConsumerField consumerField : consumerType.getDeclaredFields()) {
-                String fieldName = consumerField.getPublicName();
-                ProviderField providerField = providerType.resolveField(fieldName)
-                        .orElseThrow(() -> new DefinitionResolutionException(
-                                "Missing field " + fieldName + " in provider type " + providerType));
-
-                this.assertMatchingFields(consumerField, providerField);
-                consumerToProviderField.put(consumerField, providerField);
-            }
+            consumerType.getFields()
+                .forEach(consumerField -> this.mapField(consumerField, providerType, consumerToProviderField));
         }
 
         return consumerToProviderField;
+    }
+    
+    private void mapField(ConsumerField consumerField, ProviderRecordType providerType, Map<ConsumerField, ProviderField> fieldMap) {
+        String fieldName = consumerField.getPublicName();
+        ProviderField providerField = providerType.resolveField(fieldName)
+                .orElseThrow(() -> new DefinitionResolutionException(
+                        "Missing field " + fieldName + " in provider type " + providerType));
+
+        this.assertMatchingFields(consumerField, providerField);
+        fieldMap.put(consumerField, providerField);
     }
 
     private void assertMatchingFields(ConsumerField consumerField, ProviderField providerField) {

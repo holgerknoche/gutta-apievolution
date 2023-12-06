@@ -25,14 +25,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
 import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static java.util.Collections.*;
 
 /**
  * Test cases for definition resolution.
@@ -79,10 +79,10 @@ class DefinitionResolverTest {
 
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
-        String expected = "TestType -> TestType@revision 0\n" + " int32Field -> int32Field@TestType@revision 0\n" +
-                " int64Field -> int64Field@TestType@revision 0\n" + " unboundedStringField -> unboundedStringField@TestType@revision 0\n" +
-                " boundedStringField -> boundedStringField@TestType@revision 0\n" + " unboundedListField -> unboundedListField@TestType@revision 0\n" +
-                " boundedListField -> boundedListField@TestType@revision 0\n" + " numericField -> numericField@TestType@revision 0\n";
+        String expected = "TestType -> TestType@revision 0\n" + " int32Field@TestType -> int32Field@TestType@revision 0\n" +
+                " int64Field@TestType -> int64Field@TestType@revision 0\n" + " unboundedStringField@TestType -> unboundedStringField@TestType@revision 0\n" +
+                " boundedStringField@TestType -> boundedStringField@TestType@revision 0\n" + " unboundedListField@TestType -> unboundedListField@TestType@revision 0\n" +
+                " boundedListField@TestType -> boundedListField@TestType@revision 0\n" + " numericField@TestType -> numericField@TestType@revision 0\n";
 
         String actual = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
 
@@ -260,8 +260,8 @@ class DefinitionResolverTest {
 
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
 
-        String expectedResolution = "A -> A@revision 0\n" + "B -> B@revision 0\n" + " boundedListField -> boundedListField@B@revision 0\n" +
-                " unboundedListField -> unboundedListField@B@revision 0\n";
+        String expectedResolution = "A -> A@revision 0\n" + "B -> B@revision 0\n" + " boundedListField@B -> boundedListField@B@revision 0\n" +
+                " unboundedListField@B -> unboundedListField@B@revision 0\n";
 
         assertEquals(expectedResolution, new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
     }
@@ -677,6 +677,55 @@ class DefinitionResolverTest {
 
         List<ValidationMessage> validationMessages = resolution.getValidationMessages();
         assertEquals(singletonList(ValidationMessage.warning("Type 'unrelated' is not related to any operation.")), validationMessages);
+    }
+    
+    /**
+     * Test case: Map a type hierarchy.
+     */
+    @Test
+    void mapTypeHierarchy() {
+        // Consumer API
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
+        
+        ConsumerRecordType consumerSuperType = consumerApi.newRecordType("SuperType", noInternalName(), 0, Abstract.YES, noSuperTypes());
+        consumerSuperType.newField("inheritedField", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ConsumerRecordType consumerSubTypeA = consumerApi.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Collections.singleton(consumerSuperType));
+        consumerSubTypeA.newField("fieldA", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ConsumerRecordType consumerSubTypeB = consumerApi.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Collections.singleton(consumerSuperType));
+        consumerSubTypeB.newField("fieldB", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        consumerApi.newOperation("operation", consumerSuperType, consumerSuperType); 
+        
+        consumerApi.finalizeDefinition();
+        
+        // Provider API
+        ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType providerSuperType = providerApi.newRecordType("SuperType", noInternalName(), 0, Abstract.YES, noSuperTypes(), noPredecessor());
+        providerSuperType.newField("inheritedField", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ProviderRecordType providerSubTypeA = providerApi.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
+        providerSubTypeA.newField("fieldA", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ProviderRecordType providerSubTypeB = providerApi.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
+        providerSubTypeB.newField("fieldB", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        providerApi.newOperation("operation", providerSuperType, providerSuperType);
+        
+        providerApi.finalizeDefinition();
+        
+        // Definition resolution
+        RevisionHistory revisionHistory = new RevisionHistory(providerApi);
+        Set<Integer> supportedRevisions = Collections.singleton(0);
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
+        
+        // Make sure that there are no validation messages
+        assertTrue(resolution.getValidationMessages().isEmpty());
+        
+        System.out.println(new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
     }
 
 }

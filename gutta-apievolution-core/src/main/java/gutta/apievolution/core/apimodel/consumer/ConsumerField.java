@@ -42,13 +42,13 @@ public class ConsumerField extends Field<ConsumerRecordType, ConsumerField> impl
         }
     }
 
-    boolean stateEquals(ConsumerField that) {
+    protected boolean stateEquals(ConsumerField that) {
         return super.stateEquals(that);
     }
 
     @Override
     public <R> R accept(ConsumerApiDefinitionElementVisitor<R> visitor) {
         return visitor.handleConsumerField(this);
-    }
+    }    
 
 }

@@ -76,11 +76,6 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
     }
 
     @Override
-    public String toString() {
-        return this.getInternalName() + "@" + this.getOwner().toString();
-    }
-
-    @Override
     public int hashCode() {
         // No predecessors or successors to avoid cycles
         return super.hashCode();
@@ -97,7 +92,7 @@ public class ProviderField extends Field<ProviderRecordType, ProviderField>
         }
     }
 
-    boolean stateEquals(ProviderField that) {
+    protected boolean stateEquals(ProviderField that) {
         // No predecessors or successors to avoid cycles
         return super.stateEquals(that);
     }
