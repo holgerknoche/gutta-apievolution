@@ -20,8 +20,13 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import static gutta.apievolution.core.apimodel.Type.mostSpecificTypeOf;
 
 /**
  * Abstract supertype for a creator that produces {@link ValueMapper ValueMappers} that provides common functionality.
@@ -227,21 +232,46 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
         return type.accept(this);
     }
     
-    protected ValueMapper createMapperForUnrepresentableType(Type type, Class<?> representingClass) {
-        if (type.isException()) {
-            return this.createMapperForUnrepresentableExceptionType(type);
+    protected ValueMapper createMapperForUnrepresentableType(Type type) {
+        if (type instanceof RecordType) {
+            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+            
+            if (recordType.getSuperTypes().isEmpty()) {
+                // If the type does not have any supertypes, use the default behavior
+                // for unrelated types
+                return null;
+            }
+            
+            // If the type is a record type, there could be a supertype that can be mapped
+            // and that might specify a behavior for unmapped types
+            Type mappedSupertype = this.findMostSpecificMappedSupertypeOf(recordType);
+            if (mappedSupertype == null) {
+                return null;
+            }
+            
+            Class<?> representingClass = this.getTypeToClassMap().typeToClass(mappedSupertype);
+            return new UnrepresentableRecordTypeMapper(representingClass);
         } else {
-            return this.createMapperForUnrepresentableRegularType(type);
+            // For non-record types, treat this case as if the representing class does not
+            // represent an API type
+            return null;
         }
     }
     
-    protected ValueMapper createMapperForUnrepresentableExceptionType(Type type) {
-        // TODO
-        return null;
+    private RecordType<?, ?, ?> findMostSpecificMappedSupertypeOf(RecordType<?, ?, ?> type) {
+        Set<RecordType<?, ?, ?>> mappedSupertypes = new HashSet<>();
+        this.collectMappedSupertypesOf(type, mappedSupertypes::add);
+        
+        return mostSpecificTypeOf(mappedSupertypes);
     }
     
-    protected ValueMapper createMapperForUnrepresentableRegularType(Type type) {          
-        return null;
+    private void collectMappedSupertypesOf(RecordType<?, ?, ?> type, Consumer<RecordType<?, ?, ?>> collector) {
+        RecordType<?, ?, ?> mappedType = this.getDefinitionResolution().mapType(type);
+        if (mappedType != null) {
+            collector.accept(mappedType);
+        } else {
+            type.getSuperTypes().forEach(superType -> this.collectMappedSupertypesOf(superType, collector));
+        }
     }
 
     @Override

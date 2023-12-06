@@ -15,7 +15,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for the type mapping strategy that creates copies of objects.
@@ -79,6 +81,8 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
         ConsumerApi consumerApi = this.loadAndResolveApi();
         
         ConsumerSubType result = (ConsumerSubType) consumerApi.operationWithRepresentableSubtype(new ConsumerParameter());
+        
+        assertTrue(result.isRepresentable());
         assertEquals(1234, result.getInheritedField());
         assertEquals(5678, result.getSubField());
     }
@@ -88,7 +92,7 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
         ConsumerApi consumerApi = this.loadAndResolveApi();
         
         ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
-        System.out.println(result);
+        assertFalse(result.isRepresentable());
     }
 
     private ConsumerApi loadAndResolveApi() {
