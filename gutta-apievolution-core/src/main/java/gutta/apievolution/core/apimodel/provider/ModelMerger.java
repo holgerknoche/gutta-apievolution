@@ -563,8 +563,9 @@ public class ModelMerger {
         }
         
         private void registerFieldMapping(ProviderField sourceField, ProviderRecordType targetType) {
-            // The public name can be ambiguous on merged models, so we need to look up using the internal name
-            ProviderField targetField = targetType.resolveFieldByInternalName(sourceField.getInternalName()).orElseThrow(() -> new ModelMergeException(
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderField effectiveSourceField = sourceField.findLastSuccessor();
+            ProviderField targetField = targetType.resolveFieldByInternalName(effectiveSourceField.getInternalName()).orElseThrow(() -> new ModelMergeException(
                     "Could not find a field with internal name '" + sourceField.getInternalName() + "' on type '" + targetType + "'."));
 
             this.fieldMap.put(sourceField, targetField);
@@ -581,16 +582,20 @@ public class ModelMerger {
         }
         
         private void registerEnumMemberMapping(ProviderEnumMember sourceMember, ProviderEnumType targetType) {
-            // The public name can be ambiguous on merged models, so we need to look up using the internal name
-            ProviderEnumMember targetMember = targetType.findMemberByInternalName(sourceMember.getInternalName()).orElseThrow(() -> new ModelMergeException(
-                    "Could not find an enum member with internal name '" + sourceMember.getInternalName() + "' on type '" + targetType + "'."));
-            
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderEnumMember effectiveSourceMember = sourceMember.findLastSuccessor();
+            ProviderEnumMember targetMember = targetType.findMemberByInternalName(effectiveSourceMember.getInternalName())
+                    .orElseThrow(() -> new ModelMergeException(
+                            "Could not find an enum member with internal name '" + sourceMember.getInternalName() + "' on type '" + targetType + "'."));
+
             this.enumMemberMap.put(sourceMember, targetMember);
         }
         
         @Override
         public Void handleProviderOperation(ProviderOperation sourceOperation) {
-            ProviderOperation targetOperation = this.mergedDefinition.resolveOperationByInternalName(sourceOperation.getInternalName())
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderOperation effectiveSourceOperation = sourceOperation.findLastSuccessor();
+            ProviderOperation targetOperation = this.mergedDefinition.resolveOperationByInternalName(effectiveSourceOperation.getInternalName())
                     .orElseThrow(() -> new ModelMergeException("Could not find an operation with internal name '" + sourceOperation.getInternalName() + "'."));
             
             this.operationMap.put(sourceOperation, targetOperation);

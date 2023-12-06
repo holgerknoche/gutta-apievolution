@@ -725,7 +725,19 @@ class DefinitionResolverTest {
         // Make sure that there are no validation messages
         assertTrue(resolution.getValidationMessages().isEmpty());
         
-        System.out.println(new DefinitionResolutionPrinter().printDefinitionResolution(resolution));
+        final String expectedResolution = "SubTypeA -> SubTypeA@revision 0\n" + 
+                " inheritedField@SubTypeA -> inheritedField@SubTypeA@revision 0\n" + 
+                " fieldA@SubTypeA -> fieldA@SubTypeA@revision 0\n" + 
+                "SubTypeB -> SubTypeB@revision 0\n" + 
+                " inheritedField@SubTypeB -> inheritedField@SubTypeB@revision 0\n" + 
+                " fieldB@SubTypeB -> fieldB@SubTypeB@revision 0\n" + 
+                "SuperType -> SuperType@revision 0\n" + 
+                " inheritedField@SuperType -> inheritedField@SuperType@revision 0\n" + 
+                "operation -> operation\n";
+        
+        String actualResolution = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
+        
+        assertEquals(expectedResolution, actualResolution);
     }
 
 }
