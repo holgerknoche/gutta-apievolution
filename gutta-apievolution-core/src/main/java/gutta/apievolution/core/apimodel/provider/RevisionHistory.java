@@ -93,7 +93,7 @@ public class RevisionHistory {
         }
 
         // Instantiate the relevant checks
-        List<RevisionCheck> checks = Arrays.asList(new SameAPINameCheck(), new DescendingRevisionsCheck(),
+        List<RevisionCheck> checks = Arrays.asList(new RevisionsAreFinalizedCheck(), new SameAPINameCheck(), new DescendingRevisionsCheck(),
                 new NoTypeChangesForFieldsCheck());
 
         // Iterate over the revisions in reverse order and invoke the checks on each
@@ -231,6 +231,20 @@ public class RevisionHistory {
             }
         }
 
+    }
+    
+    /**
+     * Check implementation that all contained revisions are finalized.
+     */
+    private static class RevisionsAreFinalizedCheck implements RevisionCheck {
+        
+        @Override
+        public void checkRevision(ProviderApiDefinition revision) {
+            if (!revision.isFinalized()) {
+                throw new InconsistentHistoryException("Revision '" + revision.getRevision() + "' is not finalized.");
+            }            
+        }
+        
     }
 
 }

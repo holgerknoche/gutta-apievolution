@@ -102,6 +102,8 @@ class DefinitionResolverTest {
 
         consumerApi.newOperation("operation", consumerType, consumerType);
 
+        consumerApi.finalizeDefinition();
+        
         // Define a provider API with a mandatory field
         ProviderApiDefinition revision = ProviderApiDefinition.create("test", 0);
 
@@ -112,6 +114,8 @@ class DefinitionResolverTest {
 
         revision.newOperation("operation", recordType, recordType);
 
+        revision.finalizeDefinition();
+        
         // Resolve the consumer definition against the revision history
         RevisionHistory revisionHistory = new RevisionHistory(revision);
         Set<Integer> supportedRevision = new HashSet<>(Arrays.asList(0));
@@ -136,6 +140,8 @@ class DefinitionResolverTest {
 
         providerType.newField("testField", AtomicType.INT_32, Optionality.MANDATORY);
 
+        providerApi.finalizeDefinition();
+        
         // Consumer definition
         ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
 
@@ -143,6 +149,8 @@ class DefinitionResolverTest {
 
         consumerType.newField("testField", AtomicType.INT_64, Optionality.MANDATORY);
 
+        consumerApi.finalizeDefinition();
+        
         //
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0));
@@ -562,6 +570,8 @@ class DefinitionResolverTest {
 
         consumerApi.newOperation("operation", consumerResultType, consumerParameterType);
 
+        consumerApi.finalizeDefinition();
+        
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
         ProviderRecordType providerResultType = providerApi.newRecordType("ProviderResult", 0);
@@ -569,6 +579,8 @@ class DefinitionResolverTest {
 
         providerApi.newOperation("operation", providerResultType, providerParameterType);
 
+        providerApi.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
@@ -589,6 +601,8 @@ class DefinitionResolverTest {
 
         consumerApi.newOperation("operation", consumerResultType, consumerParameterType);
 
+        consumerApi.finalizeDefinition();
+        
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
         ProviderRecordType providerResultType = providerApi.newRecordType("Result", 0);
@@ -596,6 +610,8 @@ class DefinitionResolverTest {
 
         providerApi.newOperation("operation", providerResultType, providerParameterType);
 
+        providerApi.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 
@@ -616,6 +632,8 @@ class DefinitionResolverTest {
 
         consumerApi.newOperation("operation", consumerResultType, consumerParameterType);
 
+        consumerApi.finalizeDefinition();
+        
         ProviderApiDefinition providerApi = ProviderApiDefinition.create("test", 0);
 
         ProviderRecordType providerResultType = providerApi.newRecordType("Result", 0);
@@ -627,6 +645,8 @@ class DefinitionResolverTest {
         ProviderOperation providerOperation = providerApi.newOperation("operation", providerResultType, providerParameterType);
         providerOperation.addThrownException(providerExceptionType);
 
+        providerApi.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(providerApi);
         Set<Integer> supportedRevisions = Collections.singleton(0);
 

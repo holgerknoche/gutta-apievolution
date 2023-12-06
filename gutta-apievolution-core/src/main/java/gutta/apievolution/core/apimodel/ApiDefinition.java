@@ -203,6 +203,15 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
     protected void performSpecificFinalizationActions() {
         // Do nothing by default
     }
+    
+    /**
+     * Returns whether this API definition is finalized, i.e., it is immutable and all finalization actions have been performed.
+     * 
+     * @return {@code True} if the API definition is finalized, {@code false} otherwise
+     */
+    public boolean isFinalized() {
+        return (this.state == ApiDefinitionState.FINALIZED);
+    }
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses

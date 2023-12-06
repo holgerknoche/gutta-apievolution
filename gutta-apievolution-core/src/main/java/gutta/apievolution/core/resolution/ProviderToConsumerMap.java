@@ -109,6 +109,10 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
                 }
                 
                 for (ProviderField field : providerType) {
+                    if (field.isInherited()) {
+                        continue;
+                    }
+                    
                     this.ensureMandatoryFieldIsMapped(field, consumerType, result);
                 }
             }

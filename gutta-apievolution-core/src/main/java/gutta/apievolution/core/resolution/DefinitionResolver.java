@@ -47,14 +47,21 @@ public class DefinitionResolver {
     public DefinitionResolution resolveConsumerDefinition(RevisionHistory revisionHistory,
             Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
 
-        int desiredRevision = consumerApi.getReferencedRevision();
-        if (!supportedRevisions.contains(desiredRevision)) {
-            throw new DefinitionResolutionException("Revision " + desiredRevision + " is not supported.");
+        // Make sure that the consumer API is finalized
+        if (!consumerApi.isFinalized()) {
+            throw new DefinitionResolutionException("Consumer API definition is not finalized.");
         }
+        
+        // Make sure that the referenced revision exists and is supported
+        int desiredRevision = consumerApi.getReferencedRevision();        
 
         Optional<ProviderApiDefinition> optionalProviderApi = revisionHistory.getRevision(desiredRevision);
         if (!optionalProviderApi.isPresent()) {
             throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exist.");
+        }
+        
+        if (!supportedRevisions.contains(desiredRevision)) {
+            throw new DefinitionResolutionException("Revision " + desiredRevision + " is not supported.");
         }
 
         return this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi, revisionHistory);

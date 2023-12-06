@@ -30,9 +30,13 @@ class ModelMergerTest {
         ProviderApiDefinition revision1 = new ProviderApiDefinition("a.b",
                 new HashSet<>(Arrays.asList(new Annotation("a", "b"), new Annotation("b", "c"))), 0, null);
 
+        revision1.finalizeDefinition();
+        
         ProviderApiDefinition revision2 = new ProviderApiDefinition("a.b",
-                new HashSet<>(Arrays.asList(new Annotation("b", "x"), new Annotation("c", "d"))), 1, null);
-
+                new HashSet<>(Arrays.asList(new Annotation("b", "x"), new Annotation("c", "d"))), 1, null);        
+        
+        revision2.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         ProviderApiDefinition mergedRevision = new ModelMerger().createMergedDefinition(revisionHistory);
 
@@ -58,6 +62,8 @@ class ModelMergerTest {
         testTypeV1.newField("typeChangeField", AtomicType.INT_32, Optionality.MANDATORY);
         testTypeV1.newField("deletedField", StringType.unbounded(), Optionality.MANDATORY);
 
+        revision1.finalizeDefinition();
+        
         ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 2);
 
         ProviderRecordType testTypeV2 = revision2.newRecordType("Test", noInternalName(), 0, testTypeV1);
@@ -68,6 +74,8 @@ class ModelMergerTest {
                 unchangedFieldV1);
         testTypeV2.newField("addedField", StringType.unbounded(), Optionality.MANDATORY);
 
+        revision2.finalizeDefinition();
+        
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
@@ -100,6 +108,8 @@ class ModelMergerTest {
         ProviderEnumMember unchangedMember = testEnumV1.newEnumMember("UNCHANGED");
         testEnumV1.newEnumMember("DELETED");
 
+        revision1.finalizeDefinition();
+        
         ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 2, revision1);
 
         ProviderEnumType testEnumV2 = revision2.newEnumType("Test", noInternalName(), 0, testEnumV1);
@@ -107,6 +117,8 @@ class ModelMergerTest {
         testEnumV2.newEnumMember("UNCHANGED", noInternalName(), unchangedMember);
         testEnumV2.newEnumMember("ADDED");
 
+        revision2.finalizeDefinition();
+        
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
@@ -142,6 +154,8 @@ class ModelMergerTest {
         ProviderEnumMember unchangedMemberV1 = testEnumV1.newEnumMember("UNCHANGED");
         ProviderEnumMember deletedMemberV1 = testEnumV1.newEnumMember("DELETED");
 
+        revision1.finalizeDefinition();
+        
         ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 2);
 
         ProviderRecordType testTypeV2 = revision2.newRecordType("Test", "TestInternal", 0, testTypeV1);
@@ -158,6 +172,8 @@ class ModelMergerTest {
                 unchangedMemberV1);
         ProviderEnumMember addedMemberV2 = testEnumV2.newEnumMember("ADDED");
 
+        revision2.finalizeDefinition();
+        
         // Merge the test revision history into a single definition
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
 
