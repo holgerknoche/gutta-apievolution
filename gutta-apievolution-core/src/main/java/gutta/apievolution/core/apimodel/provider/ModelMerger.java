@@ -50,11 +50,13 @@ public class ModelMerger {
      * @param referenceRevision A specific revision for whose elements a mapping is created
      * @return A map from the reference revision to the merged definition
      */
-    public ToMergedModelMap createMergedDefinition(RevisionHistory revisionHistory, ProviderApiDefinition referenceRevision) {
+    public MergedDefinitionWithMap createMergedDefinition(RevisionHistory revisionHistory, ProviderApiDefinition referenceRevision) {
         RevisionMergeData mergeData = this.mergeRevisionHistory(revisionHistory);
 
         MergedModelMappingCreator mappingCreator = new MergedModelMappingCreator(referenceRevision, mergeData);        
-        return mappingCreator.createToMergedModelMap();
+        ToMergedModelMap map = mappingCreator.createToMergedModelMap();
+        
+        return new MergedDefinitionWithMap(mergeData.mergedDefinition, map);
     }
 
     private ProviderApiDefinition createEmptyMergedDefinition(RevisionHistory revisionHistory) {
@@ -634,6 +636,19 @@ public class ModelMerger {
             this.typeLookup = typeLookup;
         }
 
+    }
+    
+    public static class MergedDefinitionWithMap {
+        
+        public final ProviderApiDefinition mergedDefinition;
+        
+        public final ToMergedModelMap map;
+        
+        private MergedDefinitionWithMap(ProviderApiDefinition mergedDefinition, ToMergedModelMap map) {
+            this.mergedDefinition = mergedDefinition;
+            this.map = map;
+        }                
+        
     }
 
 }

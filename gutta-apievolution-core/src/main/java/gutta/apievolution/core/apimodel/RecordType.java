@@ -161,12 +161,13 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public boolean isRecord() {
         return true;
     }
-
+    
     /**
      * Returns whether this record type is an exception.
      *
      * @return see above
      */
+    @Override
     public boolean isException() {
         return (this.recordKind == RecordKind.EXCEPTION);
     }

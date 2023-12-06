@@ -1,11 +1,16 @@
 package gutta.apievolution.inprocess;
 
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 /**
  * Abstract implementation of a {@link TypeMappingStrategy} that provides common functionality.
@@ -88,25 +93,74 @@ public abstract class AbstractTypeMappingStrategy implements TypeMappingStrategy
             return (T) type;
         }
 
-        // Otherwise, try to find a match in the superclass (if any)...
+        // Otherwise, find the most specific type of all supertypes (superclasses or interfaces)
+        Set<Type> candidates = this.findTypesRepresentedBySuperTypesOf(javaClass);
+        return (T) mostSpecificTypeOf(candidates);
+    }
+
+    private Set<Type> findTypesRepresentedBySuperTypesOf(Class<?> javaClass) {
+        Set<Type> types = new HashSet<>();
+
+        this.collectTypesRepresentedBySuperTypes(javaClass, types::add);
+
+        return types;
+    }
+
+    private void collectTypesRepresentedBySuperTypes(Class<?> javaClass, Consumer<Type> collector) {
+        Type candidate = this.getTypeToClassMap().classToType(javaClass);
+        if (candidate != null) {
+            collector.accept(candidate);
+        }
+                
         Class<?> superClass = javaClass.getSuperclass();
         if (superClass != null) {
-            T candidate = this.findTypeRepresentedBy(superClass);
-            if (candidate != null) {
-                return candidate;
-            }
+            this.collectTypesRepresentedBySuperTypes(superClass, collector);
         }
 
         // ...or the implemented interfaces
         for (Class<?> implementedInterface : javaClass.getInterfaces()) {
-            T candidate = this.findTypeRepresentedBy(implementedInterface);
-            if (candidate != null) {
-                return candidate;
+            this.collectTypesRepresentedBySuperTypes(implementedInterface, collector);
+        }       
+    }
+    
+    private static Type mostSpecificTypeOf(Collection<Type> types) {
+        Type mostSpecificType = null;
+        
+        for (Type type : types) {
+            if (mostSpecificType == null) {
+                // The first type encountered is always the most specific one up to this point
+                mostSpecificType = type;
+                continue;
+            } else if (type instanceof RecordType && mostSpecificType instanceof RecordType) {
+                // If both the most specific type and the current type are records, they may be in a inheritance hierarchy
+                // and the current type may be more specific
+                
+                RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+                RecordType<?, ?, ?> mostSpecificRecordType = (RecordType<?, ?, ?>) mostSpecificType;
+                
+                if (mostSpecificRecordType.isSupertypeOf(recordType)) {
+                    // The current type is more specific than the most specific one up to this point
+                    mostSpecificType = recordType;
+                } else if (!recordType.isSupertypeOf(mostSpecificRecordType)) {
+                    // The current type is a supertype of the most specific one, which is fine
+                } else {
+                    // The current type and the most specific type are not in the same inheritance hierarchy
+                    return onIncompatibleTypes(type, mostSpecificType);
+                }                
+            } else {
+                // If not both the current type and the most specific type are records, they cannot be in an inheritance hierarchy and
+                // must therfore be the same
+                if (!type.equals(mostSpecificType)) {
+                    return onIncompatibleTypes(type, mostSpecificType);
+                }
             }
         }
-
-        // If no match is found, return null
-        return null;
+        
+        return mostSpecificType;
+    }
+    
+    private static Type onIncompatibleTypes(Type type1, Type type2) {
+        throw new InvalidApiException("Inconsistent representation, types '" + type1 + "' and '" + type2 + "' are not in the same inheritance hierarchy.");
     }
 
 }

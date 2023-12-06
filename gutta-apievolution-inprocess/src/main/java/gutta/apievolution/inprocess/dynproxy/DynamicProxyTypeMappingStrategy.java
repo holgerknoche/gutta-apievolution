@@ -1,6 +1,7 @@
 package gutta.apievolution.inprocess.dynproxy;
 
 import gutta.apievolution.core.apimodel.Field;
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
@@ -54,8 +55,8 @@ class DynamicProxyTypeMappingStrategy extends AbstractTypeMappingStrategy {
         }
 
         @Override
-        protected ValueMapper createRecordValueMapper(Class<?> targetClass, Map<Method, FieldMapper> fieldMappers) {
-            return new RecordTypeValueMapper(targetClass, fieldMappers);
+        protected ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
+            return new RecordTypeValueMapper(representingClass, fieldMappers);
         }
 
     }

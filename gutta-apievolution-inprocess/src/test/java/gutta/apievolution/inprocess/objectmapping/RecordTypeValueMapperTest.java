@@ -1,6 +1,7 @@
 package gutta.apievolution.inprocess.objectmapping;
 
 import com.google.common.collect.ImmutableMap;
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.inprocess.FieldMapper;
 import gutta.apievolution.inprocess.ImplementedBy;
 import gutta.apievolution.inprocess.InvalidApiException;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for mapping of record types using the object mapping strategy (see {@link RecordTypeValueMapper}).
@@ -28,7 +31,10 @@ class RecordTypeValueMapperTest {
         FieldMapper fieldMapper = (value) -> ((SourceType) value).getIntValue();
         Map<Method, FieldMapper> fieldMappers = ImmutableMap.of(targetAccessor, fieldMapper);
 
-        RecordTypeValueMapper mapper = new RecordTypeValueMapper(SimpleTargetType.class, fieldMappers);
+        RecordType<?, ?, ?> recordType = mock(RecordType.class);
+        when(recordType.isConcrete()).thenReturn(true);
+        
+        RecordTypeValueMapper mapper = new RecordTypeValueMapper(recordType, SimpleTargetType.class, fieldMappers);
 
         SourceType sourceValue = new SourceType();
         sourceValue.setIntValue(1234);
@@ -48,7 +54,10 @@ class RecordTypeValueMapperTest {
         FieldMapper fieldMapper = (value) -> ((SourceType) value).getIntValue();
         Map<Method, FieldMapper> fieldMappers = ImmutableMap.of(targetAccessor, fieldMapper);
 
-        RecordTypeValueMapper mapper = new RecordTypeValueMapper(SimpleTargetTypeInterface.class, fieldMappers);
+        RecordType<?, ?, ?> recordType = mock(RecordType.class);
+        when(recordType.isConcrete()).thenReturn(true);
+        
+        RecordTypeValueMapper mapper = new RecordTypeValueMapper(recordType, SimpleTargetTypeInterface.class, fieldMappers);
 
         SourceType sourceValue = new SourceType();
         sourceValue.setIntValue(1234);
@@ -62,7 +71,10 @@ class RecordTypeValueMapperTest {
      */
     @Test
     void missingImplementorOnInterface() {
-        assertThrows(InvalidApiException.class, () -> new RecordTypeValueMapper(MissingImplementor.class, ImmutableMap.of()));
+        RecordType<?, ?, ?> recordType = mock(RecordType.class);
+        when(recordType.isConcrete()).thenReturn(true);
+        
+        assertThrows(InvalidApiException.class, () -> new RecordTypeValueMapper(recordType, MissingImplementor.class, ImmutableMap.of()));
     }
 
     /**
@@ -78,7 +90,11 @@ class RecordTypeValueMapperTest {
         FieldMapper fieldMapper2 = (value) -> ((SourceSubType) value).getFieldA();
         Map<Method, FieldMapper> fieldMappers = ImmutableMap.of(targetAccessor1, fieldMapper1, targetAccessor2, fieldMapper2);
         
-        RecordTypeValueMapper mapper = new RecordTypeValueMapper(TargetSubType.class, fieldMappers);
+        
+        RecordType<?, ?, ?> recordType = mock(RecordType.class);
+        when(recordType.isConcrete()).thenReturn(true);
+        
+        RecordTypeValueMapper mapper = new RecordTypeValueMapper(recordType, TargetSubType.class, fieldMappers);
         
         SourceSubType sourceValue = new SourceSubType();
         sourceValue.setFieldA(1234);

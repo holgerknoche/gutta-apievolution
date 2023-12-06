@@ -1,5 +1,6 @@
 package gutta.apievolution.inprocess.objectmapping;
 
+import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
@@ -33,9 +34,11 @@ class ObjectMappingMethodMappingStrategy extends AbstractMethodMappingStrategy {
     protected void assertValidConsumerMethod(Method consumerMethod) {
         super.assertValidConsumerMethod(consumerMethod);
 
-        Class<?> declaredResultType = consumerMethod.getReturnType();
+        Class<?> declaredResultType = consumerMethod.getReturnType();        
+        RecordType<?, ?, ?> modeledResultType = (RecordType<?, ?, ?>) this.typeToClassMap.classToType(declaredResultType);
+        
         Optional<Class<?>> resultTypeImplementor = determineImplementorOf(declaredResultType);
-        if (!resultTypeImplementor.isPresent()) {
+        if (modeledResultType.isConcrete() && !resultTypeImplementor.isPresent()) {
             throw new InvalidApiException(
                     "Consumer result type '" + declaredResultType + "' of method '" + consumerMethod + "' is abstract and does not specify an implementor.");
         }

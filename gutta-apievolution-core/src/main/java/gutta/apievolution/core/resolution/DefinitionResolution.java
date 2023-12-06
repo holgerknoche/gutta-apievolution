@@ -6,6 +6,7 @@ import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerEnumMember;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
 import gutta.apievolution.core.apimodel.provider.ProviderOperation;
@@ -24,7 +25,9 @@ import java.util.stream.Collectors;
  * against the internal representation resulting from the revision history.
  */
 public class DefinitionResolution {
-
+        
+    private final ProviderApiDefinition internalProviderApi;
+    
     private final ConsumerToProviderMap consumerToProviderMap;
 
     private final ProviderToConsumerMap providerToConsumerMap;
@@ -35,7 +38,11 @@ public class DefinitionResolution {
     
     private final List<ValidationMessage> validationMessages;
 
-    DefinitionResolution(ConsumerToProviderMap consumerToProviderMap, ProviderToConsumerMap providerToConsumerMap, List<ValidationMessage> validationMessages) {
+    DefinitionResolution(ProviderApiDefinition internalProviderApi, ConsumerToProviderMap consumerToProviderMap,
+            ProviderToConsumerMap providerToConsumerMap, List<ValidationMessage> validationMessages) {
+        
+        this.internalProviderApi = internalProviderApi;
+        
         this.consumerToProviderMap = consumerToProviderMap;
         this.providerToConsumerMap = providerToConsumerMap;
         this.validationMessages = validationMessages;
@@ -95,6 +102,15 @@ public class DefinitionResolution {
         return this.providerToConsumerMap.providerTypes();
     }
 
+    /**
+     * Returns a collection of all internal provider types, including those not referenced by the consumer.
+     * 
+     * @return see above
+     */
+    public List<UserDefinedType<ProviderApiDefinition>> allInternalProviderTypes() {
+        return Collections.unmodifiableList(this.internalProviderApi.getUserDefinedTypes());
+    }
+    
     /**
      * Returns a collection of all mapped provider operations.
      *

@@ -32,4 +32,13 @@ public interface Type {
         return false;
     }
 
+    /**
+     * Denotes whether this type is an exception type.
+     * 
+     * @return {@code True} if this is an exception type, otherwise {@code false}
+     */
+    default boolean isException() {
+        return false;
+    }
+    
 }

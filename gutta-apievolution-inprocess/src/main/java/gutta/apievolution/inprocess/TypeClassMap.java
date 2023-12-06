@@ -11,6 +11,7 @@ import gutta.apievolution.core.apimodel.UnboundedStringType;
 import gutta.apievolution.core.apimodel.UserDefinedType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
+import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
@@ -60,11 +61,10 @@ public class TypeClassMap {
     private static Map<Class<?>, Type> createProviderTypeLookup(UDTToClassMap typeMap, ConsumerApiDefinition apiDefinition,
             DefinitionResolution definitionResolution) {
 
-        List<UserDefinedType<ConsumerApiDefinition>> userDefinedTypes = apiDefinition.getUserDefinedTypes();
+        List<UserDefinedType<ProviderApiDefinition>> userDefinedTypes = definitionResolution.allInternalProviderTypes();
         Map<Class<?>, Type> lookup = new HashMap<>(userDefinedTypes.size());
 
-        for (UserDefinedType<ConsumerApiDefinition> consumerType : userDefinedTypes) {
-            ProviderUserDefinedType providerType = (ProviderUserDefinedType) definitionResolution.mapConsumerType(consumerType);
+        for (UserDefinedType<ProviderApiDefinition> providerType : userDefinedTypes) {            
             Class<?> representingClass = typeMap.providerTypeToClass(providerType);
 
             if (representingClass != null) {

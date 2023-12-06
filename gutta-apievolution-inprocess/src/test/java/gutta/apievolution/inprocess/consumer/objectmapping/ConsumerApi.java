@@ -9,5 +9,9 @@ public interface ConsumerApi {
     ConsumerResult operationWithUnmappedException(ConsumerParameter parameter);
 
     ConsumerResult operationWithRuntimeException(ConsumerParameter parameter);
+    
+    ConsumerSuperType operationWithRepresentableSubtype(ConsumerParameter parameter);
+    
+    ConsumerSuperType operationWithUnrepresentableSubtype(ConsumerParameter parameter);
 
 }

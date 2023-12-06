@@ -25,7 +25,15 @@ api test.customer {
     
     exception TestException as MappedConsumerException {
     	string exceptionField
-    }    
+    }
+    
+    abstract record SuperType as ConsumerSuperType {
+        int32 inheritedField
+    }
+    
+    record SubType extends SuperType as ConsumerSubType {
+        int32 subField
+    }
     
     operation testOperation(TestParameter): TestResult
     
@@ -34,5 +42,9 @@ api test.customer {
     operation operationWithUnmappedException(TestParameter): TestResult
     
     operation operationWithRuntimeException(TestParameter): TestResult
+    
+    operation operationWithRepresentableSubtype(TestParameter): SuperType
+    
+    operation operationWithUnrepresentableSubtype(TestParameter): SuperType
 
 }

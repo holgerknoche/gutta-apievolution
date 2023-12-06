@@ -10,6 +10,7 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ModelMerger;
+import gutta.apievolution.core.apimodel.provider.ModelMerger.MergedDefinitionWithMap;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
@@ -79,7 +80,10 @@ public class DefinitionResolver {
         ValidationResult p2cResult = providerToConsumerMap.checkConsistency();
         p2cResult.throwOnError(DefinitionResolutionException::new);
         
-        ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
+        MergedDefinitionWithMap mergedDefinitionWithMap  = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
+        ProviderApiDefinition mergedDefinition = mergedDefinitionWithMap.mergedDefinition;
+        ToMergedModelMap toMergedModelMap = mergedDefinitionWithMap.map;
+        
         ValidationResult toMergedModelResult = toMergedModelMap.checkConsistency();
         toMergedModelResult.throwOnError(DefinitionResolutionException::new);
         
@@ -92,7 +96,7 @@ public class DefinitionResolver {
                 .joinWith(p2cResult)
                 .joinWith(toMergedModelResult);
         
-        return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap, joinedValidationResult.getMessages());
+        return new DefinitionResolution(mergedDefinition, consumerToRepresentationMap, representationToConsumerMap, joinedValidationResult.getMessages());
     }
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,

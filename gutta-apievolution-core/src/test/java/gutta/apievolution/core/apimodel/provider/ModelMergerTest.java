@@ -178,7 +178,7 @@ class ModelMergerTest {
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
 
         // Create and inspect a mapping from the first revision
-        ToMergedModelMap map1 = new ModelMerger().createMergedDefinition(revisionHistory, revision1);
+        ToMergedModelMap map1 = new ModelMerger().createMergedDefinition(revisionHistory, revision1).map;
 
         // Inspect the mapped types
         ProviderRecordType mergedTestTypeV1 = map1.<ProviderRecordType>mapType(testTypeV1).get();
@@ -218,7 +218,7 @@ class ModelMergerTest {
         assertEquals(deletedMemberV1.getInternalName(), mergedDeletedMemberV1.getInternalName());
 
         // Create and inspect a mapping from the second revision
-        ToMergedModelMap map2 = new ModelMerger().createMergedDefinition(revisionHistory, revision2);
+        ToMergedModelMap map2 = new ModelMerger().createMergedDefinition(revisionHistory, revision2).map;
 
         ProviderRecordType mergedTestTypeV2 = map2.<ProviderRecordType>mapType(testTypeV2).get();
         assertEquals(testTypeV2.getPublicName(), mergedTestTypeV2.getPublicName());

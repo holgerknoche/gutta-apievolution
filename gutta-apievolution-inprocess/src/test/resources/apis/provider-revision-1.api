@@ -28,6 +28,18 @@ api test.provider {
         string exceptionField
     }
     
+    abstract record SuperType as ProviderSuperType {
+        int32 inheritedField
+    }
+    
+    record SubType extends SuperType as ProviderSubTypeA {
+        int32 subField as fieldA
+    }
+    
+    record SubTypeB extends SuperType as ProviderSubTypeB {
+        int32 subField as fieldB
+    }
+    
     exception UnmappedTestException {}
     
     operation testOperation(TestParameter): TestResult
@@ -37,5 +49,9 @@ api test.provider {
     operation operationWithUnmappedException(TestParameter): TestResult throws UnmappedTestException
     
     operation operationWithRuntimeException(TestParameter): TestResult
+    
+    operation operationWithRepresentableSubtype(TestParameter): SuperType
+    
+    operation operationWithUnrepresentableSubtype(TestParameter): SuperType
 
 }

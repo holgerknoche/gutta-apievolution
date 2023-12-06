@@ -52,7 +52,7 @@ public class DefaultTypeToClassMap implements UDTToClassMap {
         try {
             return (Class<T>) Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new InvalidApiException("Unable to find the representation class named '" + className + "'.", e);
         }
     }
 

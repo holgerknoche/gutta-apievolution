@@ -4,6 +4,8 @@ import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerResult;
+import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerSubType;
+import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerSuperType;
 import gutta.apievolution.inprocess.consumer.objectmapping.MappedConsumerException;
 import gutta.apievolution.inprocess.dynproxy.MappedException;
 import gutta.apievolution.inprocess.objectmapping.ObjectMappingApiMappingStrategy;
@@ -70,6 +72,23 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
 
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithRuntimeException(new ConsumerParameter()));
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
+    }
+    
+    @Test
+    void invocationWithRepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSubType result = (ConsumerSubType) consumerApi.operationWithRepresentableSubtype(new ConsumerParameter());
+        assertEquals(1234, result.getInheritedField());
+        assertEquals(5678, result.getSubField());
+    }
+    
+    @Test
+    void invocationWithUnrepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
+        System.out.println(result);
     }
 
     private ConsumerApi loadAndResolveApi() {

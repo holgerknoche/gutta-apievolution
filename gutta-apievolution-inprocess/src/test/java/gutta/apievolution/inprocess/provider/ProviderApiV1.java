@@ -43,5 +43,22 @@ public class ProviderApiV1 {
     public TestResult operationWithRuntimeException(TestParameter parameter) {
         throw new UnsupportedOperationException();
     }
+    
+    public ProviderSuperType operationWithRepresentableSubtype(TestParameter paramater) {
+        ProviderSubTypeA result = new ProviderSubTypeAImpl();
+        
+        result.setInheritedField(1234);        
+        result.setFieldA(5678);
+        
+        return result;
+    }
+    
+    public ProviderSuperType operationWithUnrepresentableSubtype(TestParameter parameter) {
+        ProviderSubTypeB result = new ProviderSubTypeBImpl();
+        
+        result.setInheritedField(1234);
+        
+        return result;
+    }
 
 }
