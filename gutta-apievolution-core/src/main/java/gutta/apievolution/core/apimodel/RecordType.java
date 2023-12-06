@@ -167,7 +167,6 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      *
      * @return see above
      */
-    @Override
     public boolean isException() {
         return (this.recordKind == RecordKind.EXCEPTION);
     }

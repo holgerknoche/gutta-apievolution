@@ -35,15 +35,6 @@ public interface Type {
     }
 
     /**
-     * Denotes whether this type is an exception type.
-     * 
-     * @return {@code True} if this is an exception type, otherwise {@code false}
-     */
-    default boolean isException() {
-        return false;
-    }
-
-    /**
      * Returns the most specific (with respect to inheritance) type of a collection
      * of types.
      * 
