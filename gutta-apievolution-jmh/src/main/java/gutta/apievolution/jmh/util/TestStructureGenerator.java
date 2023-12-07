@@ -92,19 +92,19 @@ public class TestStructureGenerator {
             // Accessors for integer fields
             for (int count = 1; count <= numberOfElements; count++) {
                 this.writeLine("    /**");
-                this.writeLine("    * Returns the value of int field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @return see above");
-                this.writeLine("    */");
+                this.writeLine("     * Returns the value of int field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @return see above");
+                this.writeLine("     */");
                 this.writeLine("    public Integer getIntField" + count + "() {");
                 this.writeLine("        return this.intField" + count + ";");
                 this.writeLine("    }");
                 this.writeLine("");
                 this.writeLine("    /**");
-                this.writeLine("    * Sets the value of int field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @param value The value to set");
-                this.writeLine("    */");
+                this.writeLine("     * Sets the value of int field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @param value The value to set");
+                this.writeLine("     */");
                 this.writeLine("    public void setIntField" + count + "(Integer value) {");
                 this.writeLine("        this.intField" + count + " = value;");
                 this.writeLine("    }");
@@ -114,19 +114,19 @@ public class TestStructureGenerator {
             // Accessors for string fields
             for (int count = 1; count <= numberOfElements; count++) {
                 this.writeLine("    /**");
-                this.writeLine("    * Returns the value of string field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @return see above");
-                this.writeLine("    */");
+                this.writeLine("     * Returns the value of string field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @return see above");
+                this.writeLine("     */");
                 this.writeLine("    public String getStringField" + count + "() {");
                 this.writeLine("        return this.stringField" + count + ";");
                 this.writeLine("    }");
                 this.writeLine("");
                 this.writeLine("    /**");
-                this.writeLine("    * Sets the value of string field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @param value The value to set");
-                this.writeLine("    */");
+                this.writeLine("     * Sets the value of string field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @param value The value to set");
+                this.writeLine("     */");
                 this.writeLine("    public void setStringField" + count + "(String value) {");
                 this.writeLine("        this.stringField" + count + " = value;");
                 this.writeLine("    }");
@@ -152,17 +152,17 @@ public class TestStructureGenerator {
             // Accessors for integer fields
             for (int count = 1; count <= numberOfElements; count++) {
                 this.writeLine("    /**");
-                this.writeLine("    * Returns the value of int field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @return see above");
-                this.writeLine("    */");
+                this.writeLine("     * Returns the value of int field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @return see above");
+                this.writeLine("     */");
                 this.writeLine("    Integer getIntField" + count + "();");
                 this.writeLine("");
                 this.writeLine("    /**");
-                this.writeLine("    * Sets the value of int field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @param value The value to set");
-                this.writeLine("    */");
+                this.writeLine("     * Sets the value of int field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @param value The value to set");
+                this.writeLine("     */");
                 this.writeLine("    void setIntField" + count + "(Integer value);");
                 this.writeLine("");
             }
@@ -170,17 +170,17 @@ public class TestStructureGenerator {
             // Accessors for string fields
             for (int count = 1; count <= numberOfElements; count++) {
                 this.writeLine("    /**");
-                this.writeLine("    * Returns the value of string field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @return see above");
-                this.writeLine("    */");
+                this.writeLine("     * Returns the value of string field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @return see above");
+                this.writeLine("     */");
                 this.writeLine("    String getStringField" + count + "();");
                 this.writeLine("");
                 this.writeLine("    /**");
-                this.writeLine("    * Sets the value of string field #" + count + ".");
-                this.writeLine("    *");
-                this.writeLine("    * @param value The value to set");
-                this.writeLine("    */");
+                this.writeLine("     * Sets the value of string field #" + count + ".");
+                this.writeLine("     *");
+                this.writeLine("     * @param value The value to set");
+                this.writeLine("     */");
                 this.writeLine("    void setStringField" + count + "(String value);");
                 this.writeLine("");
             }
