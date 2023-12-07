@@ -13,6 +13,8 @@ class DynamicProxyConversionBenchmarksTest {
         
         benchmarks.invokeResult10();
         benchmarks.invokeAndInspectResult10();
+        benchmarks.invokeResult100();
+        benchmarks.invokeAndInspectResult100();
     }
     
 }
