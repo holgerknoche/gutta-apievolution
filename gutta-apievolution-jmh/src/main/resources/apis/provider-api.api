@@ -1,0 +1,33 @@
+api test.provider {
+
+	record Parameter as ProviderParameter {
+		// Empty parameter type
+	}
+	
+	record Result10 as ProviderResult10 {
+		int32 intField1
+		int32 intField2
+		int32 intField3
+		int32 intField4
+		int32 intField5
+		int32 intField6
+		int32 intField7
+		int32 intField8
+		int32 intField9
+		int32 intField10
+		
+		string stringField1
+		string stringField2
+		string stringField3
+		string stringField4
+		string stringField5
+		string stringField6
+		string stringField7
+		string stringField8
+		string stringField9
+		string stringField10
+	}
+		
+	operation testMethod10(Parameter): Result10	
+
+}

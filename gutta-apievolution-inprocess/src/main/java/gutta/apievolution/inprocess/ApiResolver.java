@@ -24,7 +24,7 @@ public class ApiResolver {
      * @param resolutionContext  The resolution context to use
      * @param apiMappingStrategy The API mapping strategy to use
      */
-    ApiResolver(ApiResolutionContext resolutionContext, ApiMappingStrategy apiMappingStrategy) {
+    public ApiResolver(ApiResolutionContext resolutionContext, ApiMappingStrategy apiMappingStrategy) {
         this.apiResolutionContext = resolutionContext;
         this.apiMappingStrategy = apiMappingStrategy;
     }
