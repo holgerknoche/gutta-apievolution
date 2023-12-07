@@ -4,6 +4,8 @@ import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerApi;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerResult;
+import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerSubType;
+import gutta.apievolution.inprocess.consumer.objectmapping.ConsumerSuperType;
 import gutta.apievolution.inprocess.consumer.objectmapping.MappedConsumerException;
 import gutta.apievolution.inprocess.dynproxy.MappedException;
 import gutta.apievolution.inprocess.objectmapping.ObjectMappingApiMappingStrategy;
@@ -13,13 +15,18 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for the type mapping strategy that creates copies of objects.
  */
 class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMappingStrategy> {
 
+    /**
+     * Test case: Successful invocation of an API method.
+     */
     @Test
     void successfulInvocation() {
         ConsumerApi consumerApi = this.loadAndResolveApi();
@@ -70,6 +77,31 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
 
         UnmappedException exception = assertThrows(UnmappedException.class, () -> consumerApi.operationWithRuntimeException(new ConsumerParameter()));
         assertEquals(UnsupportedOperationException.class, exception.getCause().getClass());
+    }
+    
+    /**
+     * Test case: Invocation of a method that returns a representable subtype of the result type.
+     */
+    @Test
+    void invocationWithRepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSubType result = (ConsumerSubType) consumerApi.operationWithRepresentableSubtype(new ConsumerParameter());
+        
+        assertTrue(result.isRepresentable());
+        assertEquals(1234, result.getInheritedField());
+        assertEquals(5678, result.getSubField());
+    }
+    
+    /**
+     * Test case: Invocation of a method that returns an unrepresentable subtype of the result type.
+     */
+    @Test
+    void invocationWithUnrepresentableSubtype() {
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        
+        ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
+        assertFalse(result.isRepresentable());
     }
 
     private ConsumerApi loadAndResolveApi() {

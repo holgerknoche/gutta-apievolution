@@ -118,7 +118,7 @@ abstract class AbstractApiDefinitionElement {
         return Objects.hash(this.publicName, this.internalName);
     }
 
-    boolean stateEquals(AbstractApiDefinitionElement that) {
+    protected boolean stateEquals(AbstractApiDefinitionElement that) {
         return this.publicName.equals(that.publicName) && this.internalName.equals(that.internalName);
     }
 

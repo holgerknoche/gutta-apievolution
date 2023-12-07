@@ -4,8 +4,13 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
+
+import static gutta.apievolution.core.apimodel.Type.mostSpecificTypeOf;
 
 /**
  * Abstract implementation of a {@link TypeMappingStrategy} that provides common functionality.
@@ -88,25 +93,38 @@ public abstract class AbstractTypeMappingStrategy implements TypeMappingStrategy
             return (T) type;
         }
 
-        // Otherwise, try to find a match in the superclass (if any)...
+        // Otherwise, find the most specific type of all supertypes (superclasses or interfaces)
+        Set<Type> candidates = this.findTypesRepresentedBySuperTypesOf(javaClass);
+        if (candidates.isEmpty()) {
+            return null;
+        } else {
+            return (T) mostSpecificTypeOf(candidates);
+        }
+    }
+
+    private Set<Type> findTypesRepresentedBySuperTypesOf(Class<?> javaClass) {
+        Set<Type> types = new HashSet<>();
+
+        this.collectTypesRepresentedBySuperTypes(javaClass, types::add);
+
+        return types;
+    }
+
+    private void collectTypesRepresentedBySuperTypes(Class<?> javaClass, Consumer<Type> collector) {
+        Type candidate = this.getTypeToClassMap().classToType(javaClass);
+        if (candidate != null) {
+            collector.accept(candidate);
+        }
+                
         Class<?> superClass = javaClass.getSuperclass();
         if (superClass != null) {
-            T candidate = this.findTypeRepresentedBy(superClass);
-            if (candidate != null) {
-                return candidate;
-            }
+            this.collectTypesRepresentedBySuperTypes(superClass, collector);
         }
 
         // ...or the implemented interfaces
         for (Class<?> implementedInterface : javaClass.getInterfaces()) {
-            T candidate = this.findTypeRepresentedBy(implementedInterface);
-            if (candidate != null) {
-                return candidate;
-            }
-        }
-
-        // If no match is found, return null
-        return null;
+            this.collectTypesRepresentedBySuperTypes(implementedInterface, collector);
+        }       
     }
-
+    
 }

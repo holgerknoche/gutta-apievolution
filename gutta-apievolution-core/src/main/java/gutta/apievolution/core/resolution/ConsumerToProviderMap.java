@@ -284,6 +284,11 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         @Override
         public Void handleRecordType(RecordType<?, ?, ?> recordType) {
             for (Field<?, ?> field : recordType) {
+                if (field.isInherited()) {
+                    // Inherited fields are checked as part of the declaring supertype
+                    continue;
+                }
+                
                 if (!mapField((ConsumerField) field).isPresent()) {
                     this.result.addErrorMessage("Field '" +  field + "' is not mapped.");
                 }

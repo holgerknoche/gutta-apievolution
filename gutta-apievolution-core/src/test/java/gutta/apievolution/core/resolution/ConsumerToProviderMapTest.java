@@ -1,6 +1,7 @@
 package gutta.apievolution.core.resolution;
 
 import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.AtomicType;
 import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.StringType;
 import gutta.apievolution.core.apimodel.Usage;
@@ -161,7 +162,7 @@ class ConsumerToProviderMapTest {
         
         ValidationResult result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(Arrays.asList(ValidationMessage.error("Field 'field' is not mapped.")), result.getMessages());
+        assertEquals(Arrays.asList(ValidationMessage.error("Field 'field@TestRecord' is not mapped.")), result.getMessages());
     }
     
     /**
@@ -430,6 +431,46 @@ class ConsumerToProviderMapTest {
         assertFalse(result.hasError());
         result = runOptionalityTest(Usage.IN_OUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
         assertFalse(result.hasError());
+    }
+    
+    /**
+     * Test case: Inherited fields are mapped appropriately; in particular, the copies of inherited fields at receiving types do not
+     * interfere with consistency checks.
+     */
+    @Test
+    void inheritedFieldMapping() {
+        ConsumerApiDefinition consumerDefinition = TestFixtures.createConsumerApiDefinition("test", 0);
+        
+        ConsumerRecordType consumerSuperType = consumerDefinition.newRecordType("SuperType", 0);
+        ConsumerField consumerInheritedField = consumerSuperType.newField("inheritedField", AtomicType.INT_32, Optionality.MANDATORY);
+        ConsumerRecordType consumerSubType = consumerDefinition.newRecordType("SubType", noInternalName(), 1, Abstract.NO, Collections.singleton(consumerSuperType));
+        ConsumerField consumerSubField = consumerSubType.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ConsumerOperation consumerOperation = consumerDefinition.newOperation("operation", consumerSuperType, consumerSuperType);
+        
+        consumerDefinition.finalizeDefinition();
+        
+        ProviderApiDefinition providerDefinition = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType providerSuperType = providerDefinition.newRecordType("SuperType", 0);
+        ProviderField providerInheritedField = providerSuperType.newField("inheritedField", AtomicType.INT_32, Optionality.MANDATORY);
+        ProviderRecordType providerSubType = providerDefinition.newRecordType("SubType", noInternalName(), 1, Abstract.NO, Collections.singleton(providerSuperType), noPredecessor());
+        ProviderField providerSubField = providerSubType.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        ProviderOperation providerOperation = providerDefinition.newOperation("operation", providerSuperType, providerSuperType);
+        
+        providerDefinition.finalizeDefinition();
+        
+        
+        Map<ConsumerUserDefinedType, ProviderUserDefinedType> typeMap = mapOf(consumerSuperType, providerSuperType, consumerSubType, providerSubType);
+        ConsumerToProviderMap map = new ConsumerToProviderMap(consumerDefinition, providerDefinition, 
+                typeMap,
+                mapOf(consumerInheritedField, providerInheritedField, consumerSubField, providerSubField),
+                emptyMap(),
+                mapOf(consumerOperation, providerOperation));
+        
+        ValidationResult result = map.checkConsistency();
+        assertFalse(result.hasError());               
     }
     
     private ValidationResult runOptionalityTest(Usage consumerUsage, Optionality consumerOptionality,

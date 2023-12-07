@@ -1,6 +1,5 @@
 package gutta.apievolution.core.apimodel;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**

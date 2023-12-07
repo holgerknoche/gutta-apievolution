@@ -10,6 +10,7 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerOperation;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ModelMerger;
+import gutta.apievolution.core.apimodel.provider.ModelMerger.MergedDefinitionWithMap;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumMember;
 import gutta.apievolution.core.apimodel.provider.ProviderEnumType;
@@ -47,14 +48,21 @@ public class DefinitionResolver {
     public DefinitionResolution resolveConsumerDefinition(RevisionHistory revisionHistory,
             Set<Integer> supportedRevisions, ConsumerApiDefinition consumerApi) {
 
-        int desiredRevision = consumerApi.getReferencedRevision();
-        if (!supportedRevisions.contains(desiredRevision)) {
-            throw new DefinitionResolutionException("Revision " + desiredRevision + " is not supported.");
+        // Make sure that the consumer API is finalized
+        if (!consumerApi.isFinalized()) {
+            throw new DefinitionResolutionException("Consumer API definition is not finalized.");
         }
+        
+        // Make sure that the referenced revision exists and is supported
+        int desiredRevision = consumerApi.getReferencedRevision();        
 
         Optional<ProviderApiDefinition> optionalProviderApi = revisionHistory.getRevision(desiredRevision);
         if (!optionalProviderApi.isPresent()) {
             throw new DefinitionResolutionException("Revision " + desiredRevision + " does not exist.");
+        }
+        
+        if (!supportedRevisions.contains(desiredRevision)) {
+            throw new DefinitionResolutionException("Revision " + desiredRevision + " is not supported.");
         }
 
         return this.resolveConsumerDefinitionAgainst(optionalProviderApi.get(), consumerApi, revisionHistory);
@@ -72,7 +80,10 @@ public class DefinitionResolver {
         ValidationResult p2cResult = providerToConsumerMap.checkConsistency();
         p2cResult.throwOnError(DefinitionResolutionException::new);
         
-        ToMergedModelMap toMergedModelMap = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
+        MergedDefinitionWithMap mergedDefinitionWithMap  = new ModelMerger().createMergedDefinition(revisionHistory, providerApi);
+        ProviderApiDefinition mergedDefinition = mergedDefinitionWithMap.mergedDefinition;
+        ToMergedModelMap toMergedModelMap = mergedDefinitionWithMap.map;
+        
         ValidationResult toMergedModelResult = toMergedModelMap.checkConsistency();
         toMergedModelResult.throwOnError(DefinitionResolutionException::new);
         
@@ -85,7 +96,7 @@ public class DefinitionResolver {
                 .joinWith(p2cResult)
                 .joinWith(toMergedModelResult);
         
-        return new DefinitionResolution(consumerToRepresentationMap, representationToConsumerMap, joinedValidationResult.getMessages());
+        return new DefinitionResolution(mergedDefinition, consumerToRepresentationMap, representationToConsumerMap, joinedValidationResult.getMessages());
     }
 
     private ConsumerToProviderMap createConsumerToProviderMap(ConsumerApiDefinition consumerApi,
@@ -142,18 +153,21 @@ public class DefinitionResolver {
 
             ConsumerRecordType consumerType = (ConsumerRecordType) consumerUDT;
             ProviderRecordType providerType = (ProviderRecordType) consumerToProviderType.get(consumerType);
-            for (ConsumerField consumerField : consumerType.getDeclaredFields()) {
-                String fieldName = consumerField.getPublicName();
-                ProviderField providerField = providerType.resolveField(fieldName)
-                        .orElseThrow(() -> new DefinitionResolutionException(
-                                "Missing field " + fieldName + " in provider type " + providerType));
-
-                this.assertMatchingFields(consumerField, providerField);
-                consumerToProviderField.put(consumerField, providerField);
-            }
+            consumerType.getFields()
+                .forEach(consumerField -> this.mapField(consumerField, providerType, consumerToProviderField));
         }
 
         return consumerToProviderField;
+    }
+    
+    private void mapField(ConsumerField consumerField, ProviderRecordType providerType, Map<ConsumerField, ProviderField> fieldMap) {
+        String fieldName = consumerField.getPublicName();
+        ProviderField providerField = providerType.resolveField(fieldName)
+                .orElseThrow(() -> new DefinitionResolutionException(
+                        "Missing field " + fieldName + " in provider type " + providerType));
+
+        this.assertMatchingFields(consumerField, providerField);
+        fieldMap.put(consumerField, providerField);
     }
 
     private void assertMatchingFields(ConsumerField consumerField, ProviderField providerField) {

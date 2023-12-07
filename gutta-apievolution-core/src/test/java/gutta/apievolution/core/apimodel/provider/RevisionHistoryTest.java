@@ -22,6 +22,9 @@ class RevisionHistoryTest {
         ProviderApiDefinition revision1 = ProviderApiDefinition.create("a.b", 0);
         ProviderApiDefinition revision2 = ProviderApiDefinition.create("b.c", 1);
 
+        revision1.finalizeDefinition();
+        revision2.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
                 revisionHistory::checkConsistency);
@@ -37,6 +40,9 @@ class RevisionHistoryTest {
         ProviderApiDefinition revision1 = ProviderApiDefinition.create("a.b", 1);
         ProviderApiDefinition revision2 = ProviderApiDefinition.create("a.b", 0);
 
+        revision1.finalizeDefinition();
+        revision2.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
                 revisionHistory::checkConsistency);
@@ -56,12 +62,16 @@ class RevisionHistoryTest {
 
         ProviderField fieldV1 = recordTypeV1.newField("test", AtomicType.INT_32, Optionality.MANDATORY);
 
+        revision1.finalizeDefinition();
+        
         ProviderApiDefinition revision2 = new ProviderApiDefinition("a.b", noAnnotations(), 1, revision1);
 
         ProviderRecordType recordTypeV2 = revision2.newRecordType("Test", noInternalName(), 0, recordTypeV1);
 
         recordTypeV2.newField("test", noInternalName(), AtomicType.INT_64, Optionality.MANDATORY, fieldV1);
 
+        revision2.finalizeDefinition();
+        
         RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
         InconsistentHistoryException exception = assertThrows(InconsistentHistoryException.class,
                 revisionHistory::checkConsistency);

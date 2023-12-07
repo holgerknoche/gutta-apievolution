@@ -43,6 +43,8 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
     private final List<O> operations;
 
     private final Map<String, O> operationLookup;
+    
+    private final Map<String, O> operationInternalNameLookup;
 
     /**
      * Creates a new API definition from the given data.
@@ -68,6 +70,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
         this.udtInternalNameLookup = new HashMap<>();
         this.operations = new ArrayList<>();
         this.operationLookup = new HashMap<>();
+        this.operationInternalNameLookup = new HashMap<>();
     }
 
     /**
@@ -122,6 +125,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
 
         this.operations.add(operation);
         this.operationLookup.put(operation.getPublicName(), operation);
+        this.operationInternalNameLookup.put(operation.getInternalName(), operation);
     }
 
     /**
@@ -169,11 +173,21 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
     /**
      * Resolves a name to an operation provided by this API definition.
      *
-     * @param name The name of the operation to resolve
+     * @param name The public name of the operation to resolve
      * @return The resolved operation, if it exists
      */
     public Optional<O> resolveOperation(final String name) {
         return Optional.ofNullable(this.operationLookup.get(name));
+    }
+    
+    /**
+     * Resolves an operation using its internal name.
+     *
+     * @param internalName The internal name of the operation to resolve
+     * @return The resolved operation, if it exists
+     */
+    public Optional<O> resolveOperationByInternalName(final String internalName) {
+        return Optional.ofNullable(this.operationInternalNameLookup.get(internalName));
     }
 
     /**
@@ -202,6 +216,15 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
      */
     protected void performSpecificFinalizationActions() {
         // Do nothing by default
+    }
+    
+    /**
+     * Returns whether this API definition is finalized, i.e., it is immutable and all finalization actions have been performed.
+     * 
+     * @return {@code True} if the API definition is finalized, {@code false} otherwise
+     */
+    public boolean isFinalized() {
+        return (this.state == ApiDefinitionState.FINALIZED);
     }
 
     @Override

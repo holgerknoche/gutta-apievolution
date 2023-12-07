@@ -17,7 +17,7 @@ public abstract class AbstractMethodMappingStrategy implements MethodMappingStra
 
     private final DefinitionResolution definitionResolution;
 
-    private final TypeClassMap typeToClassMap;
+    protected final TypeClassMap typeToClassMap;
 
     /**
      * Creates a new method mapping strategy using the given data.

@@ -2,7 +2,6 @@ package gutta.apievolution.inprocess;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,15 +17,6 @@ public class ApiResolver {
     private final ApiMappingStrategy apiMappingStrategy;
 
     private final ConcurrentMap<Class<?>, Object> apiCache = new ConcurrentHashMap<>();
-
-    /**
-     * Creates a new API resolver using the given resolution context.
-     * 
-     * @param resolutionContext The resolution context to use
-     */
-    ApiResolver(ApiResolutionContext resolutionContext) {
-        this(resolutionContext, new DynamicProxyApiMappingStrategy());
-    }
 
     /**
      * Creates a new API resolver using the given data.

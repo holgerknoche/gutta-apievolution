@@ -24,7 +24,7 @@ import java.util.function.Function;
  * @param <O1> The type of operation from the first API definition
  * @param <O2> The type of operation from the second API definition
  */
-public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, T1 extends UserDefinedType<A1>, 
+public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 extends ApiDefinition<A2, ?>, T1 extends UserDefinedType<A1>,
     T2 extends UserDefinedType<A2>, F1 extends Field<?, F1>, F2 extends Field<?, F2>, M1 extends EnumMember<?, M1>, M2 extends EnumMember<?, M2>,
     O1 extends Operation<?, O1, ?>, O2 extends Operation<?, O2, ?>> {
 
@@ -164,8 +164,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
     }
 
     private void ensureConsistentFieldTypeMapping(Field<?, ?> sourceField, Field<?, ?> targetField, ValidationResult result) {
-        // Make sure that the record type containing the member is mapped in a
-        // compatible way
+        // Make sure that the record type containing the member is mapped in a compatible way
         this.ensureConsistentTypeMapping(sourceField, targetField, Field::getOwner, result,
                 (source, sourceType) -> "Record type '" + sourceType + "' containing field '" + source + "' is not mapped.",
                 (source, sourceType, mappedType, expectedType) -> "Record type '" + sourceType + "' containing field '" + source +
@@ -239,24 +238,24 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
             }
         }
     }
-    
+
     /**
      * Determines the user-defined types reachable from the given operations. This includes types that are used as return types, parameter types, or exceptions,
      * as well as types reachable from those types (e.g., field types).
      * 
-     * @param <A> The concrete type of API definition that is used
-     * @param <O> The concrete type of operation that is used
+     * @param <A>        The concrete type of API definition that is used
+     * @param <O>        The concrete type of operation that is used
      * 
      * @param operations The operations to determine the types of
      * @return The types reachable from the given operations
      */
     protected static <A extends ApiDefinition<A, O>, O extends Operation<A, O, ?>> Set<UserDefinedType<A>> determineReachableTypes(Collection<O> operations) {
         Set<UserDefinedType<A>> reachableTypes = new HashSet<>();
-        
+
         for (O operation : operations) {
             reachableTypes.addAll(operation.getReachableUserDefinedTypes());
         }
-        
+
         return reachableTypes;
     }
 

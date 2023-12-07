@@ -83,11 +83,16 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
     public boolean isInherited() {
         return this.inherited;
     }
+    
+    @Override
+    public String toString() {
+        return this.getInternalName() + "@" + this.getOwner().toString();
+    }
 
     @Override
     protected void assertMutability() {
         this.getOwner().assertMutability();
-    }
+    }        
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
@@ -100,9 +105,16 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
      * @param that The field to compare against
      * @return Whether the states are equal
      */
-    protected boolean stateEquals(Field<R, F> that) {
-        return super.stateEquals(that) && this.type.equals(that.type) && this.optionality.equals(that.optionality) &&
-                this.inherited == that.inherited;
+    protected boolean stateEquals(F that) {
+        return super.stateEquals(that) &&
+                // Same optionality
+                this.getOptionality().equals(that.getOptionality()) &&
+                // Both inherited or neither
+                this.isInherited() == that.isInherited() &&
+                // Same owner (ID check to avoid cycles)
+                this.getOwner().getTypeId() == that.getOwner().getTypeId() &&
+                // Same field type
+                this.getType().equals(that.getType());
     }
 
 }

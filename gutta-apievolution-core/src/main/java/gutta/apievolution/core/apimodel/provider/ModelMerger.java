@@ -27,9 +27,8 @@ import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static gutta.apievolution.core.apimodel.provider.ProviderTypeTools.isTypeChange;
 
 /**
- * The model merger builds a merged definition from a history of definitions.
- * This merged definition is the basis for internal provider representations, as
- * it is essentially the union of the definition history.
+ * The model merger builds a merged definition from a history of definitions. This merged definition is the basis for internal provider representations, as it
+ * is essentially the union of the definition history.
  */
 public class ModelMerger {
 
@@ -37,37 +36,27 @@ public class ModelMerger {
      * Creates a merged API definition from a given revision history.
      *
      * @param revisionHistory A non-empty revision history to merge
-     * @return A merged API definition that represents the union of the definition
-     *         history
+     * @return A merged API definition that represents the union of the definition history
      */
     public ProviderApiDefinition createMergedDefinition(RevisionHistory revisionHistory) {
-        ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
-        this.mergeElementsIntoRevision(revisionHistory, mergedDefinition, RevisionMergePass2::new);
-
-        mergedDefinition.finalizeDefinition();
-
-        return mergedDefinition;
+        return this.mergeRevisionHistory(revisionHistory).mergedDefinition;
     }
 
     /**
-     * Creates a merged API definition from a given revision history and provides a
-     * mapping of the elements of the given revision (which needs to be part of the
+     * Creates a merged API definition from a given revision history and provides a mapping of the elements of the given revision (which needs to be part of the
      * revision history) to the elements of the merged revision.
      *
      * @param revisionHistory   A non-empty revision history to merge
-     * @param referenceRevision A specific revision for whose elements a mapping is
-     *                          created
+     * @param referenceRevision A specific revision for whose elements a mapping is created
      * @return A map from the reference revision to the merged definition
      */
-    public ToMergedModelMap createMergedDefinition(RevisionHistory revisionHistory,
-            ProviderApiDefinition referenceRevision) {
-        ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
-        MergePass2Creator pass2Creator = (supportedRevisions, typeLookup, mergedDef) -> new MappingRevisionMergePass2(
-                supportedRevisions, typeLookup, mergedDef, referenceRevision);
-        MappingRevisionMergePass2 pass2 = (MappingRevisionMergePass2) this.mergeElementsIntoRevision(revisionHistory,
-                mergedDefinition, pass2Creator);
+    public MergedDefinitionWithMap createMergedDefinition(RevisionHistory revisionHistory, ProviderApiDefinition referenceRevision) {
+        RevisionMergeData mergeData = this.mergeRevisionHistory(revisionHistory);
 
-        return pass2.getToMergedModelMap();
+        MergedModelMappingCreator mappingCreator = new MergedModelMappingCreator(referenceRevision, mergeData);        
+        ToMergedModelMap map = mappingCreator.createToMergedModelMap();
+        
+        return new MergedDefinitionWithMap(mergeData.mergedDefinition, map);
     }
 
     private ProviderApiDefinition createEmptyMergedDefinition(RevisionHistory revisionHistory) {
@@ -78,7 +67,7 @@ public class ModelMerger {
         String mergedDefinitionName = this.determineHistoryName(revisionHistory);
         Set<Annotation> mergedAnnotations = this.mergeAnnotations(revisionHistory);
 
-        return new ProviderApiDefinition(mergedDefinitionName, mergedAnnotations, 0, null);
+        return new ProviderApiDefinition(mergedDefinitionName, mergedAnnotations, 0, noPredecessor());
     }
 
     private String determineHistoryName(RevisionHistory revisionHistory) {
@@ -116,33 +105,32 @@ public class ModelMerger {
         return mergedAnnotations;
     }
 
-    private RevisionMergePass2 mergeElementsIntoRevision(RevisionHistory revisionHistory,
-            ProviderApiDefinition mergedDefinition, MergePass2Creator pass2Creator) {
+    private RevisionMergeData mergeRevisionHistory(RevisionHistory revisionHistory) {
+        ProviderApiDefinition mergedDefinition = this.createEmptyMergedDefinition(revisionHistory);
+
         ListIterator<ProviderApiDefinition> revisions = revisionHistory.reverseIterator();
         Set<ProviderApiDefinition> supportedRevisions = revisionHistory.revisionSet();
 
-        // First, merge the user-defined types and create a type lookup for the second
-        // pass
+        // First, merge the user-defined types and create a type lookup for the second pass
         RevisionMergePass1 pass1 = new RevisionMergePass1();
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeLookup = 
-                pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
+        MergedTypeLookup typeLookup = pass1.createTypeLookup(revisionHistory, supportedRevisions, mergedDefinition);
 
         // Then, convert the remaining elements using the previously created type lookup
-        RevisionMergePass2 pass2 = pass2Creator.create(supportedRevisions, typeLookup, mergedDefinition);
+        RevisionMergePass2 pass2 = new RevisionMergePass2(supportedRevisions, typeLookup, mergedDefinition);
 
         while (revisions.hasPrevious()) {
             ProviderApiDefinition currentRevision = revisions.previous();
             pass2.mergeRevision(currentRevision);
         }
 
-        return pass2;
+        mergedDefinition.finalizeDefinition();
+
+        return new RevisionMergeData(mergedDefinition, typeLookup);
     }
 
     /**
-     * This class embodies the first pass of the revision merge process, in which
-     * only the user-defined types are collected and mapped to their respective
-     * counterparts. Members of the types are only processed in the second pass, as
-     * especially fields may require access to all mapped types.
+     * This class embodies the first pass of the revision merge process, in which only the user-defined types are collected and mapped to their respective
+     * counterparts. Members of the types are only processed in the second pass, as especially fields may require access to all mapped types.
      */
     private static class RevisionMergePass1 implements ProviderApiDefinitionElementVisitor<Void> {
 
@@ -153,9 +141,8 @@ public class ModelMerger {
 
         private ProviderApiDefinition mergedDefinition;
 
-        public TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> 
-                createTypeLookup(RevisionHistory revisionHistory,
-                Set<ProviderApiDefinition> supportedRevisions, ProviderApiDefinition mergedDefinition) {
+        public MergedTypeLookup createTypeLookup(RevisionHistory revisionHistory, Set<ProviderApiDefinition> supportedRevisions,
+                ProviderApiDefinition mergedDefinition) {
             // Ensure that the revision history is consistent
             revisionHistory.checkConsistency();
 
@@ -167,12 +154,12 @@ public class ModelMerger {
                 currentRevision.forEach(element -> element.accept(this));
             }
 
-            return new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(this.udtLookup);
+            return new MergedTypeLookup(this.udtLookup);
         }
 
         @SuppressWarnings("unchecked")
-        private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType> 
-            Void handleUserDefinedType(T inType, UnaryOperator<T> mapperFunction) {
+        private <T extends UserDefinedType<ProviderApiDefinition> & RevisionedElement<T> & ProviderUserDefinedType> Void handleUserDefinedType(T inType,
+                UnaryOperator<T> mapperFunction) {
 
             // Check if a successor of this type is already part of the merged model
             Optional<T> optionalMappedSuccessor = inType.findFirstSuccessorMatching(this.udtLookup::containsKey);
@@ -205,13 +192,13 @@ public class ModelMerger {
 
         private ProviderRecordType convertRecordType(ProviderRecordType inType) {
             Abstract abstractness = (inType.isAbstract()) ? Abstract.YES : Abstract.NO;
-            
+
             if (inType.isException()) {
-                return this.mergedDefinition.newExceptionType(inType.getPublicName(), inType.getInternalName(),
-                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+                return this.mergedDefinition.newExceptionType(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(), abstractness,
+                        noSuperTypes(), noPredecessor());
             } else {
-                return this.mergedDefinition.newRecordType(inType.getPublicName(), inType.getInternalName(),
-                        inType.getTypeId(), abstractness, noSuperTypes(), noPredecessor());
+                return this.mergedDefinition.newRecordType(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(), abstractness, noSuperTypes(),
+                        noPredecessor());
             }
         }
 
@@ -229,25 +216,22 @@ public class ModelMerger {
     @FunctionalInterface
     private interface MergePass2Creator {
 
-        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, 
-                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
+        RevisionMergePass2 create(Set<ProviderApiDefinition> supportedRevisions, TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition);
 
     }
 
     /**
-     * This class embodies the second pass of the revision merge process. In this
-     * pass, fields and enum members as well as services and service operations are
-     * merged. These elements require access to the merged types, which are passed
-     * on from the first pass.
+     * This class embodies the second pass of the revision merge process. In this pass, fields and enum members as well as services and service operations are
+     * merged. These elements require access to the merged types, which are passed on from the first pass.
      */
     private static class RevisionMergePass2 implements ProviderApiDefinitionElementVisitor<Void> {
 
         private final Set<ProviderApiDefinition> supportedRevisions;
 
-        protected final TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap;
+        private final TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap;
 
-        protected final ProviderApiDefinition mergedDefinition;
+        private final ProviderApiDefinition mergedDefinition;
 
         private final Set<MemberName> knownMemberNames = new HashSet<>();
 
@@ -261,8 +245,7 @@ public class ModelMerger {
 
         private ProviderEnumType currentEnumType;
 
-        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions,
-                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
+        public RevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
                 ProviderApiDefinition mergedDefinition) {
             this.supportedRevisions = supportedRevisions;
             this.typeMap = typeMap;
@@ -316,8 +299,7 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderField(ProviderField field) {
-            Optional<ProviderField> optionalMappedSuccessor = field
-                    .findFirstSuccessorMatching(this.mappedFields::containsKey);
+            Optional<ProviderField> optionalMappedSuccessor = field.findFirstSuccessorMatching(this.mappedFields::containsKey);
 
             boolean typeChange = false;
             if (optionalMappedSuccessor.isPresent()) {
@@ -346,36 +328,32 @@ public class ModelMerger {
 
             // See if there is already a matching field in the merged type that can be
             // reused
-            ProviderField potentialMatch = this.currentRecordType
-                    .resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
+            ProviderField potentialMatch = this.currentRecordType.resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
             if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, optionality, type)) {
                 // If there is a matching type, reuse it
                 return potentialMatch;
             }
 
             // Ensure that the internal name is unique
-            MemberName memberName = new MemberName(originalField.getOwner().getInternalName(),
-                    originalField.getInternalName());
+            MemberName memberName = new MemberName(originalField.getOwner().getInternalName(), originalField.getInternalName());
             this.assertUniqueMemberName(memberName);
 
-            
-            Inherited inherited = (originalField.isInherited()) ? Inherited.YES : Inherited.NO;            
-            ProviderField newField = this.currentRecordType.newField(originalField.getPublicName(),
-                    originalField.getInternalName(), type, optionality, inherited, noDeclaredPredecessors(),
-                    noPredecessor());
-            
+            Inherited inherited = (originalField.isInherited()) ? Inherited.YES : Inherited.NO;
+            ProviderField newField = this.currentRecordType.newField(originalField.getPublicName(), originalField.getInternalName(), type, optionality,
+                    inherited, noDeclaredPredecessors(), noPredecessor());
+
             this.knownMemberNames.add(memberName);
             this.mappedFields.put(originalField, newField);
 
             return newField;
         }
 
-        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Optionality optionality,
-                Type type) {
+        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Optionality optionality, Type type) {
             // See if the candidate actually matches with respect to the relevant properties
             return matchCandidate.getPublicName().equals(originalField.getPublicName()) &&
                     matchCandidate.getInternalName().equals(originalField.getInternalName()) &&
-                    matchCandidate.getType().equals(type) && matchCandidate.getOptionality().equals(optionality) &&
+                    matchCandidate.getType().equals(type) &&
+                    matchCandidate.getOptionality().equals(optionality) &&
                     matchCandidate.isInherited() == originalField.isInherited();
         }
 
@@ -412,16 +390,14 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderEnumMember(ProviderEnumMember enumMember) {
-            Optional<ProviderEnumMember> optionalMappedPredecessor = enumMember
-                    .findFirstSuccessorMatching(this.mappedMembers::containsKey);
+            Optional<ProviderEnumMember> optionalMappedPredecessor = enumMember.findFirstSuccessorMatching(this.mappedMembers::containsKey);
 
             ProviderEnumMember mappedMember;
             if (!optionalMappedPredecessor.isPresent()) {
                 String internalName = enumMember.getInternalName();
 
                 // Ensure that the internal name is unique
-                MemberName memberName = new MemberName(enumMember.getOwner().getInternalName(),
-                        enumMember.getInternalName());
+                MemberName memberName = new MemberName(enumMember.getOwner().getInternalName(), enumMember.getInternalName());
                 this.assertUniqueMemberName(memberName);
 
                 mappedMember = this.currentEnumType.newEnumMember(enumMember.getPublicName(), internalName, noPredecessor());
@@ -442,8 +418,7 @@ public class ModelMerger {
 
         @Override
         public Void handleProviderOperation(ProviderOperation operation) {
-            Optional<ProviderOperation> optionalMappedPredecessor = operation
-                    .findFirstSuccessorMatching(this.mappedOperations::containsKey);
+            Optional<ProviderOperation> optionalMappedPredecessor = operation.findFirstSuccessorMatching(this.mappedOperations::containsKey);
 
             boolean typeChange = false;
             if (optionalMappedPredecessor.isPresent()) {
@@ -453,8 +428,7 @@ public class ModelMerger {
                 Type parameterType = operation.getParameterType();
                 Type successorParameterType = optionalMappedPredecessor.get().getReturnType();
 
-                typeChange = isTypeChange(returnType, successorReturnType) ||
-                        isTypeChange(parameterType, successorParameterType);
+                typeChange = isTypeChange(returnType, successorReturnType) || isTypeChange(parameterType, successorParameterType);
             }
 
             ProviderOperation mappedOperation;
@@ -462,13 +436,11 @@ public class ModelMerger {
                 ProviderRecordType mappedReturnType = this.lookupType(operation.getReturnType());
                 ProviderRecordType mappedParameterType = this.lookupType(operation.getParameterType());
 
-                mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(),
-                        operation.getInternalName(), this.mergedDefinition, mappedReturnType,
-                        mappedParameterType, null);
+                mappedOperation = new ProviderOperation(operation.getAnnotations(), operation.getPublicName(), operation.getInternalName(),
+                        this.mergedDefinition, mappedReturnType, mappedParameterType, null);
 
                 // Add exceptions to the operation
-                operation.getThrownExceptions()
-                        .forEach(exception -> mappedOperation.addThrownException(this.lookupType(exception)));
+                operation.getThrownExceptions().forEach(exception -> mappedOperation.addThrownException(this.lookupType(exception)));
 
                 this.mappedOperations.put(operation, mappedOperation);
             } else {
@@ -494,8 +466,7 @@ public class ModelMerger {
             return null;
         }
 
-        protected void registerOperationMapping(ProviderOperation originalOperation,
-                ProviderOperation mappedOperation) {
+        protected void registerOperationMapping(ProviderOperation originalOperation, ProviderOperation mappedOperation) {
             // Do nothing as of now
         }
 
@@ -540,8 +511,7 @@ public class ModelMerger {
         }
 
         /**
-         * Collector operation to determine the most permissive optionality from a
-         * revision history of provider fields.
+         * Collector operation to determine the most permissive optionality from a revision history of provider fields.
          */
         private static class MaxOptionalityCollector implements Consumer<ProviderField> {
 
@@ -562,10 +532,13 @@ public class ModelMerger {
 
     }
 
-    private static class MappingRevisionMergePass2
-            extends RevisionMergePass2 {
+    private static class MergedModelMappingCreator implements ProviderApiDefinitionElementVisitor<Void> {
 
         private final ProviderApiDefinition referenceRevision;
+
+        private final ProviderApiDefinition mergedDefinition;
+
+        private final MergedTypeLookup typeLookup;
 
         private final Map<ProviderField, ProviderField> fieldMap = new HashMap<>();
 
@@ -573,43 +546,112 @@ public class ModelMerger {
 
         private final Map<ProviderOperation, ProviderOperation> operationMap = new HashMap<>();
 
-        public MappingRevisionMergePass2(Set<ProviderApiDefinition> supportedRevisions, 
-                TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap,
-                ProviderApiDefinition mergedDefinition, ProviderApiDefinition referenceRevision) {
-            super(supportedRevisions, typeMap, mergedDefinition);
-
+        public MergedModelMappingCreator(ProviderApiDefinition referenceRevision, RevisionMergeData mergeData) {
             this.referenceRevision = referenceRevision;
+            this.mergedDefinition = mergeData.mergedDefinition;
+            this.typeLookup = mergeData.typeLookup;
         }
-
+        
+        private <T extends Type> T lookupType(T type) {
+            return this.typeLookup.mapType(type);
+        }
+        
         @Override
-        protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
-            if (originalField.getOwner().getOwner().equals(this.referenceRevision)) {
-                this.fieldMap.put(originalField, mappedField);
-            }
+        public Void handleProviderRecordType(ProviderRecordType sourceType) {
+            ProviderRecordType targetType = this.lookupType(sourceType);
+            
+            sourceType.getFields()
+                .forEach(sourceField -> this.registerFieldMapping(sourceField, targetType));
+            
+            return null;
         }
+        
+        private void registerFieldMapping(ProviderField sourceField, ProviderRecordType targetType) {
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderField effectiveSourceField = sourceField.findLastSuccessor();
+            ProviderField targetField = targetType.resolveFieldByInternalName(effectiveSourceField.getInternalName()).orElseThrow(() -> new ModelMergeException(
+                    "Could not find a field with internal name '" + sourceField.getInternalName() + "' on type '" + targetType + "'."));
 
+            this.fieldMap.put(sourceField, targetField);
+        }
+                
         @Override
-        protected void registerEnumMemberMapping(ProviderEnumMember originalMember, ProviderEnumMember mappedMember) {
-            if (originalMember.getOwner().getOwner().equals(this.referenceRevision)) {
-                this.enumMemberMap.put(originalMember, mappedMember);
-            }
+        public Void handleProviderEnumType(ProviderEnumType sourceType) {
+            ProviderEnumType targetType = this.lookupType(sourceType);
+            
+            sourceType.getDeclaredMembers()
+                .forEach(sourceMember -> this.registerEnumMemberMapping(sourceMember, targetType));
+            
+            return null;
         }
+        
+        private void registerEnumMemberMapping(ProviderEnumMember sourceMember, ProviderEnumType targetType) {
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderEnumMember effectiveSourceMember = sourceMember.findLastSuccessor();
+            ProviderEnumMember targetMember = targetType.findMemberByInternalName(effectiveSourceMember.getInternalName())
+                    .orElseThrow(() -> new ModelMergeException(
+                            "Could not find an enum member with internal name '" + sourceMember.getInternalName() + "' on type '" + targetType + "'."));
 
+            this.enumMemberMap.put(sourceMember, targetMember);
+        }
+        
         @Override
-        protected void registerOperationMapping(ProviderOperation originalOperation,
-                ProviderOperation mappedOperation) {
-            if (originalOperation.getOwner().equals(this.referenceRevision)) {
-                this.operationMap.put(originalOperation, mappedOperation);
-            }
+        public Void handleProviderOperation(ProviderOperation sourceOperation) {
+            // Merged model elements are built on the last successor, so we have to determine it to look up the corresponding element
+            ProviderOperation effectiveSourceOperation = sourceOperation.findLastSuccessor();
+            ProviderOperation targetOperation = this.mergedDefinition.resolveOperationByInternalName(effectiveSourceOperation.getInternalName())
+                    .orElseThrow(() -> new ModelMergeException("Could not find an operation with internal name '" + sourceOperation.getInternalName() + "'."));
+            
+            this.operationMap.put(sourceOperation, targetOperation);
+            
+            return null;
         }
 
-        public ToMergedModelMap getToMergedModelMap() {
-            TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> restrictedTypeLookup = 
-                    this.typeMap.restrictTo(this.referenceRevision);
-            return new ToMergedModelMap(this.referenceRevision, this.mergedDefinition, restrictedTypeLookup, this.fieldMap, 
-                    this.enumMemberMap, this.operationMap);
+        public ToMergedModelMap createToMergedModelMap() {
+            this.referenceRevision.forEach(element -> element.accept(this));
+            
+            TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> restrictedTypeLookup = this.typeLookup.restrictTo(this.referenceRevision);
+            return new ToMergedModelMap(this.referenceRevision, this.mergedDefinition, restrictedTypeLookup, this.fieldMap, this.enumMemberMap,
+                    this.operationMap);
         }
 
+    }
+
+    private static class MergedTypeLookup extends TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> {
+
+        public MergedTypeLookup(Map<ProviderUserDefinedType, ProviderUserDefinedType> udtMap) {
+            super(udtMap);
+        }
+
+    }
+
+    private static class RevisionMergeData {
+
+        public final ProviderApiDefinition mergedDefinition;
+
+        public final MergedTypeLookup typeLookup;
+
+        public RevisionMergeData(ProviderApiDefinition mergedDefinition, MergedTypeLookup typeLookup) {
+            this.mergedDefinition = mergedDefinition;
+            this.typeLookup = typeLookup;
+        }
+
+    }
+
+    /**
+     * This type groups a merged model definition with the corresponding map from a provider revision.
+     */
+    public static class MergedDefinitionWithMap {
+        
+        public final ProviderApiDefinition mergedDefinition;
+        
+        public final ToMergedModelMap map;
+        
+        private MergedDefinitionWithMap(ProviderApiDefinition mergedDefinition, ToMergedModelMap map) {
+            this.mergedDefinition = mergedDefinition;
+            this.map = map;
+        }                
+        
     }
 
 }

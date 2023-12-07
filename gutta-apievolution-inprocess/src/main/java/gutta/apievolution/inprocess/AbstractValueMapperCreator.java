@@ -20,8 +20,13 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import static gutta.apievolution.core.apimodel.Type.mostSpecificTypeOf;
 
 /**
  * Abstract supertype for a creator that produces {@link ValueMapper ValueMappers} that provides common functionality.
@@ -198,7 +203,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
     public ValueMapper createMapperForClass(Class<?> type) {
         Type sourceType = this.findTypeRepresentedBy(type);
         if (sourceType == null) {
-            // No mappers for unmapped types
+            // No mappers for types that do not represent any API type
             return null;
         }
 
@@ -208,9 +213,13 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             throw new IllegalArgumentException("Unmappable input class '" + type + "'.");
         }
         Type targetType = this.getDefinitionResolution().mapType(sourceType);
-
-        // Mappers are created based on the target type (i.e., the reader's expectation)
-        return this.createMapperForType(targetType);
+                
+        if (targetType != null) {
+            // Mappers are created based on the target type (i.e., the reader's expectation)
+            return this.createMapperForType(targetType);
+        } else {
+            return this.createMapperForUnrepresentableType(sourceType);
+        }
     }
 
     /**
@@ -221,6 +230,54 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      */
     protected ValueMapper createMapperForType(Type type) {
         return type.accept(this);
+    }
+
+    /**
+     * Creates a mapper for the given unrepresentable type.
+     * 
+     * @param type The unrepresentable type to create a mapper for
+     * @return An appropriate value mapper or {@code null} if no mapper can be created
+     */
+    protected ValueMapper createMapperForUnrepresentableType(Type type) {
+        if (type instanceof RecordType) {
+            RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
+            
+            if (recordType.getSuperTypes().isEmpty()) {
+                // If the type does not have any supertypes, use the default behavior
+                // for unrelated types
+                return null;
+            }
+            
+            // If the type is a record type, there could be a supertype that can be mapped
+            // and that might specify a behavior for unmapped types
+            Type mappedSupertype = this.findMostSpecificMappedSupertypeOf(recordType);
+            if (mappedSupertype == null) {
+                return null;
+            }
+            
+            Class<?> representingClass = this.getTypeToClassMap().typeToClass(mappedSupertype);
+            return new UnrepresentableRecordTypeMapper(representingClass);
+        } else {
+            // For non-record types, treat this case as if the representing class does not
+            // represent an API type
+            return null;
+        }
+    }
+    
+    private RecordType<?, ?, ?> findMostSpecificMappedSupertypeOf(RecordType<?, ?, ?> type) {
+        Set<RecordType<?, ?, ?>> mappedSupertypes = new HashSet<>();
+        this.collectMappedSupertypesOf(type, mappedSupertypes::add);
+        
+        return mostSpecificTypeOf(mappedSupertypes);
+    }
+    
+    private void collectMappedSupertypesOf(RecordType<?, ?, ?> type, Consumer<RecordType<?, ?, ?>> collector) {
+        RecordType<?, ?, ?> mappedType = this.getDefinitionResolution().mapType(type);
+        if (mappedType != null) {
+            collector.accept(mappedType);
+        } else {
+            type.getSuperTypes().forEach(superType -> this.collectMappedSupertypesOf(superType, collector));
+        }
     }
 
     @Override
@@ -277,14 +334,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             memberMap.put(sourceValue, targetValue);
         }
 
-        return new EnumTypeValueMapper(memberMap);
+        return new EnumTypeValueMapper(targetClass, memberMap);
     }
 
     @Override
     public ValueMapper handleRecordType(RecordType<?, ?, ?> targetType) {
         RecordType<?, ?, ?> sourceType = this.determineOpposingType(targetType);
         Class<?> sourceClass = this.getTypeToClassMap().typeToClass(sourceType);
-        Class<?> targetClass = this.determineAppropriateTypeFor(this.getTypeToClassMap().typeToClass(targetType));
+        Class<?> targetClass = this.determineAppropriateTypeFor(targetType, this.getTypeToClassMap().typeToClass(targetType));
 
         // Only the provider must deal with unmapped elements
         boolean allowUnmappedElements = isProviderType(targetType);
@@ -292,17 +349,18 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
         Map<Method, FieldMapper> fieldMappers = new HashMap<>();
         targetType.getFields().forEach(field -> this.registerMapperForField(field, sourceClass, targetClass, fieldMappers, allowUnmappedElements));
 
-        return this.createRecordValueMapper(targetClass, fieldMappers);
+        return this.createRecordValueMapper(targetType, targetClass, fieldMappers);
     }
 
     /**
      * Creates a record value mapper for the given type.
      * 
-     * @param targetClass  The class representing the record type
-     * @param fieldMappers The field mappers for the record type
+     * @param type              The record type
+     * @param representingClass The class representing the record type
+     * @param fieldMappers      The field mappers for the record type
      * @return The created value mapper
      */
-    protected abstract ValueMapper createRecordValueMapper(Class<?> targetClass, Map<Method, FieldMapper> fieldMappers);
+    protected abstract ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers);
 
     private void registerMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, Map<Method, FieldMapper> fieldMappers,
             boolean allowUnmappedElements) {
@@ -365,14 +423,15 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
     protected abstract Optional<Method> findSourceAccessor(Field<?, ?> sourceField, Class<?> sourceClass);
 
     /**
-     * Determines the actual type to use for the given type. This operation can be overridden
-     * by subtypes to replace, for instance, interfaces by their implementing classes.
+     * Determines the actual type to use for the given type. This operation can be overridden by subtypes to replace, for instance, interfaces by their
+     * implementing classes.
      * 
-     * @param type The encountered type
+     * @param type              The record type in question
+     * @param representingClass The class representing the type
      * @return The actual type to use (can be the same as the input)
      */
-    protected Class<?> determineAppropriateTypeFor(Class<?> type) {
-        return type;
-    }
+    protected Class<?> determineAppropriateTypeFor(RecordType<?, ?, ?> type, Class<?> representingClass) {
+        return representingClass;
+    }        
 
 }

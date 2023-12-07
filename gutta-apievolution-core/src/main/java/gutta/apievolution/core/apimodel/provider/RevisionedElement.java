@@ -51,6 +51,24 @@ public interface RevisionedElement<T extends RevisionedElement<T>> {
     default Optional<T> findFirstPredecessorMatching(Predicate<T> matchPredicate) {
         return this.predecessorStream(false).filter(matchPredicate).findFirst();
     }
+    
+    /**
+     * Finds the last successor of this element.
+     * 
+     * @return The last successor, potentially the element itself
+     */
+    @SuppressWarnings("unchecked")
+    default T findLastSuccessor() {
+        T currentElement = (T) this;
+        Optional<T> successor = this.getSuccessor();
+        
+        while (successor.isPresent()) {
+            currentElement = successor.get();
+            successor = currentElement.getSuccessor();
+        }
+        
+        return currentElement;
+    }
 
     /**
      * Returns a stream of all predecessors of this element, possibly including the

@@ -28,7 +28,7 @@ api test.provider {
     }
     
     exception UnmappedTestException {}
-    
+        
     operation testOperation(TestParameter): TestResult
     
     operation operationWithMappedException(TestParameter): TestResult throws TestException

@@ -161,7 +161,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
     public boolean isRecord() {
         return true;
     }
-
+    
     /**
      * Returns whether this record type is an exception.
      *
@@ -195,7 +195,7 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
      * @param type The potential subtype
      * @return {@code True} if this type is a supertype of the given type, {@code false} otherwise
      */
-    public boolean isSupertypeOf(R type) {
+    public boolean isSupertypeOf(RecordType<?, ?, ?> type) {
         return (this.equals(type)) || this.subTypes.contains(type);
     }
     
