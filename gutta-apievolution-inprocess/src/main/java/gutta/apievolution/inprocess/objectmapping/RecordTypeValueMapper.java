@@ -8,6 +8,8 @@ import gutta.apievolution.inprocess.ImplementedBy;
 import gutta.apievolution.inprocess.InvalidApiException;
 import gutta.apievolution.inprocess.InvalidInvocationException;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +26,7 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
 
     public RecordTypeValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
         super(representingClass);
-        
+
         this.recordCreator = creatorFor(type, representingClass);
 
         List<FieldValueTransferrer> transferrers = new ArrayList<>(fieldMappers.size());
@@ -40,7 +42,7 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
             return new AbstractTypeObjectCreator<>(type);
         }
     }
-    
+
     private static Class<?> implementorOf(Class<?> type) {
         if (Modifier.isAbstract(type.getModifiers())) {
             ImplementedBy implementorAnnotation = type.getAnnotation(ImplementedBy.class);
@@ -61,11 +63,11 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
 
         return record;
     }
-    
+
     private interface ObjectCreator<T> {
-        
+
         public T createObject();
-        
+
     }
 
     private static class ConcreteObjectCreator<T> implements ObjectCreator<T> {
@@ -89,38 +91,46 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
         }
 
     }
-    
+
     private static class AbstractTypeObjectCreator<T> implements ObjectCreator<T> {
-        
+
         private final Type type;
-        
+
         public AbstractTypeObjectCreator(Type type) {
             this.type = type;
         }
-        
+
         @Override
         public T createObject() {
             throw new UnsupportedOperationException("Unable to create object for abstract type '" + this.type + "'.");
         }
-        
+
     }
 
     private static class FieldValueTransferrer {
 
-        private Method targetAccessor;
+        private final MethodHandle targetHandle;
 
-        private FieldMapper fieldMapper;
+        private final FieldMapper fieldMapper;
 
         public FieldValueTransferrer(Method targetAccessor, FieldMapper fieldMapper) {
-            this.targetAccessor = targetAccessor;
+            this.targetHandle = findHandleFor(targetAccessor);
             this.fieldMapper = fieldMapper;
+        }
+
+        private static MethodHandle findHandleFor(Method accessor) {
+            try {
+                return MethodHandles.publicLookup().unreflect(accessor);
+            } catch (IllegalAccessException e) {
+                throw new InvalidApiException("Could not look up method handle for accessor '" + accessor + "',", e);
+            }
         }
 
         public void transferValue(Object sourceObject, Object targetObject) {
             Object mappedValue = this.fieldMapper.mapField(sourceObject);
             try {
-                this.targetAccessor.invoke(targetObject, mappedValue);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                this.targetHandle.invoke(targetObject, mappedValue);
+            } catch (Throwable e) {
                 throw new InvalidInvocationException("Error transferring a value.", e);
             }
         }
