@@ -14,6 +14,7 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerUserDefinedType;
 import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.ProviderUserDefinedType;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.core.util.MapUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +25,14 @@ import java.util.Map;
  */
 public class TypeClassMap {
 
-    private final UDTToClassMap udtToClassMap;
-
     private final Map<Class<?>, Type> consumerTypeLookup;
 
     private final Map<Class<?>, Type> providerTypeLookup;
 
+    private final Map<Type, Class<?>> consumerClassLookup;
+    
+    private final Map<Type, Class<?>> providerClassLookup;
+    
     /**
      * Creates a new map using the given data.
      * 
@@ -38,9 +41,11 @@ public class TypeClassMap {
      * @param definitionResolution The resolution of the consumer API against the provider API
      */
     TypeClassMap(UDTToClassMap udtToClassMap, ConsumerApiDefinition apiDefinition, DefinitionResolution definitionResolution) {
-        this.udtToClassMap = udtToClassMap;
         this.consumerTypeLookup = createConsumerTypeLookup(udtToClassMap, apiDefinition);
+        this.consumerClassLookup = MapUtil.invertMap(this.consumerTypeLookup, type -> {});
+        
         this.providerTypeLookup = createProviderTypeLookup(udtToClassMap, apiDefinition, definitionResolution);
+        this.providerClassLookup = MapUtil.invertMap(this.providerTypeLookup, type -> {});
     }
 
     private static Map<Class<?>, Type> createConsumerTypeLookup(UDTToClassMap typeMap, ConsumerApiDefinition apiDefinition) {
@@ -96,8 +101,8 @@ public class TypeClassMap {
 
     private Type classToProviderType(Class<?> type) {
         return this.providerTypeLookup.get(type);
-    }
-
+    }        
+    
     /**
      * Returns the class representing the given API type.
      * 
@@ -108,9 +113,9 @@ public class TypeClassMap {
     @SuppressWarnings("unchecked")
     public <T> Class<T> typeToClass(Type type) {
         if (type instanceof ConsumerUserDefinedType) {
-            return this.udtToClassMap.consumerTypeToClass((ConsumerUserDefinedType) type);
+            return (Class<T>) this.consumerClassLookup.get(type);
         } else if (type instanceof ProviderUserDefinedType) {
-            return this.udtToClassMap.providerTypeToClass((ProviderUserDefinedType) type);
+            return (Class<T>) this.providerClassLookup.get(type);
         } else if (type instanceof BasicType) {
             return (Class<T>) this.basicTypeToClass((BasicType) type);
         } else {
