@@ -4,6 +4,10 @@ api test.consumer {
 		// Empty parameter type
 	}
 	
+	record EmptyResult as EmptyConsumerResult {
+		// Empty result type
+	}
+	
 	record Result10 as ConsumerResult10 {
 		int32 intField1
 		int32 intField2
@@ -2051,6 +2055,8 @@ api test.consumer {
         string stringField499
         string stringField500
     }	
+
+	operation testMethodEmpty(Parameter): EmptyResult
 		
 	operation testMethod10(Parameter): Result10
 	

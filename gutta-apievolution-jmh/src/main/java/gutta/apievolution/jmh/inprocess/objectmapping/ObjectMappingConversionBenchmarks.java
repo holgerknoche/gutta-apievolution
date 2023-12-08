@@ -16,6 +16,14 @@ public class ObjectMappingConversionBenchmarks extends InProcessConversionBenchm
 
     private static final ConsumerParameter CONSUMER_PARAMETER = new ConsumerParameter();
 
+    
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    public void invokeEmptyResult() {
+        CONSUMER_API.testMethodEmpty(CONSUMER_PARAMETER);
+    }
+    
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)

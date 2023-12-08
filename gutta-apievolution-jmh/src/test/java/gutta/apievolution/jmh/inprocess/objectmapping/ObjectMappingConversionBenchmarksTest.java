@@ -11,6 +11,7 @@ class ObjectMappingConversionBenchmarksTest {
     void invocationTests() {
         ObjectMappingConversionBenchmarks benchmarks = new ObjectMappingConversionBenchmarks();
         
+        benchmarks.invokeEmptyResult();
         benchmarks.invokeResult10();
         benchmarks.invokeAndInspectResult10();
         benchmarks.invokeResult25();

@@ -2,6 +2,8 @@ package gutta.apievolution.jmh.inprocess.objectmapping;
 
 public interface ConsumerApi {
     
+    EmptyConsumerResult testMethodEmpty(ConsumerParameter parameter);
+    
     ConsumerResult10 testMethod10(ConsumerParameter parameter);
     
     ConsumerResult25 testMethod25(ConsumerParameter parameter);

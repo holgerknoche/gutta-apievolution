@@ -19,6 +19,13 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    public void invokeEmptyResult() {
+        CONSUMER_API.testMethodEmpty(CONSUMER_PARAMETER);
+    }
+    
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeResult10() {
         CONSUMER_API.testMethod10(CONSUMER_PARAMETER);                    
     }

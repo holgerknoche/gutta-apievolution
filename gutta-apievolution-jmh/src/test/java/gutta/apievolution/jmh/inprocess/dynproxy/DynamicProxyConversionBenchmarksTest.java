@@ -11,6 +11,7 @@ class DynamicProxyConversionBenchmarksTest {
     void invocationTests() {
         DynamicProxyConversionBenchmarks benchmarks = new DynamicProxyConversionBenchmarks();
         
+        benchmarks.invokeEmptyResult();
         benchmarks.invokeResult10();
         benchmarks.invokeAndInspectResult10();
         benchmarks.invokeResult25();

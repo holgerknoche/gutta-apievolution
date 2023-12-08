@@ -2,6 +2,8 @@ package gutta.apievolution.jmh.inprocess.provider;
 
 public class ProviderApiV1 {
 
+    private static final EmptyProviderResult EMPTY_RESULT = new EmptyProviderResult();
+    
     private static final ProviderResult10 RESULT_10 = createProviderResult10();
 
     private static ProviderResult10 createProviderResult10() {
@@ -2090,6 +2092,10 @@ public class ProviderApiV1 {
         result.setStringField500("500");
 
         return result;
+    }
+    
+    public EmptyProviderResult testMethodEmpty(ProviderParameter parameter) {
+        return EMPTY_RESULT;
     }
 
     public ProviderResult10 testMethod10(ProviderParameter parameter) {
