@@ -18,12 +18,10 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * A provider operation proxy transparently handles revisioned communication on
- * the provider side, i.e. it transforms the request to the internal
- * representation and the response to the public representation.
+ * A provider operation proxy transparently handles revisioned communication on the provider side, i.e. it transforms the request to the internal representation
+ * and the response to the public representation.
  */
-public abstract class ProviderOperationProxy<P, R>
-        extends AbstractOperationProxy {
+public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProxy {
 
     private final String serviceName;
 
@@ -47,8 +45,8 @@ public abstract class ProviderOperationProxy<P, R>
      * @param resultTypeName     The internal name of the result type
      * @param parameterType      The actual parameter type for request handling
      */
-    public ProviderOperationProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions,
-            String parameterTypeName, String resultTypeName, Class<P> parameterType) {
+    public ProviderOperationProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions, String parameterTypeName,
+            String resultTypeName, Class<P> parameterType) {
         this.serviceName = serviceName;
         this.revisionHistory = revisionHistory;
         this.supportedRevisions = supportedRevisions;
@@ -66,8 +64,7 @@ public abstract class ProviderOperationProxy<P, R>
         return this.serviceName;
     }
 
-    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution,
-            JsonNode representation) {
+    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
         return new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
     }
 
@@ -76,18 +73,27 @@ public abstract class ProviderOperationProxy<P, R>
      * 
      * @param consumerApiId      The consumer API ID that was used for the request
      * @param referencedApiName  The name of the referenced provider API
-     * @param referencedRevision The provider revision referenced by the consumer
-     *                           API
+     * @param referencedRevision The provider revision referenced by the consumer API
      * @param requestJson        The request in JSON format
      * @return The response in JSON format
      */
     public String invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, String requestJson) {
-        ObjectMapper objectMapper = OBJECT_MAPPER;
-
         // We currently use the file name as the API id
         ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory,
-                this.supportedRevisions, consumerApi);
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
+
+        return this.invokeOperation(resolution, requestJson);
+    }
+
+    /**
+     * Invokes the underlying service method using the given data.
+     * 
+     * @param resolution  The resolution of the consumer API to use
+     * @param requestJson The request in JSON format
+     * @return The response in JSON format
+     */
+    public String invokeOperation(DefinitionResolution resolution, String requestJson) {
+        ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
             Type parameterType = resolution.resolveProviderType(this.parameterTypeName);
@@ -116,11 +122,9 @@ public abstract class ProviderOperationProxy<P, R>
     protected abstract R invokeOperation(P parameter);
 
     /**
-     * Specific visitor for rewriting a public to a provider-internal
-     * representation.
+     * Specific visitor for rewriting a public to a provider-internal representation.
      */
-    private static class PublicToInternalRewriter
-            extends AbstractPublicToInternalRewriter {
+    private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
 
         private final DefinitionResolution definitionResolution;
 
@@ -146,8 +150,7 @@ public abstract class ProviderOperationProxy<P, R>
                 JsonNode value = objectNode.remove(consumerField.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(),
-                            this.fork().rewritePublicToInternal(field.getType(), value));
+                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(), value));
                 }
             }
 

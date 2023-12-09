@@ -14,12 +14,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * A consumer operation proxy transparently handles revisioned communication on
- * the consumer side, i.e. it transforms the request to the public
- * representation and the response to the internal representation.
+ * A consumer operation proxy transparently handles revisioned communication on the consumer side, i.e. it transforms the request to the public representation
+ * and the response to the internal representation.
  */
-public abstract class ConsumerOperationProxy
-        extends AbstractOperationProxy {
+public abstract class ConsumerOperationProxy extends AbstractOperationProxy {
 
     private final ConsumerRecordType parameterType;
 
@@ -31,14 +29,11 @@ public abstract class ConsumerOperationProxy
      * Creates a new proxy using the given data.
      * 
      * @param apiDefinition     The API definition to use
-     * @param parameterTypeName The internal name of the parameter type in the API
-     *                          definition
-     * @param resultTypeName    The internal name of the result name in the API
-     *                          definition
+     * @param parameterTypeName The internal name of the parameter type in the API definition
+     * @param resultTypeName    The internal name of the result name in the API definition
      * @param router            The router to use for the invocation
      */
-    protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String parameterTypeName,
-            String resultTypeName, RequestRouter router) {
+    protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String parameterTypeName, String resultTypeName, RequestRouter router) {
         Optional<ConsumerRecordType> optionalParameterType = apiDefinition.findUDTByInternalName(parameterTypeName);
         Optional<ConsumerRecordType> optionalResultType = apiDefinition.findUDTByInternalName(resultTypeName);
 
@@ -62,8 +57,7 @@ public abstract class ConsumerOperationProxy
      * @param resultType         The result type for result handling
      * @return The deserialized result
      */
-    protected <T> T invokeMethod(String apiId, int referencedRevision, String serviceName, Object parameterObject,
-            Class<T> resultType) {
+    protected <T> T invokeMethod(String apiId, int referencedRevision, String serviceName, Object parameterObject, Class<T> resultType) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
@@ -82,8 +76,7 @@ public abstract class ConsumerOperationProxy
         }
     }
 
-    private static class PublicToInternalRewriter
-            extends AbstractPublicToInternalRewriter {
+    private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
 
         @Override
         protected PublicToInternalRewriter fork() {
@@ -98,8 +91,7 @@ public abstract class ConsumerOperationProxy
                 JsonNode value = objectNode.remove(field.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(),
-                            this.fork().rewritePublicToInternal(field.getType(), value));
+                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(), value));
                 }
             }
 
