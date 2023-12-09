@@ -12,6 +12,7 @@ class JSONConversionBenchmarksTest {
         JSONConversionBenchmarks benchmarks = new JSONConversionBenchmarks();
         
         benchmarks.invokeEmptyResult();
+        benchmarks.invokeTestMethod100();
     }
     
 }

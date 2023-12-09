@@ -23,11 +23,11 @@ class JsonRequestRouter implements RequestRouter {
     }
     
     @Override
-    public String invokeService(String consumerApiId, int referencedRevision, String serviceName, String requestJson) {
+    public byte[] invokeService(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson) {
         return this.invokeService(serviceName, requestJson);
     }
     
-    public String invokeService(String operationName, String requestJson) {
+    public byte[] invokeService(String operationName, byte[] requestJson) {
         ProviderOperationProxy<?, ?> proxy = this.proxyMap.get(operationName);
         return proxy.invokeOperation(this.resolution, requestJson);
     }
