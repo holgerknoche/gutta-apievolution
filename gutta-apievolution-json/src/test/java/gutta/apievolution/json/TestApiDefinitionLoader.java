@@ -17,10 +17,9 @@ class TestApiDefinitionLoader {
 
     public static RevisionHistory loadRevisionHistory(String... fileNames) {
         try {
-        	List<NamedInputStream> streams = loadStreams(fileNames);
-        	
-            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader
-                    .loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
+            List<NamedInputStream> streams = loadStreams(fileNames);
+
+            List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
             RevisionHistory revisionHistory = new RevisionHistory(apiDefinitions);
 
             for (NamedInputStream stream : streams) {
@@ -32,21 +31,21 @@ class TestApiDefinitionLoader {
             throw new ApiLoadFailedException(e);
         }
     }
-    
+
     private static List<NamedInputStream> loadStreams(String... fileNames) throws IOException {
-    	ClassLoader classLoader = TestApiDefinitionLoader.class.getClassLoader();
-    	
-    	List<NamedInputStream> streams = new ArrayList<>(fileNames.length);
-    	for (String fileName : fileNames) {
-    		InputStream inputStream = classLoader.getResourceAsStream(fileName);
-    		
-    		if (inputStream != null) {
-    			streams.add(new NamedInputStream(fileName, inputStream));
-    		}
-    	}
-    	
-    	return streams;
-    		
+        ClassLoader classLoader = TestApiDefinitionLoader.class.getClassLoader();
+
+        List<NamedInputStream> streams = new ArrayList<>(fileNames.length);
+        for (String fileName : fileNames) {
+            InputStream inputStream = classLoader.getResourceAsStream(fileName);
+
+            if (inputStream != null) {
+                streams.add(new NamedInputStream(fileName, inputStream));
+            }
+        }
+
+        return streams;
+
     }
 
     public static ConsumerApiDefinition loadConsumerApi(String fileName, String referencedApiName, int referencedRevision) {
@@ -57,8 +56,9 @@ class TestApiDefinitionLoader {
         }
     }
 
-    private static class ApiLoadFailedException
-            extends RuntimeException {
+    private static class ApiLoadFailedException extends RuntimeException {
+
+        private static final long serialVersionUID = -3031184149542951350L;
 
         public ApiLoadFailedException(Throwable cause) {
             super(cause);

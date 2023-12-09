@@ -18,7 +18,7 @@ public class TestRequestRouter implements RequestRouter {
     }
 
     @Override
-    public String invokeService(String consumerApiId, int referencedRevision, String operationName, String requestJson) {
+    public byte[] invokeService(String consumerApiId, int referencedRevision, String operationName, byte[] requestJson) {
         ProviderOperationProxy<?, ?> operationProxy = this.providerOperationProxyMap.get(operationName);
         return operationProxy.invokeOperation(consumerApiId, this.apiName, referencedRevision, requestJson);
     }

@@ -64,8 +64,8 @@ public abstract class ConsumerOperationProxy extends AbstractOperationProxy {
             JsonNode parameterNode = objectMapper.valueToTree(parameterObject);
             parameterNode = this.rewriteInternalToPublic(this.parameterType, parameterNode);
 
-            String requestJson = objectMapper.writeValueAsString(parameterNode);
-            String responseJson = this.router.invokeService(apiId, referencedRevision, serviceName, requestJson);
+            byte[] requestJson = objectMapper.writeValueAsBytes(parameterNode);
+            byte[] responseJson = this.router.invokeService(apiId, referencedRevision, serviceName, requestJson);
 
             JsonNode responseNode = objectMapper.readTree(responseJson);
             responseNode = this.rewritePublicToConsumerInternal(this.resultType, responseNode);

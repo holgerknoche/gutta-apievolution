@@ -77,7 +77,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      * @param requestJson        The request in JSON format
      * @return The response in JSON format
      */
-    public String invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, String requestJson) {
+    public byte[] invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, byte[] requestJson) {
         // We currently use the file name as the API id
         ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
         DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
@@ -92,7 +92,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      * @param requestJson The request in JSON format
      * @return The response in JSON format
      */
-    public String invokeOperation(DefinitionResolution resolution, String requestJson) {
+    public byte[] invokeOperation(DefinitionResolution resolution, byte[] requestJson) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
@@ -107,7 +107,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             JsonNode responseNode = objectMapper.valueToTree(result);
             responseNode = this.rewriteInternalToPublic(resultType, responseNode);
 
-            return objectMapper.writeValueAsString(responseNode);
+            return objectMapper.writeValueAsBytes(responseNode);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
