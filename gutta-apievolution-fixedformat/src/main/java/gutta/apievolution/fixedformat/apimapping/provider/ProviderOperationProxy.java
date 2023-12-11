@@ -21,19 +21,13 @@ public abstract class ProviderOperationProxy<P, R> {
 
     private final ApiMappingScript providerToConsumerScript;
 
-    private final ByteBuffer providerParameterBuffer;
-
-    private final FixedFormatData providerParameterData;
-
-    private final ByteBuffer providerResultBuffer;
-
-    private final FixedFormatData providerResultData;
-
     private final Class<P> parameterType;
 
     private final Class<R> resultType;
 
     private final FixedFormatMapper mapper;
+    
+    private final Charset charset;
 
     /**
      * Creates a new proxy using the given data.
@@ -55,12 +49,7 @@ public abstract class ProviderOperationProxy<P, R> {
         this.parameterType = parameterType;
         this.resultType = resultType;
         this.mapper = mapper;
-
-        this.providerParameterBuffer = ByteBuffer.allocate(mapper.determineMaxSizeOf(parameterType));
-        this.providerParameterData = FixedFormatData.of(this.providerParameterBuffer, charset);
-
-        this.providerResultBuffer = ByteBuffer.allocate(mapper.determineMaxSizeOf(resultType));
-        this.providerResultData = FixedFormatData.of(this.providerResultBuffer, charset);
+        this.charset = charset;
     }
 
     /**
@@ -71,21 +60,24 @@ public abstract class ProviderOperationProxy<P, R> {
      * @param consumerResultBuffer    The buffer to store the result data in. This buffer will be {@link ByteBuffer#flip() flipped} before returning.
      * @return The result buffer
      */
-    public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {        
+    public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {
+        FixedFormatMapper formatMapper = this.mapper;
+        
         // Map the parameter data provided by the consumer
-        ByteBuffer parameterBuffer = this.providerParameterBuffer;
-        parameterBuffer.clear();
+        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));        
         
         this.consumerToProviderScript.mapParameterFor(this.getOperationName(), consumerParameterBuffer, parameterBuffer);
         parameterBuffer.flip();
-        P parameter = this.mapper.readValue(this.providerParameterData, this.parameterType);
+        
+        FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
+        P parameter = this.mapper.readValue(parameterData, this.parameterType);
 
         R result = this.invokeOperation(parameter);
         
-        ByteBuffer resultBuffer = this.providerResultBuffer;
-        resultBuffer.clear();
-        
-        this.mapper.writeValue(result, this.providerResultData);
+        ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
+        FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
+                
+        this.mapper.writeValue(result, resultData);
         resultBuffer.flip();
         this.providerToConsumerScript.mapResultFor(this.getOperationName(), resultBuffer, consumerResultBuffer);
 

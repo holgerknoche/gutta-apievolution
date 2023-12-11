@@ -22,14 +22,8 @@ public abstract class ConsumerOperationProxy<P, R> {
     private final String operationName;
 
     private final Class<R> resultType;
-
-    private final ByteBuffer parameterBuffer;
-
-    private final FixedFormatData parameterData;
-
-    private final ByteBuffer resultBuffer;
-
-    private final FixedFormatData resultData;
+    
+    private final Charset charset;
 
     /**
      * Creates a new proxy with the given data.
@@ -47,11 +41,7 @@ public abstract class ConsumerOperationProxy<P, R> {
         this.router = router;
         this.mapper = mapper;
         this.resultType = resultType;
-
-        this.parameterBuffer = ByteBuffer.allocate(mapper.determineMaxSizeOf(parameterType));
-        this.parameterData = FixedFormatData.of(parameterBuffer, charset);
-        this.resultBuffer = ByteBuffer.allocate(mapper.determineMaxSizeOf(resultType));
-        this.resultData = FixedFormatData.of(resultBuffer, charset);
+        this.charset = charset;
     }
 
     /**
@@ -61,15 +51,20 @@ public abstract class ConsumerOperationProxy<P, R> {
      * @return The operation's result
      */
     public R invoke(P parameter) {
-        this.parameterBuffer.clear();
-        this.resultBuffer.clear();
+        FixedFormatMapper formatMapper = this.mapper;
         
-        this.mapper.writeValue(parameter, this.parameterData);
-        this.parameterBuffer.flip();
+        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
+        FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
+        
+        this.mapper.writeValue(parameter, parameterData);
+        parameterBuffer.flip();
+        
+        ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
 
-        this.router.routeRequest(this.operationName, this.parameterBuffer, this.resultBuffer);
+        this.router.routeRequest(this.operationName, parameterBuffer, resultBuffer);
 
-        return this.mapper.readValue(this.resultData, this.resultType);
+        FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
+        return this.mapper.readValue(resultData, this.resultType);
     }
 
 }
