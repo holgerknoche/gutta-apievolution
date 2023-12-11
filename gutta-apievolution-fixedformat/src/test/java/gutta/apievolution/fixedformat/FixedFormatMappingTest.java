@@ -74,7 +74,7 @@ class FixedFormatMappingTest {
         }
 
         @Override
-        protected ProviderResult invokeMethod(ProviderParameter parameter) {
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
             ProviderResult result = new ProviderResult();
 
             result.setResultEnum(parameter.getTestEnum());
