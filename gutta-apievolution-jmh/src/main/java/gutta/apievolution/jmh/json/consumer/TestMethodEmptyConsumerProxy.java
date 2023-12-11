@@ -10,11 +10,6 @@ public class TestMethodEmptyConsumerProxy extends ConsumerProxyTemplate<EmptyCon
     }
 
     @Override
-    protected Class<EmptyConsumerResult> getResultClass() {
-        return EmptyConsumerResult.class;
-    }
-
-    @Override
     protected String getOperationName() {
         return "testMethodEmpty";
     }

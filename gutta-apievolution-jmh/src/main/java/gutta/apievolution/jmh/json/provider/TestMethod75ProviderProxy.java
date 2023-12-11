@@ -4,13 +4,13 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 
 import java.util.Set;
 
-public class TestMethod100ProviderProxy extends ProviderProxyTemplate<ProviderResult100> {
+public class TestMethod75ProviderProxy extends ProviderProxyTemplate<ProviderResult75> {
 
-    private static final ProviderResult100 RESULT = createResult(); 
-    
-    public static ProviderResult100 createResult() {
-        ProviderResult100 result = new ProviderResult100();
+    private static final ProviderResult75 RESULT = createResult();
 
+    public static ProviderResult75 createResult() {
+        ProviderResult75 result = new ProviderResult75();
+        
         result.setIntField1(1);
         result.setIntField2(2);
         result.setIntField3(3);
@@ -86,31 +86,6 @@ public class TestMethod100ProviderProxy extends ProviderProxyTemplate<ProviderRe
         result.setIntField73(73);
         result.setIntField74(74);
         result.setIntField75(75);
-        result.setIntField76(76);
-        result.setIntField77(77);
-        result.setIntField78(78);
-        result.setIntField79(79);
-        result.setIntField80(80);
-        result.setIntField81(81);
-        result.setIntField82(82);
-        result.setIntField83(83);
-        result.setIntField84(84);
-        result.setIntField85(85);
-        result.setIntField86(86);
-        result.setIntField87(87);
-        result.setIntField88(88);
-        result.setIntField89(89);
-        result.setIntField90(90);
-        result.setIntField91(91);
-        result.setIntField92(92);
-        result.setIntField93(93);
-        result.setIntField94(94);
-        result.setIntField95(95);
-        result.setIntField96(96);
-        result.setIntField97(97);
-        result.setIntField98(98);
-        result.setIntField99(99);
-        result.setIntField100(100);
 
         result.setStringField1("1");
         result.setStringField2("2");
@@ -187,42 +162,17 @@ public class TestMethod100ProviderProxy extends ProviderProxyTemplate<ProviderRe
         result.setStringField73("73");
         result.setStringField74("74");
         result.setStringField75("75");
-        result.setStringField76("76");
-        result.setStringField77("77");
-        result.setStringField78("78");
-        result.setStringField79("79");
-        result.setStringField80("80");
-        result.setStringField81("81");
-        result.setStringField82("82");
-        result.setStringField83("83");
-        result.setStringField84("84");
-        result.setStringField85("85");
-        result.setStringField86("86");
-        result.setStringField87("87");
-        result.setStringField88("88");
-        result.setStringField89("89");
-        result.setStringField90("90");
-        result.setStringField91("91");
-        result.setStringField92("92");
-        result.setStringField93("93");
-        result.setStringField94("94");
-        result.setStringField95("95");
-        result.setStringField96("96");
-        result.setStringField97("97");
-        result.setStringField98("98");
-        result.setStringField99("99");
-        result.setStringField100("100");
-
+        
         return result;
     }
     
-    public TestMethod100ProviderProxy(RevisionHistory revisionHistory, Set<Integer> supportedRevisions) {
-        super("testMethod100", revisionHistory, supportedRevisions, "ProviderResult100");
+    public TestMethod75ProviderProxy(RevisionHistory revisionHistory, Set<Integer> supportedRevisions) {
+        super("testMethod75", revisionHistory, supportedRevisions, "ProviderResult75");
     }
     
     @Override
-    protected ProviderResult100 invokeOperation(ProviderParameter parameter) {
+    protected ProviderResult75 invokeOperation(ProviderParameter parameter) {
         return RESULT;
     }
-
+    
 }

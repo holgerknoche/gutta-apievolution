@@ -10,11 +10,6 @@ public class TestMethod100ConsumerProxy extends ConsumerProxyTemplate<ConsumerRe
     }
 
     @Override
-    protected Class<ConsumerResult100> getResultClass() {
-        return ConsumerResult100.class;
-    }
-
-    @Override
     protected String getOperationName() {
         return "testMethod100";
     }
