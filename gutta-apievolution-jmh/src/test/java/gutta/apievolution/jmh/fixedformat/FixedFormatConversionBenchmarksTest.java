@@ -8,6 +8,7 @@ class FixedFormatConversionBenchmarksTest {
     void invocationTests() {
         FixedFormatConversionBenchmarks benchmarks = new FixedFormatConversionBenchmarks();
         
+        benchmarks.resultConversionOnly100();
         benchmarks.invokeTestMethod100();
     }
 

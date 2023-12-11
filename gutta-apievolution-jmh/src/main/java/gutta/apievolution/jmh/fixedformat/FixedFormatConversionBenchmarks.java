@@ -1,23 +1,28 @@
 package gutta.apievolution.jmh.fixedformat;
 
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
-import gutta.apievolution.fixedformat.apimapping.RequestRouter;
-import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy;
-import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
-import gutta.apievolution.jmh.JMHBenchmarkTemplate;
-import gutta.apievolution.jmh.fixedformat.consumer.ConsumerParameter;
-import gutta.apievolution.jmh.fixedformat.consumer.TestMethod100ConsumerProxy;
-import gutta.apievolution.jmh.fixedformat.provider.TestMethod100ProviderProxy;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
+import gutta.apievolution.fixedformat.apimapping.RequestRouter;
+import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy;
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
+import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.jmh.JMHBenchmarkTemplate;
+import gutta.apievolution.jmh.fixedformat.consumer.ConsumerParameter;
+import gutta.apievolution.jmh.fixedformat.consumer.TestMethod100ConsumerProxy;
+import gutta.apievolution.jmh.fixedformat.provider.ProviderResult100;
+import gutta.apievolution.jmh.fixedformat.provider.TestMethod100ProviderProxy;
 
 /**
  * JMH benchmarks to determine the performance impact of format conversion with our fixed-format conversion.
@@ -44,9 +49,36 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
         return new RequestRouter(proxies);
     }
     
+    private static <T> ByteBuffer createData(Class<T> type, Supplier<T> valueSupplier) {
+    	ByteBuffer buffer = ByteBuffer.allocate(MAPPER.determineMaxSizeOf(type));
+    	FixedFormatData data = FixedFormatData.of(buffer, CHARSET);
+    	MAPPER.writeValue(valueSupplier.get(), data);
+    	
+    	buffer.flip();
+    	
+    	return buffer;
+    }
+    
     private static final TestMethod100ConsumerProxy TEST_METHOD_100_PROXY = new TestMethod100ConsumerProxy(REQUEST_ROUTER, MAPPER, CHARSET);
     
     private static final ConsumerParameter CONSUMER_PARAMETER = new ConsumerParameter();
+    
+    private static final ByteBuffer RESULT_100_DATA = createData(ProviderResult100.class, TestMethod100ProviderProxy::createResult);    
+    
+    private static final ByteBuffer TARGET_BUFFER = ByteBuffer.allocate(32768);
+    
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    public void resultConversionOnly100() {
+    	ByteBuffer sourceBuffer = RESULT_100_DATA;
+    	sourceBuffer.position(0);
+    	
+    	ByteBuffer targetBuffer = TARGET_BUFFER;
+    	targetBuffer.clear();
+    	
+    	PROVIDER_TO_CONSUMER_SCRIPT.mapResultFor("testMethod100", sourceBuffer, targetBuffer);
+    }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
