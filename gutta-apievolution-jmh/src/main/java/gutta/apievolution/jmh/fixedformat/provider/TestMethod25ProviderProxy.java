@@ -2,7 +2,6 @@ package gutta.apievolution.jmh.fixedformat.provider;
 
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
-import gutta.apievolution.jmh.inprocess.provider.ProviderResult25;
 
 import java.nio.charset.Charset;
 

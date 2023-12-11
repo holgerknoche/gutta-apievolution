@@ -5,12 +5,12 @@ import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 
 import java.nio.charset.Charset;
 
-public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderResult100> {
+public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderResult50> {
 
-    private static final ProviderResult100 RESULT = createResult();
+    private static final ProviderResult50 RESULT = createResult();
 
-    public static ProviderResult100 createResult() {
-        ProviderResult100 result = new ProviderResult100();
+    public static ProviderResult50 createResult() {
+        ProviderResult50 result = new ProviderResult50();
 
         result.setIntField1(1);
         result.setIntField2(2);
@@ -62,56 +62,6 @@ public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderRes
         result.setIntField48(48);
         result.setIntField49(49);
         result.setIntField50(50);
-        result.setIntField51(51);
-        result.setIntField52(52);
-        result.setIntField53(53);
-        result.setIntField54(54);
-        result.setIntField55(55);
-        result.setIntField56(56);
-        result.setIntField57(57);
-        result.setIntField58(58);
-        result.setIntField59(59);
-        result.setIntField60(60);
-        result.setIntField61(61);
-        result.setIntField62(62);
-        result.setIntField63(63);
-        result.setIntField64(64);
-        result.setIntField65(65);
-        result.setIntField66(66);
-        result.setIntField67(67);
-        result.setIntField68(68);
-        result.setIntField69(69);
-        result.setIntField70(70);
-        result.setIntField71(71);
-        result.setIntField72(72);
-        result.setIntField73(73);
-        result.setIntField74(74);
-        result.setIntField75(75);
-        result.setIntField76(76);
-        result.setIntField77(77);
-        result.setIntField78(78);
-        result.setIntField79(79);
-        result.setIntField80(80);
-        result.setIntField81(81);
-        result.setIntField82(82);
-        result.setIntField83(83);
-        result.setIntField84(84);
-        result.setIntField85(85);
-        result.setIntField86(86);
-        result.setIntField87(87);
-        result.setIntField88(88);
-        result.setIntField89(89);
-        result.setIntField90(90);
-        result.setIntField91(91);
-        result.setIntField92(92);
-        result.setIntField93(93);
-        result.setIntField94(94);
-        result.setIntField95(95);
-        result.setIntField96(96);
-        result.setIntField97(97);
-        result.setIntField98(98);
-        result.setIntField99(99);
-        result.setIntField100(100);
 
         result.setStringField1("1");
         result.setStringField2("2");
@@ -163,56 +113,6 @@ public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderRes
         result.setStringField48("48");
         result.setStringField49("49");
         result.setStringField50("50");
-        result.setStringField51("51");
-        result.setStringField52("52");
-        result.setStringField53("53");
-        result.setStringField54("54");
-        result.setStringField55("55");
-        result.setStringField56("56");
-        result.setStringField57("57");
-        result.setStringField58("58");
-        result.setStringField59("59");
-        result.setStringField60("60");
-        result.setStringField61("61");
-        result.setStringField62("62");
-        result.setStringField63("63");
-        result.setStringField64("64");
-        result.setStringField65("65");
-        result.setStringField66("66");
-        result.setStringField67("67");
-        result.setStringField68("68");
-        result.setStringField69("69");
-        result.setStringField70("70");
-        result.setStringField71("71");
-        result.setStringField72("72");
-        result.setStringField73("73");
-        result.setStringField74("74");
-        result.setStringField75("75");
-        result.setStringField76("76");
-        result.setStringField77("77");
-        result.setStringField78("78");
-        result.setStringField79("79");
-        result.setStringField80("80");
-        result.setStringField81("81");
-        result.setStringField82("82");
-        result.setStringField83("83");
-        result.setStringField84("84");
-        result.setStringField85("85");
-        result.setStringField86("86");
-        result.setStringField87("87");
-        result.setStringField88("88");
-        result.setStringField89("89");
-        result.setStringField90("90");
-        result.setStringField91("91");
-        result.setStringField92("92");
-        result.setStringField93("93");
-        result.setStringField94("94");
-        result.setStringField95("95");
-        result.setStringField96("96");
-        result.setStringField97("97");
-        result.setStringField98("98");
-        result.setStringField99("99");
-        result.setStringField100("100");
 
         return result;
     }
@@ -220,11 +120,11 @@ public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderRes
     public TestMethod50ProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper,
             Charset charset) {
 
-        super("testMethod100", ProviderResult100.class, consumerToProviderScript, providerToConsumerScript, mapper, charset);
+        super("testMethod50", ProviderResult50.class, consumerToProviderScript, providerToConsumerScript, mapper, charset);
     }
 
     @Override
-    protected ProviderResult100 invokeOperation(ProviderParameter parameter) {
+    protected ProviderResult50 invokeOperation(ProviderParameter parameter) {
         return RESULT;
     }
 
