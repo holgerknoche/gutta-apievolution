@@ -1,5 +1,6 @@
 package gutta.apievolution.jmh.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -60,9 +61,19 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void jsonProcessing100() throws IOException {
+    public void immediateJsonProcessing100() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_100);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult100.class);
+    }
+    
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    public void indirectProcessing100() throws IOException {
+        JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_100);
+        byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
+        JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
+        OBJECT_MAPPER.treeToValue(readTree, ProviderResult100.class);
     }
 
     @Benchmark
