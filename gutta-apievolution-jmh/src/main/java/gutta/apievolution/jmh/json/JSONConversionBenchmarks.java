@@ -2,8 +2,6 @@ package gutta.apievolution.jmh.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.jmh.JMHBenchmarkTemplate;
 import gutta.apievolution.jmh.json.consumer.ConsumerParameter;
 import gutta.apievolution.jmh.json.consumer.TestMethod100ConsumerProxy;
@@ -58,9 +56,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
                 new TestMethod250ProviderProxy(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS),
                 new TestMethod500ProviderProxy(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS) };
 
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS,
-                CONSUMER_API_DEFINITION);
-        return new JsonRequestRouter(resolution, proxies);
+        return new JsonRequestRouter(DEFINITION_RESOLUTION, proxies);
     }
 
     private static final TestMethodEmptyConsumerProxy TEST_METHOD_EMPTY_PROXY = new TestMethodEmptyConsumerProxy(CONSUMER_API_DEFINITION, ROUTER);
