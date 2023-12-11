@@ -71,15 +71,20 @@ public abstract class ProviderOperationProxy<P, R> {
      * @param consumerResultBuffer    The buffer to store the result data in. This buffer will be {@link ByteBuffer#flip() flipped} before returning.
      * @return The result buffer
      */
-    public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {
+    public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {        
         // Map the parameter data provided by the consumer
         ByteBuffer parameterBuffer = this.providerParameterBuffer;
+        parameterBuffer.clear();
+        
         this.consumerToProviderScript.mapParameterFor(this.getOperationName(), consumerParameterBuffer, parameterBuffer);
         parameterBuffer.flip();
         P parameter = this.mapper.readValue(this.providerParameterData, this.parameterType);
 
         R result = this.invokeOperation(parameter);
+        
         ByteBuffer resultBuffer = this.providerResultBuffer;
+        resultBuffer.clear();
+        
         this.mapper.writeValue(result, this.providerResultData);
         resultBuffer.flip();
         this.providerToConsumerScript.mapResultFor(this.getOperationName(), resultBuffer, consumerResultBuffer);

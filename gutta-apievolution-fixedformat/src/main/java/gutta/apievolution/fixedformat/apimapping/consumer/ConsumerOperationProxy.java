@@ -61,6 +61,9 @@ public abstract class ConsumerOperationProxy<P, R> {
      * @return The operation's result
      */
     public R invoke(P parameter) {
+        this.parameterBuffer.clear();
+        this.resultBuffer.clear();
+        
         this.mapper.writeValue(parameter, this.parameterData);
         this.parameterBuffer.flip();
 
