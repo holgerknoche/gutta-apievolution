@@ -65,6 +65,15 @@ public abstract class Field<R extends RecordType<?, R, F>, F extends Field<R, F>
     public R getOwner() {
         return this.owner;
     }
+    
+    /**
+     * Returns the usage of this field, e.g., if it is used as an output or an input field. 
+     * 
+     * @return see above
+     */
+    public Usage getUsage() {
+        return this.getOwner().getUsage();
+    }
 
     /**
      * Returns the field's optionality.

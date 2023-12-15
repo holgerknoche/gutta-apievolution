@@ -181,17 +181,17 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
     }
 
     private void ensureCompatibleOptionality(ConsumerField sourceField, ProviderField targetField, ValidationResult result) {
-        if (!this.isOptionalityCompatible(sourceField, targetField)) {
+        if (!isOptionalityCompatible(sourceField, targetField)) {
             result.addErrorMessage("Optionalities of " + sourceField + " and " + targetField + " are not compatible.");
         }
     }
         
-    private boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
+    private static boolean isOptionalityCompatible(ConsumerField ownField, ProviderField foreignField) {
         Optionality consumerOptionality = ownField.getOptionality();
         Optionality providerOptionality = foreignField.getOptionality();
         
         // The consumer usage is the one that counts
-        Usage usage = ownField.getOwner().getUsage();
+        Usage usage = ownField.getUsage();
         
         switch (usage) {
         case INPUT_ONLY:
