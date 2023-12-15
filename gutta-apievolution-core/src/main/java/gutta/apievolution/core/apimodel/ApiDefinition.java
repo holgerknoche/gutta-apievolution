@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -229,7 +228,7 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
 
     @Override
     public int hashCode() { // NOSONAR Equals is overridden in the concrete subclasses
-        return Objects.hash(this.name, this.annotations, this.userDefinedTypes, this.operations);
+        return this.name.hashCode();
     }
 
     /**
