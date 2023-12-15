@@ -127,7 +127,7 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         // Determine the usage by the consumer, since output-only types do not have to be mapped
         Usage usage = consumerType.getUsage();
         
-        if (consumerField == null && providerOptionality == Optionality.MANDATORY && usage != Usage.OUTPUT) {
+        if (consumerField == null && providerOptionality == Optionality.MANDATORY && usage != Usage.OUTPUT_ONLY) {
             // Report an error if a mandatory field is not mapped and is not used only for output
             result.addErrorMessage("Mandatory field " + providerField + " is not mapped.");
         }

@@ -35,8 +35,8 @@ class ModelCreationTest {
 
         // Assert that the usages on the types are set accordingly
         assertEquals(Usage.NONE, unusedType.getUsage());
-        assertEquals(Usage.OUTPUT, returnType.getUsage());
-        assertEquals(Usage.INPUT, parameterType.getUsage());
+        assertEquals(Usage.OUTPUT_ONLY, returnType.getUsage());
+        assertEquals(Usage.INPUT_ONLY, parameterType.getUsage());
         assertEquals(Usage.IN_OUT, inoutType.getUsage());
     }
 

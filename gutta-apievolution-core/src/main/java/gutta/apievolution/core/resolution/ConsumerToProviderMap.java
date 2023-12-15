@@ -194,7 +194,7 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         Usage usage = ownField.getOwner().getUsage();
         
         switch (usage) {
-        case INPUT:
+        case INPUT_ONLY:
             // For types only used as input, the consumer can be more strict than the
             // provider. Furthermore, opt-in and optional are equivalent.
             if (providerOptionality == MANDATORY) {
@@ -203,7 +203,7 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
                 return true;
             }
             
-        case OUTPUT:
+        case OUTPUT_ONLY:
             // For types only used as output, the consumer can be more permissive than
             // the provider. Furthermore, opt-in and mandatory are equivalent.
             if (providerOptionality == OPTIONAL) {

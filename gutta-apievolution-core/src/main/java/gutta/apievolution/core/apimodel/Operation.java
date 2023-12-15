@@ -57,8 +57,8 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
         this.returnType = returnType;
         this.parameterType = parameterType;
 
-        returnType.registerUsage(Usage.OUTPUT);
-        parameterType.registerUsage(Usage.INPUT);
+        returnType.registerUsage(Usage.OUTPUT_ONLY);
+        parameterType.registerUsage(Usage.INPUT_ONLY);
 
         owner.addOperation((O) this);
     }

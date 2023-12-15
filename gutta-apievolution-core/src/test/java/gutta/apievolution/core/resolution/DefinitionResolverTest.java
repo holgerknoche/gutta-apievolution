@@ -316,12 +316,12 @@ class DefinitionResolverTest {
         ProviderRecordType providerOutputType;
 
         switch (desiredUsage) {
-        case INPUT:
+        case INPUT_ONLY:
             providerInputType = providerTypeWithField;
             providerOutputType = providerTypeNoField;
             break;
 
-        case OUTPUT:
+        case OUTPUT_ONLY:
             providerInputType = providerTypeNoField;
             providerOutputType = providerTypeWithField;
             break;
@@ -353,12 +353,12 @@ class DefinitionResolverTest {
         ConsumerRecordType consumerOutputType;
 
         switch (desiredUsage) {
-        case INPUT:
+        case INPUT_ONLY:
             consumerInputType = consumerTypeWithField;
             consumerOutputType = consumerTypeNoField;
             break;
 
-        case OUTPUT:
+        case OUTPUT_ONLY:
             consumerInputType = consumerTypeNoField;
             consumerOutputType = consumerTypeWithField;
             break;
@@ -382,7 +382,7 @@ class DefinitionResolverTest {
     }
 
     private DefinitionResolution runOptionalityTestForInputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
-        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.INPUT);
+        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.INPUT_ONLY);
     }
 
     /**
@@ -439,7 +439,7 @@ class DefinitionResolverTest {
     }
 
     private DefinitionResolution runOptionalityTestForOutputOnly(Optionality providerOptionality, Optionality consumerOptionality) {
-        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.OUTPUT);
+        return this.runOptionalityTest(providerOptionality, consumerOptionality, Usage.OUTPUT_ONLY);
     }
 
     /**

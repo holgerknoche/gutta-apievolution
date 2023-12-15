@@ -289,11 +289,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an input field mandatory, it can be of any optionality
         // on the provider side
-        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.MANDATORY, Optionality.MANDATORY);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.MANDATORY, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.MANDATORY, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.MANDATORY, Optionality.OPTIONAL);
         assertFalse(result.hasError());
     }
     
@@ -306,11 +306,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an input field opt-in, it may not be mandatory on the
         // provider side
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPT_IN, Optionality.MANDATORY);
         assertTrue(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPT_IN, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPT_IN, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPT_IN, Optionality.OPTIONAL);
         assertFalse(result.hasError());
     }
     
@@ -323,11 +323,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an input field optional, it may not be mandatory on the
         // provider side
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPTIONAL, Optionality.MANDATORY);
         assertTrue(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPTIONAL, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.INPUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.INPUT_ONLY, Optionality.OPTIONAL, Optionality.OPTIONAL);
         assertFalse(result.hasError());
     }
     
@@ -340,11 +340,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an output field mandatory, it may not be optional on
         // the provider side
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.MANDATORY, Optionality.MANDATORY);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.MANDATORY, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.MANDATORY, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.MANDATORY, Optionality.OPTIONAL);
         assertTrue(result.hasError());
     }
     
@@ -357,11 +357,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an output field opt-in, it may not be optional on the
         // provider side
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPT_IN, Optionality.MANDATORY);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPT_IN, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPT_IN, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPT_IN, Optionality.OPTIONAL);
         assertTrue(result.hasError());
     }
     
@@ -374,11 +374,11 @@ class ConsumerToProviderMapTest {
         
         // When the consumer considers an output field optional, it may be of any optionality
         // on the provider side
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.MANDATORY);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPTIONAL, Optionality.MANDATORY);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.OPT_IN);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPTIONAL, Optionality.OPT_IN);
         assertFalse(result.hasError());
-        result = runOptionalityTest(Usage.OUTPUT, Optionality.OPTIONAL, Optionality.OPTIONAL);
+        result = runOptionalityTest(Usage.OUTPUT_ONLY, Optionality.OPTIONAL, Optionality.OPTIONAL);
         assertFalse(result.hasError());
     }
     
@@ -486,12 +486,12 @@ class ConsumerToProviderMapTest {
         ConsumerRecordType consumerParameterType;
         ConsumerRecordType consumerResultType;
         switch (consumerUsage) {
-        case INPUT:
+        case INPUT_ONLY:
             consumerParameterType = consumerRecord;
             consumerResultType = consumerDummy;
             break;
             
-        case OUTPUT:
+        case OUTPUT_ONLY:
             consumerParameterType = consumerDummy;
             consumerResultType = consumerRecord;
             break;
@@ -523,12 +523,12 @@ class ConsumerToProviderMapTest {
         ProviderRecordType providerParameterType;
         ProviderRecordType providerResultType;
         switch (consumerUsage) {
-        case INPUT:
+        case INPUT_ONLY:
             providerParameterType = providerRecord;
             providerResultType = providerDummy;
             break;
             
-        case OUTPUT:
+        case OUTPUT_ONLY:
             providerParameterType = providerDummy;
             providerResultType = providerRecord;
             break;
