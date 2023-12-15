@@ -114,6 +114,16 @@
                 <artifactId>gutta-apievolution-fixedformat</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>gutta.apievolution</groupId>
+                <artifactId>gutta-apievolution-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+				<groupId>gutta.apievolution</groupId>
+				<artifactId>gutta-apievolution-inprocess</artifactId>
+				<version>${project.version}</version>			
+			</dependency>
 
             <!-- Third-party dependencies -->
             <dependency>

@@ -2,6 +2,7 @@ package gutta.apievolution.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -11,15 +12,22 @@ import java.util.NoSuchElementException;
 
 abstract class AbstractOperationProxy {
 
-    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        return objectMapper;
+    }
 
     protected JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
         return new InternalToPublicRewriter().rewriteInternalToPublic(type, representation);
     }
 
     /**
-     * Visitor implementation for rewriting an internal representation to a public
-     * representation.
+     * Visitor implementation for rewriting an internal representation to a public representation.
      */
     static class InternalToPublicRewriter implements TypeVisitor<JsonNode> {
 
@@ -51,8 +59,7 @@ abstract class AbstractOperationProxy {
             TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
-            EnumMember<?,
-                    ?> enumMember = enumType.findMemberByInternalName(value).orElseThrow(NoSuchElementException::new);
+            EnumMember<?, ?> enumMember = enumType.findMemberByInternalName(value).orElseThrow(NoSuchElementException::new);
 
             return new TextNode(enumMember.getPublicName());
         }

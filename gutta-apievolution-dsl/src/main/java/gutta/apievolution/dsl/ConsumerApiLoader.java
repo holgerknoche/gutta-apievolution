@@ -70,6 +70,10 @@ public class ConsumerApiLoader extends ApiDefinitionLoader {
         ClassLoader classLoader = ConsumerApiLoader.class.getClassLoader();
 
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new ApiLoadException("Resource '" + fileName + "' could not be found by the class loader.");
+            }
+            
             return loadFromStream(inputStream, fileName, referencedApiName, referencedRevision);
         } catch (IOException e) {
             throw new ApiLoadException("Error loading API definition " + fileName + " from classpath.", e);

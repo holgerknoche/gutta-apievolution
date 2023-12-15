@@ -17,6 +17,6 @@ public interface RequestRouter {
      *                           consumer API definition)
      * @return The result in JSON format (conforming to the consumer API definition)
      */
-    String invokeService(String consumerApiId, int referencedRevision, String serviceName, String requestJson);
+    byte[] invokeService(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson);
 
 }
