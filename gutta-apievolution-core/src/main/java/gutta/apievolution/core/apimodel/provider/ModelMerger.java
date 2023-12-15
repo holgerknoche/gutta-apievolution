@@ -382,7 +382,7 @@ public class ModelMerger {
                 // If the field does not exist in all revisions, it must be optional in some
                 // way. If it is used as output, it must be fully optional, otherwise, it may be opt-in.
                 Usage fieldUsage = field.getUsage();
-                minimalOptionality = (fieldUsage.includes(Usage.OUTPUT_ONLY)) ? Optionality.OPTIONAL : Optionality.OPT_IN;
+                minimalOptionality = (fieldUsage.maybeOutput()) ? Optionality.OPTIONAL : Optionality.OPT_IN;
             }
 
             return Optionality.max(specifiedOptionality, minimalOptionality);

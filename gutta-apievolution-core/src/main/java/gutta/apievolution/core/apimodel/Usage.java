@@ -21,34 +21,16 @@ public enum Usage {
      * The element is used for both in- and output.
      */
     IN_OUT;
-
+    
     /**
-     * Denotes whether this usage type includes the given one.
-     *
-     * @param usage The usage type to compare against
-     * @return {@code True} iff this type includes the given one
+     * Returns whether the element annotated with this usage may be used for output. 
+     * 
+     * @return {@code True} if the element can be used for output, {@code false} otherwise
      */
-    public boolean includes(Usage usage) {
-        if (this == usage) {
-            return true;
-        }
-
-        switch (this) {
-        case NONE:
-            return false;
-
-        case INPUT_ONLY:
-        case OUTPUT_ONLY:
-            return (usage == IN_OUT);
-
-        case IN_OUT:
-            return true;
-
-        default:
-            throw new IllegalArgumentException("Values " + this + " and " + usage + " are not comparable.");
-        }
-    }
-
+    public boolean maybeOutput() {
+        return (this == OUTPUT_ONLY || this == IN_OUT);
+    }    
+    
     /**
      * Computes the least upper bound of this usage and the given one.
      *
