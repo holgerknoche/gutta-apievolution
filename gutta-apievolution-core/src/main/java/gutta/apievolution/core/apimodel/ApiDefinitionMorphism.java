@@ -134,9 +134,10 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
      * 
      * @return The result of the check
      */
-    protected ValidationResult checkConsistency() {
+    public ValidationResult checkConsistency() {
         ValidationResult result = new ValidationResult();
 
+        this.checkSuperTypeConsistency(result);
         this.checkFieldMapping(result);
         this.checkEnumMemberMapping(result);
         this.checkOperationMapping(result);
@@ -210,12 +211,7 @@ public abstract class ApiDefinitionMorphism<A1 extends ApiDefinition<A1, ?>, A2 
                         "' is mapped to incompatible type '" + mappedType + "' instead of '" + expectedType + "'.");
     }
 
-    /**
-     * Check the consistency of supertypes mapped by this morphism.
-     * 
-     * @param result The result to store potential violations in
-     */
-    protected void checkSuperTypeConsistency(ValidationResult result) {
+    private void checkSuperTypeConsistency(ValidationResult result) {
         this.typeMap.forEach((sourceType, targetType) -> this.checkSuperTypeAssociation(sourceType, targetType, result));
     }
 

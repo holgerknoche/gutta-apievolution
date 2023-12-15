@@ -122,14 +122,12 @@ class ConsumerToProviderMap extends ApiDefinitionMorphism<ConsumerApiDefinition,
         throw new DefinitionResolutionException("Ambiguous operation " + operation + ".");
     }
 
-    protected ValidationResult checkConsistency() {
+    public ValidationResult checkConsistency() {
         ValidationResult superResult = super.checkConsistency();
         
         ValidationResult ownResult = new ValidationResult();
         // Make sure that all elements are mapped
         this.checkAllElementsAreMapped(ownResult);
-        // Make sure that supertypes are mapped consistently
-        this.checkSuperTypeConsistency(ownResult);
         // Check for types unrelated to any operation
         this.checkForUnrelatedTypes(ownResult);
         // Check optionalities of fields

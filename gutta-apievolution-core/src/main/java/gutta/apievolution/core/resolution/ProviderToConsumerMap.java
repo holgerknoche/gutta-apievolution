@@ -65,7 +65,7 @@ class ProviderToConsumerMap extends ApiDefinitionMorphism<ProviderApiDefinition,
         return this.memberMap.get(providerEnumMember);
     }
 
-    protected ValidationResult checkConsistency() {
+    public ValidationResult checkConsistency() {
         ValidationResult superResult = super.checkConsistency();
         
         ValidationResult ownResult = new ValidationResult();
