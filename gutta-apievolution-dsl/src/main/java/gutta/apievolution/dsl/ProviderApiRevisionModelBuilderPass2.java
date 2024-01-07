@@ -163,7 +163,7 @@ class ProviderApiRevisionModelBuilderPass2
                     .orElseThrow(() -> new APIResolutionException(refToken, "No predecessor revision available."));
 
             UserDefinedType<ProviderApiDefinition> predecessorType = previousRevision.resolveUserDefinedType(predecessorTypeName)
-                    .orElseThrow(() -> new APIResolutionException(refToken, "Predecessor type" + predecessorTypeName + "does not exist."));
+                    .orElseThrow(() -> new APIResolutionException(refToken, "Predecessor type '" + predecessorTypeName + "' does not exist."));
 
             predecessorRecordType = this.assertRecordType(predecessorType);
         } else if (explicitReference) {
