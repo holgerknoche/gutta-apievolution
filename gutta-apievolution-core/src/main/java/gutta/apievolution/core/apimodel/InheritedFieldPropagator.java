@@ -39,10 +39,10 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
             inheritedFields.addAll(newFields);
         }
 
-        // If the current type has not yet been processed, add the inherited types to
+        // If the current type has not yet been processed, add the inherited fields to
         // the current type
         if (!this.processedTypes.contains(recordType)) {
-            for (F inheritedField : inheritedFields) {
+            for (F inheritedField : inheritedFields) {                
                 this.createInheritedField(inheritedField, recordType);
             }
             this.processedTypes.add(recordType);

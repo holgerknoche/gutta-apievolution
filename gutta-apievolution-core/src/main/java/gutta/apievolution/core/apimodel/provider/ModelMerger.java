@@ -123,7 +123,8 @@ public class ModelMerger {
             pass2.mergeRevision(currentRevision);
         }
 
-        mergedDefinition.finalizeDefinition();
+        // Do not propagate inherited fields, as they have already been propagated during the merge
+        mergedDefinition.finalizeDefinition(false);
 
         return new RevisionMergeData(mergedDefinition, typeLookup);
     }
@@ -271,7 +272,7 @@ public class ModelMerger {
                 this.currentRecordType.addSuperType(superType);
             });
 
-            recordType.getDeclaredFields().forEach(field -> field.accept(this));
+            recordType.getFields().forEach(field -> field.accept(this));
 
             this.currentRecordType = null;
             return null;
@@ -326,8 +327,7 @@ public class ModelMerger {
             Optionality optionality = this.determineOptionalityForField(originalField);
             Type type = this.lookupType(originalField.getType());
 
-            // See if there is already a matching field in the merged type that can be
-            // reused
+            // See if there is already a matching field in the merged type that can be reused
             ProviderField potentialMatch = this.currentRecordType.resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
             if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, optionality, type)) {
                 // If there is a matching type, reuse it

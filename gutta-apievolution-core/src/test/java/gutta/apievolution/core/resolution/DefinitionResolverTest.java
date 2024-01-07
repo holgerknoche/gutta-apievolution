@@ -738,6 +738,6 @@ class DefinitionResolverTest {
         String actualResolution = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
         
         assertEquals(expectedResolution, actualResolution);
-    }
+    } 
 
 }

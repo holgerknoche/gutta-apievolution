@@ -21,8 +21,8 @@ public class ProviderTypeTools {
     public static boolean isTypeChange(Type predecessorType, Type successorType) {
         if (successorType instanceof RevisionedElement) {
             // If the current type is revisioned, we must see if there is a predecessor of
-            // the successor type
-            // matching the current type
+            // the successor type matching the current type
+            @SuppressWarnings("unlikely-arg-type")
             Optional<?> matchingPredecessor = ((RevisionedElement<?>) successorType)
                     .findFirstPredecessorMatching(type -> type.equals(predecessorType));
 

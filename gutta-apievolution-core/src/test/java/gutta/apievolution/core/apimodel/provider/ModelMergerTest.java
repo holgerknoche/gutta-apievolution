@@ -592,5 +592,44 @@ class ModelMergerTest {
         assertEquals(expected, actual);
     }
         
+    /**
+     * Test case: Pulling up a field into a supertype works as expected.
+     */
+    @Test
+    void pullUpField() {
+        // Revision 1
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType recordTypeV1 = revision1.newRecordType("RecordType", 0);
+        ProviderField fieldV1 = recordTypeV1.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
+        
+        ProviderRecordType superTypeV2 = revision2.newRecordType("SuperType", 1);
+        superTypeV2.newField("field", noInternalName(), AtomicType.INT_32, Optionality.MANDATORY, Inherited.NO, Collections.singletonList(fieldV1), fieldV1);
+        
+        revision2.newRecordType("RecordType", noInternalName(), 0, Abstract.NO, Collections.singleton(superTypeV2), recordTypeV1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        String expected = "api test [] {\n" + 
+                " record SuperType(SuperType) {\n" + 
+                "  mandatory field(field):int32\n" + 
+                " }\n" + 
+                " record RecordType(RecordType) extends SuperType {\n" + 
+                "  inherited mandatory field(field):int32\n" + 
+                " }\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
 
 }

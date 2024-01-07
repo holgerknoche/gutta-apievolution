@@ -191,12 +191,27 @@ public abstract class ApiDefinition<A extends ApiDefinition<A, O>, O extends Ope
 
     /**
      * Finalizes this definition, i.e., performs all necessary checks to ensure that
-     * the definition is complete and consistent. After finalization, the definition
-     * is immutable.
+     * the definition is complete and consistent, and propagates inherited fields. 
+     * After finalization, the definition is immutable.
      */
     public void finalizeDefinition() {
-        // Propagate inherited fields to the subtypes
-        this.propagateInheritedFields();
+        this.finalizeDefinition(true);
+    }
+    
+    /**
+     * Finalizes this definition, i.e., performs all necessary checks to ensure that
+     * the definition is complete and consistent. Inherited field propagation is only performed
+     * on request. If no propagation is requested, it is the caller's responsibility propagate
+     * inherited fields where necessary before calling this method.
+     * After finalization, the definition is immutable.
+     * 
+     * @param propagateInheritedFields Flag whether to propagate inherited fields as part of the finalization
+     */
+    public void finalizeDefinition(boolean propagateInheritedFields) {
+        // Propagate inherited fields to the subtypes if requested
+        if (propagateInheritedFields) {
+            this.propagateInheritedFields();
+        }
 
         // Perform specific finalization actions, if any
         this.performSpecificFinalizationActions();
