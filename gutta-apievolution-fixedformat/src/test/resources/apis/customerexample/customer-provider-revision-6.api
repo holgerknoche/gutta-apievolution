@@ -4,7 +4,7 @@ api customer.provider {
 		string(20) firstName
 		string(20) lastName
 		string(10) dateOfBirth
-		int32 gender
+		Gender gender as genderNew
 		Address primaryAddress as newPrimaryAddress
 		Address[10] secondaryAddresses as newSecondaryAddresses
 	}
