@@ -369,14 +369,27 @@ public class ModelMerger {
             field.predecessorStream(true).forEach(maxOptionalityCollector);
             Optionality specifiedOptionality = maxOptionalityCollector.getMaxOptionality();
 
-            // Then, check whether the field exists in all supported revisions
-            Set<ProviderApiDefinition> defsInWhichFieldExists = new HashSet<>();
-            field.predecessorStream(true).forEach(fld -> defsInWhichFieldExists.add(fld.getOwner().getOwner()));
-            boolean existsInAllRevisions = defsInWhichFieldExists.containsAll(this.supportedRevisions);
+            // Then, check whether the field exists in all supported revisions in which the owning type also exists            
+            boolean existsInAllRevisions;
+            ProviderRecordType owningType = field.getOwner();
+            
+            if (owningType.findFirstSuccessorMatching(succType -> this.supportedRevisions.contains(succType.getOwner())).isPresent()) {
+                // If the owning type has a successor within a supported revision, the field cannot be present in all
+                // relevant revisions
+                existsInAllRevisions = false;
+            } else {
+                // If there is no successor in a supported revision, we need to check all predecessors
+                Set<ProviderApiDefinition> defsInWhichFieldExists = new HashSet<>();
+                field.predecessorStream(true).forEach(fld -> defsInWhichFieldExists.add(fld.getOwner().getOwner()));
 
+                Set<ProviderApiDefinition> defsInWhichOwningTypeExists = new HashSet<>();             
+                owningType.predecessorStream(true).forEach(type -> defsInWhichOwningTypeExists.add(type.getOwner()));
+                existsInAllRevisions = defsInWhichFieldExists.containsAll(defsInWhichOwningTypeExists);
+            }
+            
             Optionality minimalOptionality;
             if (existsInAllRevisions) {
-                // If the field exists in all revisions, it can be mandatory
+                // If the field exists in all revisions in which its owning type exists, it can be mandatory
                 minimalOptionality = Optionality.MANDATORY;
             } else {
                 // If the field does not exist in all revisions, it must be optional in some
