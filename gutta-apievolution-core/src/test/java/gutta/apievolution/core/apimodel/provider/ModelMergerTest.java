@@ -632,6 +632,47 @@ class ModelMergerTest {
     }
     
     /**
+     * An unchanged operation is identified as such and results in a single operation in the merged model.
+     */
+    @Test
+    void noTypeChangeOfOperation() {
+        // Revision 1
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType parameterTypeV1 = revision1.newRecordType("ParameterType", 0);
+        ProviderRecordType returnTypeV1 = revision1.newRecordType("ResultType", 1);
+        
+        ProviderOperation operationV1 = revision1.newOperation("operation", returnTypeV1, parameterTypeV1);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
+        
+        ProviderRecordType parameterTypeV2 = revision2.newRecordType("ParameterType", noInternalName(), 0, parameterTypeV1);
+        ProviderRecordType returnTypeV2 = revision2.newRecordType("ResultType", noInternalName(), 1, returnTypeV1);
+        
+        revision2.newOperation("operation", noInternalName(), returnTypeV2, parameterTypeV2, operationV1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        String expected = "api test [] {\n" + 
+                " record ParameterType(ParameterType) {\n" + 
+                " }\n" + 
+                " record ResultType(ResultType) {\n" + 
+                " }\n" + 
+                " operation operation(operation) (ParameterType@revision 0) : ResultType@revision 0\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
      * Type change of an operation results in two different operations in the merged model.
      */
     @Test
