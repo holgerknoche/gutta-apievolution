@@ -658,21 +658,41 @@ public class ApiMappingScriptGenerator {
         public TypeInfo<?> handleRecordType(RecordType<?, ?, ?> recordType) {
             int offset = 0;
             
-            List<FieldInfo> fieldInfos = new ArrayList<>();
+            // Build field infos for both inherited and declared types
+            List<FieldInfo> fieldInfos = new ArrayList<>();            
             for (Field<?, ?> field : recordType) {
                 FieldInfo fieldInfo = this.handleField(field, offset);
                 
                 fieldInfos.add(fieldInfo);
                 offset += fieldInfo.getSize();                
             }
-            
-            int size = offset;
+
+            // Determine the maximum size of the type
+            int size;
             if (recordType.hasSubTypes()) {
-                // If the record type has subtypes, we need a discriminator (int32)
-                size += DISCRIMINATOR_SIZE;
+                // If the type has subtypes, its maximum size is the size of its largest subtype plus
+                // a discriminator field
+                int largestSubTypeSize = this.determineSizeOfLargestSubtype(recordType);
+                size = (largestSubTypeSize + DISCRIMINATOR_SIZE);
+            } else {
+                // If the type is a leaf type, it's size is simply the offset "after" the last field
+                size = offset;
+            }            
+                        
+            return new RecordTypeInfo<>(recordType, size, fieldInfos);
+        }
+        
+        private int determineSizeOfLargestSubtype(RecordType<?, ?, ?> recordType) {
+            int largestSubTypeSize = 0;
+            
+            for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
+                TypeInfo<?> subTypeInfo = this.determineInfoForType(subType);
+                if (subTypeInfo.size > largestSubTypeSize) {
+                    largestSubTypeSize = subTypeInfo.size; 
+                }
             }
             
-            return new RecordTypeInfo<>(recordType, size, fieldInfos);
+            return largestSubTypeSize;
         }
                 
         private FieldInfo handleField(Field<?, ?> field, int offset) {

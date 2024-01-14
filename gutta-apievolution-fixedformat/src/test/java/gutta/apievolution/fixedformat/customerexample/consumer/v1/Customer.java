@@ -1,9 +1,13 @@
 package gutta.apievolution.fixedformat.customerexample.consumer.v1;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 public class Customer {
     
+    @MaxLength(20)
     private String firstName;
     
+    @MaxLength(20)
     private String lastName;
     
     private int gender;

@@ -1,9 +1,12 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 public abstract class Address {
     
     private int postalCode;
     
+    @MaxLength(20)
     private String city;
 
     public int getPostalCode() {

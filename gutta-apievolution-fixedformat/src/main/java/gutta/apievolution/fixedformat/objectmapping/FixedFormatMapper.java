@@ -32,7 +32,12 @@ public class FixedFormatMapper {
         if (type.equals(int.class) || type.equals(Integer.class)) {
             typeMapper = new Int32Mapper();
         } else if (type.equals(String.class)) {
-            int fieldLength = element.getAnnotation(MaxLength.class).value();
+            MaxLength lengthAnnotation = element.getAnnotation(MaxLength.class);
+            if (lengthAnnotation == null) {
+                throw new InvalidRepresentationElementException("MaxLength annotation missing on element " + element + ".");
+            }
+            
+            int fieldLength = lengthAnnotation.value();
             typeMapper = new StringMapper(fieldLength);
         } else if (type.equals(List.class)) {
             typeMapper = this.createTypeMapperForList((ParameterizedType) genericType, element);
@@ -51,6 +56,10 @@ public class FixedFormatMapper {
 
     private TypeMapper<?> createTypeMapperForRecord(Class<?> type) {
         int maxLength = 0;
+        
+        // TODO Add field mappers for inherited fields
+        // TODO For types with subtypes: Determine size of largest subtype and add discriminator size
+        
         List<FieldMapper> fieldMappers = new ArrayList<>();
         for (Field field : type.getDeclaredFields()) {
             Class<?> fieldType = field.getType();

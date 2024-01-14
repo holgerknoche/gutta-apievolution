@@ -1,7 +1,10 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 public class FormattedAddress {
     
+    @MaxLength(40)
     private String address;
 
     public String getAddress() {

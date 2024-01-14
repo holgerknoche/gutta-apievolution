@@ -1,22 +1,33 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 import java.util.List;
 
 public class Customer {
     
+    @MaxLength(20)
     private String firstName;
     
+    @MaxLength(20)
     private String lastName;
     
+    @MaxLength(10)
     private String dateOfBirth;
     
-    private int gender;
+    private int gender;    
     
     private Gender genderNew;
     
-    private Address primaryAddress;
+    private StreetAddress primaryAddress;
     
-    private List<Address> secondaryAddresses;
+    @MaxLength(10)
+    private List<StreetAddress> secondaryAddresses;
+    
+    private Address newPrimaryAddress;
+    
+    @MaxLength(10)
+    private List<Address> newSecondaryAddresses;
 
     public String getFirstName() {
         return this.firstName;
@@ -58,20 +69,36 @@ public class Customer {
         this.genderNew = genderNew;
     }
 
-    public Address getPrimaryAddress() {
+    public StreetAddress getPrimaryAddress() {
         return this.primaryAddress;
     }
-
-    public void setPrimaryAddress(Address primaryAddress) {
+    
+    public void setPrimaryAddress(StreetAddress primaryAddress) {
         this.primaryAddress = primaryAddress;
     }
-
-    public List<Address> getSecondaryAddresses() {
+    
+    public List<StreetAddress> getSecondaryAddresses() {
         return this.secondaryAddresses;
     }
-
-    public void setSecondaryAddresses(List<Address> secondaryAddresses) {
+    
+    public void setSecondaryAddresses(List<StreetAddress> secondaryAddresses) {
         this.secondaryAddresses = secondaryAddresses;
+    }
+    
+    public Address getNewPrimaryAddress() {
+        return this.newPrimaryAddress;
+    }
+
+    public void setNewPrimaryAddress(Address newPrimaryAddress) {
+        this.newPrimaryAddress = newPrimaryAddress;
+    }
+
+    public List<Address> getNewSecondaryAddresses() {
+        return this.newSecondaryAddresses;
+    }
+
+    public void setNewSecondaryAddresses(List<Address> newSecondaryAddresses) {
+        this.newSecondaryAddresses = newSecondaryAddresses;
     }        
 
 }

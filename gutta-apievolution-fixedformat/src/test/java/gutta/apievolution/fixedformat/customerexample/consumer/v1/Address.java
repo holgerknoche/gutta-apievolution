@@ -1,13 +1,17 @@
 package gutta.apievolution.fixedformat.customerexample.consumer.v1;
 
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 public class Address {
     
+    @MaxLength(20)
     private String street;
     
     private int number;
     
     private int postalCode;
     
+    @MaxLength(20)
     private String city;
 
     public String getStreet() {
