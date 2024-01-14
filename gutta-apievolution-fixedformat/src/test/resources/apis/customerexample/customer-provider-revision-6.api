@@ -35,6 +35,6 @@ api customer.provider {
 	
 	operation upsert(Customer): Customer
 	
-	operation formatAddress(Address): FormattedAddress
+	operation formatAddress(Address): FormattedAddress replaces nothing as formatAddressNew
 
 }

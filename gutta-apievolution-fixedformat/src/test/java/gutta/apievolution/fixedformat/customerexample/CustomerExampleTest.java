@@ -28,6 +28,8 @@ class CustomerExampleTest {
     
     private static final ConsumerApiDefinition CONSUMER_API_V3 = ConsumerApiLoader.loadFromClasspath("apis/customerexample/customer-consumer-v3.api", "customer.provider", 2);
     
+    private static final ConsumerApiDefinition CONSUMER_API_V6 = ConsumerApiLoader.loadFromClasspath("apis/customerexample/customer-consumer-v6.api", "customer.provider", 5);
+    
     private static final RevisionHistory PROVIDER_REVISION_HISTORY = ProviderApiLoader.loadHistoryFromClasspath(
             "apis/customerexample/customer-provider-revision-1.api", "apis/customerexample/customer-provider-revision-2.api",
             "apis/customerexample/customer-provider-revision-3.api", "apis/customerexample/customer-provider-revision-4.api",
@@ -47,6 +49,11 @@ class CustomerExampleTest {
     @Test
     void invokeV6ProviderFromV3Consumer() {
         DefinitionResolution definitionResolution = new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS, CONSUMER_API_V3);
+    }
+    
+    @Test
+    void invokeV6ProviderFromV6Consumer() {
+        DefinitionResolution definitionResolution = new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS, CONSUMER_API_V6);
     }       
 
 }
