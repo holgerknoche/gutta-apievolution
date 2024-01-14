@@ -652,7 +652,7 @@ class ModelMergerTest {
         ProviderRecordType recordTypeV2 = revision2.newRecordType("RecordType2", 1);
         recordTypeV2.newField("field2", AtomicType.INT_32, Optionality.MANDATORY);
         
-        revision2.newOperation("operation", recordTypeV2, recordTypeV2);
+        revision2.newOperation("operation", "operation2", recordTypeV2, recordTypeV2, noPredecessor());
         
         revision2.finalizeDefinition();
         
@@ -667,7 +667,7 @@ class ModelMergerTest {
                 " record RecordType1(RecordType1) {\n" + 
                 "  mandatory field1(field1):int32\n" + 
                 " }\n" + 
-                " operation operation(operation) (RecordType2@revision 0) : RecordType2@revision 0\n" + 
+                " operation operation(operation2) (RecordType2@revision 0) : RecordType2@revision 0\n" + 
                 " operation operation(operation) (RecordType1@revision 0) : RecordType1@revision 0\n" + 
                 "}\n";
         

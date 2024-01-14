@@ -235,6 +235,8 @@ public class ModelMerger {
         private final ProviderApiDefinition mergedDefinition;
 
         private final Set<MemberName> knownMemberNames = new HashSet<>();
+        
+        private final Set<String> knownInternalOperationNames = new HashSet<>();
 
         private final Map<ProviderField, ProviderField> mappedFields = new HashMap<>();
 
@@ -439,13 +441,16 @@ public class ModelMerger {
                 Type successorReturnType = optionalMappedPredecessor.get().getReturnType();
 
                 Type parameterType = operation.getParameterType();
-                Type successorParameterType = optionalMappedPredecessor.get().getReturnType();
+                Type successorParameterType = optionalMappedPredecessor.get().getParameterType();
 
                 typeChange = isTypeChange(returnType, successorReturnType) || isTypeChange(parameterType, successorParameterType);
             }
 
             ProviderOperation mappedOperation;
             if (!optionalMappedPredecessor.isPresent() || typeChange) {
+                // Ensure that the internal name is unique
+                this.assertUniqueInternalOperationName(operation);
+                
                 ProviderRecordType mappedReturnType = this.lookupType(operation.getReturnType());
                 ProviderRecordType mappedParameterType = this.lookupType(operation.getParameterType());
 
@@ -479,6 +484,16 @@ public class ModelMerger {
             return null;
         }
 
+        private void assertUniqueInternalOperationName(ProviderOperation operation) {
+            String internalName = operation.getInternalName(); 
+                    
+            if (this.knownInternalOperationNames.contains(internalName)) {
+                throw new ModelMergeException("Duplicate internal name '" + internalName + "' of operation '" + operation + "'.");
+            }
+            
+            this.knownInternalOperationNames.add(internalName);
+        }
+        
         protected void registerOperationMapping(ProviderOperation originalOperation, ProviderOperation mappedOperation) {
             // Do nothing as of now
         }
