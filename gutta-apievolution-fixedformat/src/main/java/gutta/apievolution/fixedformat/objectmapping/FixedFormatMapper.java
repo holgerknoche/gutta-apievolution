@@ -6,17 +6,24 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
+
+import static java.lang.reflect.Modifier.isAbstract;
 
 /**
  * Simple fixed-format object-to-data mapper.
  */
 public class FixedFormatMapper {
-    
+            
     private final ConcurrentMap<Class<?>, TypeMapper<?>> typeMappers = new ConcurrentHashMap<>();
-    
+            
     private synchronized TypeMapper<?> determineTypeMapperFor(Class<?> type) {
         TypeMapper<?> mapper = this.typeMappers.get(type);
         if (mapper != null) {
@@ -53,15 +60,99 @@ public class FixedFormatMapper {
             
         return typeMapper;
     }
-
+    
+    private static boolean isConcrete(Class<?> type) {
+        return !isAbstract(type.getModifiers());
+    }
+    
     private TypeMapper<?> createTypeMapperForRecord(Class<?> type) {
-        int maxLength = 0;
+        SubTypes subTypesAnnotation = type.getAnnotation(SubTypes.class);        
+        if (subTypesAnnotation != null) {
+            // If there are subtypes, we need a polymorphic type mapper
+            Map<Integer, RecordTypeMapper> subTypeMappers = this.mappersForAllConcreteSubtypes(type);
+            
+            RecordTypeMapper ownTypeMapper;
+            if (isConcrete(type)) {
+                TypeId typeIdAnnotation = type.getAnnotation(TypeId.class);
+                ownTypeMapper = subTypeMappers.get(typeIdAnnotation.value());
+            } else {
+                ownTypeMapper = null;
+            }
+            
+            return new PolymorphicRecordTypeMapper(ownTypeMapper, subTypeMappers);
+        } else {
+            // Otherwise, create a regular record type mapper
+            return this.createTypeMapperForConcreteRecord(type);
+        }
+    }
+    
+    private static Set<Class<?>> findAllConcreteSubtypesOf(Class<?> type) {
+        Set<Class<?>> subTypes = new HashSet<>();
         
-        // TODO Add field mappers for inherited fields
-        // TODO For types with subtypes: Determine size of largest subtype and add discriminator size
+        collectConcreteSubtypesOf(type, subTypes);
         
-        List<FieldMapper> fieldMappers = new ArrayList<>();
+        return subTypes;
+    }
+    
+    private static void collectConcreteSubtypesOf(Class<?> type, Set<Class<?>> subTypes) {
+        if (!isAbstract(type.getModifiers())) {
+            subTypes.add(type);
+        }
+        
+        SubTypes subTypesAnnotation = type.getAnnotation(SubTypes.class);
+        if (subTypesAnnotation == null) {
+            return;
+        }
+        
+        for (Class<?> subType : subTypesAnnotation.value()) {
+            collectConcreteSubtypesOf(subType, subTypes);
+        }
+    }
+    
+    private Map<Integer, RecordTypeMapper> mappersForAllConcreteSubtypes(Class<?> type) {
+        // Find all concrete subtypes, possibly including the type itself
+        Set<Class<?>> concreteSubtypes = findAllConcreteSubtypesOf(type);
+        Map<Integer, RecordTypeMapper> subTypeMappers = new HashMap<>(concreteSubtypes.size());
+        
+        for (Class<?> subType : concreteSubtypes) {
+            TypeId typeIdAnnotation = subType.getAnnotation(TypeId.class);
+            if (typeIdAnnotation == null) {
+                throw new InvalidRepresentationElementException("Missing type id on type '" + subType + "'.");
+            }
+            
+            int typeId = typeIdAnnotation.value();
+            RecordTypeMapper subTypeMapper = (RecordTypeMapper) this.determineTypeMapperFor(subType);
+            
+            subTypeMappers.put(typeId, subTypeMapper);
+        }
+        
+        return subTypeMappers;
+    }
+
+    private static List<Field> getAllFieldsOf(Class<?> type) {
+        List<Field> allFields = new ArrayList<>();
+        
+        collectFieldsOf(type, allFields::add);
+        
+        return allFields;
+    }
+    
+    private static void collectFieldsOf(Class<?> type, Consumer<Field> collector) {
+        Class<?> superType = type.getSuperclass();
+        if (superType != null) {
+            collectFieldsOf(superType, collector);
+        }
+        
         for (Field field : type.getDeclaredFields()) {
+            collector.accept(field);
+        }
+    }
+    
+    private TypeMapper<?> createTypeMapperForConcreteRecord(Class<?> type) {
+        // Create field mappers for the type
+        int sizeOfFields = 0;
+        List<FieldMapper> fieldMappers = new ArrayList<>();
+        for (Field field : getAllFieldsOf(type)) {
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
             
@@ -82,11 +173,11 @@ public class FixedFormatMapper {
             }
                 
             FieldMapper fieldMapper = new FieldMapper(getter, setter, fieldTypeMapper);
-            maxLength += fieldMapper.getMaxLength();
+            sizeOfFields += fieldMapper.getMaxLength();
             fieldMappers.add(fieldMapper);
         }
         
-        return new RecordTypeMapper(maxLength, type, fieldMappers);
+        return new RecordTypeMapper(sizeOfFields, type, fieldMappers);
     }
     
     private TypeMapper<?> createTypeMapperForList(ParameterizedType type, AnnotatedElement element) {        

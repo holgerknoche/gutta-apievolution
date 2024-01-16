@@ -1,7 +1,9 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+import gutta.apievolution.fixedformat.objectmapping.TypeId;
 
+@TypeId(3)
 public class StreetAddress extends Address {
     
     @MaxLength(20)

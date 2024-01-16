@@ -1,7 +1,9 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+import gutta.apievolution.fixedformat.objectmapping.SubTypes;
 
+@SubTypes({StreetAddress.class, POBoxAddress.class})
 public abstract class Address {
     
     private int postalCode;

@@ -1,6 +1,9 @@
 package gutta.apievolution.fixedformat.customerexample.provider;
 
-public class POBoxAddress {
+import gutta.apievolution.fixedformat.objectmapping.TypeId;
+
+@TypeId(4)
+public class POBoxAddress extends Address {
     
     private int boxNo;
 
