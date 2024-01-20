@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
  */
 public class ApiMappingScriptGenerator {
 
+    // TODO Include the flags when copying a field and for the offsets
+    private static final int FLAGS_SIZE = 1;
+    
     private static final int INT32_SIZE = 4;
     
     private static final int INT64_SIZE = 8;
@@ -201,6 +204,8 @@ public class ApiMappingScriptGenerator {
     
     private static class EntryCreator implements TypeVisitor<TypeEntry> {
         
+        private static final int UNREPRESENTABLE_ENUM_VALUE = -1;
+        
         private final MappingInfoProvider mappingInfoProvider;
         
         private final Map<Type, Integer> typeToEntryIndex;
@@ -316,7 +321,7 @@ public class ApiMappingScriptGenerator {
                 Integer targetOrdinal = targetTypeInfo.getOrdinalFor(targetMember);
                 
                 if (targetOrdinal == null) {
-                    ordinalMap[sourceOrdinal] = -1;
+                    ordinalMap[sourceOrdinal] = UNREPRESENTABLE_ENUM_VALUE;
                 } else {
                     ordinalMap[sourceOrdinal] = targetOrdinal;
                 }
@@ -325,12 +330,12 @@ public class ApiMappingScriptGenerator {
             int entryIndex = this.typeToEntryIndex.get(enumType);
             return new EnumTypeEntry(entryIndex, enumType.getTypeId(), ordinalMap);
         }
-        
+                
         @Override
         public TypeEntry handleRecordType(RecordType<?, ?, ?> recordType) {
-            Type sourceType = this.mappingInfoProvider.toSourceType(recordType);
+            RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(recordType);
             RecordTypeInfo<?> sourceTypeInfo = this.mappingInfoProvider.getInfoForSourceType(sourceType);
-            
+                        
             List<FieldMapping> fieldMappings = new ArrayList<>();
             for (Field<?, ?> targetField : recordType) {
                 Field<?, ?> sourceField = this.mappingInfoProvider.toSourceField(targetField);
@@ -390,16 +395,20 @@ public class ApiMappingScriptGenerator {
             this.typeToOperation.put(type, operation);
             
             return operation;
-        }               
+        }
+        
+        private static int determineEffectiveSize(int valueSize) {
+            return (valueSize + FLAGS_SIZE);
+        }
                  
         @Override
         public ApiMappingOperation handleAtomicType(AtomicType atomicType) {
             switch (atomicType) {
             case INT_32:
-                return new CopyOperation(INT32_SIZE);
+                return new CopyOperation(determineEffectiveSize(INT32_SIZE));
                 
             case INT_64:
-                return new CopyOperation(INT64_SIZE);
+                return new CopyOperation(determineEffectiveSize(INT64_SIZE));
                 
             default:
                 throw new IllegalArgumentException();
@@ -422,7 +431,7 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleBoundedStringType(BoundedStringType boundedStringType) {
-            return new CopyOperation(boundedStringType.getBound());
+            return new CopyOperation(determineEffectiveSize(boundedStringType.getBound()));
         }
         
         @Override
@@ -435,7 +444,7 @@ public class ApiMappingScriptGenerator {
         public ApiMappingOperation handleNumericType(NumericType numericType) {
             // We can use either the source and target type info as they need to have the same spec
             TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(numericType);
-            return new CopyOperation(typeInfo.getSize());
+            return new CopyOperation(determineEffectiveSize(typeInfo.getSize()));
         }
         
         @Override

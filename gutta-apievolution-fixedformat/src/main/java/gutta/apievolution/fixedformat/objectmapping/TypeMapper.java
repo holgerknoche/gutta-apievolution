@@ -8,6 +8,12 @@ interface TypeMapper<T> {
     
     T readValue(FixedFormatData data);
     
-    void writeValue(Object value, FixedFormatData data);
+    T handleUnrepresentableValue();
+            
+    default boolean isUnrepresentable(Object value) {
+        return false;
+    }
     
+    void writeValue(Object value, FixedFormatData data);
+        
 }

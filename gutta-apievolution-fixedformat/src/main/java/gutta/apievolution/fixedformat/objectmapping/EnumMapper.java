@@ -51,6 +51,12 @@ class EnumMapper implements TypeMapper<Object> {
     }
     
     @Override
+    public Object handleUnrepresentableValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
     public void writeValue(Object value, FixedFormatData data) {
         int ordinal = ((Enum<?>) value).ordinal();
         data.writeInt32(ordinal);

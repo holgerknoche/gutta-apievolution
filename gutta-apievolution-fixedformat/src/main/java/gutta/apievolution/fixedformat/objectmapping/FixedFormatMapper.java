@@ -150,7 +150,7 @@ public class FixedFormatMapper {
     
     private TypeMapper<?> createTypeMapperForConcreteRecord(Class<?> type) {
         // Create field mappers for the type
-        int sizeOfFields = 0;
+        int dataLength = 0;
         List<FieldMapper> fieldMappers = new ArrayList<>();
         for (Field field : getAllFieldsOf(type)) {
             Class<?> fieldType = field.getType();
@@ -172,12 +172,12 @@ public class FixedFormatMapper {
                 throw new RuntimeException("Missing accessors for " + field.getName() + " on type " + type + ".", e);
             }
                 
-            FieldMapper fieldMapper = new FieldMapper(getter, setter, fieldTypeMapper);
-            sizeOfFields += fieldMapper.getMaxLength();
+            FieldMapper fieldMapper = new FieldMapper(field, getter, setter, fieldTypeMapper);
+            dataLength += fieldMapper.getMaxLength();
             fieldMappers.add(fieldMapper);
         }
         
-        return new RecordTypeMapper(sizeOfFields, type, fieldMappers);
+        return new RecordTypeMapper(dataLength, type, fieldMappers);
     }
     
     private TypeMapper<?> createTypeMapperForList(ParameterizedType type, AnnotatedElement element) {        

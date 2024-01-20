@@ -25,6 +25,11 @@ class StringMapper implements TypeMapper<String> {
     }
     
     @Override
+    public String handleUnrepresentableValue() {
+        throw new IllegalStateException("String types cannot have unrepresentable values.");  
+    }
+    
+    @Override
     public void writeValue(Object value, FixedFormatData data) {
         data.writeBoundedString((String) value, this.maxLength);
     }

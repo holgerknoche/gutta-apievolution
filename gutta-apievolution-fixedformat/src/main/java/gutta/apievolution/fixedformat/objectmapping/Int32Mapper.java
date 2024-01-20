@@ -11,10 +11,15 @@ class Int32Mapper implements TypeMapper<Integer> {
     public int getMaxLength() {
         return 4;
     }
-
+    
     @Override
     public Integer readValue(FixedFormatData data) {
         return data.readInt32();
+    }
+    
+    @Override
+    public Integer handleUnrepresentableValue() {
+        throw new IllegalStateException("The basic type int32 does not support unrepresentable values.");
     }
     
     @Override

@@ -52,6 +52,12 @@ class PolymorphicRecordTypeMapper implements TypeMapper<Object> {
         
         return typeMapper.readValue(data);
     }
+    
+    @Override
+    public Object handleUnrepresentableValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public void writeValue(Object value, FixedFormatData data) {

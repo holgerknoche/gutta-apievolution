@@ -12,8 +12,13 @@ public class ApiMappingScriptPrinter {
         StringBuilder scriptBuilder = new StringBuilder();
         
         TypeEntryPrinter typeEntryPrinter = new TypeEntryPrinter(scriptBuilder);
+        int typeIndex = 0;
         for (TypeEntry typeEntry : script) {
+            scriptBuilder.append("type index " + typeIndex + ":\n");
+            
             typeEntry.accept(typeEntryPrinter);
+            
+            typeIndex++;
         }
         
         for (OperationEntry operationEntry : script.getOperationEntries()) {

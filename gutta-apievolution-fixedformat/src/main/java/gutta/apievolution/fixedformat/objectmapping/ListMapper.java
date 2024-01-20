@@ -51,6 +51,11 @@ class ListMapper implements TypeMapper<Object> {
     }
     
     @Override
+    public Object handleUnrepresentableValue() {
+        throw new IllegalStateException("List types cannot have unrepresentable values.");
+    }
+    
+    @Override
     public void writeValue(Object value, FixedFormatData data) {
         List<?> list = (List<?>) value;
                 
