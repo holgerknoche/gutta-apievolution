@@ -2,9 +2,7 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
-
-class ListMappingOperation implements ApiMappingOperation {
+class ListMappingOperation extends NullableTypeMappingOperation {
     
     final int maxElements;
     
@@ -26,35 +24,11 @@ class ListMappingOperation implements ApiMappingOperation {
     }
     
     @Override
-    public void apply(int sourceOffset, ByteBuffer source, ByteBuffer target) {
-        source.position(sourceOffset);
-        
-        byte flags = source.get();
-        switch (flags) {
-        case IS_ABSENT:
-            target.put(IS_ABSENT);
-            this.writeNulls(target);
-            break;
-            
-        case IS_PRESENT:
-            target.put(IS_PRESENT);
-            this.mapNonNullValue(source, target);
-            break;
-            
-        case IS_UNREPRESENTABLE:
-            throw new UnsupportedOperationException("Unrepresentable lists cannot be mapped.");
-            
-        default:
-            throw new IllegalStateException("Unsupported flags " + flags + ".");
-        }
+    protected int getTargetDataLength() {
+        return this.targetDataLength;
     }
     
-    private void writeNulls(ByteBuffer target) {
-        byte[] paddingData = new byte[this.targetDataLength];
-        target.put(paddingData);
-    }
-    
-    private void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
+    protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         // Read and transfer the actual number of arguments
         int actualElements = source.getInt();
         if (actualElements > this.maxElements) {

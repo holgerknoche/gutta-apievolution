@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,13 +50,17 @@ class ApiMappingOperationTest {
         EnumTypeEntry entry = new EnumTypeEntry(0, 0, new int[] {2, 1, 0});
         EnumMappingOperation operation = new EnumMappingOperation(entry);
        
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(4);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(4);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(5);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(5);
         
-        sourceDataBuffer.putInt(0).flip();
+        sourceDataBuffer
+            .put(IS_PRESENT)
+            .putInt(0)
+            .flip();
         operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         targetDataBuffer.flip();
+        assertEquals(IS_PRESENT, targetDataBuffer.get());
         assertEquals(2, targetDataBuffer.getInt());
     }
     
@@ -70,19 +76,19 @@ class ApiMappingOperationTest {
         RecordTypeEntry entry = new RecordTypeEntry(0, 0, 16, Arrays.asList(fieldMapping1, fieldMapping2, fieldMapping3));
         RecordMappingOperation operation = new RecordMappingOperation(entry);
         
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(11);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(16);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(12);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(17);
         
-        sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+        sourceDataBuffer.put(new byte[] {IS_PRESENT, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
         sourceDataBuffer.flip();
         
         operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         targetDataBuffer.flip();
-        byte[] targetData = new byte[16];
+        byte[] targetData = new byte[17];
         targetDataBuffer.get(targetData);
         
-        assertArrayEquals(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 10}, targetData);
+        assertArrayEquals(new byte[] {IS_PRESENT, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 10}, targetData);
     }
     
     /**
@@ -92,22 +98,25 @@ class ApiMappingOperationTest {
     void listMappingOperationWithFullUtilization() {
         ListMappingOperation operation = new ListMappingOperation(10, 1, 1, new CopyOperation(1));
         
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(14);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(14);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(15);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(15);
         
+        sourceDataBuffer.put(IS_PRESENT);
         sourceDataBuffer.putInt(10);
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
         operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
-        assertEquals(14, targetDataBuffer.position());
+        assertEquals(15, targetDataBuffer.position());
         
         targetDataBuffer.flip();
+        byte flags = targetDataBuffer.get();
         int elementCount = targetDataBuffer.getInt();
         byte[] targetData = new byte[10];
         targetDataBuffer.get(targetData);
         
+        assertEquals(IS_PRESENT, flags);
         assertEquals(10, elementCount);
         assertArrayEquals(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, targetData);
     }
@@ -119,22 +128,25 @@ class ApiMappingOperationTest {
     void listMappingOperationWithPartialUtilization() {
         ListMappingOperation operation = new ListMappingOperation(10, 1, 1, new CopyOperation(1));
         
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(14);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(14);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(15);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(15);
         
+        sourceDataBuffer.put(IS_PRESENT);
         sourceDataBuffer.putInt(4);
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
         operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
-        assertEquals(14, targetDataBuffer.position());
+        assertEquals(15, targetDataBuffer.position());
         
         targetDataBuffer.flip();
+        byte flags = targetDataBuffer.get();
         int elementCount = targetDataBuffer.getInt();
         byte[] targetData = new byte[10];
         targetDataBuffer.get(targetData);
         
+        assertEquals(IS_PRESENT, flags);
         assertEquals(4, elementCount);
         assertArrayEquals(new byte[] {0, 1, 2, 3, 0, 0, 0, 0, 0, 0}, targetData);
     }
@@ -146,9 +158,10 @@ class ApiMappingOperationTest {
     void listMappingOperationWithOverfullList() {
         ListMappingOperation operation = new ListMappingOperation(5, 1, 1, new CopyOperation(1));
         
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(14);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(14);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(15);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(15);
         
+        sourceDataBuffer.put(IS_PRESENT);
         sourceDataBuffer.putInt(10);
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
@@ -195,22 +208,25 @@ class ApiMappingOperationTest {
         
         PolymorphicRecordMappingOperation operation = new PolymorphicRecordMappingOperation(idToRecordMapping);
         
-        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(14);
-        ByteBuffer targetDataBuffer = ByteBuffer.allocate(14);
+        ByteBuffer sourceDataBuffer = ByteBuffer.allocate(15);
+        ByteBuffer targetDataBuffer = ByteBuffer.allocate(15);
         
+        sourceDataBuffer.put(IS_PRESENT);
         sourceDataBuffer.putInt(2);
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
         operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
-        assertEquals(14, targetDataBuffer.position());
+        assertEquals(15, targetDataBuffer.position());
         
         targetDataBuffer.flip();
+        byte flags = targetDataBuffer.get();
         int targetTypeId = targetDataBuffer.getInt();
         byte[] targetData = new byte[10];
         targetDataBuffer.get(targetData);
         
+        assertEquals(IS_PRESENT, flags);
         assertEquals(1, targetTypeId);
         assertArrayEquals(new byte[] {5, 6, 7, 8, 9, 0, 1, 2, 3, 4}, targetData);
     }

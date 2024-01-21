@@ -5,18 +5,39 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-class PolymorphicRecordMappingOperation implements ApiMappingOperation {
+class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
 
     private static final int TYPE_ID_SIZE = 4;
     
     private final Map<Integer, PolymorphicRecordMapping> idToRecordMapping;
     
+    private final int dataLength;
+    
     public PolymorphicRecordMappingOperation(Map<Integer, PolymorphicRecordMapping> idToRecordMapping) {
         this.idToRecordMapping = idToRecordMapping;
+        this.dataLength = determineMaxDataLength(idToRecordMapping.values());
+    }
+    
+    private static int determineMaxDataLength(Collection<PolymorphicRecordMapping> mappings) {
+        int maxDataLength = 0;
+        
+        for (PolymorphicRecordMapping mapping : mappings) {
+            int currentDataLength = mapping.getTypeEntry().getDataSize();
+            if (currentDataLength > maxDataLength) {
+                maxDataLength = currentDataLength;
+            }
+        }
+        
+        return (maxDataLength + TYPE_ID_SIZE);
     }
     
     @Override
-    public void apply(int sourceOffset, ByteBuffer source, ByteBuffer target) {
+    protected int getTargetDataLength() {
+        return this.dataLength;
+    }
+    
+    @Override
+    protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         int sourceTypeId = source.getInt();
         PolymorphicRecordMapping recordMapping = this.idToRecordMapping.get(sourceTypeId);
         
@@ -27,7 +48,7 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
         target.putInt(recordMapping.getTargetTypeId());
         
         RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getTypeEntry());
-        actualMappingOperation.apply(sourceOffset + TYPE_ID_SIZE, source, target);
+        actualMappingOperation.mapNonNullValue(source, target);
     }
 
     @Override
