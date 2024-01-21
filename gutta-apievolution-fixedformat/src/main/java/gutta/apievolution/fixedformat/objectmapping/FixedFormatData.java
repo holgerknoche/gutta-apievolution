@@ -44,8 +44,18 @@ public interface FixedFormatData {
      */
     void writeBoundedString(String value, int maxLength);
    
+    /**
+     * Reads a flags byte at the current position.
+     * 
+     * @return The read flags byte
+     */
     byte readFlagsByte();
     
+    /**
+     * Writes a flags byte at the current position.
+     *
+     * @param flags The flags byte to write
+     */
     void writeFlagsByte(byte flags);
     
     /**
