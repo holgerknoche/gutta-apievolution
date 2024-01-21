@@ -19,6 +19,7 @@ abstract class TypeMapper<T> {
     	
     	switch (flags) {
     	case IS_ABSENT:
+    	    data.skipBytes(this.getDataLength());
     		return null;
     		
     	case IS_PRESENT:

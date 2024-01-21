@@ -178,7 +178,6 @@ class ApiMappingScriptGeneratorTest {
     	ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
     	
     	String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript);
-    	System.out.println(actualScript);
     }
     
     /**

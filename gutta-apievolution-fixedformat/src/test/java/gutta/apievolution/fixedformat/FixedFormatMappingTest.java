@@ -1,7 +1,6 @@
 package gutta.apievolution.fixedformat;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.provider.ProviderApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -10,7 +9,6 @@ import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptPrinter;
 import gutta.apievolution.fixedformat.apimapping.RequestRouter;
 import gutta.apievolution.fixedformat.apimapping.consumer.ConsumerOperationProxy;
 import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy;
@@ -26,8 +24,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,28 +59,6 @@ class FixedFormatMappingTest {
         assertEquals(Arrays.asList(ConsumerEnum.VALUE_A, ConsumerEnum.VALUE_B), consumerResult.getResultList());
     }
     
-    @Test
-    void changeNonPolymorphicTypeToPolymorphicType() {
-        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromString("api test.consumer { record A { string(20) field } operation op (A) : A }", "test.provider", 0);
-        ProviderApiDefinition providerApi1 = ProviderApiLoader.loadFromString(0, "api test.provider { record A { string(20) field } operation op(A): A }", false, Optional.empty());
-        ProviderApiDefinition providerApi2 = ProviderApiLoader.loadFromString(1, "api test.provider { record Super {} record A extends Super { string(20) field } operation op(A): A }", false, Optional.of(providerApi1));
-    
-        RevisionHistory revisionHistory = new RevisionHistory(providerApi1, providerApi2);
-        Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
-        
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
-        
-        ApiMappingScriptGenerator generator = new ApiMappingScriptGenerator();
-        ApiMappingScript c2pScript = generator.generateMappingScript(resolution, MappingDirection.CONSUMER_TO_PROVIDER);
-        ApiMappingScript p2cScript = generator.generateMappingScript(resolution, MappingDirection.PROVIDER_TO_CONSUMER);
-        
-        // TODO We need to map the type appropriately as part of the mapping to the internal
-        // representation
-        
-        System.out.println(new ApiMappingScriptPrinter().printMappingScript(c2pScript));
-        System.out.println(new ApiMappingScriptPrinter().printMappingScript(p2cScript));
-    }
-
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
         public TestOperationConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {

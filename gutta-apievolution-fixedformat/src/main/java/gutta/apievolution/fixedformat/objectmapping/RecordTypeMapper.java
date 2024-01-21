@@ -43,8 +43,12 @@ class RecordTypeMapper extends TypeMapper<Object> {
         
     @Override
     protected Object readRegularValue(FixedFormatData data) {
-        Object instance = this.instanceSupplier.get();        
-        this.fieldMappers.forEach(mapper -> mapper.readValue(data, instance));       
+        Object instance = this.instanceSupplier.get();
+        
+        for (FieldMapper fieldMapper : this.fieldMappers) {
+            fieldMapper.readValue(data, instance);
+        }
+              
         return instance;
     }
     

@@ -14,21 +14,21 @@ public class Customer {
     
     @MaxLength(10)
     private String dateOfBirth;
-    
-    private int gender;    
-    
+        
     private Gender genderNew;
-    
-    private StreetAddress primaryAddress;
-    
-    @MaxLength(10)
-    private List<StreetAddress> secondaryAddresses;
     
     private Address newPrimaryAddress;
     
     @MaxLength(10)
     private List<Address> newSecondaryAddresses;
+    
+    private StreetAddress primaryAddress;
+    
+    @MaxLength(10)
+    private List<StreetAddress> secondaryAddresses;
 
+    private int gender;    
+    
     public String getFirstName() {
         return this.firstName;
     }

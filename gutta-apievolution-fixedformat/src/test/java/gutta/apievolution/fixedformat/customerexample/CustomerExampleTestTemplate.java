@@ -44,9 +44,7 @@ public abstract class CustomerExampleTestTemplate {
         
         ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(definitionResolution, MappingDirection.CONSUMER_TO_PROVIDER);
         ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(definitionResolution, MappingDirection.PROVIDER_TO_CONSUMER);
-        
-        System.out.println(new ApiMappingScriptPrinter().printMappingScript(consumerToProviderScript));
-        
+                
         FixedFormatMapper mapper = new FixedFormatMapper();
         
         UpsertOperationProviderProxy providerProxy = new UpsertOperationProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);

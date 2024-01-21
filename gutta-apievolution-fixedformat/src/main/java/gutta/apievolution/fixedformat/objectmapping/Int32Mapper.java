@@ -24,7 +24,7 @@ class Int32Mapper extends TypeMapper<Integer> {
     
     @Override
     public void writeRegularValue(Object value, FixedFormatData data) {
-        int intValue = (value == null) ? 0 : (Integer) value;
+        int intValue = (Integer) value;
         data.writeInt32(intValue);
     }
 
