@@ -22,7 +22,7 @@ public class BoundedStringType extends StringType {
 
     @Override
     public int hashCode() {
-        return super.hashCode() + this.bound;
+        return this.bound;
     }
 
     @Override
