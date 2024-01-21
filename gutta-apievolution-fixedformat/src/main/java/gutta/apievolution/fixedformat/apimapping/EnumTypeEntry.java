@@ -7,7 +7,7 @@ class EnumTypeEntry extends TypeEntry {
     private final int[] indexMap;
     
     public EnumTypeEntry(int entryIndex, int typeId, int[] indexMap) {
-        super(entryIndex, typeId);
+        super(entryIndex, typeId, 4);
         
         this.indexMap = indexMap;
     }
@@ -22,7 +22,7 @@ class EnumTypeEntry extends TypeEntry {
     
     @Override
     ApiMappingOperation createMappingOperation() {
-        return new EnumMappingOperation(this.getEntryIndex());
+        return new EnumMappingOperation(this);
     }
 
     @Override

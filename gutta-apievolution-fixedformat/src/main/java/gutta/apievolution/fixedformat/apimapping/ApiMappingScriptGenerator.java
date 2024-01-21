@@ -207,12 +207,15 @@ public class ApiMappingScriptGenerator {
         
         private final Map<Type, Integer> typeToEntryIndex;
         
+        private final Map<Type, TypeEntry> typeToEntry;
+        
         private final MappingOperationCreator operationCreator;
                 
         public EntryCreator(MappingInfoProvider mappingInfoProvider) {
             this.mappingInfoProvider = mappingInfoProvider;
             this.typeToEntryIndex = createTypeToEntryIndex(mappingInfoProvider);
-            this.operationCreator = new MappingOperationCreator(this.mappingInfoProvider, this.typeToEntryIndex);
+            this.typeToEntry = new HashMap<>();
+            this.operationCreator = new MappingOperationCreator(this.mappingInfoProvider, this::createTypeEntryFor);
         }
         
         private static Map<Type, Integer> createTypeToEntryIndex(MappingInfoProvider mappingInfoProvider) {
@@ -256,7 +259,16 @@ public class ApiMappingScriptGenerator {
         }               
 
         private TypeEntry createTypeEntryFor(UserDefinedType<?> type) {
-            return type.accept(this);
+            // This method may be called recursively, so we cannot use computeIfAbsent here
+            TypeEntry candidate = this.typeToEntry.get(type);
+            if (candidate != null) {
+                return candidate;
+            }
+            
+            candidate = type.accept(this);
+            this.typeToEntry.put(type, candidate);
+            
+            return candidate;
         }
         
         public List<OperationEntry> createOperationEntries() {
@@ -279,8 +291,9 @@ public class ApiMappingScriptGenerator {
         private OperationEntry createOperationEntry(int entryIndex, Operation<?, ?, ?> targetOperation,
                 MappingInfoProvider mappingInfoProvider) {
             // Result: (Possibly polymorphic) mapping of anonymous union of (all) result types and all exceptions
+            RecordType<?, ?, ?> formalReturnType = targetOperation.getReturnType();
             Set<RecordType<?, ?, ?>> possibleResultTypes = new HashSet<>();
-            possibleResultTypes.addAll(targetOperation.getReturnType().collectAllSubtypes(RecordType::isConcrete));
+            possibleResultTypes.addAll(formalReturnType.collectAllSubtypes(RecordType::isConcrete));
             
             for (RecordType<?, ?, ?> exceptionType : targetOperation.getThrownExceptions()) {
                 possibleResultTypes.addAll(exceptionType.collectAllSubtypes(RecordType::isConcrete));
@@ -289,8 +302,9 @@ public class ApiMappingScriptGenerator {
             ApiMappingOperation resultMappingOperation = this.createMappingOperation(possibleResultTypes);
             
             // Parameter: (Possibly polymorphic) mapping of all parameter types
+            RecordType<?, ?, ?> formalParameterType = targetOperation.getParameterType(); 
             Set<RecordType<?, ?, ?>> possibleParameterTypes = (Set<RecordType<?, ?, ?>>) 
-                    targetOperation.getParameterType().collectAllSubtypes(RecordType::isConcrete);                
+                    formalParameterType.collectAllSubtypes(RecordType::isConcrete);                
             
             ApiMappingOperation parameterMappingOperation = this.createMappingOperation(possibleParameterTypes);
             
@@ -333,15 +347,17 @@ public class ApiMappingScriptGenerator {
             Type sourceType = this.mappingInfoProvider.toSourceType(recordType);
             RecordTypeInfo<?> sourceTypeInfo = this.mappingInfoProvider.getInfoForSourceType(sourceType);
             
+            int dataSize = 0;
             List<FieldMapping> fieldMappings = new ArrayList<>();
             for (Field<?, ?> targetField : recordType) {
                 Field<?, ?> sourceField = this.mappingInfoProvider.toSourceField(targetField);
                 
+                TypeInfo<?> targetFieldTypeInfo = 
+                        this.mappingInfoProvider.getInfoForTargetType(targetField.getType());
+                
                 FieldMapping fieldMapping;
                 if (sourceField == null) {
                     // If there is no source field, skip the target field
-                    TypeInfo<?> targetFieldTypeInfo = 
-                            this.mappingInfoProvider.getInfoForTargetType(targetField.getType());
                     fieldMapping = new FieldMapping(0, new SkipOperation(targetFieldTypeInfo.getSize()));
                 } else {
                     // If there is a source field, perform the appropriate mapping operation
@@ -353,10 +369,11 @@ public class ApiMappingScriptGenerator {
                 }
                 
                 fieldMappings.add(fieldMapping);
+                dataSize += targetFieldTypeInfo.getSize();
             }
             
             int entryIndex = this.typeToEntryIndex.get(recordType);
-            return new RecordTypeEntry(entryIndex, recordType.getTypeId(), fieldMappings);
+            return new RecordTypeEntry(entryIndex, recordType.getTypeId(), dataSize, fieldMappings);
         }
         
         private ApiMappingOperation deriveOperation(Type type) {
@@ -369,14 +386,14 @@ public class ApiMappingScriptGenerator {
         
         private final Map<Type, ApiMappingOperation> typeToOperation;
         
-        private final Map<Type, Integer> typeToEntryIndex;
-        
+        private final Function<UserDefinedType<?>, TypeEntry> typeEntryResolver;
+                
         private final MappingInfoProvider mappingInfoProvider;
         
         protected MappingOperationCreator(MappingInfoProvider mappingInfoProvider, 
-                Map<Type, Integer> typeToEntryIndex) {
+                Function<UserDefinedType<?>, TypeEntry> typeEntryResolver) {
             this.mappingInfoProvider = mappingInfoProvider;
-            this.typeToEntryIndex = typeToEntryIndex;
+            this.typeEntryResolver = typeEntryResolver;
             this.typeToOperation = new HashMap<>();
         }                
         
@@ -393,7 +410,12 @@ public class ApiMappingScriptGenerator {
             
             return operation;
         }               
-                 
+
+        @SuppressWarnings("unchecked")
+        private <T extends TypeEntry> T resolveTypeEntryFor(UserDefinedType<?> type) {
+            return (T) this.typeEntryResolver.apply(type);
+        }
+        
         @Override
         public ApiMappingOperation handleAtomicType(AtomicType atomicType) {
         	TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(atomicType);
@@ -422,8 +444,8 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleEnumType(EnumType<?, ?, ?> enumType) {
-            int entryIndex = this.typeToEntryIndex.get(enumType);
-            return new EnumMappingOperation(entryIndex);
+            EnumTypeEntry typeEntry = this.resolveTypeEntryFor(enumType);
+            return new EnumMappingOperation(typeEntry);
         }
         
         @Override
@@ -438,28 +460,28 @@ public class ApiMappingScriptGenerator {
             return this.createRecordMappingOperation(this.collectAllConcreteSubtypes(recordType));
         }
         
-        private ApiMappingOperation createRecordMappingOperation(Set<RecordType<?, ?, ?>> types) {
-            if (types.isEmpty()) {
+        private ApiMappingOperation createRecordMappingOperation(Set<RecordType<?, ?, ?>> possibleTypes) {
+            if (possibleTypes.isEmpty()) {
                 throw new IllegalArgumentException("The type set must not be empty.");
             }
             
-            if (types.size() == 1) {
+            if (possibleTypes.size() == 1) {
                 // Only one possible type => non-polymorphic mapping operation
-                RecordType<?, ?, ?> recordType = types.iterator().next();
-                int entryIndex = this.typeToEntryIndex.get(recordType);
-                return new RecordMappingOperation(entryIndex);
+                RecordType<?, ?, ?> recordType = possibleTypes.iterator().next();
+                RecordTypeEntry typeEntry = this.resolveTypeEntryFor(recordType);
+                return new RecordMappingOperation(typeEntry);
             } else {
                 // More than one possible type => polymorphic mapping operation
-                Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(types.size());
-                for (RecordType<?, ?, ?> targetType : types) {
+                Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(possibleTypes.size());
+                for (RecordType<?, ?, ?> targetType : possibleTypes) {
                     RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
                     
                     int sourceTypeId = sourceType.getTypeId();
                     int targetTypeId = targetType.getTypeId();                
-                    int entryIndex = this.typeToEntryIndex.get(targetType);
+                    RecordTypeEntry typeEntry = this.resolveTypeEntryFor(targetType);
                     
                     PolymorphicRecordMapping recordMapping = 
-                            new PolymorphicRecordMapping(sourceTypeId, targetTypeId, entryIndex);
+                            new PolymorphicRecordMapping(sourceTypeId, targetTypeId, typeEntry);
                     idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
                 }
                 

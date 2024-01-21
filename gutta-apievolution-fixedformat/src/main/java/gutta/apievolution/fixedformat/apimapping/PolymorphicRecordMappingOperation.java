@@ -16,7 +16,7 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
     }
     
     @Override
-    public void apply(int sourceOffset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
+    public void apply(int sourceOffset, ByteBuffer source, ByteBuffer target) {
         int sourceTypeId = source.getInt();
         PolymorphicRecordMapping recordMapping = this.idToRecordMapping.get(sourceTypeId);
         
@@ -26,8 +26,8 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
         
         target.putInt(recordMapping.getTargetTypeId());
         
-        RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getEntryIndex());
-        actualMappingOperation.apply(sourceOffset + TYPE_ID_SIZE, typeEntryResolver, source, target);
+        RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getTypeEntry());
+        actualMappingOperation.apply(sourceOffset + TYPE_ID_SIZE, source, target);
     }
 
     @Override
@@ -45,12 +45,12 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
         
         private final int targetTypeId;
         
-        private final int entryIndex;
+        private final RecordTypeEntry typeEntry;
         
-        public PolymorphicRecordMapping(int sourceTypeId, int targetTypeId, int entryIndex) {
+        public PolymorphicRecordMapping(int sourceTypeId, int targetTypeId, RecordTypeEntry typeEntry) {
             this.sourceTypeId = sourceTypeId;
             this.targetTypeId = targetTypeId;
-            this.entryIndex = entryIndex;
+            this.typeEntry = typeEntry;
         }
         
         public int getSourceTypeId() {
@@ -61,8 +61,8 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
             return this.targetTypeId;
         }
         
-        public int getEntryIndex() {
-            return this.entryIndex;
+        public RecordTypeEntry getTypeEntry() {
+            return this.typeEntry;
         }
         
     }    

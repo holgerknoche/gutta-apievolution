@@ -169,7 +169,7 @@ public class ApiMappingScriptPrinter {
         		builder.append("->(");
         		builder.append(mapping.getTargetTypeId());
         		builder.append("@");
-        		builder.append(mapping.getEntryIndex());
+        		builder.append(mapping.getTypeEntry().getEntryIndex());
         		builder.append(")");
         		
         		if (mappings.hasNext()) {

@@ -2,18 +2,16 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-class EnumMappingOperation extends UserDefinedTypeMappingOperation {
+class EnumMappingOperation extends UserDefinedTypeMappingOperation<EnumTypeEntry> {
     
-    public EnumMappingOperation(int entryIndex) {
-        super(entryIndex);
+    public EnumMappingOperation(EnumTypeEntry typeEntry) {
+        super(typeEntry);
     }
         
     @Override
-    public void apply(int offset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
-        EnumTypeEntry typeEntry = typeEntryResolver.resolveEntry(this.getEntryIndex());
-        
-        int sourceIndex = source.getInt(offset);
-        int targetIndex = typeEntry.mapIndex(sourceIndex);
+    protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
+        int sourceIndex = source.getInt();
+        int targetIndex = this.getTypeEntry().mapIndex(sourceIndex);
         target.putInt(targetIndex);
     }
     

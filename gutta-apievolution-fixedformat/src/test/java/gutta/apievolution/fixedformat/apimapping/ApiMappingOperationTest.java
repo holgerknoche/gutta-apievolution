@@ -27,7 +27,7 @@ class ApiMappingOperationTest {
         
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19});
         
-        operation.apply(5, null, sourceDataBuffer, targetDataBuffer);
+        operation.apply(5, sourceDataBuffer, targetDataBuffer);
         
         // Assert that the target buffer is at the expected position
         assertEquals(10, targetDataBuffer.position());
@@ -46,19 +46,19 @@ class ApiMappingOperationTest {
     @Test
     void enumMappingForExistingMember() {
         EnumTypeEntry entry = new EnumTypeEntry(0, 0, new int[] {2, 1, 0});
-        EnumMappingOperation operation = new EnumMappingOperation(0);
+        EnumMappingOperation operation = new EnumMappingOperation(entry);
        
         ByteBuffer sourceDataBuffer = ByteBuffer.allocate(4);
         ByteBuffer targetDataBuffer = ByteBuffer.allocate(4);
         
         sourceDataBuffer.putInt(0).flip();
-        operation.apply(0, new TestEntryResolver(entry), sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         targetDataBuffer.flip();
         assertEquals(2, targetDataBuffer.getInt());
     }
     
-    /**
+    /** 
      * Test case: The record mapping operation works as expected.
      */
     @Test
@@ -67,8 +67,8 @@ class ApiMappingOperationTest {
         FieldMapping fieldMapping2 = new FieldMapping(0, new SkipOperation(5));
         FieldMapping fieldMapping3 = new FieldMapping(10, new CopyOperation(1));
         
-        RecordTypeEntry entry = new RecordTypeEntry(0, 0, Arrays.asList(fieldMapping1, fieldMapping2, fieldMapping3));
-        RecordMappingOperation operation = new RecordMappingOperation(0);
+        RecordTypeEntry entry = new RecordTypeEntry(0, 0, 16, Arrays.asList(fieldMapping1, fieldMapping2, fieldMapping3));
+        RecordMappingOperation operation = new RecordMappingOperation(entry);
         
         ByteBuffer sourceDataBuffer = ByteBuffer.allocate(11);
         ByteBuffer targetDataBuffer = ByteBuffer.allocate(16);
@@ -76,7 +76,7 @@ class ApiMappingOperationTest {
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
         sourceDataBuffer.flip();
         
-        operation.apply(0, new TestEntryResolver(entry), sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         targetDataBuffer.flip();
         byte[] targetData = new byte[16];
@@ -99,7 +99,7 @@ class ApiMappingOperationTest {
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
-        operation.apply(0, null, sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         assertEquals(14, targetDataBuffer.position());
         
@@ -126,7 +126,7 @@ class ApiMappingOperationTest {
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
-        operation.apply(0, null, sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         assertEquals(14, targetDataBuffer.position());
         
@@ -154,7 +154,7 @@ class ApiMappingOperationTest {
         sourceDataBuffer.flip();
         
         IllegalStateException exception = assertThrows(IllegalStateException.class, 
-                () -> operation.apply(0, null, sourceDataBuffer, targetDataBuffer));
+                () -> operation.apply(0, sourceDataBuffer, targetDataBuffer));
         assertTrue(exception.getMessage().startsWith("Too many elements"));
     }
     
@@ -168,7 +168,7 @@ class ApiMappingOperationTest {
         ByteBuffer sourceDataBuffer = ByteBuffer.allocate(20);
         ByteBuffer targetDataBuffer = ByteBuffer.allocate(20);
         
-        operation.apply(0, null, sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         assertEquals(0, sourceDataBuffer.position());
         assertEquals(10, targetDataBuffer.position());
@@ -182,18 +182,16 @@ class ApiMappingOperationTest {
         FieldMapping fieldMappingType11 = new FieldMapping(0, new CopyOperation(5));
         FieldMapping fieldMappingType12 = new FieldMapping(5, new CopyOperation(5));
         
-        RecordTypeEntry typeEntry1 = new RecordTypeEntry(0, 1, Arrays.asList(fieldMappingType11, fieldMappingType12));
+        RecordTypeEntry typeEntry1 = new RecordTypeEntry(0, 1, 10, Arrays.asList(fieldMappingType11, fieldMappingType12));
         
         FieldMapping fieldMappingType21 = new FieldMapping(5, new CopyOperation(5));
         FieldMapping fieldMappingType22 = new FieldMapping(0, new CopyOperation(5));
         
-        RecordTypeEntry typeEntry2 = new RecordTypeEntry(1, 2, Arrays.asList(fieldMappingType21, fieldMappingType22));
-        
-        TypeEntryResolver typeEntryResolver = new TestPolyEntryResolver(new TypeEntry[] {typeEntry1, typeEntry2});
+        RecordTypeEntry typeEntry2 = new RecordTypeEntry(1, 2, 10, Arrays.asList(fieldMappingType21, fieldMappingType22));
         
         Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>();
-        idToRecordMapping.put(1, new PolymorphicRecordMapping(1, 2, 0));
-        idToRecordMapping.put(2, new PolymorphicRecordMapping(2, 1, 1));
+        idToRecordMapping.put(1, new PolymorphicRecordMapping(1, 2, typeEntry1));
+        idToRecordMapping.put(2, new PolymorphicRecordMapping(2, 1, typeEntry2));
         
         PolymorphicRecordMappingOperation operation = new PolymorphicRecordMappingOperation(idToRecordMapping);
         
@@ -204,7 +202,7 @@ class ApiMappingOperationTest {
         sourceDataBuffer.put(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         sourceDataBuffer.flip();
         
-        operation.apply(0, typeEntryResolver, sourceDataBuffer, targetDataBuffer);
+        operation.apply(0, sourceDataBuffer, targetDataBuffer);
         
         assertEquals(14, targetDataBuffer.position());
         
@@ -217,36 +215,4 @@ class ApiMappingOperationTest {
         assertArrayEquals(new byte[] {5, 6, 7, 8, 9, 0, 1, 2, 3, 4}, targetData);
     }
     
-    private static class TestEntryResolver implements TypeEntryResolver {
-        
-        private final TypeEntry entry;
-        
-        public TestEntryResolver(TypeEntry entry) {
-            this.entry = entry;
-        }
-        
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T extends TypeEntry> T resolveEntry(int index) {
-            return (T) this.entry;
-        }
-        
-    }
-    
-    private static class TestPolyEntryResolver implements TypeEntryResolver {
-        
-        private final TypeEntry[] entries; 
-        
-        public TestPolyEntryResolver(TypeEntry[] entries) {
-            this.entries = entries;
-        }
-        
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T extends TypeEntry> T resolveEntry(int index) {
-            return (T) this.entries[index];
-        }
-        
-    }
-
 }

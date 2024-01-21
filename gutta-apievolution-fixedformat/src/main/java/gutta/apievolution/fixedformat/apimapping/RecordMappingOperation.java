@@ -2,18 +2,18 @@ package gutta.apievolution.fixedformat.apimapping;
 
 import java.nio.ByteBuffer;
 
-class RecordMappingOperation extends UserDefinedTypeMappingOperation {
+class RecordMappingOperation extends UserDefinedTypeMappingOperation<RecordTypeEntry> {
     
-    public RecordMappingOperation(int entryIndex) {
-        super(entryIndex);
+    public RecordMappingOperation(RecordTypeEntry typeEntry) {
+        super(typeEntry);
     }
     
     @Override
-    public void apply(int offset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
-        RecordTypeEntry typeEntry = typeEntryResolver.resolveEntry(this.getEntryIndex());
+    protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
+        int offset = source.position();
         
-        for (FieldMapping fieldMapping : typeEntry) {
-            fieldMapping.apply(offset, typeEntryResolver, source, target);
+        for (FieldMapping fieldMapping : this.getTypeEntry()) {
+            fieldMapping.apply(offset, source, target);
         }
     }
 
