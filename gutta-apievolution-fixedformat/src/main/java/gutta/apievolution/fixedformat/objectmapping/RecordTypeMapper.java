@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Supplier;
 
-class RecordTypeMapper implements TypeMapper<Object> {
+class RecordTypeMapper extends TypeMapper<Object> {
             
     private final int dataLength;
     
@@ -36,12 +36,13 @@ class RecordTypeMapper implements TypeMapper<Object> {
         return true;
     }
         
-    public int getMaxLength() {
+    @Override
+    protected int getDataLength() {
         return this.dataLength;
     }
         
     @Override
-    public Object readValue(FixedFormatData data) {
+    protected Object readRegularValue(FixedFormatData data) {
         Object instance = this.instanceSupplier.get();        
         this.fieldMappers.forEach(mapper -> mapper.readValue(data, instance));       
         return instance;
@@ -54,7 +55,7 @@ class RecordTypeMapper implements TypeMapper<Object> {
     }
                 
     @Override
-    public void writeValue(Object value, FixedFormatData data) {        
+    protected void writeRegularValue(Object value, FixedFormatData data) {        
         this.fieldMappers.forEach(mapper -> mapper.writeValue(value, data));
     }
     

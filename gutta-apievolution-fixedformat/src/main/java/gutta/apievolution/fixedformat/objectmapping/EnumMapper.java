@@ -3,7 +3,7 @@ package gutta.apievolution.fixedformat.objectmapping;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class EnumMapper implements TypeMapper<Object> {
+class EnumMapper extends TypeMapper<Object> {
     
     private final Object[] ordinalLookup;
     
@@ -35,29 +35,29 @@ class EnumMapper implements TypeMapper<Object> {
     }
 
     @Override
-    public boolean isCacheable() {
+    protected boolean isCacheable() {
         return true;
     }
     
     @Override
-    public int getMaxLength() {
+    protected int getDataLength() {
         return 4;
     }
 
     @Override
-    public Object readValue(FixedFormatData data) {
+    protected Object readRegularValue(FixedFormatData data) {
         int ordinal = data.readInt32();
         return this.ordinalLookup[ordinal];
     }
     
     @Override
-    public Object handleUnrepresentableValue() {
+    protected Object handleUnrepresentableValue() {
         // TODO Auto-generated method stub
         return null;
     }
     
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    protected void writeRegularValue(Object value, FixedFormatData data) {
         int ordinal = ((Enum<?>) value).ordinal();
         data.writeInt32(ordinal);
     }

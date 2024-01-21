@@ -3,11 +3,11 @@ package gutta.apievolution.fixedformat.objectmapping;
 import java.util.Collection;
 import java.util.Map;
 
-class PolymorphicRecordTypeMapper implements TypeMapper<Object> {
+class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
     
     private static final int DISCRIMINATOR_SIZE = 4;
 
-    private final int maxLength;
+    private final int dataLength;
     
     private final RecordTypeMapper ownTypeMapper;
     
@@ -16,15 +16,15 @@ class PolymorphicRecordTypeMapper implements TypeMapper<Object> {
     public PolymorphicRecordTypeMapper(RecordTypeMapper ownTypeMapper, Map<Integer, RecordTypeMapper> subTypeMappers) {
         this.ownTypeMapper = ownTypeMapper;
         this.subTypeMappers = subTypeMappers;
-        this.maxLength = determineMaxLength(subTypeMappers.values());
+        this.dataLength = determineMaxDataLength(subTypeMappers.values());
     }
     
-    private static int determineMaxLength(Collection<RecordTypeMapper> mappers) {
+    private static int determineMaxDataLength(Collection<RecordTypeMapper> mappers) {
         int maxLength = 0;
         
         for (RecordTypeMapper mapper : mappers) {
             if (mapper.getMaxLength() > maxLength) {
-                maxLength = mapper.getMaxLength();
+                maxLength = mapper.getDataLength();
             }
         }
         
@@ -37,12 +37,12 @@ class PolymorphicRecordTypeMapper implements TypeMapper<Object> {
     }
 
     @Override
-    public int getMaxLength() {
-        return this.maxLength;
+    protected int getDataLength() {
+        return this.dataLength;
     }
 
     @Override()
-    public Object readValue(FixedFormatData data) {
+    protected Object readRegularValue(FixedFormatData data) {
         int typeId = data.readInt32();
         
         RecordTypeMapper typeMapper = this.subTypeMappers.get(typeId);
@@ -60,7 +60,7 @@ class PolymorphicRecordTypeMapper implements TypeMapper<Object> {
     }
 
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    protected void writeRegularValue(Object value, FixedFormatData data) {
         if (this.ownTypeMapper != null) {
             this.ownTypeMapper.writeValue(value, data);
         } else {

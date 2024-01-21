@@ -32,14 +32,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
+
 /**
  * This class provides operations to generate an API mapping script from a definition resolution.
  */
 public class ApiMappingScriptGenerator {
 
-    // TODO Include the flags when copying a field and for the offsets
-    private static final int FLAGS_SIZE = 1;
-    
     private static final int INT32_SIZE = 4;
     
     private static final int INT64_SIZE = 8;
@@ -204,8 +203,6 @@ public class ApiMappingScriptGenerator {
     
     private static class EntryCreator implements TypeVisitor<TypeEntry> {
         
-        private static final int UNREPRESENTABLE_ENUM_VALUE = -1;
-        
         private final MappingInfoProvider mappingInfoProvider;
         
         private final Map<Type, Integer> typeToEntryIndex;
@@ -321,7 +318,7 @@ public class ApiMappingScriptGenerator {
                 Integer targetOrdinal = targetTypeInfo.getOrdinalFor(targetMember);
                 
                 if (targetOrdinal == null) {
-                    ordinalMap[sourceOrdinal] = UNREPRESENTABLE_ENUM_VALUE;
+                    ordinalMap[sourceOrdinal] = -1;
                 } else {
                     ordinalMap[sourceOrdinal] = targetOrdinal;
                 }
@@ -330,12 +327,12 @@ public class ApiMappingScriptGenerator {
             int entryIndex = this.typeToEntryIndex.get(enumType);
             return new EnumTypeEntry(entryIndex, enumType.getTypeId(), ordinalMap);
         }
-                
+        
         @Override
         public TypeEntry handleRecordType(RecordType<?, ?, ?> recordType) {
-            RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(recordType);
+            Type sourceType = this.mappingInfoProvider.toSourceType(recordType);
             RecordTypeInfo<?> sourceTypeInfo = this.mappingInfoProvider.getInfoForSourceType(sourceType);
-                        
+            
             List<FieldMapping> fieldMappings = new ArrayList<>();
             for (Field<?, ?> targetField : recordType) {
                 Field<?, ?> sourceField = this.mappingInfoProvider.toSourceField(targetField);
@@ -395,24 +392,12 @@ public class ApiMappingScriptGenerator {
             this.typeToOperation.put(type, operation);
             
             return operation;
-        }
-        
-        private static int determineEffectiveSize(int valueSize) {
-            return (valueSize + FLAGS_SIZE);
-        }
+        }               
                  
         @Override
         public ApiMappingOperation handleAtomicType(AtomicType atomicType) {
-            switch (atomicType) {
-            case INT_32:
-                return new CopyOperation(determineEffectiveSize(INT32_SIZE));
-                
-            case INT_64:
-                return new CopyOperation(determineEffectiveSize(INT64_SIZE));
-                
-            default:
-                throw new IllegalArgumentException();
-            }
+        	TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(atomicType);
+            return new CopyOperation(typeInfo.getSize());
         }
         
         @Override
@@ -431,7 +416,8 @@ public class ApiMappingScriptGenerator {
         
         @Override
         public ApiMappingOperation handleBoundedStringType(BoundedStringType boundedStringType) {
-            return new CopyOperation(determineEffectiveSize(boundedStringType.getBound()));
+        	TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(boundedStringType);
+            return new CopyOperation(typeInfo.getSize());
         }
         
         @Override
@@ -444,7 +430,7 @@ public class ApiMappingScriptGenerator {
         public ApiMappingOperation handleNumericType(NumericType numericType) {
             // We can use either the source and target type info as they need to have the same spec
             TypeInfo<?> typeInfo = this.mappingInfoProvider.getInfoForSourceType(numericType);
-            return new CopyOperation(determineEffectiveSize(typeInfo.getSize()));
+            return new CopyOperation(typeInfo.getSize());
         }
         
         @Override
@@ -620,11 +606,11 @@ public class ApiMappingScriptGenerator {
             
             switch (atomicType) {
             case INT_32:
-                size = INT32_SIZE;
+                size = (INT32_SIZE + FLAGS_SIZE);
                 break;
                 
             case INT_64:
-                size = INT64_SIZE;
+                size = (INT64_SIZE + FLAGS_SIZE);
                 break;
                 
             default:
@@ -640,26 +626,27 @@ public class ApiMappingScriptGenerator {
             TypeInfo<?> elementTypeInfo = this.determineInfoForType(elementType);
             
             // Four additional bytes to store the actual number of elements
-            int size = (boundedListType.getBound() * elementTypeInfo.getSize()) + NUMBER_OF_ELEMENTS_INDICATOR_SIZE;
+            int size = (boundedListType.getBound() * elementTypeInfo.getSize()) + NUMBER_OF_ELEMENTS_INDICATOR_SIZE + FLAGS_SIZE;
             
             return new TypeInfo<Type>(boundedListType, size);
         }
         
         @Override
         public TypeInfo<?> handleBoundedStringType(BoundedStringType boundedStringType) {
-            return new TypeInfo<>(boundedStringType, boundedStringType.getBound());
+        	int size = (boundedStringType.getBound() + FLAGS_SIZE);
+            return new TypeInfo<>(boundedStringType, size);
         }
                 
         @Override
         public TypeInfo<?> handleEnumType(EnumType<?, ?, ?> enumType) {
             // Enums are encoded as int32 values
-            return new EnumTypeInfo<>(enumType, ENUM_SIZE);
+            return new EnumTypeInfo<>(enumType, ENUM_SIZE + FLAGS_SIZE);
         }
         
         @Override
         public TypeInfo<?> handleNumericType(NumericType numericType) {
             // Numeric types are encoded as strings with leading sign
-            int size = (numericType.getIntegerPlaces() + numericType.getFractionalPlaces() + 1);
+            int size = (numericType.getIntegerPlaces() + numericType.getFractionalPlaces() + 1 + FLAGS_SIZE);
             return new TypeInfo<>(numericType, size);
         }
         
@@ -680,12 +667,12 @@ public class ApiMappingScriptGenerator {
             int size;
             if (recordType.hasSubTypes()) {
                 // If the type has subtypes, its maximum size is the size of its largest subtype plus
-                // a discriminator field
+                // a discriminator field (the flags size is already included)
                 int largestSubTypeSize = this.determineSizeOfLargestSubtype(recordType);
                 size = (largestSubTypeSize + DISCRIMINATOR_SIZE);
             } else {
                 // If the type is a leaf type, it's size is simply the offset "after" the last field
-                size = offset;
+                size = (offset + FLAGS_SIZE);
             }            
                         
             return new RecordTypeInfo<>(recordType, size, fieldInfos);
@@ -696,8 +683,8 @@ public class ApiMappingScriptGenerator {
             
             for (RecordType<?, ?, ?> subType : recordType.getSubTypes()) {
                 TypeInfo<?> subTypeInfo = this.determineInfoForType(subType);
-                if (subTypeInfo.size > largestSubTypeSize) {
-                    largestSubTypeSize = subTypeInfo.size; 
+                if (subTypeInfo.getSize() > largestSubTypeSize) {
+                    largestSubTypeSize = subTypeInfo.getSize(); 
                 }
             }
             
