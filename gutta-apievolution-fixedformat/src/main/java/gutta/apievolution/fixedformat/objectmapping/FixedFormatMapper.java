@@ -1,7 +1,5 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-import static java.lang.reflect.Modifier.isAbstract;
-
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -16,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
+
+import static java.lang.reflect.Modifier.isAbstract;
 
 /**
  * Simple fixed-format object-to-data mapper.
