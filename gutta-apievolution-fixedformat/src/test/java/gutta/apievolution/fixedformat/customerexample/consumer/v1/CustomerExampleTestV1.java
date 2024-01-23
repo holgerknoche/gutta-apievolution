@@ -24,17 +24,8 @@ class CustomerExampleTestV1 extends CustomerExampleTestTemplate {
         
         Customer result = this.invokeProviderMethod(CONSUMER_API_V1, UpsertOperationConsumerProxyV1::new, customer);                
         
-        assertNotSame(customer, result);
-        
-        assertEquals(customer.getFirstName(), result.getFirstName());
-        assertEquals(customer.getLastName(), result.getLastName());
-        assertEquals(customer.getGender(), result.getGender());
-       
-        Address resultAddress = customer.getAddress();
-        assertEquals(address.getStreet(), resultAddress.getStreet());
-        assertEquals(address.getNumber(), resultAddress.getNumber());
-        assertEquals(address.getPostalCode(), resultAddress.getPostalCode());
-        assertEquals(address.getCity(), resultAddress.getCity());
+        assertNotSame(customer, result);        
+        assertEquals(customer, result);
     }
     
 }

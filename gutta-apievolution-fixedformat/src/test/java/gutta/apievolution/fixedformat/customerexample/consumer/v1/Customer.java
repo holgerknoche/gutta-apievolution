@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.customerexample.consumer.v1;
 
+import java.util.Objects;
+
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 
 public class Customer {
@@ -45,5 +47,28 @@ public class Customer {
     public void setAddress(Address address) {
         this.address = address;
     }       
+    
+    @Override
+    public int hashCode() {
+    	return Objects.hash(this.firstName, this.lastName);
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+    	if (this == that) {
+    		return true;
+    	} else if (that != null && this.getClass() == that.getClass()) {
+    		return this.equals((Customer) that);
+    	} else {
+    		return false;
+    	}
+    }
+    
+    private boolean equals(Customer that) {
+    	return (this.gender == that.gender) &&
+    		   Objects.equals(this.firstName, that.firstName) &&
+    		   Objects.equals(this.lastName, that.lastName) &&
+    		   Objects.equals(this.address, that.address);
+    }
 
 }

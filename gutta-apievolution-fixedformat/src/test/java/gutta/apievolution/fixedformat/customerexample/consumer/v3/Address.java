@@ -1,13 +1,19 @@
 package gutta.apievolution.fixedformat.customerexample.consumer.v3;
 
+import java.util.Objects;
+
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+
 public class Address {
 
+	@MaxLength(20)
     private String street;
     
     private int number;
     
     private int postalCode;
     
+    @MaxLength(20)
     private String city;
 
     public String getStreet() {
@@ -41,5 +47,27 @@ public class Address {
     public void setCity(String city) {
         this.city = city;
     }        
+
+    @Override
+    public int hashCode() {
+    	return (this.number + this.postalCode);
+    }
+    
+    public boolean equals(Object that) {
+    	if (this == that) {
+    		return true;
+    	} else if (that != null && this.getClass() == that.getClass()) {
+    		return this.equals((Address) that);
+    	} else {
+    		return false;
+    	}
+    }
+    
+    private boolean equals(Address that) {
+    	return (this.number == that.number) &&
+    		   (this.postalCode == that.postalCode) &&
+    		   Objects.equals(this.city, that.city) &&
+    		   Objects.equals(this.street, that.street);
+    }
     
 }

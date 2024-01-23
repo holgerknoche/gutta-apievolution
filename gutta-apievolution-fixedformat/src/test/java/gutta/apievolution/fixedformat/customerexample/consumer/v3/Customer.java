@@ -1,19 +1,26 @@
 package gutta.apievolution.fixedformat.customerexample.consumer.v3;
 
 import java.util.List;
+import java.util.Objects;
+
+import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 
 public class Customer {
-    
+
+	@MaxLength(20)
     private String firstName;
     
+	@MaxLength(20)
     private String lastName;
     
+	@MaxLength(10)
     private String dateOfBirth;
     
     private int gender;
     
     private Address primaryAddress;
     
+    @MaxLength(10)
     private List<Address> secondaryAddresses;
 
     public String getFirstName() {
@@ -62,6 +69,30 @@ public class Customer {
 
     public void setSecondaryAddresses(List<Address> secondaryAddresses) {
         this.secondaryAddresses = secondaryAddresses;
-    }        
+    }
+    
+    @Override
+    public int hashCode() {
+    	return Objects.hash(this.firstName, this.lastName);
+    }
+    
+    public boolean equals(Object that) {
+    	if (this == that) {
+    		return true;
+    	} else if (that != null && this.getClass() == that.getClass()) {
+    		return this.equals((Customer) that);
+    	} else {
+    		return false;
+    	}
+    }
+    
+    private boolean equals(Customer that) {
+    	return (this.gender == that.gender) &&
+    		   Objects.equals(this.firstName, that.firstName) &&
+    		   Objects.equals(this.lastName, that.lastName) &&
+    		   Objects.equals(this.dateOfBirth, that.dateOfBirth) &&
+    		   Objects.equals(this.primaryAddress, that.primaryAddress) &&
+    		   Objects.equals(this.secondaryAddresses, that.secondaryAddresses);
+    }
 
 }
