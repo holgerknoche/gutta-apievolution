@@ -8,13 +8,10 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
     private static final int DISCRIMINATOR_SIZE = 4;
 
     private final int dataLength;
-    
-    private final RecordTypeMapper ownTypeMapper;
-    
+        
     private final Map<Integer, RecordTypeMapper> subTypeMappers;
     
-    public PolymorphicRecordTypeMapper(RecordTypeMapper ownTypeMapper, Map<Integer, RecordTypeMapper> subTypeMappers) {
-        this.ownTypeMapper = ownTypeMapper;
+    public PolymorphicRecordTypeMapper(Map<Integer, RecordTypeMapper> subTypeMappers) {
         this.subTypeMappers = subTypeMappers;
         this.dataLength = determineMaxDataLength(subTypeMappers.values());
     }
@@ -41,16 +38,23 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
         return this.dataLength;
     }
 
+    private RecordTypeMapper getTypeMapperFor(int typeId) {
+    	RecordTypeMapper typeMapper = this.subTypeMappers.get(typeId);
+    	
+    	if (typeMapper == null) {
+            throw new InvalidDataException("No type mapper for type id " + typeId + ".");
+    	}
+    	
+    	return typeMapper;
+    }
+    
     @Override()
     protected Object readRegularValue(FixedFormatData data) {
         int typeId = data.readInt32();
         
-        RecordTypeMapper typeMapper = this.subTypeMappers.get(typeId);
-        if (typeMapper == null) {
-            throw new InvalidDataException("No type mapper for type id " + typeId + ".");
-        }
-        
-        return typeMapper.readValue(data);
+        RecordTypeMapper typeMapper = this.getTypeMapperFor(typeId);
+        // Null checks have already been performed, therefore invoke readRegularValue
+        return typeMapper.readRegularValue(data);
     }
     
     @Override
@@ -61,11 +65,17 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
 
     @Override
     protected void writeRegularValue(Object value, FixedFormatData data) {
-        if (this.ownTypeMapper != null) {
-            this.ownTypeMapper.writeValue(value, data);
-        } else {
-            throw new UnsupportedOperationException("Cannot write a value of an abstract type.");
-        }
+    	TypeId typeIdAnnotation = value.getClass().getAnnotation(TypeId.class);
+    	if (typeIdAnnotation == null) {
+    		throw new InvalidRepresentationElementException("Missing type id on type " + value.getClass() + ".");
+    	}
+    	
+    	int typeId = typeIdAnnotation.value();
+    	data.writeInt32(typeId);
+
+    	RecordTypeMapper typeMapper = this.getTypeMapperFor(typeId);
+    	// Non-null flag has already been written
+    	typeMapper.writeRegularValue(value, data);
     }
     
 }

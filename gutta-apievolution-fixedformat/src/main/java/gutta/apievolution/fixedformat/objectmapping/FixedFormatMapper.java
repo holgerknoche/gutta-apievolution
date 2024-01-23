@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
+import static java.lang.reflect.Modifier.isAbstract;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -14,8 +16,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
-
-import static java.lang.reflect.Modifier.isAbstract;
 
 /**
  * Simple fixed-format object-to-data mapper.
@@ -60,26 +60,13 @@ public class FixedFormatMapper {
             
         return typeMapper;
     }
-    
-    private static boolean isConcrete(Class<?> type) {
-        return !isAbstract(type.getModifiers());
-    }
-    
+        
     private TypeMapper<?> createTypeMapperForRecord(Class<?> type) {
         SubTypes subTypesAnnotation = type.getAnnotation(SubTypes.class);        
         if (subTypesAnnotation != null) {
             // If there are subtypes, we need a polymorphic type mapper
-            Map<Integer, RecordTypeMapper> subTypeMappers = this.mappersForAllConcreteSubtypes(type);
-            
-            RecordTypeMapper ownTypeMapper;
-            if (isConcrete(type)) {
-                TypeId typeIdAnnotation = type.getAnnotation(TypeId.class);
-                ownTypeMapper = subTypeMappers.get(typeIdAnnotation.value());
-            } else {
-                ownTypeMapper = null;
-            }
-            
-            return new PolymorphicRecordTypeMapper(ownTypeMapper, subTypeMappers);
+            Map<Integer, RecordTypeMapper> subTypeMappers = this.mappersForAllConcreteSubtypes(type);            
+            return new PolymorphicRecordTypeMapper(subTypeMappers);
         } else {
             // Otherwise, create a regular record type mapper
             return this.createTypeMapperForConcreteRecord(type);

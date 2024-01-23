@@ -27,7 +27,7 @@ public class Customer {
     @MaxLength(10)
     private List<StreetAddress> secondaryAddresses;
 
-    private int gender;    
+    private Integer gender;    
     
     public String getFirstName() {
         return this.firstName;
@@ -53,11 +53,11 @@ public class Customer {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getGender() {
+    public Integer getGender() {
         return this.gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
