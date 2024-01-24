@@ -79,10 +79,11 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
             try {
                 return unrepresentableValueHandler.invoke(null);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                throw new RuntimeException("An error occurred invoking the unrepresentable value handler on class '" +this.representedType + "'." , e);
+                throw new RuntimeException("An error occurred invoking the unrepresentable value handler on class '" + this.representedType + "'.", e);
             }
         } else {
-            throw new UnrepresentableValueException("An unrepresentable subtype of '" + this.representedType + "' was encountered, and no handler was defined.");
+            throw new UnrepresentableValueException("An unrepresentable subtype of '" + this.representedType +
+                    "' was encountered, and no handler was defined.");
         }
     }
 
