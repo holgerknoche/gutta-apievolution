@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.fixedformat.objectmapping.Flags;
+
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,14 +39,23 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
     }
     
     @Override
+    protected boolean mayBeUnrepresentable() {
+        return true;
+    }
+    
+    @Override
     protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         int sourceTypeId = source.getInt();
         PolymorphicRecordMapping recordMapping = this.idToRecordMapping.get(sourceTypeId);
         
         if (recordMapping == null) {
-            throw new IllegalArgumentException("No record mapping for id " + sourceTypeId + ".");
+            // If the type id does not exist, the value is unrepresentable.
+            target.put(Flags.IS_UNREPRESENTABLE);
+            this.writeNulls(target);
+            return;
         }
         
+        target.put(Flags.IS_PRESENT);
         target.putInt(recordMapping.getTargetTypeId());
         
         RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getTypeEntry());

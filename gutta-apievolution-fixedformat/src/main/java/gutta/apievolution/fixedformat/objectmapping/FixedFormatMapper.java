@@ -66,7 +66,7 @@ public class FixedFormatMapper {
         if (subTypesAnnotation != null) {
             // If there are subtypes, we need a polymorphic type mapper
             Map<Integer, RecordTypeMapper> subTypeMappers = this.mappersForAllConcreteSubtypes(type);            
-            return new PolymorphicRecordTypeMapper(subTypeMappers);
+            return new PolymorphicRecordTypeMapper(type, subTypeMappers);
         } else {
             // Otherwise, create a regular record type mapper
             return this.createTypeMapperForConcreteRecord(type);
@@ -108,7 +108,14 @@ public class FixedFormatMapper {
             }
             
             int typeId = typeIdAnnotation.value();
-            RecordTypeMapper subTypeMapper = (RecordTypeMapper) this.determineTypeMapperFor(subType);
+            RecordTypeMapper subTypeMapper;
+            if (subType == type) {
+                // If the polymorphic type itself is encountered, treat it as a concrete
+                // record to avoid endless recursion
+                subTypeMapper = (RecordTypeMapper) this.createTypeMapperForConcreteRecord(type);
+            } else {
+                subTypeMapper = (RecordTypeMapper) this.determineTypeMapperFor(subType);
+            }
             
             subTypeMappers.put(typeId, subTypeMapper);
         }
@@ -204,12 +211,30 @@ public class FixedFormatMapper {
     }
     
     /**
-     * Writes an object to the given data object.
+     * Writes an object to the given data object, using the type mapper associated
+     * with the runtime type of the object.
+     * 
      * @param value The value to write
      * @param data The data object to write to
      */
     public void writeValue(Object value, FixedFormatData data) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(value.getClass());
+        typeMapper.writeValue(value, data);
+    }
+    
+    /**
+     * Writes an object to the given data object, using the type mapper of the
+     * given formal type. The formal type needs to be the same type or a supertype of the 
+     * object.
+     * 
+     * @param <T> The formal type of the value
+     * @param <P> The actual type of the value
+     * @param value The value to write
+     * @param formalType The formal type to use for writing the value
+     * @param data The data object to write to
+     */
+    public <T, P extends T> void writeValue(P value, Class<T> formalType, FixedFormatData data) {
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(formalType);
         typeMapper.writeValue(value, data);
     }
     

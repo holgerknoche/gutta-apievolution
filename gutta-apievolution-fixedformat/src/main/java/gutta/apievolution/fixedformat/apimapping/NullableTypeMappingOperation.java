@@ -20,7 +20,10 @@ abstract class NullableTypeMappingOperation implements ApiMappingOperation {
             break;
             
         case IS_PRESENT:
-            target.put(IS_PRESENT);
+            if (!this.mayBeUnrepresentable()) {
+                target.put(IS_PRESENT);
+            }
+            
             this.mapNonNullValue(source, target);
             break;
             
@@ -33,7 +36,18 @@ abstract class NullableTypeMappingOperation implements ApiMappingOperation {
         
     }
     
-    private void writeNulls(ByteBuffer target) {
+    /**
+     * Denotes that this type mapping operation may result in an unrepresentable
+     * value. In such cases, the {@link #mapNonNullValue(ByteBuffer, ByteBuffer)}
+     * operation must write the value flags itself.
+     * 
+     * @return {@code True} if this operation may result in an unrepresentable value, {@code false} otherwise
+     */
+    protected boolean mayBeUnrepresentable() {
+        return false;
+    }
+    
+    protected void writeNulls(ByteBuffer target) {
         byte[] paddingData = new byte[this.getTargetDataLength()];
         target.put(paddingData);
     }

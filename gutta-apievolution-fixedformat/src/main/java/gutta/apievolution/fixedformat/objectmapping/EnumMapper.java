@@ -1,13 +1,17 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 class EnumMapper extends TypeMapper<Object> {
     
+    private final Class<?> enumType;
+    
     private final Object[] ordinalLookup;
     
     public EnumMapper(Class<?> enumType) {
+        this.enumType = enumType;
         this.ordinalLookup = createOrdinalLookup(enumType);
     }
     
@@ -50,10 +54,25 @@ class EnumMapper extends TypeMapper<Object> {
         return this.ordinalLookup[ordinal];
     }
     
-    @Override
-    protected Object handleUnrepresentableValue() {
-        // TODO Auto-generated method stub
+    private Field findUnrepresentableValueMember() {
+        for (Field field : this.enumType.getDeclaredFields()) {
+            if (field.isAnnotationPresent(UnrepresentableValue.class)) {
+                return field;
+            }
+        }
+        
         return null;
+    }
+    
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected Object handleUnrepresentableValue() {
+        Field unrepresentableValueMember = this.findUnrepresentableValueMember();
+        if (unrepresentableValueMember != null) {
+            return Enum.valueOf((Class) this.enumType, unrepresentableValueMember.getName());
+        } else {
+            throw new UnrepresentableValueException("An unrepresentable member of '" + this.enumType + "' was encountered, but no default value was defined.");
+        }        
     }
     
     @Override

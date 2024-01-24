@@ -8,10 +8,9 @@ import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator;
+import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
 import gutta.apievolution.fixedformat.apimapping.RequestRouter;
 import gutta.apievolution.fixedformat.apimapping.consumer.ConsumerOperationProxy;
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptGenerator.MappingDirection;
-import gutta.apievolution.fixedformat.apimapping.ApiMappingScriptPrinter;
 import gutta.apievolution.fixedformat.customerexample.provider.UpsertOperationProviderProxy;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 

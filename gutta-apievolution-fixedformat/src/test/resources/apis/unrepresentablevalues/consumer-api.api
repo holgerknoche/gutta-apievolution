@@ -1,0 +1,17 @@
+api test.provider {
+
+    record SuperType {
+    }
+    
+    record SubTypeA extends SuperType {
+        int32 subValueA
+        Enumeration enumValue
+    }
+    
+    enum Enumeration {
+        VALUE_A
+    }
+    
+    operation op(SuperType): SuperType
+
+}
