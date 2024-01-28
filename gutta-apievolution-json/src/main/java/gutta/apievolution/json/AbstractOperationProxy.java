@@ -9,11 +9,20 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.*;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
-abstract class AbstractOperationProxy {
-
+abstract class AbstractOperationProxy<P, R> {    
+    
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
+    
+    private static final String TYPE_PROPERTY_NAME = "@type";
+    
+    private final String operationName;
+    
+    private final String parameterTypeName;
 
+    private final String resultTypeName;
+    
     private static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -21,11 +30,48 @@ abstract class AbstractOperationProxy {
 
         return objectMapper;
     }
-
-    protected JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
-        return new InternalToPublicRewriter().rewriteInternalToPublic(type, representation);
+    
+    protected AbstractOperationProxy(String operationName, String parameterTypeName, String resultTypeName) {
+        this.operationName = operationName;
+        this.parameterTypeName = parameterTypeName;
+        this.resultTypeName = resultTypeName;
+    }
+    
+    public String getOperationName() {
+        return this.operationName;
+    }
+    
+    protected String getParameterTypeName() {
+        return this.parameterTypeName;
+    }
+    
+    protected String getResultTypeName() {
+        return this.resultTypeName;
     }
 
+    @SuppressWarnings("unchecked")
+    protected <T extends JsonNode> T rewriteInternalToPublic(Type type, JsonNode representation) {
+        return (T) new InternalToPublicRewriter().rewriteInternalToPublic(type, representation);
+    }
+
+    protected Optional<String> determineSpecificTypeId(ObjectNode node) {
+        JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
+        
+        if (typePropertyNode == null || !typePropertyNode.isTextual()) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(typePropertyNode.asText());
+    }
+    
+    /**
+     * Invokes the operation with the given parameter.
+     * 
+     * @param parameter The parameter to pass to the operation
+     * @return The result of the operation
+     */
+    protected abstract R invokeOperation(P parameter);
+    
     /**
      * Visitor implementation for rewriting an internal representation to a public representation.
      */
@@ -44,14 +90,26 @@ abstract class AbstractOperationProxy {
 
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
-            ObjectNode objectNode = (ObjectNode) this.representation;
+            ObjectNode objectNode = (ObjectNode) this.representation;            
 
+            this.rewriteTypeIdentifier(objectNode, recordType);
+            
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getInternalName());
                 objectNode.set(field.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
             }
 
             return objectNode;
+        }
+        
+        private void rewriteTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type) {
+            JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
+            
+            if (typePropertyNode == null || !typePropertyNode.isTextual()) {
+                return;
+            }
+            
+            node.set(TYPE_PROPERTY_NAME, new TextNode(type.getPublicName()));
         }
 
         @Override
@@ -142,6 +200,20 @@ abstract class AbstractOperationProxy {
         public JsonNode handleNumericType(NumericType numericType) {
             return this.representation;
         }
+        
+        protected void rewriteTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type) {
+            JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
+            
+            if (typePropertyNode == null || !typePropertyNode.isTextual()) {
+                return;
+            }
+        
+            String typeIdentifier = typePropertyNode.asText();
+            System.out.println(typeIdentifier);
+            
+            node.set(TYPE_PROPERTY_NAME, new TextNode(type.getInternalName()));
+        }
+                
 
         protected abstract AbstractPublicToInternalRewriter fork();
 

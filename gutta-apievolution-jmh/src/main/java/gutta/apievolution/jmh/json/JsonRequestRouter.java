@@ -23,7 +23,7 @@ class JsonRequestRouter implements RequestRouter {
     }
     
     @Override
-    public byte[] invokeService(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson) {
+    public byte[] invokeOperation(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson) {
         return this.invokeService(serviceName, requestJson);
     }
     

@@ -16,24 +16,22 @@ import gutta.apievolution.dsl.ConsumerApiLoader;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * A provider operation proxy transparently handles revisioned communication on the provider side, i.e. it transforms the request to the internal representation
  * and the response to the public representation.
  */
-public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProxy {
-
-    private final String operationName;
+public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProxy<P, R> {
 
     private final RevisionHistory revisionHistory;
 
     private final Set<Integer> supportedRevisions;
-
-    private final String parameterTypeName;
-
-    private final String resultTypeName;
-
+    
     private final Class<P> parameterType;
+    
+    private final ConcurrentMap<String, DefinitionResolution> resolutionCache = new ConcurrentHashMap<>();
 
     /**
      * Creates a new proxy using the given data.
@@ -47,25 +45,17 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      */
     public ProviderOperationProxy(String operationName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions, String parameterTypeName,
             String resultTypeName, Class<P> parameterType) {
-        this.operationName = operationName;
+        
+        super(operationName, parameterTypeName, resultTypeName);
+        
         this.revisionHistory = revisionHistory;
         this.supportedRevisions = supportedRevisions;
-        this.parameterTypeName = parameterTypeName;
-        this.resultTypeName = resultTypeName;
         this.parameterType = parameterType;
     }
 
-    /**
-     * Returns the name of the proxied operation.
-     * 
-     * @return see above
-     */
-    public String getOperationName() {
-        return this.operationName;
-    }
-
-    private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
-        return new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
+    @SuppressWarnings("unchecked")
+    private <T extends JsonNode> T rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
+        return (T) new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
     }
 
     /**
@@ -78,13 +68,20 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      * @return The response in JSON format
      */
     public byte[] invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, byte[] requestJson) {
-        // We currently use the file name as the API id
-        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
-        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
+        DefinitionResolution resolution = this.resolutionCache.computeIfAbsent(
+                consumerApiId,
+                consumerId -> this.createApiResolution(consumerId, referencedApiName, referencedRevision)
+        );
 
         return this.invokeOperation(resolution, requestJson);
     }
 
+    private DefinitionResolution createApiResolution(String consumerApiId, String referencedApiName, int referencedRevision) {
+        // We currently use the file name as the API id
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
+        return new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
+    }
+    
     /**
      * Invokes the underlying service method using the given data.
      * 
@@ -96,30 +93,28 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
-            Type parameterType = resolution.resolveProviderType(this.parameterTypeName);
-            JsonNode requestNode = objectMapper.readTree(requestJson);
-            requestNode = this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
+            ObjectNode requestNode = (ObjectNode) objectMapper.readTree(requestJson);            
+            
+            // Determine the actual parameter type name (may be a subtype)
+            String actualParameterTypeName = this.determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());            
+            Type parameterType = resolution.resolveProviderType(actualParameterTypeName);            
+            requestNode = (ObjectNode) this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
             P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
             R result = this.invokeOperation(parameter);
 
-            Type resultType = resolution.resolveProviderType(this.resultTypeName);
-            JsonNode responseNode = objectMapper.valueToTree(result);
+            ObjectNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
+            
+            // Same as for the parameter type name
+            String actualResultTypeName = this.determineSpecificTypeId(responseNode).orElse(this.getResultTypeName());
+            Type resultType = resolution.resolveProviderType(actualResultTypeName);
+            
             responseNode = this.rewriteInternalToPublic(resultType, responseNode);
-
             return objectMapper.writeValueAsBytes(responseNode);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Invokes the actual service method with the given parameter.
-     * 
-     * @param parameter The parameter to pass to the service method
-     * @return The result of the service method
-     */
-    protected abstract R invokeOperation(P parameter);
+    }    
 
     /**
      * Specific visitor for rewriting a public to a provider-internal representation.
@@ -140,6 +135,8 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) representation;
+            
+            this.rewriteTypeIdentifier(objectNode, recordType);
 
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 ConsumerField consumerField = this.definitionResolution.mapProviderField((ProviderField) field);
@@ -158,5 +155,5 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
 
     }
-
+    
 }

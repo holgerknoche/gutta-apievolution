@@ -15,7 +15,7 @@ public class SimpleJsonRequestRouter implements RequestRouter {
 	}
 	
 	@Override
-	public byte[] invokeService(String consumerApiId, int referencedRevision, String operationName, byte[] requestJson) {
+	public byte[] invokeOperation(String consumerApiId, int referencedRevision, String operationName, byte[] requestJson) {
 		ProviderOperationProxy<?, ?> proxy = this.operationNameToProxyMap.get(operationName);
 		if (proxy == null) {
 			throw new IllegalArgumentException("Unsupported operation '" + operationName + "'.");

@@ -97,7 +97,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeEmptyResult() {
-        TEST_METHOD_EMPTY_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_EMPTY_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 
     @Benchmark
@@ -122,7 +122,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod10() {
-        TEST_METHOD_10_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_10_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -147,7 +147,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod25() {
-        TEST_METHOD_25_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_25_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -172,7 +172,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod50() {
-        TEST_METHOD_50_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_50_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -197,7 +197,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod75() {
-        TEST_METHOD_75_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_75_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -222,7 +222,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod100() {
-        TEST_METHOD_100_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_100_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -247,7 +247,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod250() {
-        TEST_METHOD_250_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_250_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
@@ -272,7 +272,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void invokeTestMethod500() {
-        TEST_METHOD_500_PROXY.invoke(CONSUMER_PARAMETER);
+        TEST_METHOD_500_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 
 }

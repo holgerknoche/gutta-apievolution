@@ -4,7 +4,7 @@ import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.json.ConsumerOperationProxy;
 import gutta.apievolution.json.RequestRouter;
 
-public class TestOperationConsumerProxy extends ConsumerOperationProxy {
+public class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
 	private static final String API_ID = "apis/consumer-api.api";
 
@@ -20,11 +20,7 @@ public class TestOperationConsumerProxy extends ConsumerOperationProxy {
 
 	public TestOperationConsumerProxy(RequestRouter router) {
 		super(ConsumerApiLoader.loadFromClasspath(API_ID, REFERENCED_API_NAME, REFERENCED_REVISION),
-				PARAMETER_TYPE_NAME, RESULT_TYPE_NAME, router);
-	}
-
-	public ConsumerResult invokeProviderMethod(ConsumerParameter parameter) {
-		return this.invokeMethod(API_ID, REFERENCED_REVISION, OPERATION_NAME, parameter, ConsumerResult.class);
+				API_ID, OPERATION_NAME, PARAMETER_TYPE_NAME, RESULT_TYPE_NAME, ConsumerResult.class, router);
 	}
 
 }
