@@ -19,7 +19,7 @@ class JsonRequestRouter implements RequestRouter {
         this.resolution = resolution;
         
         this.proxyMap = Stream.of(proxies)
-            .collect(Collectors.toMap(ProviderOperationProxy::getServiceName, Function.identity()));                
+            .collect(Collectors.toMap(ProviderOperationProxy::getOperationName, Function.identity()));                
     }
     
     @Override

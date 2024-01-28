@@ -14,7 +14,7 @@ public class TestRequestRouter implements RequestRouter {
     }
     
     public void registerProviderService(ProviderOperationProxy<?, ?> operationProxy) {
-        this.providerOperationProxyMap.put(operationProxy.getServiceName(), operationProxy);
+        this.providerOperationProxyMap.put(operationProxy.getOperationName(), operationProxy);
     }
 
     @Override

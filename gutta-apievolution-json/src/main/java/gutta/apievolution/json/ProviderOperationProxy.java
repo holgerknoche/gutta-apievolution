@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProxy {
 
-    private final String serviceName;
+    private final String operationName;
 
     private final RevisionHistory revisionHistory;
 
@@ -38,16 +38,16 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
     /**
      * Creates a new proxy using the given data.
      * 
-     * @param serviceName        The name of the proxied service
+     * @param operationName      The name of the proxied service
      * @param revisionHistory    The revision history to use
      * @param supportedRevisions The set of supported revisions from the history
      * @param parameterTypeName  The internal name of the parameter type
      * @param resultTypeName     The internal name of the result type
      * @param parameterType      The actual parameter type for request handling
      */
-    public ProviderOperationProxy(String serviceName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions, String parameterTypeName,
+    public ProviderOperationProxy(String operationName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions, String parameterTypeName,
             String resultTypeName, Class<P> parameterType) {
-        this.serviceName = serviceName;
+        this.operationName = operationName;
         this.revisionHistory = revisionHistory;
         this.supportedRevisions = supportedRevisions;
         this.parameterTypeName = parameterTypeName;
@@ -56,12 +56,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
     }
 
     /**
-     * Returns the name of the proxied service.
+     * Returns the name of the proxied operation.
      * 
      * @return see above
      */
-    public String getServiceName() {
-        return this.serviceName;
+    public String getOperationName() {
+        return this.operationName;
     }
 
     private JsonNode rewritePublicToProviderInternal(Type type, DefinitionResolution definitionResolution, JsonNode representation) {
