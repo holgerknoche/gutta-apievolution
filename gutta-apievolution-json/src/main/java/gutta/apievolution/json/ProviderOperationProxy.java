@@ -59,6 +59,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         return (T) new PublicToInternalRewriter(definitionResolution).rewritePublicToInternal(type, representation);
     }
 
+    private DefinitionResolution createApiResolution(String consumerApiId, String referencedApiName, int referencedRevision) {
+        // We currently use the file name as the API id
+        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
+        return new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
+    }
+    
     /**
      * Invokes the underlying service method using the given data.
      * 
@@ -75,12 +81,6 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         );
 
         return this.invokeOperation(resolution, requestJson);
-    }
-
-    private DefinitionResolution createApiResolution(String consumerApiId, String referencedApiName, int referencedRevision) {
-        // We currently use the file name as the API id
-        ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
-        return new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
     }
     
     /**

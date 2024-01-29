@@ -62,14 +62,22 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         return new PublicToInternalRewriter(onUnrepresentableValue).rewritePublicToInternal(type, representation);
     }
 
+    /**
+     * Invokes the provider operation using the given data and throws an exception on unrepresentable values.
+     * 
+     * @param parameterObject The parameter object for the method
+     * @return The deserialized result
+     * @throws UnrepresentableValueException If an unrepresentable value is encountered during deserialization
+     */
     public R invokeOperation(P parameterObject) {
         return this.invokeOperation(parameterObject, OnUnrepresentableValue.throwException());
     }
     
     /**
-     * Invokes the provider operation using the given data.
+     * Invokes the provider operation using the given data, and performs the given action if an unrepresentable value is encountered.
      * 
      * @param parameterObject The parameter object for the method
+     * @param onUnrepresentableValue The action to perform if an unrepresentable value is encountered
      * @return The deserialized result
      */
     public R invokeOperation(P parameterObject, OnUnrepresentableValue<?> onUnrepresentableValue) {

@@ -94,7 +94,7 @@ abstract class AbstractOperationProxy<P, R> {
     /**
      * Visitor implementation for rewriting an internal representation to a public representation.
      */
-    static abstract class AbstractInternalToPublicRewriter implements TypeVisitor<JsonNode> {
+    abstract static class AbstractInternalToPublicRewriter implements TypeVisitor<JsonNode> {
 
         JsonNode representation;
         
