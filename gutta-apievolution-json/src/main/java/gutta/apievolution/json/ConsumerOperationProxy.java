@@ -12,6 +12,7 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * A consumer operation proxy transparently handles revisioned communication on the consumer side, i.e. it transforms the request to the public representation
@@ -43,9 +44,9 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
      */
     protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String apiId, String operationName, String parameterTypeName, String resultTypeName,
             Class<R> resultTypeRepresentation, RequestRouter router) {
-        
+
         super(operationName, parameterTypeName, resultTypeName);
-        
+
         Optional<ConsumerRecordType> optionalParameterType = apiDefinition.findUDTByInternalName(parameterTypeName);
         Optional<ConsumerRecordType> optionalResultType = apiDefinition.findUDTByInternalName(resultTypeName);
 
@@ -57,29 +58,33 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         this.router = router;
     }
 
-    private JsonNode rewritePublicToConsumerInternal(Type type, JsonNode representation) {
-        return new PublicToInternalRewriter().rewritePublicToInternal(type, representation);
+    private JsonNode rewritePublicToConsumerInternal(Type type, JsonNode representation, OnUnrepresentableValue<?> onUnrepresentableValue) {
+        return new PublicToInternalRewriter(onUnrepresentableValue).rewritePublicToInternal(type, representation);
     }
 
+    public R invokeOperation(P parameterObject) {
+        return this.invokeOperation(parameterObject, OnUnrepresentableValue.throwException());
+    }
+    
     /**
      * Invokes the provider operation using the given data.
      * 
      * @param parameterObject The parameter object for the method
      * @return The deserialized result
      */
-    public R invokeOperation(P parameterObject) {
+    public R invokeOperation(P parameterObject, OnUnrepresentableValue<?> onUnrepresentableValue) {
         ObjectMapper objectMapper = OBJECT_MAPPER;
         int referencedRevision = this.apiDefinition.getReferencedRevision();
 
         try {
             JsonNode parameterNode = objectMapper.valueToTree(parameterObject);
-            parameterNode = this.rewriteInternalToPublic(this.parameterType, parameterNode);
+            parameterNode = this.rewriteInternalToPublic(this.parameterType, this::resolveType, parameterNode);
 
             byte[] requestJson = objectMapper.writeValueAsBytes(parameterNode);
             byte[] responseJson = this.router.invokeOperation(this.apiId, referencedRevision, this.getOperationName(), requestJson);
 
             JsonNode responseNode = objectMapper.readTree(responseJson);
-            responseNode = this.rewritePublicToConsumerInternal(this.resultType, responseNode);
+            responseNode = this.rewritePublicToConsumerInternal(this.resultType, responseNode, onUnrepresentableValue);
 
             return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
         } catch (IOException e) {
@@ -87,19 +92,37 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         }
     }
 
+    private Type resolveType(String name) {
+        return this.apiDefinition.findUDTByInternalName(name).orElse(null);
+    }
+
+    private JsonNode rewriteInternalToPublic(ConsumerRecordType type, Function<String, Type> typeResolver, JsonNode representation) {
+        return new InternalToPublicRewriter(typeResolver).rewriteInternalToPublic(type, representation);
+    }
+
     private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
 
+        private final OnUnrepresentableValue<?> onUnrepresentableValue;
+        
+        public PublicToInternalRewriter(OnUnrepresentableValue<?> onUnrepresentableValue) {
+            this.onUnrepresentableValue = onUnrepresentableValue;
+        }
+        
         @Override
-        protected PublicToInternalRewriter fork() {
-            return new PublicToInternalRewriter();
+        protected AbstractPublicToInternalRewriter fork() {
+            return new PublicToInternalRewriter(this.onUnrepresentableValue);
         }
 
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) representation;
-
-            this.rewriteTypeIdentifier(objectNode, recordType);
             
+            if (isUnrepresentableValue(objectNode)) {
+                return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
+            }
+            
+            this.rewriteTypeIdentifier(objectNode, recordType);
+
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getPublicName());
 
@@ -110,6 +133,43 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
+    }
+
+    private static class InternalToPublicRewriter extends AbstractInternalToPublicRewriter {
+
+        private final Function<String, Type> typeResolver;
+
+        public InternalToPublicRewriter(Function<String, Type> typeResolver) {
+            this.typeResolver = typeResolver;
+        }
+
+        @Override
+        protected AbstractInternalToPublicRewriter fork() {
+            return new InternalToPublicRewriter(this.typeResolver);
+        }
+
+        @Override
+        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+            ConsumerRecordType type = (ConsumerRecordType) this.typeResolver.apply(typeId);
+            if (type == null) {
+                throw new IllegalArgumentException("Unknown type id '" + typeId + "'.");
+            }
+
+            // Set the appropriate type ID and rewrite the node according to the actual type
+            this.setTypeId(objectNode, type.getPublicName());
+            return this.rewriteRecord(type, objectNode);
+        }
+
+        @Override
+        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            for (Field<?, ?> field : recordType) {
+                JsonNode value = objectNode.remove(field.getInternalName());
+                objectNode.set(field.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
+            }
+
+            return objectNode;
+        }
+
     }
 
 }

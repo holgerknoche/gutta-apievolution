@@ -1,21 +1,21 @@
 package gutta.apievolution.json.unrepresentablevalues;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.ConsumerOperationProxy;
 import gutta.apievolution.json.ProviderOperationProxy;
 import gutta.apievolution.json.RequestRouter;
 import gutta.apievolution.json.SimpleJsonRequestRouter;
+import gutta.apievolution.json.UnrepresentableValueException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UnrepresentableValuesTest {
     
@@ -27,9 +27,7 @@ class UnrepresentableValuesTest {
             "apis/unrepresentablevalues/provider-revision-1.api", "apis/unrepresentablevalues/provider-revision-2.api"
             );
 
-    private static final Set<Integer> SUPPORTED_REVISIONS = new HashSet<>(Arrays.asList(0, 1));
-    
-    private static final DefinitionResolution DEFINITION_RESOLUTION = new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS, CONSUMER_API);    
+    private static final Set<Integer> SUPPORTED_REVISIONS = new HashSet<>(Arrays.asList(0, 1));        
         
     @Test
     void unrepresentableSubtype() {
@@ -37,8 +35,7 @@ class UnrepresentableValuesTest {
         SimpleJsonRequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
         TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
 
-        ConsumerSuperType result = consumerProxy.invokeOperation(new ConsumerSuperType());
-    	// TODO
+        assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invokeOperation(new ConsumerSuperType()));    	
     }
     
     private static class TestOperationProviderProxy extends ProviderOperationProxy<ProviderSuperType, ProviderSuperType> {

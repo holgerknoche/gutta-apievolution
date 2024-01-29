@@ -4,9 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import gutta.apievolution.core.apimodel.*;
+import gutta.apievolution.core.apimodel.AtomicType;
+import gutta.apievolution.core.apimodel.BoundedListType;
+import gutta.apievolution.core.apimodel.BoundedStringType;
+import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.apimodel.ListType;
+import gutta.apievolution.core.apimodel.NumericType;
+import gutta.apievolution.core.apimodel.RecordType;
+import gutta.apievolution.core.apimodel.Type;
+import gutta.apievolution.core.apimodel.TypeVisitor;
+import gutta.apievolution.core.apimodel.UnboundedListType;
+import gutta.apievolution.core.apimodel.UnboundedStringType;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -16,6 +28,8 @@ abstract class AbstractOperationProxy<P, R> {
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
     
     private static final String TYPE_PROPERTY_NAME = "@type";
+    
+    private static final String UNREPRESENTABLE_PROPERTY_NAME = "@unrepresentable";
     
     private final String operationName;
     
@@ -49,12 +63,7 @@ abstract class AbstractOperationProxy<P, R> {
         return this.resultTypeName;
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T extends JsonNode> T rewriteInternalToPublic(Type type, JsonNode representation) {
-        return (T) new InternalToPublicRewriter().rewriteInternalToPublic(type, representation);
-    }
-
-    protected Optional<String> determineSpecificTypeId(ObjectNode node) {
+    protected static Optional<String> determineSpecificTypeId(ObjectNode node) {
         JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
         
         if (typePropertyNode == null || !typePropertyNode.isTextual()) {
@@ -62,6 +71,16 @@ abstract class AbstractOperationProxy<P, R> {
         }
         
         return Optional.of(typePropertyNode.asText());
+    }
+    
+    protected static boolean isUnrepresentableValue(ObjectNode node) {
+        return node.has(UNREPRESENTABLE_PROPERTY_NAME);
+    }
+    
+    protected static ObjectNode createUnrepresentableValue() {
+        ObjectNode node = OBJECT_MAPPER.createObjectNode();
+        node.set(UNREPRESENTABLE_PROPERTY_NAME, BooleanNode.TRUE);
+        return node;
     }
     
     /**
@@ -75,43 +94,40 @@ abstract class AbstractOperationProxy<P, R> {
     /**
      * Visitor implementation for rewriting an internal representation to a public representation.
      */
-    static class InternalToPublicRewriter implements TypeVisitor<JsonNode> {
+    static abstract class AbstractInternalToPublicRewriter implements TypeVisitor<JsonNode> {
 
         JsonNode representation;
-
+        
         public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
         }
 
-        InternalToPublicRewriter fork() {
-            return new InternalToPublicRewriter();
-        }
+        protected abstract AbstractInternalToPublicRewriter fork();
 
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) this.representation;            
 
-            this.rewriteTypeIdentifier(objectNode, recordType);
-            
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
-                JsonNode value = objectNode.remove(field.getInternalName());
-                objectNode.set(field.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
-            }
+            Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
+            if (specificTypeId.isPresent()) {
+                // If a specific type ID is present, the actual type may be a subtype of
+                // the formal type
+                return this.handlePolymorphicRecordType(specificTypeId.get(), objectNode);
+            } else {
+                // If no type ID is present, simply rewrite the record with the given type
+                return this.rewriteRecord(recordType, objectNode);
+            }                        
+        }
 
-            return objectNode;
+        protected abstract ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
+        
+        protected void setTypeId(ObjectNode objectNode, String typeId) {
+            objectNode.set(TYPE_PROPERTY_NAME, new TextNode(typeId));
         }
         
-        private void rewriteTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type) {
-            JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
-            
-            if (typePropertyNode == null || !typePropertyNode.isTextual()) {
-                return;
-            }
-            
-            node.set(TYPE_PROPERTY_NAME, new TextNode(type.getPublicName()));
-        }
-
+        protected abstract ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
+                                
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
             TextNode textNode = (TextNode) this.representation;
@@ -127,7 +143,7 @@ abstract class AbstractOperationProxy<P, R> {
                 return this.representation;
             }
 
-            InternalToPublicRewriter rewriter = this.fork();
+            AbstractInternalToPublicRewriter rewriter = this.fork();
             Type elementType = listType.getElementType();
 
             ArrayNode arrayNode = (ArrayNode) this.representation;

@@ -9,6 +9,7 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerField;
 import gutta.apievolution.core.apimodel.provider.ProviderField;
+import gutta.apievolution.core.apimodel.provider.ProviderRecordType;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -96,25 +97,25 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             ObjectNode requestNode = (ObjectNode) objectMapper.readTree(requestJson);            
             
             // Determine the actual parameter type name (may be a subtype)
-            String actualParameterTypeName = this.determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());            
+            String actualParameterTypeName = determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());            
             Type parameterType = resolution.resolveProviderType(actualParameterTypeName);            
             requestNode = (ObjectNode) this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
             P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
             R result = this.invokeOperation(parameter);
-
-            ObjectNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
-            
-            // Same as for the parameter type name
-            String actualResultTypeName = this.determineSpecificTypeId(responseNode).orElse(this.getResultTypeName());
-            Type resultType = resolution.resolveProviderType(actualResultTypeName);
-            
-            responseNode = this.rewriteInternalToPublic(resultType, responseNode);
+                        
+            Type resultType = resolution.resolveProviderType(this.getResultTypeName());
+            JsonNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
+            responseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
             return objectMapper.writeValueAsBytes(responseNode);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }    
+    }
+    
+    private JsonNode rewriteInternalToPublic(Type type, DefinitionResolution resolution, JsonNode representation) {
+        return new InternalToPublicRewriter(resolution).rewriteInternalToPublic(type, representation);
+    }
 
     /**
      * Specific visitor for rewriting a public to a provider-internal representation.
@@ -138,7 +139,11 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             
             this.rewriteTypeIdentifier(objectNode, recordType);
 
-            for (Field<?, ?> field : recordType.getDeclaredFields()) {
+            for (Field<?, ?> field : recordType) {
+                // Determine the consumer field that is mapped to the provider-internal field. If no such field exists,
+                // it is assumed that the consumer does not provide this field. Note that the public name of the provider-internal
+                // field may differ from the public name of the consumer field, as the provider-internal representation
+                // is built from the latest revision of the field.
                 ConsumerField consumerField = this.definitionResolution.mapProviderField((ProviderField) field);
                 if (consumerField == null) {
                     continue;
@@ -154,6 +159,47 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             return objectNode;
         }
 
+    }
+    
+    private static class InternalToPublicRewriter extends AbstractInternalToPublicRewriter {        
+                
+        private final DefinitionResolution definitionResolution;
+        
+        public InternalToPublicRewriter(DefinitionResolution definitionResolution) {
+            this.definitionResolution = definitionResolution;
+        }
+        
+        @Override
+        protected AbstractInternalToPublicRewriter fork() {
+            return new InternalToPublicRewriter(this.definitionResolution);
+        }
+
+        @Override
+        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+            ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderType(typeId);
+            
+            if (actualProviderType == null) {
+                // If no mapped type with the given type id exists, we have an unrepresentable value
+                return createUnrepresentableValue();
+            } else {
+                return this.rewriteRecord(actualProviderType, objectNode);
+            }
+        }
+        
+        @Override
+        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            for (Field<?, ?> field : recordType) {
+                JsonNode value = objectNode.remove(field.getInternalName());
+                
+                Field<?, ?> consumerField = this.definitionResolution.mapField(field);
+                if (consumerField != null) {
+                    objectNode.set(consumerField.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
+                }
+            }
+
+            return objectNode;
+        }
+        
     }
     
 }
