@@ -63,7 +63,7 @@ abstract class AbstractOperationProxy<P, R> {
         return this.resultTypeName;
     }
 
-    protected static Optional<String> determineSpecificTypeId(ObjectNode node) {
+    protected static Optional<String> determineSpecificTypeId(JsonNode node) {
         JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
         
         if (typePropertyNode == null || !typePropertyNode.isTextual()) {
@@ -202,10 +202,15 @@ abstract class AbstractOperationProxy<P, R> {
             TextNode textNode = (TextNode) representation;
             String value = textNode.asText();
 
-            EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElseThrow(NoSuchElementException::new);
-
-            return new TextNode(enumMember.getInternalName());
+            EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElse(null);
+            if (enumMember != null) {
+            	return new TextNode(enumMember.getInternalName());
+            } else {
+            	return this.onUnrepresentableEnumMember(value);
+            }
         }
+        
+        protected abstract JsonNode onUnrepresentableEnumMember(String name);
 
         @Override
         public JsonNode handleAtomicType(AtomicType atomicType) {

@@ -1,18 +1,17 @@
 package gutta.apievolution.json;
 
+import java.io.IOException;
+import java.util.function.Function;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
-
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * A consumer operation proxy transparently handles revisioned communication on the consumer side, i.e. it transforms the request to the public representation
@@ -23,10 +22,6 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
     private final ConsumerApiDefinition apiDefinition;
 
     private final String apiId;
-
-    private final ConsumerRecordType parameterType;
-
-    private final ConsumerRecordType resultType;
 
     private final Class<R> resultTypeRepresentation;
 
@@ -47,13 +42,8 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
         super(operationName, parameterTypeName, resultTypeName);
 
-        Optional<ConsumerRecordType> optionalParameterType = apiDefinition.findUDTByInternalName(parameterTypeName);
-        Optional<ConsumerRecordType> optionalResultType = apiDefinition.findUDTByInternalName(resultTypeName);
-
         this.apiDefinition = apiDefinition;
         this.apiId = apiId;
-        this.parameterType = optionalParameterType.orElseThrow(NoSuchElementException::new);
-        this.resultType = optionalResultType.orElseThrow(NoSuchElementException::new);
         this.resultTypeRepresentation = resultTypeRepresentation;
         this.router = router;
     }
@@ -86,13 +76,19 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
         try {
             JsonNode parameterNode = objectMapper.valueToTree(parameterObject);
-            parameterNode = this.rewriteInternalToPublic(this.parameterType, this::resolveType, parameterNode);
+            
+            String actualParameterTypeInternalName = determineSpecificTypeId(parameterNode).orElse(this.getParameterTypeName());
+            Type parameterType = this.resolveTypeByInternalName(actualParameterTypeInternalName); 
+            parameterNode = (ObjectNode) this.rewriteInternalToPublic(parameterType, this::resolveTypeByInternalName, parameterNode);
 
             byte[] requestJson = objectMapper.writeValueAsBytes(parameterNode);
             byte[] responseJson = this.router.invokeOperation(this.apiId, referencedRevision, this.getOperationName(), requestJson);
 
             JsonNode responseNode = objectMapper.readTree(responseJson);
-            responseNode = this.rewritePublicToConsumerInternal(this.resultType, responseNode, onUnrepresentableValue);
+            
+            String actualResultTypePublicName = determineSpecificTypeId(responseNode).orElse(this.getResultTypeName());
+            Type resultType = this.resolveTypeByPublicName(actualResultTypePublicName);
+            responseNode = this.rewritePublicToConsumerInternal(resultType, responseNode, onUnrepresentableValue);
 
             return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
         } catch (IOException e) {
@@ -100,11 +96,15 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         }
     }
 
-    private Type resolveType(String name) {
-        return this.apiDefinition.findUDTByInternalName(name).orElse(null);
+    private Type resolveTypeByInternalName(String internalName) {
+        return this.apiDefinition.findUDTByInternalName(internalName).orElse(null);
+    }
+    
+    private Type resolveTypeByPublicName(String publicName) {
+    	return this.apiDefinition.resolveUserDefinedType(publicName).orElse(null);
     }
 
-    private JsonNode rewriteInternalToPublic(ConsumerRecordType type, Function<String, Type> typeResolver, JsonNode representation) {
+    private JsonNode rewriteInternalToPublic(Type type, Function<String, Type> typeResolver, JsonNode representation) {
         return new InternalToPublicRewriter(typeResolver).rewriteInternalToPublic(type, representation);
     }
 
@@ -141,6 +141,12 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
+
+		@Override
+		protected JsonNode onUnrepresentableEnumMember(String name) {
+			return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
+		}
+		
     }
 
     private static class InternalToPublicRewriter extends AbstractInternalToPublicRewriter {

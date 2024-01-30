@@ -158,6 +158,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
+        
+        @Override
+        protected JsonNode onUnrepresentableEnumMember(String name) {
+        	// Unrepresentable values are only possible on the consumer side
+        	throw new IllegalStateException("Unknown member name '" + name + "' encountered.");
+        }
 
     }
     

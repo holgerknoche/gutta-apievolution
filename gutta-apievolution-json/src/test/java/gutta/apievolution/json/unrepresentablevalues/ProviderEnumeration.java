@@ -1,5 +1,6 @@
 package gutta.apievolution.json.unrepresentablevalues;
 
-public class ProviderEnumeration {
-
+public enum ProviderEnumeration {
+	VALUE_A,
+	VALUE_B
 }

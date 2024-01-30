@@ -1,21 +1,25 @@
 package gutta.apievolution.json.unrepresentablevalues;
 
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.dsl.ConsumerApiLoader;
-import gutta.apievolution.dsl.ProviderApiLoader;
-import gutta.apievolution.json.ConsumerOperationProxy;
-import gutta.apievolution.json.ProviderOperationProxy;
-import gutta.apievolution.json.RequestRouter;
-import gutta.apievolution.json.SimpleJsonRequestRouter;
-import gutta.apievolution.json.UnrepresentableValueException;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.dsl.ConsumerApiLoader;
+import gutta.apievolution.dsl.ProviderApiLoader;
+import gutta.apievolution.json.ConsumerOperationProxy;
+import gutta.apievolution.json.OnUnrepresentableValue;
+import gutta.apievolution.json.ProviderOperationProxy;
+import gutta.apievolution.json.RequestRouter;
+import gutta.apievolution.json.SimpleJsonRequestRouter;
+import gutta.apievolution.json.UnrepresentableValueException;
 
 class UnrepresentableValuesTest {
     
@@ -31,17 +35,45 @@ class UnrepresentableValuesTest {
         
     @Test
     void unrepresentableSubtype() {
-        TestOperationProviderProxy providerProxy = new TestOperationProviderProxy("SuperType", "SuperType", ProviderSuperType.class);        
+        UnrepresentableSubtypeProviderProxy providerProxy = new UnrepresentableSubtypeProviderProxy("SuperType", "SuperType", ProviderSuperType.class);        
         SimpleJsonRequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
         TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
 
         assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invokeOperation(new ConsumerSuperType()));    	
     }
     
-    private static class TestOperationProviderProxy extends ProviderOperationProxy<ProviderSuperType, ProviderSuperType> {
+    @Test
+    void unrepresentableSubtypeAsNull() {
+    	UnrepresentableSubtypeProviderProxy providerProxy = new UnrepresentableSubtypeProviderProxy("SuperType", "SuperType", ProviderSuperType.class);        
+        SimpleJsonRequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+        TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
 
-        public TestOperationProviderProxy(String parameterTypeName, String resultTypeName, Class<ProviderSuperType> parameterType) {
-            
+        assertNull(consumerProxy.invokeOperation(new ConsumerSuperType(), OnUnrepresentableValue.returnNull()));
+    }
+    
+    @Test
+    void unrepresentableEnumMember() {
+    	UnrepresentableEnumMemberProviderProxy providerProxy = new UnrepresentableEnumMemberProviderProxy("SuperType", "SuperType", ProviderSuperType.class);
+    	SimpleJsonRequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+    	TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
+    	
+    	assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invokeOperation(new ConsumerSuperType()));
+    }
+    
+    @Test
+    void unrepresentableEnumMemberAsNull() {
+    	UnrepresentableEnumMemberProviderProxy providerProxy = new UnrepresentableEnumMemberProviderProxy("SuperType", "SuperType", ProviderSuperType.class);
+    	SimpleJsonRequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+    	TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
+    	
+    	ConsumerSubTypeA result = (ConsumerSubTypeA) consumerProxy.invokeOperation(new ConsumerSuperType(), OnUnrepresentableValue.returnNull());
+    	assertEquals(1234, result.getSubValueA());
+    	assertNull(result.getEnumValue());
+    }
+    
+    private static class UnrepresentableSubtypeProviderProxy extends ProviderOperationProxy<ProviderSuperType, ProviderSuperType> {
+
+        public UnrepresentableSubtypeProviderProxy(String parameterTypeName, String resultTypeName, Class<ProviderSuperType> parameterType) {            
             super("op", PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS, parameterTypeName, resultTypeName, parameterType);
         }
 
@@ -53,6 +85,23 @@ class UnrepresentableValuesTest {
             return subTypeB;
         }
         
+    }
+    
+    private static class UnrepresentableEnumMemberProviderProxy extends ProviderOperationProxy<ProviderSuperType, ProviderSuperType> {
+    	
+    	public UnrepresentableEnumMemberProviderProxy(String parameterTypeName, String resultTypeName, Class<ProviderSuperType> parameterType) {
+    		super("op", PROVIDER_REVISION_HISTORY, SUPPORTED_REVISIONS, parameterTypeName, resultTypeName, parameterType);
+    	}
+
+		@Override
+		protected ProviderSuperType invokeOperation(ProviderSuperType parameter) {
+			ProviderSubTypeA subTypeA = new ProviderSubTypeA();
+			subTypeA.setSubValueA(1234);
+			subTypeA.setEnumValue(ProviderEnumeration.VALUE_B);
+			
+			return subTypeA;
+		}
+    	
     }
     
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerSuperType, ConsumerSuperType> {
