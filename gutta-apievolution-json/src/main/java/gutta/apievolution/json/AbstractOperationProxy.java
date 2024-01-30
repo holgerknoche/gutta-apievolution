@@ -228,10 +228,7 @@ abstract class AbstractOperationProxy<P, R> {
             if (typePropertyNode == null || !typePropertyNode.isTextual()) {
                 return;
             }
-        
-            String typeIdentifier = typePropertyNode.asText();
-            System.out.println(typeIdentifier);
-            
+                    
             node.set(TYPE_PROPERTY_NAME, new TextNode(type.getInternalName()));
         }
                 
