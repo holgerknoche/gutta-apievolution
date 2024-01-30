@@ -23,20 +23,20 @@ import gutta.apievolution.core.apimodel.UnboundedStringType;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-abstract class AbstractOperationProxy<P, R> {    
-    
+abstract class AbstractOperationProxy<P, R> {
+
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
-    
+
     private static final String TYPE_PROPERTY_NAME = "@type";
-    
+
     private static final String UNREPRESENTABLE_PROPERTY_NAME = "@unrepresentable";
-    
+
     private final String operationName;
-    
+
     private final String parameterTypeName;
 
     private final String resultTypeName;
-    
+
     private static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,45 +44,45 @@ abstract class AbstractOperationProxy<P, R> {
 
         return objectMapper;
     }
-    
+
     protected AbstractOperationProxy(String operationName, String parameterTypeName, String resultTypeName) {
         this.operationName = operationName;
         this.parameterTypeName = parameterTypeName;
         this.resultTypeName = resultTypeName;
     }
-    
+
     public String getOperationName() {
         return this.operationName;
     }
-    
+
     protected String getParameterTypeName() {
         return this.parameterTypeName;
     }
-    
+
     protected String getResultTypeName() {
         return this.resultTypeName;
     }
 
     protected static Optional<String> determineSpecificTypeId(JsonNode node) {
         JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
-        
+
         if (typePropertyNode == null || !typePropertyNode.isTextual()) {
             return Optional.empty();
         }
-        
+
         return Optional.of(typePropertyNode.asText());
     }
-    
+
     protected static boolean isUnrepresentableValue(ObjectNode node) {
         return node.has(UNREPRESENTABLE_PROPERTY_NAME);
     }
-    
+
     protected static ObjectNode createUnrepresentableValue() {
         ObjectNode node = OBJECT_MAPPER.createObjectNode();
         node.set(UNREPRESENTABLE_PROPERTY_NAME, BooleanNode.TRUE);
         return node;
     }
-    
+
     /**
      * Invokes the operation with the given parameter.
      * 
@@ -90,14 +90,14 @@ abstract class AbstractOperationProxy<P, R> {
      * @return The result of the operation
      */
     protected abstract R invokeOperation(P parameter);
-    
+
     /**
      * Visitor implementation for rewriting an internal representation to a public representation.
      */
     abstract static class AbstractInternalToPublicRewriter implements TypeVisitor<JsonNode> {
 
         JsonNode representation;
-        
+
         public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
@@ -107,7 +107,7 @@ abstract class AbstractOperationProxy<P, R> {
 
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
-            ObjectNode objectNode = (ObjectNode) this.representation;            
+            ObjectNode objectNode = (ObjectNode) this.representation;
 
             Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
             if (specificTypeId.isPresent()) {
@@ -117,17 +117,17 @@ abstract class AbstractOperationProxy<P, R> {
             } else {
                 // If no type ID is present, simply rewrite the record with the given type
                 return this.rewriteRecord(recordType, objectNode);
-            }                        
+            }
         }
 
         protected abstract ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
-        
+
         protected void setTypeId(ObjectNode objectNode, String typeId) {
             objectNode.set(TYPE_PROPERTY_NAME, new TextNode(typeId));
         }
-        
+
         protected abstract ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
-                                
+
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
             TextNode textNode = (TextNode) this.representation;
@@ -204,12 +204,12 @@ abstract class AbstractOperationProxy<P, R> {
 
             EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElse(null);
             if (enumMember != null) {
-            	return new TextNode(enumMember.getInternalName());
+                return new TextNode(enumMember.getInternalName());
             } else {
-            	return this.onUnrepresentableEnumMember(value);
+                return this.onUnrepresentableEnumMember(value);
             }
         }
-        
+
         protected abstract JsonNode onUnrepresentableEnumMember(String name);
 
         @Override
@@ -221,17 +221,16 @@ abstract class AbstractOperationProxy<P, R> {
         public JsonNode handleNumericType(NumericType numericType) {
             return this.representation;
         }
-        
+
         protected void rewriteTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type) {
             JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
-            
+
             if (typePropertyNode == null || !typePropertyNode.isTextual()) {
                 return;
             }
-                    
+
             node.set(TYPE_PROPERTY_NAME, new TextNode(type.getInternalName()));
         }
-                
 
         protected abstract AbstractPublicToInternalRewriter fork();
 

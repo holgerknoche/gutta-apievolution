@@ -29,9 +29,9 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
     private final RevisionHistory revisionHistory;
 
     private final Set<Integer> supportedRevisions;
-    
+
     private final Class<P> parameterType;
-    
+
     private final ConcurrentMap<String, DefinitionResolution> resolutionCache = new ConcurrentHashMap<>();
 
     /**
@@ -46,9 +46,9 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      */
     public ProviderOperationProxy(String operationName, RevisionHistory revisionHistory, Set<Integer> supportedRevisions, String parameterTypeName,
             String resultTypeName, Class<P> parameterType) {
-        
+
         super(operationName, parameterTypeName, resultTypeName);
-        
+
         this.revisionHistory = revisionHistory;
         this.supportedRevisions = supportedRevisions;
         this.parameterType = parameterType;
@@ -64,7 +64,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         ConsumerApiDefinition consumerApi = ConsumerApiLoader.loadFromClasspath(consumerApiId, referencedApiName, referencedRevision);
         return new DefinitionResolver().resolveConsumerDefinition(this.revisionHistory, this.supportedRevisions, consumerApi);
     }
-    
+
     /**
      * Invokes the underlying service method using the given data.
      * 
@@ -75,14 +75,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
      * @return The response in JSON format
      */
     public byte[] invokeOperation(String consumerApiId, String referencedApiName, int referencedRevision, byte[] requestJson) {
-        DefinitionResolution resolution = this.resolutionCache.computeIfAbsent(
-                consumerApiId,
-                consumerId -> this.createApiResolution(consumerId, referencedApiName, referencedRevision)
-        );
+        DefinitionResolution resolution = this.resolutionCache.computeIfAbsent(consumerApiId,
+                consumerId -> this.createApiResolution(consumerId, referencedApiName, referencedRevision));
 
         return this.invokeOperation(resolution, requestJson);
     }
-    
+
     /**
      * Invokes the underlying service method using the given data.
      * 
@@ -94,16 +92,16 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
-            ObjectNode requestNode = (ObjectNode) objectMapper.readTree(requestJson);            
-            
+            ObjectNode requestNode = (ObjectNode) objectMapper.readTree(requestJson);
+
             // Determine the actual parameter type name (may be a subtype)
-            String actualParameterTypeName = determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());            
-            Type parameterType = resolution.resolveProviderType(actualParameterTypeName);            
+            String actualParameterTypeName = determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());
+            Type parameterType = resolution.resolveProviderType(actualParameterTypeName);
             requestNode = (ObjectNode) this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
             P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
             R result = this.invokeOperation(parameter);
-                        
+
             Type resultType = resolution.resolveProviderType(this.getResultTypeName());
             JsonNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
             responseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
@@ -112,7 +110,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             throw new RuntimeException(e);
         }
     }
-    
+
     private JsonNode rewriteInternalToPublic(Type type, DefinitionResolution resolution, JsonNode representation) {
         return new InternalToPublicRewriter(resolution).rewriteInternalToPublic(type, representation);
     }
@@ -136,7 +134,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) representation;
-            
+
             this.rewriteTypeIdentifier(objectNode, recordType);
 
             for (Field<?, ?> field : recordType) {
@@ -158,23 +156,23 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
-        
+
         @Override
         protected JsonNode onUnrepresentableEnumMember(String name) {
-        	// Unrepresentable values are only possible on the consumer side
-        	throw new IllegalStateException("Unknown member name '" + name + "' encountered.");
+            // Unrepresentable values are only possible on the consumer side
+            throw new IllegalStateException("Unknown member name '" + name + "' encountered.");
         }
 
     }
-    
-    private static class InternalToPublicRewriter extends AbstractInternalToPublicRewriter {        
-                
+
+    private static class InternalToPublicRewriter extends AbstractInternalToPublicRewriter {
+
         private final DefinitionResolution definitionResolution;
-        
+
         public InternalToPublicRewriter(DefinitionResolution definitionResolution) {
             this.definitionResolution = definitionResolution;
         }
-        
+
         @Override
         protected AbstractInternalToPublicRewriter fork() {
             return new InternalToPublicRewriter(this.definitionResolution);
@@ -183,7 +181,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         @Override
         protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
             ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderType(typeId);
-            
+
             if (actualProviderType == null) {
                 // If no mapped type with the given type id exists, we have an unrepresentable value
                 return createUnrepresentableValue();
@@ -191,12 +189,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
                 return this.rewriteRecord(actualProviderType, objectNode);
             }
         }
-        
+
         @Override
         protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             for (Field<?, ?> field : recordType) {
                 JsonNode value = objectNode.remove(field.getInternalName());
-                
+
                 Field<?, ?> consumerField = this.definitionResolution.mapField(field);
                 if (consumerField != null) {
                     objectNode.set(consumerField.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
@@ -205,7 +203,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
-        
+
     }
-    
+
 }
