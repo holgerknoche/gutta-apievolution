@@ -1,4 +1,4 @@
-package gutta.apievolution.fixedformat.customerexample.consumer.v3;
+package gutta.apievolution.fixedformat.customerexample.consumer.v6;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -9,25 +9,24 @@ import org.junit.jupiter.api.Test;
 
 import gutta.apievolution.fixedformat.customerexample.CustomerExampleTestTemplate;
 
-class CustomerExampleTestV3 extends CustomerExampleTestTemplate {
-
+class CustomerExampleV6Test extends CustomerExampleTestTemplate {
+	
 	@Test
-    void invokeProviderV6FromConsumerV3() {        
-        Address primaryAddress = new Address();
+    void invokeProviderV6FromConsumerV6() {        
+        StreetAddress primaryAddress = new StreetAddress();
         primaryAddress.setStreet("Test Street");
         primaryAddress.setNumber(1234);
         primaryAddress.setPostalCode(5678);
         primaryAddress.setCity("Test City");
         
-        Address secondaryAddress1 = new Address();
+        StreetAddress secondaryAddress1 = new StreetAddress();
         secondaryAddress1.setStreet("Test Road");
         secondaryAddress1.setNumber(235);
         secondaryAddress1.setPostalCode(7654);
         secondaryAddress1.setCity("Test City");
         
-        Address secondaryAddress2 = new Address();
-        secondaryAddress2.setStreet("Test Road");
-        secondaryAddress2.setNumber(123);
+        POBoxAddress secondaryAddress2 = new POBoxAddress();
+        secondaryAddress2.setBoxNo(246);
         secondaryAddress2.setPostalCode(9876);
         secondaryAddress2.setCity("Test City");
         
@@ -35,14 +34,14 @@ class CustomerExampleTestV3 extends CustomerExampleTestTemplate {
         customer.setFirstName("Test");
         customer.setLastName("Tester");
         customer.setDateOfBirth("2000-01-01");
-        customer.setGender(1);
+        customer.setGender(Gender.THIRD);
         customer.setPrimaryAddress(primaryAddress);
         customer.setSecondaryAddresses(Arrays.asList(secondaryAddress1, secondaryAddress2));
         
-        Customer result = this.invokeProviderMethod(CONSUMER_API_V3, UpsertOperationConsumerProxyV3::new, customer);                
+        Customer result = this.invokeProviderMethod(CONSUMER_API_V6, UpsertOperationConsumerProxyV6::new, customer);                
         
         assertNotSame(customer, result);
         assertEquals(customer, result);
     }
-		
+
 }

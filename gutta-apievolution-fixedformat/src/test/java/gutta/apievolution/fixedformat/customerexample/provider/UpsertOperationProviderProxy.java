@@ -16,7 +16,6 @@ public class UpsertOperationProviderProxy extends ProviderOperationProxy<Custome
     
     @Override
     protected Customer invokeOperation(Customer parameter) {
-        // TODO
         return parameter;
     }
 
