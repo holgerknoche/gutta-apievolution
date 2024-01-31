@@ -94,6 +94,8 @@ abstract class AbstractOperationProxy<P, R> {
 
     private abstract static class AbstractRepresentationRewriter implements TypeVisitor<JsonNode> {
      
+        protected JsonNode representation;
+        
         protected boolean requiresTypeIdentifier(RecordType<?, ?, ?> type) {
             return (type.hasSuperTypes() || type.hasSubTypes());
         }
@@ -106,22 +108,6 @@ abstract class AbstractOperationProxy<P, R> {
             }
         }
         
-    }
-    
-    /**
-     * Visitor implementation for rewriting an internal representation to a public representation.
-     */
-    protected abstract static class AbstractInternalToPublicRewriter extends AbstractRepresentationRewriter {
-
-        JsonNode representation;
-
-        public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
-            this.representation = representation;
-            return type.accept(this);
-        }
-
-        protected abstract AbstractInternalToPublicRewriter fork();
-
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) this.representation;
@@ -137,9 +123,23 @@ abstract class AbstractOperationProxy<P, R> {
             }
         }
 
-        protected abstract ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
+        protected abstract JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
 
-        protected abstract ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
+        protected abstract JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
+        
+    }
+    
+    /**
+     * Visitor implementation for rewriting an internal representation to a public representation.
+     */
+    protected abstract static class AbstractInternalToPublicRewriter extends AbstractRepresentationRewriter {
+
+        public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
+            this.representation = representation;
+            return type.accept(this);
+        }
+
+        protected abstract AbstractInternalToPublicRewriter fork();
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
@@ -202,8 +202,6 @@ abstract class AbstractOperationProxy<P, R> {
     }
 
     protected abstract static class AbstractPublicToInternalRewriter extends AbstractRepresentationRewriter {
-
-        protected JsonNode representation;
 
         public JsonNode rewritePublicToInternal(Type type, JsonNode representation) {
             this.representation = representation;

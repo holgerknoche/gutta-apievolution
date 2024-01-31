@@ -47,8 +47,8 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         this.router = router;
     }
 
-    private JsonNode rewritePublicToConsumerInternal(Type type, JsonNode representation, OnUnrepresentableValue<?> onUnrepresentableValue) {
-        return new PublicToInternalRewriter(onUnrepresentableValue).rewritePublicToInternal(type, representation);
+    private JsonNode rewritePublicToConsumerInternal(Type type, Function<String, Type> typeResolver, JsonNode representation, OnUnrepresentableValue<?> onUnrepresentableValue) {
+        return new PublicToInternalRewriter(typeResolver, onUnrepresentableValue).rewritePublicToInternal(type, representation);
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             String actualResultTypePublicName = determineSpecificTypeId(responseNode).orElse(this.getResultTypeName());
             Type resultType = this.resolveTypeByPublicName(actualResultTypePublicName);
-            responseNode = this.rewritePublicToConsumerInternal(resultType, responseNode, onUnrepresentableValue);
+            responseNode = this.rewritePublicToConsumerInternal(resultType, this::resolveTypeByPublicName, responseNode, onUnrepresentableValue);
 
             return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
         } catch (IOException e) {
@@ -109,21 +109,34 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
     private static class PublicToInternalRewriter extends AbstractPublicToInternalRewriter {
 
+        private final Function<String, Type> typeResolver;
+        
         private final OnUnrepresentableValue<?> onUnrepresentableValue;
 
-        public PublicToInternalRewriter(OnUnrepresentableValue<?> onUnrepresentableValue) {
+        public PublicToInternalRewriter(Function<String, Type> typeResolver, OnUnrepresentableValue<?> onUnrepresentableValue) {
+            this.typeResolver = typeResolver;
             this.onUnrepresentableValue = onUnrepresentableValue;
         }
 
         @Override
         protected AbstractPublicToInternalRewriter fork() {
-            return new PublicToInternalRewriter(this.onUnrepresentableValue);
+            return new PublicToInternalRewriter(this.typeResolver, this.onUnrepresentableValue);
         }
 
         @Override
-        public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
-            ObjectNode objectNode = (ObjectNode) representation;
+        protected JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+            ConsumerRecordType type = (ConsumerRecordType) this.typeResolver.apply(typeId);
+            if (type == null) {
+                throw new IllegalArgumentException("Unknown type id '" + typeId + "'.");
+            }
 
+            // Set the appropriate type ID and rewrite the node according to the actual type
+            this.handleTypeIdentifier(objectNode, type, RecordType::getInternalName);
+            return this.rewriteRecord(type, objectNode);
+        }
+        
+        @Override
+        protected JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             if (isUnrepresentableValue(objectNode)) {
                 return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
             }
@@ -140,7 +153,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             return objectNode;
         }
-
+        
         @Override
         protected JsonNode onUnrepresentableEnumMember(String name) {
             return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();

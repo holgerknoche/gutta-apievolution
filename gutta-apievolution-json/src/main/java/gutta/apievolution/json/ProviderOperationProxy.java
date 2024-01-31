@@ -92,22 +92,21 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         ObjectMapper objectMapper = OBJECT_MAPPER;
 
         try {
-            ObjectNode requestNode = (ObjectNode) objectMapper.readTree(requestJson);
+            JsonNode requestNode = objectMapper.readTree(requestJson);
 
             // Determine the actual parameter type name (may be a subtype)
-            String actualParameterTypeName = determineSpecificTypeId(requestNode).orElse(this.getParameterTypeName());
-            Type parameterType = resolution.resolveProviderType(actualParameterTypeName);
-            requestNode = (ObjectNode) this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
+            Type parameterType = resolution.resolveProviderTypeByInternalName(this.getParameterTypeName());
+            JsonNode rewrittenRequestNode = this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
-            P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
+            P parameter = objectMapper.treeToValue(rewrittenRequestNode, this.parameterType);
             R result = this.invokeOperation(parameter);
 
-            Type resultType = resolution.resolveProviderType(this.getResultTypeName());           
-            JsonNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
-            responseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
-            return objectMapper.writeValueAsBytes(responseNode);
+            Type resultType = resolution.resolveProviderTypeByPublicName(this.getResultTypeName());           
+            JsonNode responseNode = objectMapper.valueToTree(result);
+            JsonNode rewrittenResponseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
+            return objectMapper.writeValueAsBytes(rewrittenResponseNode);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new InvalidDataException("Could not rewrite JSON data on the provider side.", e);
         }
     }
 
@@ -132,10 +131,20 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
-            ObjectNode objectNode = (ObjectNode) representation;
-
-            this.handleTypeIdentifier(objectNode, recordType, RecordType::getInternalName);
+        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+            ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderTypeByPublicName(typeId);
+            if (actualProviderType == null) {
+                throw new IllegalStateException("Missing type with public name '" + typeId + "'.");
+            }
+            
+            return this.rewriteRecord(actualProviderType, objectNode);            
+        }
+        
+        @Override
+        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
+            ObjectNode targetNode = OBJECT_MAPPER.createObjectNode();
+            
+            this.handleTypeIdentifier(targetNode, recordType, RecordType::getInternalName);
 
             for (Field<?, ?> field : recordType) {
                 // Determine the consumer field that is mapped to the provider-internal field. If no such field exists,
@@ -147,14 +156,14 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
                     continue;
                 }
 
-                JsonNode value = objectNode.remove(consumerField.getPublicName());
+                JsonNode value = sourceNode.get(consumerField.getPublicName());
 
                 if (value != null) {
-                    objectNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(), value));
+                    targetNode.set(field.getInternalName(), this.fork().rewritePublicToInternal(field.getType(), value));
                 }
             }
 
-            return objectNode;
+            return targetNode;
         }
 
         @Override
@@ -180,7 +189,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
 
         @Override
         protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
-            ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderType(typeId);
+            ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderTypeByInternalName(typeId);
 
             if (actualProviderType == null) {
                 // If no mapped type with the given type id exists, we have an unrepresentable value
@@ -191,23 +200,25 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
             RecordType<?, ?, ?> consumerRecordType = (RecordType<?, ?, ?>) this.definitionResolution.mapProviderType(recordType);
+            
+            ObjectNode targetNode = OBJECT_MAPPER.createObjectNode();
             
             // Handle the type identifier according to the customer type. The public name is the same as for the provider type,
             // but the necessity of a type identifier may be different
-            this.handleTypeIdentifier(objectNode, consumerRecordType, RecordType::getPublicName);
+            this.handleTypeIdentifier(targetNode, consumerRecordType, RecordType::getPublicName);
             
             for (Field<?, ?> field : recordType) {
-                JsonNode value = objectNode.remove(field.getInternalName());
+                JsonNode value = sourceNode.get(field.getInternalName());
 
                 Field<?, ?> consumerField = this.definitionResolution.mapField(field);
                 if (consumerField != null) {
-                    objectNode.set(consumerField.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
+                    targetNode.set(consumerField.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
                 }
             }
 
-            return objectNode;
+            return targetNode;
         }
 
     }
