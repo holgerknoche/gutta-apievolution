@@ -9,7 +9,7 @@ public class TestMethodEmptyProviderProxy extends ProviderProxyTemplate<EmptyPro
     private static final EmptyProviderResult RESULT = new EmptyProviderResult();
     
     public TestMethodEmptyProviderProxy(RevisionHistory revisionHistory, Set<Integer> supportedRevisions) {
-        super("testMethodEmpty", revisionHistory, supportedRevisions, "EmptyProviderResult");
+        super("testMethodEmpty", revisionHistory, supportedRevisions, "EmptyResult");
     }
 
     @Override

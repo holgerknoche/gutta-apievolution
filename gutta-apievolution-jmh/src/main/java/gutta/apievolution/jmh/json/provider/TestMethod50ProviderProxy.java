@@ -117,7 +117,7 @@ public class TestMethod50ProviderProxy extends ProviderProxyTemplate<ProviderRes
     }
     
     public TestMethod50ProviderProxy(RevisionHistory revisionHistory, Set<Integer> supportedRevisions) {
-        super("testMethod50", revisionHistory, supportedRevisions, "ProviderResult50");
+        super("testMethod50", revisionHistory, supportedRevisions, "Result50");
     }
     
     @Override
