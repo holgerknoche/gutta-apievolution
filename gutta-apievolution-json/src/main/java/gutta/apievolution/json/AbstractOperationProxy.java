@@ -22,6 +22,7 @@ import gutta.apievolution.core.apimodel.UnboundedStringType;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
 abstract class AbstractOperationProxy<P, R> {
 
@@ -91,10 +92,26 @@ abstract class AbstractOperationProxy<P, R> {
      */
     protected abstract R invokeOperation(P parameter);
 
+    private abstract static class AbstractRepresentationRewriter implements TypeVisitor<JsonNode> {
+     
+        protected boolean requiresTypeIdentifier(RecordType<?, ?, ?> type) {
+            return (type.hasSuperTypes() || type.hasSubTypes());
+        }
+        
+        protected void handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {
+            if (this.requiresTypeIdentifier(type)) {
+                node.set(TYPE_PROPERTY_NAME, new TextNode(nameAccessor.apply(type)));
+            } else {
+                node.remove(TYPE_PROPERTY_NAME);
+            }
+        }
+        
+    }
+    
     /**
      * Visitor implementation for rewriting an internal representation to a public representation.
      */
-    abstract static class AbstractInternalToPublicRewriter implements TypeVisitor<JsonNode> {
+    protected abstract static class AbstractInternalToPublicRewriter extends AbstractRepresentationRewriter {
 
         JsonNode representation;
 
@@ -121,10 +138,6 @@ abstract class AbstractOperationProxy<P, R> {
         }
 
         protected abstract ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
-
-        protected void setTypeId(ObjectNode objectNode, String typeId) {
-            objectNode.set(TYPE_PROPERTY_NAME, new TextNode(typeId));
-        }
 
         protected abstract ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
 
@@ -188,7 +201,7 @@ abstract class AbstractOperationProxy<P, R> {
         }
     }
 
-    protected abstract static class AbstractPublicToInternalRewriter implements TypeVisitor<JsonNode> {
+    protected abstract static class AbstractPublicToInternalRewriter extends AbstractRepresentationRewriter {
 
         protected JsonNode representation;
 
@@ -220,17 +233,7 @@ abstract class AbstractOperationProxy<P, R> {
         @Override
         public JsonNode handleNumericType(NumericType numericType) {
             return this.representation;
-        }
-
-        protected void rewriteTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type) {
-            JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
-
-            if (typePropertyNode == null || !typePropertyNode.isTextual()) {
-                return;
-            }
-
-            node.set(TYPE_PROPERTY_NAME, new TextNode(type.getInternalName()));
-        }
+        }        
 
         protected abstract AbstractPublicToInternalRewriter fork();
 

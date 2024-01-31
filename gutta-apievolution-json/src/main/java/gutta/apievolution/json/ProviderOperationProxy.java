@@ -102,7 +102,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             P parameter = objectMapper.treeToValue(requestNode, this.parameterType);
             R result = this.invokeOperation(parameter);
 
-            Type resultType = resolution.resolveProviderType(this.getResultTypeName());
+            Type resultType = resolution.resolveProviderType(this.getResultTypeName());           
             JsonNode responseNode = (ObjectNode) objectMapper.valueToTree(result);
             responseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
             return objectMapper.writeValueAsBytes(responseNode);
@@ -135,7 +135,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
             ObjectNode objectNode = (ObjectNode) representation;
 
-            this.rewriteTypeIdentifier(objectNode, recordType);
+            this.handleTypeIdentifier(objectNode, recordType, RecordType::getInternalName);
 
             for (Field<?, ?> field : recordType) {
                 // Determine the consumer field that is mapped to the provider-internal field. If no such field exists,
@@ -192,6 +192,12 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
 
         @Override
         protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            RecordType<?, ?, ?> consumerRecordType = (RecordType<?, ?, ?>) this.definitionResolution.mapProviderType(recordType);
+            
+            // Handle the type identifier according to the customer type. The public name is the same as for the provider type,
+            // but the necessity of a type identifier may be different
+            this.handleTypeIdentifier(objectNode, consumerRecordType, RecordType::getPublicName);
+            
             for (Field<?, ?> field : recordType) {
                 JsonNode value = objectNode.remove(field.getInternalName());
 

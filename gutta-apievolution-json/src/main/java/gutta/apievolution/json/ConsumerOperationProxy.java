@@ -128,7 +128,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
                 return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
             }
 
-            this.rewriteTypeIdentifier(objectNode, recordType);
+            this.handleTypeIdentifier(objectNode, recordType, RecordType::getInternalName);
 
             for (Field<?, ?> field : recordType.getDeclaredFields()) {
                 JsonNode value = objectNode.remove(field.getPublicName());
@@ -169,7 +169,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
             }
 
             // Set the appropriate type ID and rewrite the node according to the actual type
-            this.setTypeId(objectNode, type.getPublicName());
+            this.handleTypeIdentifier(objectNode, type, RecordType::getPublicName);
             return this.rewriteRecord(type, objectNode);
         }
 
