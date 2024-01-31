@@ -3,11 +3,11 @@ package gutta.apievolution.json;
 /**
  * This exception is thrown when invalid (JSON) data is encountered.
  */
-public class InvalidDataException extends RuntimeException {    
+class InvalidDataException extends RuntimeException {    
     
     private static final long serialVersionUID = -2621792519634892079L;
 
-    public InvalidDataException(String message, Throwable cause) {
+    InvalidDataException(String message, Throwable cause) {
         super(message, cause);
     }
 
