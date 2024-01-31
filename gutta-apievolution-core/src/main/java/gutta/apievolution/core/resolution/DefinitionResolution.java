@@ -32,9 +32,13 @@ public class DefinitionResolution {
 
     private final ProviderToConsumerMap providerToConsumerMap;
 
-    private final Map<String, Type> consumerTypeMap;
+    private final Map<String, Type> internalNameToConsumerType;
 
-    private final Map<String, Type> providerTypeMap;
+    private final Map<String, Type> internalNameToProviderType;
+    
+    private final Map<String, Type> publicNameToConsumerType;
+    
+    private final Map<String, Type> publicNameToProviderType;
     
     private final List<ValidationMessage> validationMessages;
 
@@ -47,8 +51,10 @@ public class DefinitionResolution {
         this.providerToConsumerMap = providerToConsumerMap;
         this.validationMessages = validationMessages;
 
-        this.consumerTypeMap = createTypeMap(consumerToProviderMap.consumerTypes());
-        this.providerTypeMap = createTypeMap(providerToConsumerMap.providerTypes());
+        this.internalNameToConsumerType = createInternalNameTypeMap(consumerToProviderMap.consumerTypes());
+        this.internalNameToProviderType = createInternalNameTypeMap(providerToConsumerMap.providerTypes());
+        this.publicNameToConsumerType = createPublicNameTypeMap(consumerToProviderMap.consumerTypes());
+        this.publicNameToProviderType = createPublicNameTypeMap(providerToConsumerMap.providerTypes());
     }
 
     /**
@@ -60,9 +66,14 @@ public class DefinitionResolution {
         return Collections.unmodifiableList(this.validationMessages);
     }
     
-    private static Map<String, Type> createTypeMap(Collection<Type> types) {
+    private static Map<String, Type> createInternalNameTypeMap(Collection<Type> types) {
         return types.stream().filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
                 .collect(Collectors.toMap(UserDefinedType::getInternalName, Function.identity()));
+    }
+    
+    private static Map<String, Type> createPublicNameTypeMap(Collection<Type> types) {
+        return types.stream().filter(UserDefinedType.class::isInstance).map(type -> (UserDefinedType<?>) type)
+                .collect(Collectors.toMap(UserDefinedType::getPublicName, Function.identity()));
     }
 
     /**
@@ -89,8 +100,18 @@ public class DefinitionResolution {
      * @param internalName The internal name of the desired type
      * @return The consumer type, if it exists
      */
-    public Type resolveConsumerType(String internalName) {
-        return this.consumerTypeMap.get(internalName);
+    public Type resolveConsumerTypeByInternalName(String internalName) {
+        return this.internalNameToConsumerType.get(internalName);
+    }
+    
+    /**
+     * Resolves the given public name into a consumer type.
+     *
+     * @param publicName The public name of the desired type
+     * @return The consumer type, if it exists
+     */
+    public Type resolveConsumerTypeByPublicName(String publicName) {
+        return this.publicNameToConsumerType.get(publicName);
     }
 
     /**
@@ -124,10 +145,20 @@ public class DefinitionResolution {
      * Resolves the given internal name into a provider type.
      *
      * @param internalName The internal name of the desired type
-     * @return The consumer type, if it exists
+     * @return The provider type, if it exists
      */
-    public Type resolveProviderType(String internalName) {
-        return this.providerTypeMap.get(internalName);
+    public Type resolveProviderTypeByInternalName(String internalName) {
+        return this.internalNameToProviderType.get(internalName);
+    }
+    
+    /**
+     * Resolves the given public name into a provider type.
+     *
+     * @param publicName The public name of the desired type
+     * @return The provider type, if it exists
+     */
+    public Type resolveProviderTypeByPublicName(String publicName) {
+        return this.publicNameToProviderType.get(publicName);
     }
 
     /**
