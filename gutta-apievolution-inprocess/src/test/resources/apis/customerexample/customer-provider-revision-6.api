@@ -1,0 +1,40 @@
+api customer.provider {
+
+	record Customer {
+		string(20) firstName
+		string(20) lastName
+		string(10) dateOfBirth
+		Gender gender as genderNew
+		Address primaryAddress as newPrimaryAddress
+		Address[10] secondaryAddresses as newSecondaryAddresses
+	}
+	
+	enum Gender {
+		MALE
+		FEMALE
+		THIRD
+	}
+	
+	abstract record Address replaces nothing {
+		int32 postalCode replaces Address.postalCode
+		string(20) city replaces Address.city
+	}
+	
+	record StreetAddress extends Address replaces Address {
+		string(20) street
+		int32 number		
+	}
+	
+	record POBoxAddress extends Address {
+		int32 boxNo
+	}
+	
+	record FormattedAddress {
+		string(40) address
+	}
+	
+	operation upsert(Customer): Customer
+	
+	operation formatAddress(Address): FormattedAddress replaces nothing as formatAddressNew
+
+}
