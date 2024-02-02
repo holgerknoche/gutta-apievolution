@@ -2,6 +2,8 @@ package gutta.apievolution.inprocess.customerexample.consumer.v1;
 
 import java.util.Objects;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 public class Customer {
 
     private String firstName;
@@ -51,13 +53,7 @@ public class Customer {
     
     @Override
     public boolean equals(Object that) {
-    	if (this == that) {
-    		return true;
-    	} else if (that != null && this.getClass() == that.getClass()) {
-    		return this.equals((Customer) that);
-    	} else {
-    		return false;
-    	}
+    	return EqualityUtil.equals(this, that, this::equals);
     }
     
     private boolean equals(Customer that) {
