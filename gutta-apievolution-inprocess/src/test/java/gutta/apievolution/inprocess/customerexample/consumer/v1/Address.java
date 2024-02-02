@@ -21,7 +21,7 @@ public class Address {
 	}
 
 	public Integer getNumber() {
-		return number;
+		return this.number;
 	}
 
 	public void setNumber(Integer number) {
@@ -61,8 +61,8 @@ public class Address {
     }
     
     private boolean equals(Address that) {
-    	return (this.number == that.number) &&
-    		   (this.postalCode == that.postalCode) &&
+    	return Objects.equals(this.number, that.number) &&
+    		   Objects.equals(this.postalCode, that.postalCode) &&
     		   Objects.equals(this.street, that.street) &&
     		   Objects.equals(this.city, that.city);
     }

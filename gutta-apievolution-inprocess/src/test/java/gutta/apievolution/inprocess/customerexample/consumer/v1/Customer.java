@@ -61,7 +61,7 @@ public class Customer {
     }
     
     private boolean equals(Customer that) {
-    	return (this.gender == that.gender) &&
+    	return Objects.equals(this.gender, that.gender) &&
     		   Objects.equals(this.firstName, that.firstName) &&
     		   Objects.equals(this.lastName, that.lastName) &&
     		   Objects.equals(this.address, that.address);
