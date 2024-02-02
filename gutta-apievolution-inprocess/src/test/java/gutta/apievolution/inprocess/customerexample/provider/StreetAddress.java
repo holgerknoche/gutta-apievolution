@@ -1,25 +1,16 @@
 package gutta.apievolution.inprocess.customerexample.provider;
 
-public class StreetAddress extends Address {
+import gutta.apievolution.inprocess.ImplementedBy;
 
-    private String street;
+@ImplementedBy(StreetAddressImpl.class)
+public interface StreetAddress extends Address {
+
+    String getStreet();
     
-    private Integer number;
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public Integer getNumber() {
-		return number;
-	}
-
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
-	
+    void setStreet(String street);
+    
+    Integer getNumber();
+    
+    void setNumber(Integer number);
+    
 }

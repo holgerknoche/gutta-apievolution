@@ -1,15 +1,12 @@
 package gutta.apievolution.inprocess.customerexample.provider;
 
-public class FormattedAddress {
+import gutta.apievolution.inprocess.ImplementedBy;
 
-    private String address;
+@ImplementedBy(FormattedAddressImpl.class)
+public interface FormattedAddress {
+    
+    String getAddress();
+    
+    void setAddress(String address);
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
 }

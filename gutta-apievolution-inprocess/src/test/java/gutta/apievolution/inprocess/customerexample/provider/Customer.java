@@ -1,97 +1,46 @@
 package gutta.apievolution.inprocess.customerexample.provider;
 
+import gutta.apievolution.inprocess.ImplementedBy;
+
 import java.util.List;
 
-public class Customer {
-	
-    private String firstName;
+@ImplementedBy(CustomerImpl.class)
+public interface Customer {
     
-    private String lastName;
+    String getFirstName();
     
-    private String dateOfBirth;
-        
-    private Gender genderNew;
+    void setFirstName(String firstName);
     
-    private Address newPrimaryAddress;
+    String getLastName();
     
-    private List<Address> newSecondaryAddresses;
+    void setLastName(String lastName);
     
-    private StreetAddress primaryAddress;
+    String getDateOfBirth();
     
-    private List<StreetAddress> secondaryAddresses;
-
-    private Integer gender;
-
-	public String getFirstName() {
-		return this.firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return this.lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getDateOfBirth() {
-		return this.dateOfBirth;
-	}
-
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
-	public Gender getGenderNew() {
-		return this.genderNew;
-	}
-
-	public void setGenderNew(Gender genderNew) {
-		this.genderNew = genderNew;
-	}
-
-	public Address getNewPrimaryAddress() {
-		return this.newPrimaryAddress;
-	}
-
-	public void setNewPrimaryAddress(Address newPrimaryAddress) {
-		this.newPrimaryAddress = newPrimaryAddress;
-	}
-
-	public List<Address> getNewSecondaryAddresses() {
-		return this.newSecondaryAddresses;
-	}
-
-	public void setNewSecondaryAddresses(List<Address> newSecondaryAddresses) {
-		this.newSecondaryAddresses = newSecondaryAddresses;
-	}
-
-	public StreetAddress getPrimaryAddress() {
-		return this.primaryAddress;
-	}
-
-	public void setPrimaryAddress(StreetAddress primaryAddress) {
-		this.primaryAddress = primaryAddress;
-	}
-
-	public List<StreetAddress> getSecondaryAddresses() {
-		return this.secondaryAddresses;
-	}
-
-	public void setSecondaryAddresses(List<StreetAddress> secondaryAddresses) {
-		this.secondaryAddresses = secondaryAddresses;
-	}
-
-	public Integer getGender() {
-		return this.gender;
-	}
-
-	public void setGender(Integer gender) {
-		this.gender = gender;
-	}    
+    void setDateOfBirth(String dateOfBirth);
+    
+    Gender getGenderNew();
+    
+    void setGenderNew(Gender genderNew);
+    
+    Address getNewPrimaryAddress();
+    
+    void setNewPrimaryAddress(Address newPrimaryAddress);
+    
+    List<Address> getNewSecondaryAddresses();
+    
+    void setNewSecondaryAddresses(List<Address> newSecondaryAddresses);
+    
+    public StreetAddress getPrimaryAddress();
+    
+    void setPrimaryAddress(StreetAddress primaryAddress);
+    
+    List<StreetAddress> getSecondaryAddresses();
+    
+    void setSecondaryAddresses(List<StreetAddress> secondaryAddresses);
+    
+    Integer getGender();
+    
+    void setGender(Integer gender);
 
 }

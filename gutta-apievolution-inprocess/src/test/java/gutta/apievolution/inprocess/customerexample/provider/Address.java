@@ -1,25 +1,16 @@
 package gutta.apievolution.inprocess.customerexample.provider;
 
-public abstract class Address {
+import gutta.apievolution.inprocess.ImplementedBy;
 
-	private Integer postalCode;
-	
-	private String city;
+@ImplementedBy(AddressImpl.class)
+public interface Address {
+    
+    Integer getPostalCode();
+    
+    void setPostalCode(Integer postalCode);
+    
+    String getCity();
+    
+    void setCity(String city);
 
-	public Integer getPostalCode() {
-		return this.postalCode;
-	}
-
-	public void setPostalCode(Integer postalCode) {
-		this.postalCode = postalCode;
-	}
-
-	public String getCity() {
-		return this.city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-	
 }

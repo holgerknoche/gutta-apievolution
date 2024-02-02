@@ -52,10 +52,12 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
                         // The mapping from provider to consumer we may have a partial mapping
                         continue;
                     }
-
+                    
                     AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
 
-                    Class<?> sourceTypeRepresentation = this.getTypeToClassMap().typeToClass(sourceSubtype);
+                    // Determine the actual source runtime type that will represent the subtype
+                    Class<?> sourceRepresentationCandidate = this.getTypeToClassMap().typeToClass(sourceSubtype);
+                    Class<?> sourceTypeRepresentation = this.determineAppropriateTypeFor(sourceSubtype, sourceRepresentationCandidate);
                     subtypeMappers.put(sourceTypeRepresentation, subtypeMapper);
                 }
 

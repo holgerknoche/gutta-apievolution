@@ -1,15 +1,12 @@
 package gutta.apievolution.inprocess.customerexample.provider;
 
-public class POBoxAddress extends Address {
-	
-	private Integer boxNo;
+import gutta.apievolution.inprocess.ImplementedBy;
 
-	public Integer getBoxNo() {
-		return this.boxNo;
-	}
+@ImplementedBy(POBoxAddressImpl.class)
+public interface POBoxAddress extends Address {
 
-	public void setBoxNo(Integer boxNo) {
-		this.boxNo = boxNo;
-	}
-
+    Integer getBoxNo();
+    
+    void setBoxNo(Integer boxNo);
+    
 }
