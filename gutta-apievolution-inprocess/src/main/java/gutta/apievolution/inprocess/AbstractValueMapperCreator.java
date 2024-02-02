@@ -370,7 +370,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @return The created value mapper
      */
     protected final ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
-     // Polymorphic mapping is based on the source type, since polymorphic dispatch
+        // Polymorphic mapping is based on the source type, since polymorphic dispatch
         // is based on the runtime type of the source object
         RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
 
@@ -385,7 +385,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
                     // The mapping from provider to consumer we may have a partial mapping
                     continue;
                 }
-                
+
                 AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
 
                 // Determine the actual source runtime type that will represent the subtype
@@ -400,10 +400,26 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
         }
     }
 
+    /**
+     * Creates a specific polymorphic record value mapper for the current strategy.
+     * 
+     * @param representingType The runtime type representing the polymorphic type
+     * @param subtypeMappers   A map of runtime types representing the concrete subtypes of the polymorphic type to the appropriate value mappers
+     * @return The polymorphic record value mapper
+     */
     protected abstract ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers);
-    
-    protected abstract ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers);
-    
+
+    /**
+     * Creates a specific non-polymorphic record value mapper for the current strategy.
+     * 
+     * @param type              The record type
+     * @param representingClass The class representing the record type
+     * @param fieldMappers      The field mappers for the record type
+     * @return The created value mapper
+     */
+    protected abstract ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass,
+            Map<Method, FieldMapper> fieldMappers);
+
     private void registerMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, Map<Method, FieldMapper> fieldMappers,
             boolean allowUnmappedElements) {
         // Find a potential accessor method on the target class
