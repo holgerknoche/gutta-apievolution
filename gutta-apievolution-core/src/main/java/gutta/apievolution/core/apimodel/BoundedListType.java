@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 /**
  * This type represents the bounded variant of the {@link ListType}.
  */
@@ -30,13 +32,7 @@ public class BoundedListType extends ListType {
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof BoundedListType) {
-            return this.stateEquals((BoundedListType) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(BoundedListType that) {
@@ -47,7 +43,7 @@ public class BoundedListType extends ListType {
     public <R> R accept(TypeVisitor<R> visitor) {
         return visitor.handleBoundedListType(this);
     }
-    
+
     @Override
     public String toString() {
         return this.getElementType() + "[" + this.bound + "]";

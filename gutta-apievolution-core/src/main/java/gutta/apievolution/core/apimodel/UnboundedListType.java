@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 /**
  * This type represents the unbounded variant of the {@link ListType}.
  */
@@ -13,7 +15,7 @@ public class UnboundedListType extends ListType {
     public boolean isUnbounded() {
         return true;
     }
-    
+
     @Override
     public boolean isBounded() {
         return false;
@@ -31,13 +33,7 @@ public class UnboundedListType extends ListType {
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof UnboundedListType) {
-            return this.stateEquals((UnboundedListType) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     @Override

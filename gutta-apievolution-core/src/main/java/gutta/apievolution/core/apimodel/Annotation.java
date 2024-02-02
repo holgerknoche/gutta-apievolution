@@ -1,11 +1,11 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.util.Objects;
 
 /**
- * Annotations allow to embed additional information within an API model, such
- * as, for instance, specific names of types for particular programming
- * languages.
+ * Annotations allow to embed additional information within an API model, such as, for instance, specific names of types for particular programming languages.
  */
 public class Annotation {
 
@@ -49,13 +49,7 @@ public class Annotation {
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof Annotation) {
-            return this.stateEquals((Annotation) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(Annotation that) {

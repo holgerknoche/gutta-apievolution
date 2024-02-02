@@ -2,6 +2,7 @@ package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.Operation;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.Optional;
 import java.util.Set;
@@ -17,22 +18,20 @@ public class ProviderOperation extends Operation<ProviderApiDefinition, Provider
     private final ProviderOperation predecessor;
 
     private ProviderOperation successor;
-    
+
     /**
      * Creates a new service operation from the given data.
      *
      * @param annotations   The annotations on this operation
      * @param publicName    The operation's public name
-     * @param internalName  The operation's internal name, if any. If {@code null} the
-     *                      public name is assumed
+     * @param internalName  The operation's internal name, if any. If {@code null} the public name is assumed
      * @param owner         The service that owns this operation
      * @param returnType    The operation's return type
      * @param parameterType The operation's parameter type
      * @param predecessor   The operation's predecessor, if any
      */
-    ProviderOperation(Set<Annotation> annotations, final String publicName, final String internalName,
-            final ProviderApiDefinition owner, final ProviderRecordType returnType,
-            final ProviderRecordType parameterType, final ProviderOperation predecessor) {
+    ProviderOperation(Set<Annotation> annotations, final String publicName, final String internalName, final ProviderApiDefinition owner,
+            final ProviderRecordType returnType, final ProviderRecordType parameterType, final ProviderOperation predecessor) {
         super(annotations, publicName, internalName, owner, returnType, parameterType);
 
         this.predecessor = predecessor;
@@ -73,13 +72,7 @@ public class ProviderOperation extends Operation<ProviderApiDefinition, Provider
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ProviderOperation) {
-            return this.stateEquals((ProviderOperation) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(ProviderOperation that) {

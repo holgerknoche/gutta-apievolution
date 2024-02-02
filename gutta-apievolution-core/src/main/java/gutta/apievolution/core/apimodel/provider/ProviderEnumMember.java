@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.Optional;
 
@@ -10,7 +11,7 @@ import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
  * Provider-specific implementation of an {@link EnumMember}.
  */
 public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnumMember>
-    implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
+        implements RevisionedElement<ProviderEnumMember>, ProviderApiDefinitionElement {
 
     private final ProviderEnumMember predecessor;
 
@@ -20,13 +21,11 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
      * Creates a new enum member from the given data.
      *
      * @param publicName   The enum member's public name
-     * @param internalName The enum member's internal name, if applicable.
-     *                     Otherwise, the public name is assumed
+     * @param internalName The enum member's internal name, if applicable. Otherwise, the public name is assumed
      * @param owner        The enum type that owns this member
      * @param predecessor  The member's predecessor, if any
      */
-    ProviderEnumMember(final String publicName, final String internalName,
-            final ProviderEnumType owner, final ProviderEnumMember predecessor) {
+    ProviderEnumMember(final String publicName, final String internalName, final ProviderEnumType owner, final ProviderEnumMember predecessor) {
         super(publicName, internalName, owner);
 
         this.predecessor = predecessor;
@@ -62,13 +61,7 @@ public class ProviderEnumMember extends EnumMember<ProviderEnumType, ProviderEnu
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ProviderEnumMember) {
-            return this.stateEquals((ProviderEnumMember) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(ProviderEnumMember that) {

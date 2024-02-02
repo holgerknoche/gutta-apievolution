@@ -1,5 +1,7 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 /**
  * This type represents the bounded variant of the {@link StringType}.
  */
@@ -27,13 +29,7 @@ public class BoundedStringType extends StringType {
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof BoundedStringType) {
-            return this.stateEquals((BoundedStringType) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(BoundedStringType that) {

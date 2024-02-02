@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel.provider;
 
 import gutta.apievolution.core.apimodel.EnumType;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.Optional;
 
@@ -22,14 +23,13 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
      * Creates a new enum type from the given data.
      *
      * @param publicName   The enum type's public name
-     * @param internalName The enum type's internal name, if any. If {@code null},
-     *                     the public name is assumed
+     * @param internalName The enum type's internal name, if any. If {@code null}, the public name is assumed
      * @param typeId       The enum type's type id
      * @param owner        The API definition that owns this enum type
      * @param predecessor  The enum type's predecessor
      */
-    ProviderEnumType(final String publicName, final String internalName, final int typeId,
-            final ProviderApiDefinition owner, final ProviderEnumType predecessor) {
+    ProviderEnumType(final String publicName, final String internalName, final int typeId, final ProviderApiDefinition owner,
+            final ProviderEnumType predecessor) {
         super(publicName, internalName, typeId, owner);
 
         this.predecessor = predecessor;
@@ -89,13 +89,7 @@ public class ProviderEnumType extends EnumType<ProviderApiDefinition, ProviderEn
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ProviderEnumType) {
-            return this.stateEquals((ProviderEnumType) that);
-        } else {
-            return true;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(ProviderEnumType that) {

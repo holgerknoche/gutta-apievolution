@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.Annotation;
 import gutta.apievolution.core.apimodel.ApiDefinition;
 import gutta.apievolution.core.apimodel.QualifiedName;
 import gutta.apievolution.core.apimodel.RecordKind;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -190,13 +191,7 @@ public class ConsumerApiDefinition extends ApiDefinition<ConsumerApiDefinition, 
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ConsumerApiDefinition) {
-            return this.stateEquals((ConsumerApiDefinition) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(ConsumerApiDefinition that) {

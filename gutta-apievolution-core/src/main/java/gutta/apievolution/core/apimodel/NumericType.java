@@ -1,8 +1,9 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 /**
- * A numeric type represents a fixed-length decimal with integer and fractional
- * places.
+ * A numeric type represents a fixed-length decimal with integer and fractional places.
  */
 public class NumericType implements BoundedType {
 
@@ -51,13 +52,7 @@ public class NumericType implements BoundedType {
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof NumericType) {
-            return this.stateEquals((NumericType) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(NumericType that) {
