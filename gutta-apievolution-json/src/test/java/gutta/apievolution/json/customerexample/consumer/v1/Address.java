@@ -1,5 +1,7 @@
 package gutta.apievolution.json.customerexample.consumer.v1;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.util.Objects;
 
 public class Address {
@@ -51,13 +53,7 @@ public class Address {
     
     @Override
     public boolean equals(Object that) {
-    	if (this == that) {
-    		return true;
-    	} else if (that != null && this.getClass() == that.getClass()) {
-    		return this.equals((Address) that);
-    	} else {
-    		return false;
-    	}
+        return EqualityUtil.equals(this, that, this::equals);
     }
     
     private boolean equals(Address that) {

@@ -1,6 +1,7 @@
 package gutta.apievolution.json.customerexample.consumer.v6;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import gutta.apievolution.core.util.EqualityUtil;
 
 @JsonTypeName("POBoxAddress")
 public class POBoxAddress extends Address {
@@ -21,13 +22,7 @@ public class POBoxAddress extends Address {
 	}
 	
 	public boolean equals(Object that) {
-		if (this == that) {
-			return true;
-		} else if (that != null && this.getClass() == that.getClass()) {
-			return this.equals((POBoxAddress) that);
-		} else {
-			return false;
-		}
+	    return EqualityUtil.equals(this, that, this::equals);
 	}
 	
 	private boolean equals(POBoxAddress that) {

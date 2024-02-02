@@ -3,6 +3,7 @@ package gutta.apievolution.fixedformat.customerexample.consumer.v6;
 import java.util.List;
 import java.util.Objects;
 
+import gutta.apievolution.core.util.EqualityUtil;
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 
 public class Customer {
@@ -77,13 +78,7 @@ public class Customer {
 	}
 	
 	public boolean equals(Object that) {
-		if (this == that) {
-			return true;
-		} else if (that != null && this.getClass() == that.getClass()) {
-			return this.equals((Customer) that);
-		} else {
-			return false;
-		}
+	    return EqualityUtil.equals(this, that, this::equals);
 	}
 	
 	private boolean equals(Customer that) {

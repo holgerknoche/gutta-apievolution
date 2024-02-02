@@ -2,6 +2,7 @@ package gutta.apievolution.fixedformat.customerexample.consumer.v3;
 
 import java.util.Objects;
 
+import gutta.apievolution.core.util.EqualityUtil;
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 
 public class Address {
@@ -54,13 +55,7 @@ public class Address {
     }
     
     public boolean equals(Object that) {
-    	if (this == that) {
-    		return true;
-    	} else if (that != null && this.getClass() == that.getClass()) {
-    		return this.equals((Address) that);
-    	} else {
-    		return false;
-    	}
+        return EqualityUtil.equals(this, that, this::equals);
     }
     
     private boolean equals(Address that) {

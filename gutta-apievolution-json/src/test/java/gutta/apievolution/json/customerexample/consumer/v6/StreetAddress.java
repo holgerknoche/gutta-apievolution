@@ -1,6 +1,7 @@
 package gutta.apievolution.json.customerexample.consumer.v6;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.Objects;
 
@@ -33,13 +34,7 @@ public class StreetAddress extends Address {
 	}
 	
 	public boolean equals(Object that) {
-		if (this == that) {
-			return true;
-		} else if (that != null && this.getClass() == that.getClass()) {
-			return this.equals((StreetAddress) that);
-		} else {
-			return false;
-		}
+	    return EqualityUtil.equals(this, that, this::equals);
 	}
 	
 	private boolean equals(StreetAddress that) {

@@ -10,6 +10,7 @@ import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.TypeMap;
 import gutta.apievolution.core.apimodel.Usage;
 import gutta.apievolution.core.apimodel.UserDefinedType;
+import gutta.apievolution.core.util.EqualityUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -519,14 +520,7 @@ public class ModelMerger {
 
             @Override
             public boolean equals(Object that) {
-                if (this == that) {
-                    return true;
-                } else if (that instanceof MemberName) {
-                    return this.stateEquals((MemberName) that);
-                } else {
-                    return false;
-                }
-            }
+                return EqualityUtil.equals(this, that, this::stateEquals);            }
 
             private boolean stateEquals(MemberName that) {
                 return this.typeName.equals(that.typeName) && this.memberName.equals(that.memberName);
