@@ -1,7 +1,7 @@
 package gutta.apievolution.inprocess.customerexample.consumer.dynproxy.v3;
 
 import gutta.apievolution.inprocess.customerexample.CustomerExampleTestTemplate;
-import gutta.apievolution.inprocess.objectmapping.ObjectMappingApiMappingStrategy;
+import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ class CustomerExampleV3Test extends CustomerExampleTestTemplate {
         customer.setSecondaryAddresses(Arrays.asList(secondaryAddress1, secondaryAddress2));
 
         ConsumerApi customerApi = this.createApi(ConsumerApi.class, this.getClass().getPackage(), CONSUMER_API_V3,
-                new ObjectMappingApiMappingStrategy());
+                new DynamicProxyApiMappingStrategy());
 
         Customer result = customerApi.upsert(customer);
 
