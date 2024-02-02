@@ -1,4 +1,4 @@
-package gutta.apievolution.inprocess.customerexample.consumer.v6;
+package gutta.apievolution.inprocess.customerexample.consumer.objectmapping.v6;
 
 import gutta.apievolution.core.util.EqualityUtil;
 

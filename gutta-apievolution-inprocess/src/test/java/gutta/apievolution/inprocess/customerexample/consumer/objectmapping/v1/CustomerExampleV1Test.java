@@ -1,4 +1,4 @@
-package gutta.apievolution.inprocess.customerexample.consumer.v1;
+package gutta.apievolution.inprocess.customerexample.consumer.objectmapping.v1;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;

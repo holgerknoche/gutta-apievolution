@@ -1,4 +1,4 @@
-package gutta.apievolution.inprocess.customerexample.consumer.v6;
+package gutta.apievolution.inprocess.customerexample.consumer.objectmapping.v6;
 
 import java.util.List;
 import java.util.Objects;
