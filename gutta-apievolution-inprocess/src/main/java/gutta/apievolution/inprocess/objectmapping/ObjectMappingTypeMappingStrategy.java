@@ -1,11 +1,5 @@
 package gutta.apievolution.inprocess.objectmapping;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
@@ -17,6 +11,12 @@ import gutta.apievolution.inprocess.FieldMapper;
 import gutta.apievolution.inprocess.InvalidApiException;
 import gutta.apievolution.inprocess.TypeClassMap;
 import gutta.apievolution.inprocess.ValueMapper;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
@@ -37,32 +37,32 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
         @Override
         protected ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
-        	// Polymorphic mapping is based on the source type, since polymorphic dispatch
-        	// is based on the runtime type of the source object
-        	RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
-        	
-        	if (sourceType.hasSubTypes()) {
-        		@SuppressWarnings("unchecked")
-				Set<RecordType<?, ?, ?>> concreteSubtypes = (Set<RecordType<?, ?, ?>>) sourceType.collectAllSubtypes(RecordType::isConcrete);
-        		        		
-        		Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers = new HashMap<>(concreteSubtypes.size());
-        		for (RecordType<?, ?, ?> sourceSubtype : concreteSubtypes) {
-        			RecordType<?, ?, ?> targetSubtype = this.determineOpposingType(sourceSubtype);
-        			if (targetSubtype == null) {
-        				// The mapping from provider to consumer we may have a partial mapping
-        				continue;
-        			}
-        			
-        			AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
+            // Polymorphic mapping is based on the source type, since polymorphic dispatch
+            // is based on the runtime type of the source object
+            RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
 
-        			Class<?> sourceTypeRepresentation = this.getTypeToClassMap().typeToClass(sourceSubtype);
-        			subtypeMappers.put(sourceTypeRepresentation, subtypeMapper);
-        		}
-        		
-        		return new PolymorphicRecordTypeValueMapper(representingClass, subtypeMappers);
-        	} else {        	
-        		return new RecordTypeValueMapper(type, representingClass, fieldMappers);
-        	}
+            if (sourceType.hasSubTypes()) {
+                @SuppressWarnings("unchecked")
+                Set<RecordType<?, ?, ?>> concreteSubtypes = (Set<RecordType<?, ?, ?>>) sourceType.collectAllSubtypes(RecordType::isConcrete);
+
+                Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers = new HashMap<>(concreteSubtypes.size());
+                for (RecordType<?, ?, ?> sourceSubtype : concreteSubtypes) {
+                    RecordType<?, ?, ?> targetSubtype = this.determineOpposingType(sourceSubtype);
+                    if (targetSubtype == null) {
+                        // The mapping from provider to consumer we may have a partial mapping
+                        continue;
+                    }
+
+                    AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
+
+                    Class<?> sourceTypeRepresentation = this.getTypeToClassMap().typeToClass(sourceSubtype);
+                    subtypeMappers.put(sourceTypeRepresentation, subtypeMapper);
+                }
+
+                return new PolymorphicRecordTypeValueMapper(representingClass, subtypeMappers);
+            } else {
+                return new RecordTypeValueMapper(type, representingClass, fieldMappers);
+            }
         }
 
         @Override
@@ -85,7 +85,7 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
         @Override
         protected Class<?> determineAppropriateTypeFor(RecordType<?, ?, ?> type, Class<?> representingClass) {
-            if (type.isConcrete()) {            
+            if (type.isConcrete()) {
                 return ImplementorSupport.determineMandatoryImplementorOf(representingClass);
             } else {
                 return representingClass;

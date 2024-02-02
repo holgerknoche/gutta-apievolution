@@ -36,7 +36,7 @@ import static gutta.apievolution.core.apimodel.Type.mostSpecificTypeOf;
 public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingStrategy> implements TypeVisitor<ValueMapper> {
 
     private final T typeMappingStrategy;
-    
+
     private final Map<Type, ValueMapper> knownMappers = new HashMap<>();
 
     /**
@@ -215,7 +215,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             throw new IllegalArgumentException("Unmappable input class '" + type + "'.");
         }
         Type targetType = this.getDefinitionResolution().mapType(sourceType);
-                
+
         if (targetType != null) {
             // Mappers are created based on the target type (i.e., the reader's expectation)
             return this.createMapperForType(targetType);
@@ -231,14 +231,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @return The created mapper
      */
     protected ValueMapper createMapperForType(Type type) {
-    	ValueMapper candidate = this.knownMappers.get(type);
-    	
-    	if (candidate == null) {
-    		candidate = type.accept(this);
-    		this.knownMappers.put(type, candidate);
-    	}
-    	
-    	return candidate;
+        ValueMapper candidate = this.knownMappers.get(type);
+
+        if (candidate == null) {
+            candidate = type.accept(this);
+            this.knownMappers.put(type, candidate);
+        }
+
+        return candidate;
     }
 
     /**
@@ -250,20 +250,20 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
     protected ValueMapper createMapperForUnrepresentableType(Type type) {
         if (type instanceof RecordType) {
             RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
-            
+
             if (recordType.getSuperTypes().isEmpty()) {
                 // If the type does not have any supertypes, use the default behavior
                 // for unrelated types
                 return null;
             }
-            
+
             // If the type is a record type, there could be a supertype that can be mapped
             // and that might specify a behavior for unmapped types
             Type mappedSupertype = this.findMostSpecificMappedSupertypeOf(recordType);
             if (mappedSupertype == null) {
                 return null;
             }
-            
+
             Class<?> representingClass = this.getTypeToClassMap().typeToClass(mappedSupertype);
             return new UnrepresentableRecordTypeMapper(representingClass);
         } else {
@@ -272,14 +272,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             return null;
         }
     }
-    
+
     private RecordType<?, ?, ?> findMostSpecificMappedSupertypeOf(RecordType<?, ?, ?> type) {
         Set<RecordType<?, ?, ?>> mappedSupertypes = new HashSet<>();
         this.collectMappedSupertypesOf(type, mappedSupertypes::add);
-        
+
         return mostSpecificTypeOf(mappedSupertypes);
     }
-    
+
     private void collectMappedSupertypesOf(RecordType<?, ?, ?> type, Consumer<RecordType<?, ?, ?>> collector) {
         RecordType<?, ?, ?> mappedType = this.getDefinitionResolution().mapType(type);
         if (mappedType != null) {
@@ -441,6 +441,6 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      */
     protected Class<?> determineAppropriateTypeFor(RecordType<?, ?, ?> type, Class<?> representingClass) {
         return representingClass;
-    }        
+    }
 
 }
