@@ -1,66 +1,24 @@
 package gutta.apievolution.inprocess.customerexample.consumer.dynproxy.v1;
 
-import java.util.Objects;
+import gutta.apievolution.inprocess.ImplementedBy;
 
-import gutta.apievolution.core.util.EqualityUtil;
+@ImplementedBy(CustomerImpl.class)
+public interface Customer {
 
-public class Customer {
-
-    private String firstName;
+    String getFirstName();
     
-    private String lastName;
+    void setFirstName(String firstName);
     
-    private Integer gender;
+    String getLastName();
     
-    private Address address;
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Integer getGender() {
-		return this.gender;
-	}
-
-	public void setGender(Integer gender) {
-		this.gender = gender;
-	}
-
-	public Address getAddress() {
-		return this.address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-	
-	@Override
-    public int hashCode() {
-    	return Objects.hash(this.firstName, this.lastName);
-    }
+    void setLastName(String lastName);
     
-    @Override
-    public boolean equals(Object that) {
-    	return EqualityUtil.equals(this, that, this::equals);
-    }
+    Integer getGender();
     
-    private boolean equals(Customer that) {
-    	return Objects.equals(this.gender, that.gender) &&
-    		   Objects.equals(this.firstName, that.firstName) &&
-    		   Objects.equals(this.lastName, that.lastName) &&
-    		   Objects.equals(this.address, that.address);
-    }
-	
+    void setGender(Integer gender);
+    
+    Address getAddress();
+    
+    void setAddress(Address address);
+    
 }

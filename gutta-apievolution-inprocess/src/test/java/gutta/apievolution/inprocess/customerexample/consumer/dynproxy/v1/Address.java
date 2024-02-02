@@ -1,66 +1,24 @@
 package gutta.apievolution.inprocess.customerexample.consumer.dynproxy.v1;
 
-import java.util.Objects;
+import gutta.apievolution.inprocess.ImplementedBy;
 
-import gutta.apievolution.core.util.EqualityUtil;
-
-public class Address {
-	
-    private String street;
+@ImplementedBy(Address.class)
+public interface Address {
     
-    private Integer number;
+    String getStreet();
     
-    private Integer postalCode;
+    void setStreet(String street);
     
-    private String city;
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public Integer getNumber() {
-		return this.number;
-	}
-
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
-
-	public Integer getPostalCode() {
-		return this.postalCode;
-	}
-
-	public void setPostalCode(Integer postalCode) {
-		this.postalCode = postalCode;
-	}
-
-	public String getCity() {
-		return this.city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-	
-    @Override
-    public int hashCode() {
-    	return (this.number + this.postalCode);
-    }
-	
-    @Override
-    public boolean equals(Object that) {
-        return EqualityUtil.equals(this, that, this::equals);
-    }
+    Integer getNumber();
     
-    private boolean equals(Address that) {
-    	return Objects.equals(this.number, that.number) &&
-    		   Objects.equals(this.postalCode, that.postalCode) &&
-    		   Objects.equals(this.street, that.street) &&
-    		   Objects.equals(this.city, that.city);
-    }
+    void setNumber(Integer number);
+    
+    Integer getPostalCode();
+    
+    void setPostalCode(Integer postalCode);
+    
+    String getCity();
+    
+    void setCity(String city);
 
 }
