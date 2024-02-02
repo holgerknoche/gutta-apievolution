@@ -14,10 +14,8 @@ import gutta.apievolution.inprocess.TypeClassMap;
 import gutta.apievolution.inprocess.ValueMapper;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 class DynamicProxyTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
@@ -56,35 +54,17 @@ class DynamicProxyTypeMappingStrategy extends AbstractTypeMappingStrategy {
                 throw new InvalidApiException("Accessor '" + accessor + "' has an unexpected return type (expected '" + expectedClass + "'.");
             }
         }
-
+        
         @Override
-        protected ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
-            // Polymorphic mapping is based on the source type, since polymorphic dispatch
-            // is based on the runtime type of the source object
-            RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
-
-            if (sourceType.hasSubTypes()) {
-                @SuppressWarnings("unchecked")
-                Set<RecordType<?, ?, ?>> concreteSubtypes = (Set<RecordType<?, ?, ?>>) sourceType.collectAllSubtypes(RecordType::isConcrete);
-
-                Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers = new HashMap<>(concreteSubtypes.size());
-                for (RecordType<?, ?, ?> sourceSubtype : concreteSubtypes) {
-                    RecordType<?, ?, ?> targetSubtype = this.determineOpposingType(sourceSubtype);
-                    if (targetSubtype == null) {
-                        // The mapping from provider to consumer we may have a partial mapping
-                        continue;
-                    }
-                    
-                    AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
-
-                    Class<?> sourceRepresentation = this.getTypeToClassMap().typeToClass(sourceSubtype);
-                    subtypeMappers.put(sourceRepresentation, subtypeMapper);
-                }
-
-                return new PolymorphicRecordTypeValueMapper(representingClass, subtypeMappers);
-            } else {
-                return new RecordTypeValueMapper(representingClass, fieldMappers);
-            }
+        protected ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers) {
+            return new PolymorphicRecordTypeValueMapper(representingType, subtypeMappers);
+        }
+        
+        @Override
+        protected ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass,
+                Map<Method, FieldMapper> fieldMappers) {
+            
+            return new RecordTypeValueMapper(representingClass, fieldMappers);
         }
 
     }

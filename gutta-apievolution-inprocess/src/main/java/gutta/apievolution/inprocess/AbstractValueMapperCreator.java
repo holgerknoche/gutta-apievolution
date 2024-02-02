@@ -369,8 +369,41 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @param fieldMappers      The field mappers for the record type
      * @return The created value mapper
      */
-    protected abstract ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers);
+    protected final ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
+     // Polymorphic mapping is based on the source type, since polymorphic dispatch
+        // is based on the runtime type of the source object
+        RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
 
+        if (sourceType.hasSubTypes()) {
+            @SuppressWarnings("unchecked")
+            Set<RecordType<?, ?, ?>> concreteSubtypes = (Set<RecordType<?, ?, ?>>) sourceType.collectAllSubtypes(RecordType::isConcrete);
+
+            Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers = new HashMap<>(concreteSubtypes.size());
+            for (RecordType<?, ?, ?> sourceSubtype : concreteSubtypes) {
+                RecordType<?, ?, ?> targetSubtype = this.determineOpposingType(sourceSubtype);
+                if (targetSubtype == null) {
+                    // The mapping from provider to consumer we may have a partial mapping
+                    continue;
+                }
+                
+                AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
+
+                // Determine the actual source runtime type that will represent the subtype
+                Class<?> sourceRepresentationCandidate = this.getTypeToClassMap().typeToClass(sourceSubtype);
+                Class<?> sourceTypeRepresentation = this.determineAppropriateTypeFor(sourceSubtype, sourceRepresentationCandidate);
+                subtypeMappers.put(sourceTypeRepresentation, subtypeMapper);
+            }
+
+            return this.createPolymorphicRecordValueMapper(representingClass, subtypeMappers);
+        } else {
+            return this.createNonPolymorphicRecordValueMapper(sourceType, representingClass, fieldMappers);
+        }
+    }
+
+    protected abstract ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers);
+    
+    protected abstract ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers);
+    
     private void registerMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, Map<Method, FieldMapper> fieldMappers,
             boolean allowUnmappedElements) {
         // Find a potential accessor method on the target class
