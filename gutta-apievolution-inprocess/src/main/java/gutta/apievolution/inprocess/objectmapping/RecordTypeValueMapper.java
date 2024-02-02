@@ -57,7 +57,7 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
     }
 
     @Override
-    protected Object mapRepresentableValue(Object value) {
+    public Object mapRepresentableValue(Object value) {
         Object record = this.recordCreator.createObject();
         this.transferrers.forEach(transferrer -> transferrer.transferValue(value, record));
 

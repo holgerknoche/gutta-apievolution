@@ -22,7 +22,7 @@ class RecordTypeValueMapper extends AbstractRecordTypeValueMapper {
     }
 
     @Override
-    protected Object mapRepresentableValue(Object value) {
+    public Object mapRepresentableValue(Object value) {
         InvocationHandler invocationHandler = new RecordInvocationHandler(value, this.fieldMappers);
         return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[] { this.targetInterface }, invocationHandler);
     }

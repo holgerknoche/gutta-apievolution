@@ -46,6 +46,6 @@ public abstract class AbstractRecordTypeValueMapper implements ValueMapper {
      * @param value The value to map, never {@code null}
      * @return The mapped value
      */
-    protected abstract Object mapRepresentableValue(Object value);
+    public abstract Object mapRepresentableValue(Object value);
 
 }

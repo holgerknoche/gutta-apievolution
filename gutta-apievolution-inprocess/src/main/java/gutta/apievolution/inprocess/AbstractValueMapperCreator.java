@@ -36,6 +36,8 @@ import static gutta.apievolution.core.apimodel.Type.mostSpecificTypeOf;
 public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingStrategy> implements TypeVisitor<ValueMapper> {
 
     private final T typeMappingStrategy;
+    
+    private final Map<Type, ValueMapper> knownMappers = new HashMap<>();
 
     /**
      * Creates a new mapper creator that uses the given type mapping strategy.
@@ -229,7 +231,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @return The created mapper
      */
     protected ValueMapper createMapperForType(Type type) {
-        return type.accept(this);
+    	ValueMapper candidate = this.knownMappers.get(type);
+    	
+    	if (candidate == null) {
+    		candidate = type.accept(this);
+    		this.knownMappers.put(type, candidate);
+    	}
+    	
+    	return candidate;
     }
 
     /**

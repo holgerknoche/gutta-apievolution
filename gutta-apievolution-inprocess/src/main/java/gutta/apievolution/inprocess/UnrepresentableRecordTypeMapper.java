@@ -12,7 +12,7 @@ class UnrepresentableRecordTypeMapper extends AbstractRecordTypeValueMapper {
     }
     
     @Override
-    protected Object mapRepresentableValue(Object value) {
+    public Object mapRepresentableValue(Object value) {
         throw new UnsupportedOperationException();
     }
 
