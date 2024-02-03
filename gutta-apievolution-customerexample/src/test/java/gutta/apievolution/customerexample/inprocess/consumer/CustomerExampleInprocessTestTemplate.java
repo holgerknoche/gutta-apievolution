@@ -1,4 +1,4 @@
-package gutta.apievolution.customerexample.inprocess.consumer.dynproxy;
+package gutta.apievolution.customerexample.inprocess.consumer;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.customerexample.CustomerExampleTestTemplate;
@@ -8,7 +8,7 @@ import gutta.apievolution.inprocess.ApiResolver;
 import gutta.apievolution.inprocess.DefaultTypeToClassMap;
 import gutta.apievolution.inprocess.UDTToClassMap;
 
-public abstract class CustomerExampleDynProxyTestTemplate extends CustomerExampleTestTemplate {
+public abstract class CustomerExampleInprocessTestTemplate extends CustomerExampleTestTemplate {
 	
 	private static final String PROVIDER_PACKAGE_NAME = "gutta.apievolution.customerexample.inprocess.provider";
 	

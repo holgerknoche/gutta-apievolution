@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import org.junit.jupiter.api.Test;
 
-import gutta.apievolution.customerexample.inprocess.consumer.dynproxy.CustomerExampleDynProxyTestTemplate;
+import gutta.apievolution.customerexample.inprocess.consumer.CustomerExampleInprocessTestTemplate;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 
-class CustomerExampleV1Test extends CustomerExampleDynProxyTestTemplate {
+class CustomerExampleV1Test extends CustomerExampleInprocessTestTemplate {
 
 	@Test
 	void invokeProviderV6FromConsumerV1() {
