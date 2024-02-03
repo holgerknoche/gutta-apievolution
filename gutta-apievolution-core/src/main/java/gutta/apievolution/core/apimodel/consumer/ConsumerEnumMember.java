@@ -1,6 +1,7 @@
 package gutta.apievolution.core.apimodel.consumer;
 
 import gutta.apievolution.core.apimodel.EnumMember;
+import gutta.apievolution.core.util.EqualityUtil;
 
 /**
  * Consumer-specific implementation of an {@link EnumMember}.
@@ -28,13 +29,7 @@ public class ConsumerEnumMember extends EnumMember<ConsumerEnumType, ConsumerEnu
 
     @Override
     public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof ConsumerEnumMember) {
-            return this.stateEquals((ConsumerEnumMember) that);
-        } else {
-            return false;
-        }
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
     boolean stateEquals(ConsumerEnumMember that) {

@@ -58,7 +58,7 @@ class FixedFormatMappingTest {
         assertEquals(ConsumerEnum.VALUE_A, consumerResult.getResultEnum());
         assertEquals(Arrays.asList(ConsumerEnum.VALUE_A, ConsumerEnum.VALUE_B), consumerResult.getResultList());
     }
-
+    
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
         public TestOperationConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {

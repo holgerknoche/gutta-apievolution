@@ -46,6 +46,16 @@ public class ByteBufferData implements FixedFormatData {
     }
     
     @Override
+    public byte readFlagsByte() {
+        return this.buffer.get();
+    }
+    
+    @Override
+    public void writeFlagsByte(byte flags) {
+        this.buffer.put(flags);
+    }
+    
+    @Override
     public int readInt32() {
         return this.buffer.getInt();
     }

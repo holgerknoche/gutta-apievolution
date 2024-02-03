@@ -30,12 +30,14 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
         
-        String expectedScript = "enum 0 [0 -> 1, 1 -> 0]\n"
+        String expectedScript = "type index 0:\n"
+                + "enum 0 [0 -> 1, 1 -> 0]\n"
+                + "type index 1:\n"
                 + "record 1\n"
-                + "@4: copy 30 bytes\n"
-                + "@0: skip 10 bytes\n"
+                + "@5: copy 31 bytes\n"
+                + "@0: skip 11 bytes\n"
                 + "@0: map enum 0\n"
-                + "@34: copy 11 bytes\n";
+                + "@36: copy 12 bytes\n";
         
         String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript); 
         
@@ -53,11 +55,13 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.PROVIDER_TO_CONSUMER);
         
-        String expectedScript = "enum 0 [0 -> 1, 1 -> 0]\n"
+        String expectedScript = "type index 0:\n" 
+                + "enum 0 [0 -> 1, 1 -> 0]\n"
+                + "type index 1:\n"
                 + "record 1\n"
-                + "@40: map enum 0\n"
-                + "@0: copy 30 bytes\n"
-                + "@44: copy 11 bytes\n";
+                + "@42: map enum 0\n"
+                + "@0: copy 31 bytes\n"
+                + "@47: copy 12 bytes\n";
         
         String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript); 
         
@@ -75,9 +79,13 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
         
-        String expectedScript = "record 0\n"
+        String expectedScript = "type index 0:\n" 
+                + "record 0\n"
+                + "type index 1:\n"
                 + "record 1\n"
+                + "type index 2:\n"
                 + "record 2\n"
+                + "type index 3:\n"
                 + "record 3\n"
                 + "@0: map poly record 0->(0@0), 1->(2@2), 2->(1@1)\n";
         
@@ -97,9 +105,13 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.PROVIDER_TO_CONSUMER);
         
-        String expectedScript = "record 0\n"
+        String expectedScript = "type index 0:\n" 
+                + "record 0\n"
+                + "type index 1:\n"
                 + "record 1\n"
+                + "type index 2:\n"
                 + "record 2\n"
+                + "type index 3:\n"
                 + "record 3\n"
                 + "@0: map poly record 0->(0@0), 1->(2@2), 2->(1@1)\n";
         
@@ -118,12 +130,14 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
         
-        String expectedScript = "record 0\n"
-                + "@0: copy 4 bytes\n"
-                + "@0: skip 8 bytes\n"
-                + "@4: copy 10 bytes\n"
+        String expectedScript = "type index 0:\n" 
+                + "record 0\n"
+                + "@0: copy 5 bytes\n"
+                + "@0: skip 9 bytes\n"
+                + "@5: copy 11 bytes\n"
+                + "type index 1:\n"
                 + "record 1\n"
-                + "@0: map list 10 elements, source size=14, target size=22, element mapping=map record 0\n";
+                + "@0: map list 10 elements, source size=17, target size=26, element mapping=map record 0\n";
         
         String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript); 
         
@@ -140,11 +154,13 @@ class ApiMappingScriptGeneratorTest {
         
         ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.PROVIDER_TO_CONSUMER);
         
-        String expectedScript = "record 0\n"
-                + "@0: copy 4 bytes\n"
-                + "@12: copy 10 bytes\n"
+        String expectedScript = "type index 0:\n" 
+                + "record 0\n"
+                + "@0: copy 5 bytes\n"
+                + "@14: copy 11 bytes\n"
+                + "type index 1:\n"
                 + "record 1\n"
-                + "@0: map list 10 elements, source size=22, target size=14, element mapping=map record 0\n";
+                + "@0: map list 10 elements, source size=26, target size=17, element mapping=map record 0\n";
         
         String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript); 
         
@@ -162,7 +178,6 @@ class ApiMappingScriptGeneratorTest {
     	ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
     	
     	String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript);
-    	System.out.println(actualScript);
     }
     
     /**

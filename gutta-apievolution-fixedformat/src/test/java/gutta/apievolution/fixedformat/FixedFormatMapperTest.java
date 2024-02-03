@@ -22,7 +22,7 @@ class FixedFormatMapperTest {
     @Test
     void serializeStringWithPadding() {
         String testValue = "TestTest";        
-        byte[] expectedBytes = new byte[] {0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x00, 0x00};
+        byte[] expectedBytes = new byte[] {0x01, 0x01, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x00, 0x00};
     
         this.stringSerializationTest(testValue, expectedBytes);
     }
@@ -33,7 +33,7 @@ class FixedFormatMapperTest {
     @Test
     void serializeMatchingString() {
         String testValue = "TestTestTe";        
-        byte[] expectedBytes = new byte[] {0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65};
+        byte[] expectedBytes = new byte[] {0x01, 0x01, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65};
     
         this.stringSerializationTest(testValue, expectedBytes);        
     }
@@ -44,7 +44,7 @@ class FixedFormatMapperTest {
     @Test
     void serializeTruncatedString() {
         String testValue = "TestTestTest";        
-        byte[] expectedBytes = new byte[] {0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65};
+        byte[] expectedBytes = new byte[] {0x01, 0x01, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74, 0x54, 0x65};
     
         this.stringSerializationTest(testValue, expectedBytes);
     }

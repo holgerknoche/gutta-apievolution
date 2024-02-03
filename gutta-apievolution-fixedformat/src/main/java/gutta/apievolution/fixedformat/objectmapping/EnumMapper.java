@@ -1,13 +1,17 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class EnumMapper implements TypeMapper<Object> {
+class EnumMapper extends TypeMapper<Object> {
+    
+    private final Class<?> enumType;
     
     private final Object[] ordinalLookup;
     
     public EnumMapper(Class<?> enumType) {
+        this.enumType = enumType;
         this.ordinalLookup = createOrdinalLookup(enumType);
     }
     
@@ -35,23 +39,44 @@ class EnumMapper implements TypeMapper<Object> {
     }
 
     @Override
-    public boolean isCacheable() {
+    protected boolean isCacheable() {
         return true;
     }
     
     @Override
-    public int getMaxLength() {
+    protected int getDataLength() {
         return 4;
     }
 
     @Override
-    public Object readValue(FixedFormatData data) {
+    protected Object readRegularValue(FixedFormatData data) {
         int ordinal = data.readInt32();
         return this.ordinalLookup[ordinal];
     }
     
+    private Field findUnrepresentableValueMember() {
+        for (Field field : this.enumType.getDeclaredFields()) {
+            if (field.isAnnotationPresent(UnrepresentableValue.class)) {
+                return field;
+            }
+        }
+        
+        return null;
+    }
+    
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected Object handleUnrepresentableValue() {
+        Field unrepresentableValueMember = this.findUnrepresentableValueMember();
+        if (unrepresentableValueMember != null) {
+            return Enum.valueOf((Class) this.enumType, unrepresentableValueMember.getName());
+        } else {
+            throw new UnrepresentableValueException("An unrepresentable member of '" + this.enumType + "' was encountered, but no default value was defined.");
+        }        
+    }
+    
+    @Override
+    protected void writeRegularValue(Object value, FixedFormatData data) {
         int ordinal = ((Enum<?>) value).ordinal();
         data.writeInt32(ordinal);
     }

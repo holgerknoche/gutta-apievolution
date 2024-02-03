@@ -89,7 +89,7 @@ class AbstractRecordTypeValueMapperTest {
         }
 
         @Override
-        protected Object mapRepresentableValue(Object value) {
+        public Object mapRepresentableValue(Object value) {
             return this.mapper.apply(value);
         }
 

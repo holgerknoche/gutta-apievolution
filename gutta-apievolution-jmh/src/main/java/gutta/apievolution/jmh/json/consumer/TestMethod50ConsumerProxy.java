@@ -6,12 +6,7 @@ import gutta.apievolution.json.RequestRouter;
 public class TestMethod50ConsumerProxy extends ConsumerProxyTemplate<ConsumerResult50> {
 
     public TestMethod50ConsumerProxy(ConsumerApiDefinition apiDefinition, RequestRouter router) {
-        super(apiDefinition, "ConsumerResult50", router);
-    }
-
-    @Override
-    protected String getOperationName() {
-        return "testMethod50";
+        super(apiDefinition, "testMethod50", "Result50", ConsumerResult50.class, router);
     }
     
 }

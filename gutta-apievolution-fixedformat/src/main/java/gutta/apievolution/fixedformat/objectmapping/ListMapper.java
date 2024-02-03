@@ -5,19 +5,19 @@ import java.util.List;
 
 import static java.lang.Math.min;
 
-class ListMapper implements TypeMapper<Object> {
+class ListMapper extends TypeMapper<Object> {
 
     private final int maxElements;
     
     private final TypeMapper<?> elementMapper;
     
-    private final int maxLength;
+    private final int dataLength;
     
     public ListMapper(int maxElements, TypeMapper<?> elementMapper) {
         this.maxElements = maxElements;
         this.elementMapper = elementMapper;
         
-        this.maxLength = (maxElements * elementMapper.getMaxLength()) + 4;
+        this.dataLength = (maxElements * elementMapper.getMaxLength()) + 4;
     }
     
     @Override
@@ -27,12 +27,12 @@ class ListMapper implements TypeMapper<Object> {
     }
     
     @Override
-    public int getMaxLength() {
-        return this.maxLength;
+    protected int getDataLength() {
+        return this.dataLength;
     }
 
     @Override
-    public Object readValue(FixedFormatData data) {
+    protected Object readRegularValue(FixedFormatData data) {
         int actualElementCount = data.readInt32();
         actualElementCount = min(actualElementCount, this.maxElements);
         
@@ -51,7 +51,12 @@ class ListMapper implements TypeMapper<Object> {
     }
     
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    public Object handleUnrepresentableValue() {
+        throw new IllegalStateException("List types cannot have unrepresentable values.");
+    }
+    
+    @Override
+    protected void writeRegularValue(Object value, FixedFormatData data) {
         List<?> list = (List<?>) value;
                 
         // Write at most maxElements elements

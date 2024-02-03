@@ -21,6 +21,8 @@ public abstract class ConsumerOperationProxy<P, R> {
 
     private final String operationName;
 
+    private final Class<P> parameterType;
+    
     private final Class<R> resultType;
     
     private final Charset charset;
@@ -40,6 +42,7 @@ public abstract class ConsumerOperationProxy<P, R> {
         this.operationName = operationName;
         this.router = router;
         this.mapper = mapper;
+        this.parameterType = parameterType;
         this.resultType = resultType;
         this.charset = charset;
     }
@@ -53,7 +56,7 @@ public abstract class ConsumerOperationProxy<P, R> {
     public R invoke(P parameter) {
         FixedFormatMapper formatMapper = this.mapper;
         
-        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
+        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
         
         this.mapper.writeValue(parameter, parameterData);

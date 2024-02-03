@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Supplier;
 
-class RecordTypeMapper implements TypeMapper<Object> {
-    
-    public final int maxLength;
+class RecordTypeMapper extends TypeMapper<Object> {
+            
+    private final int dataLength;
     
     private final Class<?> recordType;
     
@@ -15,8 +15,8 @@ class RecordTypeMapper implements TypeMapper<Object> {
     
     public final List<FieldMapper> fieldMappers;
   
-    public RecordTypeMapper(int maxLength, Class<?> recordType, List<FieldMapper> fieldMappers) {
-        this.maxLength = maxLength;
+    public RecordTypeMapper(int dataLength, Class<?> recordType, List<FieldMapper> fieldMappers) {        
+        this.dataLength = dataLength;
         this.recordType = recordType;
         this.instanceSupplier = createInstanceSupplier(recordType);
         this.fieldMappers = fieldMappers;
@@ -35,25 +35,34 @@ class RecordTypeMapper implements TypeMapper<Object> {
     public boolean isCacheable() {
         return true;
     }
-    
-    public int getMaxLength() {
-        return this.maxLength;
-    }
-    
+        
     @Override
-    public Object readValue(FixedFormatData data) {
+    protected int getDataLength() {
+        return this.dataLength;
+    }
+        
+    @Override
+    protected Object readRegularValue(FixedFormatData data) {
         Object instance = this.instanceSupplier.get();
         
-        this.fieldMappers.forEach(mapper -> mapper.readValue(data, instance));
-        
+        for (FieldMapper fieldMapper : this.fieldMappers) {
+            fieldMapper.readValue(data, instance);
+        }
+              
         return instance;
     }
     
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    public Object handleUnrepresentableValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+                
+    @Override
+    protected void writeRegularValue(Object value, FixedFormatData data) {        
         this.fieldMappers.forEach(mapper -> mapper.writeValue(value, data));
     }
-
+    
     private static class ConstructorBasedInstanceSupplier implements Supplier<Object> {
 
         private final Constructor<?> constructor;

@@ -1,33 +1,65 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.fixedformat.objectmapping.Flags;
+
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-class PolymorphicRecordMappingOperation implements ApiMappingOperation {
+class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
 
     private static final int TYPE_ID_SIZE = 4;
     
     private final Map<Integer, PolymorphicRecordMapping> idToRecordMapping;
     
+    private final int dataLength;
+    
     public PolymorphicRecordMappingOperation(Map<Integer, PolymorphicRecordMapping> idToRecordMapping) {
         this.idToRecordMapping = idToRecordMapping;
+        this.dataLength = determineMaxDataLength(idToRecordMapping.values());
+    }
+    
+    private static int determineMaxDataLength(Collection<PolymorphicRecordMapping> mappings) {
+        int maxDataLength = 0;
+        
+        for (PolymorphicRecordMapping mapping : mappings) {
+            int currentDataLength = mapping.getTypeEntry().getDataSize();
+            if (currentDataLength > maxDataLength) {
+                maxDataLength = currentDataLength;
+            }
+        }
+        
+        return (maxDataLength + TYPE_ID_SIZE);
     }
     
     @Override
-    public void apply(int sourceOffset, TypeEntryResolver typeEntryResolver, ByteBuffer source, ByteBuffer target) {
+    protected int getTargetDataLength() {
+        return this.dataLength;
+    }
+    
+    @Override
+    protected boolean mayBeUnrepresentable() {
+        return true;
+    }
+    
+    @Override
+    protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         int sourceTypeId = source.getInt();
         PolymorphicRecordMapping recordMapping = this.idToRecordMapping.get(sourceTypeId);
         
         if (recordMapping == null) {
-            throw new IllegalArgumentException("No record mapping for id " + sourceTypeId + ".");
+            // If the type id does not exist, the value is unrepresentable.
+            target.put(Flags.IS_UNREPRESENTABLE);
+            this.writeNulls(target);
+            return;
         }
         
+        target.put(Flags.IS_PRESENT);
         target.putInt(recordMapping.getTargetTypeId());
         
-        RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getEntryIndex());
-        actualMappingOperation.apply(sourceOffset + TYPE_ID_SIZE, typeEntryResolver, source, target);
+        RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getTypeEntry());
+        actualMappingOperation.mapNonNullValue(source, target);
     }
 
     @Override
@@ -45,12 +77,12 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
         
         private final int targetTypeId;
         
-        private final int entryIndex;
+        private final RecordTypeEntry typeEntry;
         
-        public PolymorphicRecordMapping(int sourceTypeId, int targetTypeId, int entryIndex) {
+        public PolymorphicRecordMapping(int sourceTypeId, int targetTypeId, RecordTypeEntry typeEntry) {
             this.sourceTypeId = sourceTypeId;
             this.targetTypeId = targetTypeId;
-            this.entryIndex = entryIndex;
+            this.typeEntry = typeEntry;
         }
         
         public int getSourceTypeId() {
@@ -61,8 +93,8 @@ class PolymorphicRecordMappingOperation implements ApiMappingOperation {
             return this.targetTypeId;
         }
         
-        public int getEntryIndex() {
-            return this.entryIndex;
+        public RecordTypeEntry getTypeEntry() {
+            return this.typeEntry;
         }
         
     }    

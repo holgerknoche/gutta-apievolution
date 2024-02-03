@@ -37,6 +37,8 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
 
     private final T typeMappingStrategy;
 
+    private final Map<Type, ValueMapper> knownMappers = new HashMap<>();
+
     /**
      * Creates a new mapper creator that uses the given type mapping strategy.
      * 
@@ -213,7 +215,7 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             throw new IllegalArgumentException("Unmappable input class '" + type + "'.");
         }
         Type targetType = this.getDefinitionResolution().mapType(sourceType);
-                
+
         if (targetType != null) {
             // Mappers are created based on the target type (i.e., the reader's expectation)
             return this.createMapperForType(targetType);
@@ -229,7 +231,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @return The created mapper
      */
     protected ValueMapper createMapperForType(Type type) {
-        return type.accept(this);
+        ValueMapper candidate = this.knownMappers.get(type);
+
+        if (candidate == null) {
+            candidate = type.accept(this);
+            this.knownMappers.put(type, candidate);
+        }
+
+        return candidate;
     }
 
     /**
@@ -241,20 +250,20 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
     protected ValueMapper createMapperForUnrepresentableType(Type type) {
         if (type instanceof RecordType) {
             RecordType<?, ?, ?> recordType = (RecordType<?, ?, ?>) type;
-            
+
             if (recordType.getSuperTypes().isEmpty()) {
                 // If the type does not have any supertypes, use the default behavior
                 // for unrelated types
                 return null;
             }
-            
+
             // If the type is a record type, there could be a supertype that can be mapped
             // and that might specify a behavior for unmapped types
             Type mappedSupertype = this.findMostSpecificMappedSupertypeOf(recordType);
             if (mappedSupertype == null) {
                 return null;
             }
-            
+
             Class<?> representingClass = this.getTypeToClassMap().typeToClass(mappedSupertype);
             return new UnrepresentableRecordTypeMapper(representingClass);
         } else {
@@ -263,14 +272,14 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
             return null;
         }
     }
-    
+
     private RecordType<?, ?, ?> findMostSpecificMappedSupertypeOf(RecordType<?, ?, ?> type) {
         Set<RecordType<?, ?, ?>> mappedSupertypes = new HashSet<>();
         this.collectMappedSupertypesOf(type, mappedSupertypes::add);
-        
+
         return mostSpecificTypeOf(mappedSupertypes);
     }
-    
+
     private void collectMappedSupertypesOf(RecordType<?, ?, ?> type, Consumer<RecordType<?, ?, ?>> collector) {
         RecordType<?, ?, ?> mappedType = this.getDefinitionResolution().mapType(type);
         if (mappedType != null) {
@@ -360,7 +369,56 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      * @param fieldMappers      The field mappers for the record type
      * @return The created value mapper
      */
-    protected abstract ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers);
+    protected final ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
+        // Polymorphic mapping is based on the source type, since polymorphic dispatch
+        // is based on the runtime type of the source object
+        RecordType<?, ?, ?> sourceType = this.determineOpposingType(type);
+
+        if (sourceType.hasSubTypes()) {
+            @SuppressWarnings("unchecked")
+            Set<RecordType<?, ?, ?>> concreteSubtypes = (Set<RecordType<?, ?, ?>>) sourceType.collectAllSubtypes(RecordType::isConcrete);
+
+            Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers = new HashMap<>(concreteSubtypes.size());
+            for (RecordType<?, ?, ?> sourceSubtype : concreteSubtypes) {
+                RecordType<?, ?, ?> targetSubtype = this.determineOpposingType(sourceSubtype);
+                if (targetSubtype == null) {
+                    // The mapping from provider to consumer we may have a partial mapping
+                    continue;
+                }
+
+                AbstractRecordTypeValueMapper subtypeMapper = (AbstractRecordTypeValueMapper) this.createMapperForType(targetSubtype);
+
+                // Determine the actual source runtime type that will represent the subtype
+                Class<?> sourceRepresentationCandidate = this.getTypeToClassMap().typeToClass(sourceSubtype);
+                Class<?> sourceTypeRepresentation = this.determineAppropriateTypeFor(sourceSubtype, sourceRepresentationCandidate);
+                subtypeMappers.put(sourceTypeRepresentation, subtypeMapper);
+            }
+
+            return this.createPolymorphicRecordValueMapper(representingClass, subtypeMappers);
+        } else {
+            return this.createNonPolymorphicRecordValueMapper(sourceType, representingClass, fieldMappers);
+        }
+    }
+
+    /**
+     * Creates a specific polymorphic record value mapper for the current strategy.
+     * 
+     * @param representingType The runtime type representing the polymorphic type
+     * @param subtypeMappers   A map of runtime types representing the concrete subtypes of the polymorphic type to the appropriate value mappers
+     * @return The polymorphic record value mapper
+     */
+    protected abstract ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers);
+
+    /**
+     * Creates a specific non-polymorphic record value mapper for the current strategy.
+     * 
+     * @param type              The record type
+     * @param representingClass The class representing the record type
+     * @param fieldMappers      The field mappers for the record type
+     * @return The created value mapper
+     */
+    protected abstract ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass,
+            Map<Method, FieldMapper> fieldMappers);
 
     private void registerMapperForField(Field<?, ?> targetField, Class<?> sourceClass, Class<?> targetClass, Map<Method, FieldMapper> fieldMappers,
             boolean allowUnmappedElements) {
@@ -432,6 +490,6 @@ public abstract class AbstractValueMapperCreator<T extends AbstractTypeMappingSt
      */
     protected Class<?> determineAppropriateTypeFor(RecordType<?, ?, ?> type, Class<?> representingClass) {
         return representingClass;
-    }        
+    }
 
 }

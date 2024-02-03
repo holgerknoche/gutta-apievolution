@@ -56,14 +56,9 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         }
         
         ApiMappingOperation operation = operationProvider.apply(operationEntry);
-        operation.apply(0, this::resolveTypeEntry, source, target);
+        operation.apply(0, source, target);
     }
     
-    @SuppressWarnings("unchecked")
-    private <T extends TypeEntry> T resolveTypeEntry(int entryIndex) {
-        return (T) this.typeEntries.get(entryIndex);
-    }
-
     @Override
     public Iterator<TypeEntry> iterator() {
         return this.typeEntries.iterator();

@@ -19,11 +19,11 @@ class JsonRequestRouter implements RequestRouter {
         this.resolution = resolution;
         
         this.proxyMap = Stream.of(proxies)
-            .collect(Collectors.toMap(ProviderOperationProxy::getServiceName, Function.identity()));                
+            .collect(Collectors.toMap(ProviderOperationProxy::getOperationName, Function.identity()));                
     }
     
     @Override
-    public byte[] invokeService(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson) {
+    public byte[] invokeOperation(String consumerApiId, int referencedRevision, String serviceName, byte[] requestJson) {
         return this.invokeService(serviceName, requestJson);
     }
     

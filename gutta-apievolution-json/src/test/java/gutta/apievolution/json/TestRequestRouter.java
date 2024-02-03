@@ -14,11 +14,11 @@ public class TestRequestRouter implements RequestRouter {
     }
     
     public void registerProviderService(ProviderOperationProxy<?, ?> operationProxy) {
-        this.providerOperationProxyMap.put(operationProxy.getServiceName(), operationProxy);
+        this.providerOperationProxyMap.put(operationProxy.getOperationName(), operationProxy);
     }
 
     @Override
-    public byte[] invokeService(String consumerApiId, int referencedRevision, String operationName, byte[] requestJson) {
+    public byte[] invokeOperation(String consumerApiId, int referencedRevision, String operationName, byte[] requestJson) {
         ProviderOperationProxy<?, ?> operationProxy = this.providerOperationProxyMap.get(operationName);
         return operationProxy.invokeOperation(consumerApiId, this.apiName, referencedRevision, requestJson);
     }

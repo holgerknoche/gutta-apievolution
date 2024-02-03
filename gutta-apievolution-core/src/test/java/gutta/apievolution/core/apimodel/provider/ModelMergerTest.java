@@ -454,12 +454,12 @@ class ModelMergerTest {
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
         String expected = "api test [] {\n" + " abstract record NewSuperType(NewSuperType) {\n" +
-                "  optin anotherField(anotherField):string\n" + " }\n" +
+                "  mandatory anotherField(anotherField):string\n" + " }\n" +
                 " record SubTypeA(SubTypeA) extends NewSuperType, SuperType {\n" +
                 "  inherited optin anotherField(anotherField):string\n" +
                 "  inherited optin inheritedField(inheritedField):string\n" +
                 "  optin addedField(addedField):string\n" + " }\n" + " abstract record SuperType(SuperType) {\n" +
-                "  optin inheritedField(inheritedField):string\n" + " }\n" + "}\n";
+                "  mandatory inheritedField(inheritedField):string\n" + " }\n" + "}\n";
 
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
@@ -554,8 +554,7 @@ class ModelMergerTest {
         revision2.finalizeDefinition();
 
         // Revision 3: Add an exception to method 3, exists mainly to detect errors with
-        // respect to indirect
-        // predecessors (which do not exist in revision history of length 2)
+        // respect to indirect predecessors (which do not exist in revision history of length 2)
         ProviderApiDefinition revision3 = new ProviderApiDefinition("test", noAnnotations(), 2, revision2);
 
         ProviderRecordType recordTypeV3 = revision3.newRecordType("RecordType", noInternalName(), 0, recordTypeV2);
@@ -582,7 +581,7 @@ class ModelMergerTest {
         ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
 
         String expected = "api test [] {\n" + " record RecordType(RecordType) {\n" + " }\n" + " exception E2(E2) {\n" +
-                "  optin e2(e2):string\n" + " }\n" + " exception E1(E1) {\n" + "  optin e1(e1):string\n" + " }\n" +
+                "  mandatory e2(e2):string\n" + " }\n" + " exception E1(E1) {\n" + "  mandatory e1(e1):string\n" + " }\n" +
                 " operation method1(method1) (RecordType@revision 0) : " +
                 "RecordType@revision 0 throws [E1@revision 0, E2@revision 0]\n" +
                 " operation method3(method3) (RecordType@revision 0) : RecordType@revision 0 throws [E2@revision 0]\n" +
@@ -630,6 +629,92 @@ class ModelMergerTest {
         
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
+    }
+    
+    /**
+     * An unchanged operation is identified as such and results in a single operation in the merged model.
+     */
+    @Test
+    void noTypeChangeOfOperation() {
+        // Revision 1
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType parameterTypeV1 = revision1.newRecordType("ParameterType", 0);
+        ProviderRecordType returnTypeV1 = revision1.newRecordType("ResultType", 1);
+        
+        ProviderOperation operationV1 = revision1.newOperation("operation", returnTypeV1, parameterTypeV1);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        ProviderApiDefinition revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
+        
+        ProviderRecordType parameterTypeV2 = revision2.newRecordType("ParameterType", noInternalName(), 0, parameterTypeV1);
+        ProviderRecordType returnTypeV2 = revision2.newRecordType("ResultType", noInternalName(), 1, returnTypeV1);
+        
+        revision2.newOperation("operation", noInternalName(), returnTypeV2, parameterTypeV2, operationV1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        String expected = "api test [] {\n" + 
+                " record ParameterType(ParameterType) {\n" + 
+                " }\n" + 
+                " record ResultType(ResultType) {\n" + 
+                " }\n" + 
+                " operation operation(operation) (ParameterType@revision 0) : ResultType@revision 0\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
+     * Type change of an operation results in two different operations in the merged model.
+     */
+    @Test
+    void typeChangeOfOperation() {
+        // Revision 1
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType recordTypeV1 = revision1.newRecordType("RecordType1", 0);
+        recordTypeV1.newField("field1", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        revision1.newOperation("operation", recordTypeV1, recordTypeV1);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 1);
+        
+        ProviderRecordType recordTypeV2 = revision2.newRecordType("RecordType2", 1);
+        recordTypeV2.newField("field2", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        revision2.newOperation("operation", "operation2", recordTypeV2, recordTypeV2, noPredecessor());
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        String expected = "api test [] {\n" + 
+                " record RecordType2(RecordType2) {\n" + 
+                "  mandatory field2(field2):int32\n" + 
+                " }\n" + 
+                " record RecordType1(RecordType1) {\n" + 
+                "  mandatory field1(field1):int32\n" + 
+                " }\n" + 
+                " operation operation(operation2) (RecordType2@revision 0) : RecordType2@revision 0\n" + 
+                " operation operation(operation) (RecordType1@revision 0) : RecordType1@revision 0\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+        
     }
 
 }

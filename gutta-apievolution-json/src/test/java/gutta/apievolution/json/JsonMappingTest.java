@@ -32,7 +32,7 @@ class JsonMappingTest {
         parameter.setTestList(Arrays.asList(ConsumerEnum.VALUE_A, ConsumerEnum.VALUE_B));
 
         TestOperationConsumerProxy providerProxy = new TestOperationConsumerProxy(requestRouter);
-        ConsumerResult result = providerProxy.invokeProviderMethod(parameter);
+        ConsumerResult result = providerProxy.invokeOperation(parameter);
 
         assertEquals("test valueX", result.getResultField());
         assertEquals(ConsumerEnum.VALUE_B, result.getResultEnum());

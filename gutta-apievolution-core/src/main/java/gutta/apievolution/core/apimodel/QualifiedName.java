@@ -1,12 +1,13 @@
 package gutta.apievolution.core.apimodel;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Qualified names consist of (potentially) multiple parts. Syntactically, these
- * parts are separated by dots, for instance, "a.b.c".
+ * Qualified names consist of (potentially) multiple parts. Syntactically, these parts are separated by dots, for instance, "a.b.c".
  */
 public class QualifiedName {
 
@@ -45,18 +46,12 @@ public class QualifiedName {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        } else if (other instanceof QualifiedName) {
-            return this.stateEquals((QualifiedName) other);
-        } else {
-            return false;
-        }
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::stateEquals);
     }
 
-    private boolean stateEquals(QualifiedName other) {
-        return (this.parts.equals(other.parts));
+    private boolean stateEquals(QualifiedName that) {
+        return (this.parts.equals(that.parts));
     }
 
     @Override

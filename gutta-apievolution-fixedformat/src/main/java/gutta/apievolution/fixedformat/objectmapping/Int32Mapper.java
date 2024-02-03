@@ -1,6 +1,6 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-class Int32Mapper implements TypeMapper<Integer> {
+class Int32Mapper extends TypeMapper<Integer> {
 
     @Override
     public boolean isCacheable() {
@@ -8,18 +8,23 @@ class Int32Mapper implements TypeMapper<Integer> {
     }
     
     @Override
-    public int getMaxLength() {
+    public int getDataLength() {
         return 4;
     }
-
+    
     @Override
-    public Integer readValue(FixedFormatData data) {
+    public Integer readRegularValue(FixedFormatData data) {
         return data.readInt32();
     }
     
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
-        int intValue = (value == null) ? 0 : (Integer) value;
+    public Integer handleUnrepresentableValue() {
+        throw new IllegalStateException("The basic type int32 does not support unrepresentable values.");
+    }
+    
+    @Override
+    public void writeRegularValue(Object value, FixedFormatData data) {
+        int intValue = (Integer) value;
         data.writeInt32(intValue);
     }
 

@@ -1,6 +1,6 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-class StringMapper implements TypeMapper<String> {
+class StringMapper extends TypeMapper<String> {
 
     private final int maxLength;
     
@@ -15,17 +15,22 @@ class StringMapper implements TypeMapper<String> {
     }
     
     @Override
-    public int getMaxLength() {
+    protected int getDataLength() {
         return this.maxLength;
     }
 
     @Override
-    public String readValue(FixedFormatData data) {
+    protected String readRegularValue(FixedFormatData data) {
         return data.readBoundedString(this.maxLength);
     }
     
     @Override
-    public void writeValue(Object value, FixedFormatData data) {
+    public String handleUnrepresentableValue() {
+        throw new IllegalStateException("String types cannot have unrepresentable values.");  
+    }
+    
+    @Override
+    protected void writeRegularValue(Object value, FixedFormatData data) {
         data.writeBoundedString((String) value, this.maxLength);
     }
 

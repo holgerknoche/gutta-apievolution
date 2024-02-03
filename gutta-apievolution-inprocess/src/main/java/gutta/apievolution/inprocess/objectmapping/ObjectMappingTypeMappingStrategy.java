@@ -4,6 +4,7 @@ import gutta.apievolution.core.apimodel.Field;
 import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.inprocess.AbstractRecordTypeValueMapper;
 import gutta.apievolution.inprocess.AbstractTypeMappingStrategy;
 import gutta.apievolution.inprocess.AbstractValueMapperCreator;
 import gutta.apievolution.inprocess.FieldMapper;
@@ -33,7 +34,14 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
         }
 
         @Override
-        protected ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
+        protected ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers) {
+            return new PolymorphicRecordTypeValueMapper(representingType, subtypeMappers);
+        }
+        
+        @Override
+        protected ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass,
+                Map<Method, FieldMapper> fieldMappers) {
+            
             return new RecordTypeValueMapper(type, representingClass, fieldMappers);
         }
 
@@ -57,7 +65,7 @@ class ObjectMappingTypeMappingStrategy extends AbstractTypeMappingStrategy {
 
         @Override
         protected Class<?> determineAppropriateTypeFor(RecordType<?, ?, ?> type, Class<?> representingClass) {
-            if (type.isConcrete()) {            
+            if (type.isConcrete()) {
                 return ImplementorSupport.determineMandatoryImplementorOf(representingClass);
             } else {
                 return representingClass;

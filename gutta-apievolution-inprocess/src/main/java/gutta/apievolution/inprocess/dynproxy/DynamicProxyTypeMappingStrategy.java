@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.resolution.DefinitionResolution;
+import gutta.apievolution.inprocess.AbstractRecordTypeValueMapper;
 import gutta.apievolution.inprocess.AbstractTypeMappingStrategy;
 import gutta.apievolution.inprocess.AbstractValueMapperCreator;
 import gutta.apievolution.inprocess.FieldMapper;
@@ -53,9 +54,16 @@ class DynamicProxyTypeMappingStrategy extends AbstractTypeMappingStrategy {
                 throw new InvalidApiException("Accessor '" + accessor + "' has an unexpected return type (expected '" + expectedClass + "'.");
             }
         }
-
+        
         @Override
-        protected ValueMapper createRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass, Map<Method, FieldMapper> fieldMappers) {
+        protected ValueMapper createPolymorphicRecordValueMapper(Class<?> representingType, Map<Class<?>, AbstractRecordTypeValueMapper> subtypeMappers) {
+            return new PolymorphicRecordTypeValueMapper(representingType, subtypeMappers);
+        }
+        
+        @Override
+        protected ValueMapper createNonPolymorphicRecordValueMapper(RecordType<?, ?, ?> type, Class<?> representingClass,
+                Map<Method, FieldMapper> fieldMappers) {
+            
             return new RecordTypeValueMapper(representingClass, fieldMappers);
         }
 

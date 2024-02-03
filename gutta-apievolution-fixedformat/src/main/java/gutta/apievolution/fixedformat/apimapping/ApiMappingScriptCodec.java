@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,33 +88,48 @@ public class ApiMappingScriptCodec {
         }
         offsets[numberOfEntries] = encodedScript.length;
         
-        List<TypeEntry> typeEntries = new ArrayList<>(numberOfEntries);
+        TypeEntry[] typeEntries = new TypeEntry[numberOfEntries];
         for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
-            TypeEntry typeEntry = this.readTypeEntry(entryIndex, scriptBuffer, offsets[entryIndex + 1]);
-            typeEntries.add(typeEntry);
+            this.getOrReadTypeEntry(entryIndex, offsets, typeEntries, scriptBuffer);            
         }
        
         // TODO
-        return new ApiMappingScript(typeEntries, null);
+        return new ApiMappingScript(Arrays.asList(typeEntries), null);
+    }
+        
+    private TypeEntry getOrReadTypeEntry(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        TypeEntry candidate = typeEntries[entryIndex];
+        if (candidate != null) {
+            return candidate;
+        }
+        
+        candidate = readTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
+        typeEntries[entryIndex] = candidate;
+        
+        return candidate;
     }
     
-    private TypeEntry readTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
+    private TypeEntry readTypeEntry(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        // Set the position of the buffer to the offset of the entry
+        int entryOffset = entryOffsets[entryIndex];
+        buffer.position(entryOffset);
+        
+        // Dispatch based on the entry type
         byte entryType = buffer.get();
         
         switch (entryType) {
         case ENTRY_TYPE_ENUM:
-            return this.readEnumTypeEntry(entryIndex, buffer, endOffset);
+            return this.readEnumTypeEntry(entryIndex, buffer);
             
         case ENTRY_TYPE_RECORD:
-            return this.readRecordTypeEntry(entryIndex, buffer, endOffset);
+            return this.readRecordTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
             
         default:
-            throw new IllegalStateException("Unknown entry type " + entryType + " at offset " + buffer.position() + 
-                    ".");
+            throw new IllegalStateException("Unknown entry type " + entryType + " at offset " + buffer.position() + ".");
         }
     }
     
-    private EnumTypeEntry readEnumTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
+    private EnumTypeEntry readEnumTypeEntry(int entryIndex, ByteBuffer buffer) {
         int typeId = buffer.getInt();
         int numberOfEntries = buffer.getInt();
         int[] indexMap = new int[numberOfEntries];
@@ -126,22 +142,24 @@ public class ApiMappingScriptCodec {
         return new EnumTypeEntry(entryIndex, typeId, indexMap);
     }
     
-    private RecordTypeEntry readRecordTypeEntry(int entryIndex, ByteBuffer buffer, int endOffset) {
-        int typeId = buffer.getInt();        
+    private RecordTypeEntry readRecordTypeEntry(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int typeId = buffer.getInt();
+        int numberOfFields = buffer.getInt();
+        int dataLength = buffer.getInt();
         List<FieldMapping> fieldMappings = new ArrayList<>();
         
-        while (buffer.position() < endOffset) {
+        for (int fieldIndex = 0; fieldIndex < numberOfFields; fieldIndex++) {
             int offset = buffer.getInt(); 
-            ApiMappingOperation operation = this.readOperation(buffer);
+            ApiMappingOperation operation = this.readOperation(entryOffsets, typeEntries, buffer);
 
             FieldMapping fieldMapping = new FieldMapping(offset, operation);
             fieldMappings.add(fieldMapping);
         }
         
-        return new RecordTypeEntry(entryIndex, typeId, fieldMappings);
+        return new RecordTypeEntry(entryIndex, typeId, dataLength, fieldMappings);
     }
     
-    private ApiMappingOperation readOperation(ByteBuffer buffer) {
+    private ApiMappingOperation readOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         byte opcode = buffer.get();
         
         switch (opcode) {
@@ -152,13 +170,13 @@ public class ApiMappingScriptCodec {
             return this.readSkipOperation(buffer);
             
         case OPCODE_MAP_ENUM:
-            return this.readMapEnumOperation(buffer);
+            return this.readMapEnumOperation(entryOffsets, typeEntries, buffer);
             
         case OPCODE_MAP_RECORD:
-            return this.readMapRecordOperation(buffer);
+            return this.readMapRecordOperation(entryOffsets, typeEntries, buffer);
             
         case OPCODE_MAP_LIST:
-            return this.readMapListOperation(buffer);
+            return this.readMapListOperation(entryOffsets, typeEntries, buffer);
         
         default:
             throw new IllegalStateException("Unknown opcode " + opcode + " at offset " + buffer.position() + ".");
@@ -175,21 +193,23 @@ public class ApiMappingScriptCodec {
         return new SkipOperation(bytesToSkip);
     }
     
-    private ApiMappingOperation readMapEnumOperation(ByteBuffer buffer) {
+    private ApiMappingOperation readMapEnumOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
-        return new EnumMappingOperation(entryIndex);
+        EnumTypeEntry typeEntry = (EnumTypeEntry) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);                
+        return new EnumMappingOperation(typeEntry);
     }
     
-    private ApiMappingOperation readMapRecordOperation(ByteBuffer buffer) {
+    private ApiMappingOperation readMapRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
-        return new RecordMappingOperation(entryIndex);
+        RecordTypeEntry typeEntry = (RecordTypeEntry) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);                
+        return new RecordMappingOperation(typeEntry);
     }
     
-    private ApiMappingOperation readMapListOperation(ByteBuffer buffer) {
+    private ApiMappingOperation readMapListOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int maxElements = buffer.getInt();
         int sourceElementSize = buffer.getInt();
         int targetElementSize = buffer.getInt();
-        ApiMappingOperation elementMappingOperation = this.readOperation(buffer);
+        ApiMappingOperation elementMappingOperation = this.readOperation(entryOffsets, typeEntries, buffer);
         
         return new ListMappingOperation(maxElements, sourceElementSize, targetElementSize, elementMappingOperation);
     }

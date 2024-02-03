@@ -7,8 +7,8 @@ class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
     
     private final List<FieldMapping> fieldMappings;
 
-    public RecordTypeEntry(int entryIndex, int typeId, List<FieldMapping> fieldMappings) {
-        super(entryIndex, typeId);
+    public RecordTypeEntry(int entryIndex, int typeId, int dataLength, List<FieldMapping> fieldMappings) {
+        super(entryIndex, typeId, dataLength);
         
         this.fieldMappings = fieldMappings;
     }
@@ -20,7 +20,7 @@ class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
     
     @Override
     ApiMappingOperation createMappingOperation() {
-        return new RecordMappingOperation(this.getEntryIndex());
+        return new RecordMappingOperation(this);
     }
     
     @Override

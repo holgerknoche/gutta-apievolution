@@ -1,15 +1,24 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-abstract class UserDefinedTypeMappingOperation implements ApiMappingOperation {
+abstract class UserDefinedTypeMappingOperation<T extends TypeEntry> extends NullableTypeMappingOperation {
     
-    private final int entryIndex;
+    private final T typeEntry;
     
-    protected UserDefinedTypeMappingOperation(int entryIndex) {
-        this.entryIndex = entryIndex;
+    protected UserDefinedTypeMappingOperation(T typeEntry) {
+        this.typeEntry = typeEntry;
+    }
+   
+    public int getEntryIndex() {
+        return this.typeEntry.getEntryIndex();
     }
     
-    public int getEntryIndex() {
-        return this.entryIndex;
+    protected T getTypeEntry() {
+        return this.typeEntry;
+    }
+    
+    @Override
+    protected int getTargetDataLength() {
+        return this.getTypeEntry().getDataSize();
     }
 
 }

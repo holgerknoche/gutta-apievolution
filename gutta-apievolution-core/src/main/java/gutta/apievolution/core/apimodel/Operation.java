@@ -64,7 +64,7 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
     }
 
     /**
-     * Returns the service that owns this service operation.
+     * Returns the API definition that owns this service operation.
      *
      * @return see above
      */
