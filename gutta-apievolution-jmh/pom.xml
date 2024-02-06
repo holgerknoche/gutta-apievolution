@@ -61,6 +61,10 @@
 			<groupId>gutta.apievolution</groupId>
 			<artifactId>gutta-apievolution-fixedformat</artifactId>			
 		</dependency>
+		<dependency>
+			<groupId>gutta.apievolution</groupId>
+			<artifactId>gutta-apievolution-customerexample</artifactId>			
+		</dependency>
 		
 		<!-- JMH dependencies -->
 		<dependency>
