@@ -6,7 +6,7 @@ import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 
 import java.nio.charset.Charset;
 
-class UpsertOperationConsumerProxyV1 extends ConsumerOperationProxy<Customer, Customer> {
+public class UpsertOperationConsumerProxyV1 extends ConsumerOperationProxy<Customer, Customer> {
 
     public UpsertOperationConsumerProxyV1(RequestRouter router, FixedFormatMapper mapper, Charset charset) {
         super("upsert", Customer.class, Customer.class, router, mapper, charset);
