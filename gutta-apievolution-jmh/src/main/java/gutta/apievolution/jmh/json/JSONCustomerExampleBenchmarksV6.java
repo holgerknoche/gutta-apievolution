@@ -32,6 +32,7 @@ public class JSONCustomerExampleBenchmarksV6 extends JSONCustomerExampleBenchmar
         Customer customer = new Customer();
         customer.setFirstName("Test");
         customer.setLastName("Test");
+        customer.setDateOfBirth("2000-01-01");
         customer.setGender(Gender.THIRD);
         customer.setPrimaryAddress(address);
 
