@@ -92,7 +92,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
         } catch (IOException e) {
-            throw new InvocationFailedException(e);
+            throw new InvocationFailedException("Error while processing JSON on the consumer side.", e);
         }
     }
 

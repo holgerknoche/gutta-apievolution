@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 class ListMappingOperation extends NullableTypeMappingOperation {
     
+    private static final int ELEMENT_COUNT_SIZE = 4;
+    
     final int maxElements;
     
     final int sourceElementSize;
@@ -19,7 +21,7 @@ class ListMappingOperation extends NullableTypeMappingOperation {
         this.maxElements = maxElements;
         this.sourceElementSize = sourceElementSize;
         this.targetElementSize = targetElementSize;
-        this.targetDataLength = (maxElements * targetElementSize);
+        this.targetDataLength = (maxElements * targetElementSize) + ELEMENT_COUNT_SIZE;
         this.elementMappingOperation = elementMappingOperation;
     }
     

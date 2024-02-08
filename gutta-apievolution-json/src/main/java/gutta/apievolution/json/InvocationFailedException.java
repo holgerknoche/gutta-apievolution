@@ -10,5 +10,9 @@ public class InvocationFailedException extends RuntimeException {
     InvocationFailedException(Throwable cause) {
         super(cause);
     }
+    
+    InvocationFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

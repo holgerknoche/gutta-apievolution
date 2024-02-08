@@ -1,0 +1,25 @@
+api customer.provider {
+
+	record Customer {
+		string(20) firstName
+		string(20) lastName
+		int32 gender
+		Address address
+	}
+	
+	record Address {
+		string(20) street
+		int32 number
+		int32 postalCode
+		string(20) city
+	}
+	
+	record FormattedAddress {
+		string(40) address
+	}
+	
+	operation upsert(Customer): Customer
+	
+	operation formatAddress(Address): FormattedAddress
+
+}

@@ -124,6 +124,11 @@
 				<artifactId>gutta-apievolution-inprocess</artifactId>
 				<version>${project.version}</version>			
 			</dependency>
+			<dependency>
+				<groupId>gutta.apievolution</groupId>
+				<artifactId>gutta-apievolution-customerexample</artifactId>
+				<version>${project.version}</version>			
+			</dependency>
 
             <!-- Third-party dependencies -->
             <dependency>
@@ -168,6 +173,7 @@
         <module>gutta-apievolution-fixedformat</module>
         <module>gutta-apievolution-jmh</module>
         <module>gutta-apievolution-inprocess</module>
+        <module>gutta-apievolution-customerexample</module>
     </modules>
 
 </project>
