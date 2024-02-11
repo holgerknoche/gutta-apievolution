@@ -59,7 +59,7 @@ public abstract class ConsumerOperationProxy<P, R> {
         ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
         
-        this.mapper.writeValue(parameter, parameterData);
+        this.mapper.writeValue(parameter, this.parameterType, parameterData);
         parameterBuffer.flip();
         
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));

@@ -77,7 +77,7 @@ public abstract class ProviderOperationProxy<P, R> {
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
         FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
                 
-        this.mapper.writeValue(result, resultData);
+        this.mapper.writeValue(result, this.resultType, resultData);
         resultBuffer.flip();
         this.providerToConsumerScript.mapResultFor(this.getOperationName(), resultBuffer, consumerResultBuffer);
 

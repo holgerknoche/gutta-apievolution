@@ -210,14 +210,7 @@ public class FixedFormatMapper {
         return (T) typeMapper.readValue(data);
     }
     
-    /**
-     * Writes an object to the given data object, using the type mapper associated
-     * with the runtime type of the object.
-     * 
-     * @param value The value to write
-     * @param data The data object to write to
-     */
-    public void writeValue(Object value, FixedFormatData data) {
+    void writeValue(Object value, FixedFormatData data) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(value.getClass());
         typeMapper.writeValue(value, data);
     }
