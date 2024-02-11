@@ -15,11 +15,14 @@ import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.consumer.ConsumerResult;
+import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithPolyField;
+import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeA;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeB;
 import gutta.apievolution.fixedformat.consumer.ConsumerSuperType;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
+import gutta.apievolution.fixedformat.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderSuperType;
 import org.junit.jupiter.api.Test;
 
@@ -91,6 +94,34 @@ class FixedFormatMappingTest {
         assertNotSame(result, parameter);
         assertEquals(result, parameter);
     }
+    
+    /**
+     * Test case: The invocation of a method with parameter and result structures that contain polymorphic values works as expected.
+     */
+    @Test
+    void indirectPolymorphicTypeConversion() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+        
+        PolyOperation2ProviderProxy providerProxy = new PolyOperation2ProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        PolyOperation2ConsumerProxy consumerProxy = new PolyOperation2ConsumerProxy(requestRouter, mapper);
+                
+        ConsumerSubTypeA subType = new ConsumerSubTypeA();
+        subType.setFieldA("Test");
+        
+        ConsumerStructureWithPolyField parameter = new ConsumerStructureWithPolyField();
+        parameter.setField(subType);
+        
+        ConsumerStructureWithPolyField result = consumerProxy.invoke(parameter);
+        
+        assertNotSame(result, parameter);
+        assertEquals(result, parameter);
+    }
         
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
@@ -135,6 +166,27 @@ class FixedFormatMappingTest {
         
         @Override
         protected ProviderSuperType invokeOperation(ProviderSuperType parameter) {
+            return parameter;
+        }
+        
+    }
+    
+    private static class PolyOperation2ConsumerProxy extends ConsumerOperationProxy<ConsumerStructureWithPolyField, ConsumerStructureWithPolyField> {
+
+        public PolyOperation2ConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("polyOperation2", ConsumerStructureWithPolyField.class, ConsumerStructureWithPolyField.class, router, mapper, CHARSET);
+        }
+        
+    }
+    
+    private static class PolyOperation2ProviderProxy extends ProviderOperationProxy<ProviderStructureWithPolyField, ProviderStructureWithPolyField> {
+        
+        public PolyOperation2ProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("polyOperation2", ProviderStructureWithPolyField.class, ProviderStructureWithPolyField.class, consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+        
+        @Override
+        protected ProviderStructureWithPolyField invokeOperation(ProviderStructureWithPolyField parameter) {
             return parameter;
         }
         
