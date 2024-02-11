@@ -78,7 +78,7 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     private static <T> ByteBuffer createData(Class<T> type, Supplier<T> valueSupplier) {
     	ByteBuffer buffer = ByteBuffer.allocate(MAPPER.determineMaxSizeOf(type));
     	FixedFormatData data = FixedFormatData.of(buffer, CHARSET);
-    	MAPPER.writeValue(valueSupplier.get(), data);
+    	MAPPER.writeValue(valueSupplier.get(), type, data);
     	
     	buffer.flip();
     	
