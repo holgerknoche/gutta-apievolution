@@ -3,13 +3,18 @@ package gutta.apievolution.json;
 import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
+import gutta.apievolution.json.consumer.ConsumerSubTypeB;
+import gutta.apievolution.json.consumer.ConsumerSuperType;
+import gutta.apievolution.json.consumer.PolyOperationConsumerProxy;
 import gutta.apievolution.json.consumer.TestOperationConsumerProxy;
+import gutta.apievolution.json.provider.PolyOperationProviderProxy;
 import gutta.apievolution.json.provider.TestOperationProviderProxy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 /**
  * Test case for the JSON mapping functionality.
@@ -37,6 +42,24 @@ class JsonMappingTest {
         assertEquals("test valueX", result.getResultField());
         assertEquals(ConsumerEnum.VALUE_B, result.getResultEnum());
         assertEquals(Arrays.asList(ConsumerEnum.VALUE_B, ConsumerEnum.VALUE_A), result.getResultList());
+    }
+    
+    /**
+     * Test case: The invocation of a method with polymorphic parameter and result works as expected.
+     */
+    @Test
+    void immediatePolymorphicTypes() {
+        PolyOperationProviderProxy providerProxy = new PolyOperationProviderProxy();
+        RequestRouter router = new SimpleJsonRequestRouter(providerProxy);
+        
+        ConsumerSubTypeB parameter = new ConsumerSubTypeB();
+        parameter.setFieldB(1234);
+        
+        PolyOperationConsumerProxy consumerProxy = new PolyOperationConsumerProxy(router);
+        ConsumerSuperType result = consumerProxy.invokeOperation(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter, result);
     }
 
 }

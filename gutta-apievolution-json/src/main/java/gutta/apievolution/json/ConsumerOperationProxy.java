@@ -77,8 +77,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         try {
             JsonNode parameterNode = objectMapper.valueToTree(parameterObject);
 
-            String actualParameterTypeInternalName = determineSpecificTypeId(parameterNode).orElse(this.getParameterTypeName());
-            Type parameterType = this.resolveTypeByInternalName(actualParameterTypeInternalName);
+            Type parameterType = this.resolveTypeByInternalName(this.getParameterTypeName());
             parameterNode = (ObjectNode) this.rewriteInternalToPublic(parameterType, this::resolveTypeByInternalName, parameterNode);
 
             byte[] requestJson = objectMapper.writeValueAsBytes(parameterNode);
@@ -86,8 +85,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             JsonNode responseNode = objectMapper.readTree(responseJson);
 
-            String actualResultTypePublicName = determineSpecificTypeId(responseNode).orElse(this.getResultTypeName());
-            Type resultType = this.resolveTypeByPublicName(actualResultTypePublicName);
+            Type resultType = this.resolveTypeByInternalName(this.getResultTypeName());
             responseNode = this.rewritePublicToConsumerInternal(resultType, this::resolveTypeByPublicName, responseNode, onUnrepresentableValue);
 
             return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);

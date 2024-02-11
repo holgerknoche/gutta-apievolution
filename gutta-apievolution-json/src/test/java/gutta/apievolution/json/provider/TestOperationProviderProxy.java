@@ -14,7 +14,7 @@ public class TestOperationProviderProxy
         super(OPERATION_NAME,
                 ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api",
                         "apis/provider-revision-2.api"),
-                new HashSet<>(Arrays.asList(0, 1)), "TestParameter", "TestResult", ProviderParameter.class);
+                new HashSet<>(Arrays.asList(0, 1)), "ProviderParameter", "ProviderResult", ProviderParameter.class);
     }
 
     @Override

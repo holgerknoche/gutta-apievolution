@@ -14,7 +14,7 @@ public class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerP
 
 	private static final String PARAMETER_TYPE_NAME = "ConsumerParameter";
 
-	private static final String RESULT_TYPE_NAME = "TestResult";
+	private static final String RESULT_TYPE_NAME = "ConsumerResult";
 
 	private static final String OPERATION_NAME = "testOperation";
 

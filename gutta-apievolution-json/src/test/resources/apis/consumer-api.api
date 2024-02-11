@@ -16,7 +16,26 @@ api test.customer {
         TestEnum resultEnum
         TestEnum* resultList
     }
+        
+    record StructureWithPolyField as ConsumerStructureWithPolyField {
+    	SuperType field
+    }
+    
+    record SuperType as ConsumerSuperType {
+    }
+    
+    record SubTypeA extends SuperType as ConsumerSubTypeA {
+    	string fieldA
+    }
+    
+    record SubTypeB extends SuperType as ConsumerSubTypeB {
+    	int32 fieldB
+    }
     
     operation testOperation(TestParameter): TestResult
+    
+    operation polyOperation(SuperType): SuperType
+    
+    operation polyOperation2(StructureWithPolyField): StructureWithPolyField
 
 }

@@ -5,13 +5,13 @@ api test.provider {
         B as VALUE_2
     }
 
-    record TestParameter {
+    record TestParameter as ProviderParameter {
         string testField replaces renamedField as fieldA
         TestEnum testEnum
         TestEnum* testList
     }
 
-    record TestResult {
+    record TestResult as ProviderResult {
         string resultField replaces renamedField as retField
         TestEnum resultEnum
         TestEnum* resultList
