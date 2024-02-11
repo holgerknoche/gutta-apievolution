@@ -65,7 +65,7 @@ class FixedFormatMapperTest {
         FixedFormatMapper mapper = new FixedFormatMapper();
 
         StringOnlyStructure structure = new StringOnlyStructure().value(value);
-        mapper.writeValue(structure, data);
+        mapper.writeValue(structure, StringOnlyStructure.class, data);
         buffer.flip();
         
         assertEquals(expectedBytes.length, buffer.limit());
@@ -174,7 +174,7 @@ class FixedFormatMapperTest {
         
         // Write the value
         FixedFormatMapper mapper = new FixedFormatMapper();
-        mapper.writeValue(structure, data);
+        mapper.writeValue(structure, ListOnlyStructure.class, data);
         buffer.flip();
 
         byte[] actualBytes = new byte[buffer.limit()];

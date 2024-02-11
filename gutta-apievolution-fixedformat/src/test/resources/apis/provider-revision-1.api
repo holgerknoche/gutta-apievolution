@@ -18,6 +18,25 @@ api test.provider {
         TestEnum[10] resultList
     }
     
+    record StructureWithPolyField as ProviderStructureWithPolyField {
+    	SuperType field
+    }
+    
+    record SuperType as ProviderSuperType {
+    }
+    
+    record SubTypeA extends SuperType as ProviderSubTypeA {
+    	string(10) fieldA
+    }
+    
+    record SubTypeB extends SuperType as ProviderSubTypeB {
+    	int32 fieldB
+    }
+    
     operation testOperation(TestParameter): TestResult
+    
+    operation polyOperation(SuperType): SuperType
+    
+    operation polyOperation2(StructureWithPolyField): StructureWithPolyField
 
 }
