@@ -37,7 +37,7 @@ public class TestMethod10ProviderProxy extends ProviderProxyTemplate<ProviderRes
     }
     
     public TestMethod10ProviderProxy(RevisionHistory revisionHistory, Set<Integer> supportedRevisions) {
-        super("testMethod10", revisionHistory, supportedRevisions, "Result10");
+        super("testMethod10", revisionHistory, supportedRevisions, "ProviderResult10");
     }
     
     @Override

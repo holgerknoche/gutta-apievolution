@@ -6,7 +6,7 @@ import gutta.apievolution.json.RequestRouter;
 public class TestMethodEmptyConsumerProxy extends ConsumerProxyTemplate<EmptyConsumerResult> {
 
     public TestMethodEmptyConsumerProxy(ConsumerApiDefinition apiDefinition, RequestRouter router) {
-        super(apiDefinition, "testMethodEmpty", "EmptyResult", EmptyConsumerResult.class, router);
+        super(apiDefinition, "testMethodEmpty", "EmptyConsumerResult", EmptyConsumerResult.class, router);
     }
 
 }
