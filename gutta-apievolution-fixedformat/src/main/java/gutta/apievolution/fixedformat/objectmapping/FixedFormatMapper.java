@@ -209,12 +209,7 @@ public class FixedFormatMapper {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return (T) typeMapper.readValue(data);
     }
-    
-    void writeValue(Object value, FixedFormatData data) {
-        TypeMapper<?> typeMapper = this.determineTypeMapperFor(value.getClass());
-        typeMapper.writeValue(value, data);
-    }
-    
+        
     /**
      * Writes an object to the given data object, using the type mapper of the
      * given formal type. The formal type needs to be the same type or a supertype of the 
