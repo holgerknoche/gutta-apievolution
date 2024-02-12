@@ -5,6 +5,7 @@ import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerEnum;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerParameter;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerResult;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerSubType;
+import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerSubTypeImpl;
 import gutta.apievolution.inprocess.consumer.dynproxy.ConsumerSuperType;
 import gutta.apievolution.inprocess.consumer.dynproxy.MappedConsumerException;
 import gutta.apievolution.inprocess.consumer.dynproxy.UnrepresentableConsumerSuperType;
@@ -103,6 +104,21 @@ class DynamicProxyMappingTest extends InProcessMappingTestTemplate<DynamicProxyA
         
         ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
         assertTrue(result instanceof UnrepresentableConsumerSuperType);
+    }
+    
+    /**
+     * Test case: Invocation of a method that consumes and returns a polymorphic type.
+     */
+    @Test
+    void invocationWithPolymorphicTypes() {
+        ConsumerSubType parameter = new ConsumerSubTypeImpl();
+        parameter.setInheritedField(1234);
+        parameter.setSubField(5678);
+
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        ConsumerSuperType result = consumerApi.polyOperation(parameter);
+        
+        assertEquals(parameter.getInheritedField(), result.getInheritedField());
     }
     
     private ConsumerApi loadAndResolveApi() {

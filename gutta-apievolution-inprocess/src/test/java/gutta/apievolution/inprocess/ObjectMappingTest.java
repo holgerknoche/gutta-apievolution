@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -102,6 +103,22 @@ class ObjectMappingTest extends InProcessMappingTestTemplate<ObjectMappingApiMap
         
         ConsumerSuperType result = consumerApi.operationWithUnrepresentableSubtype(new ConsumerParameter());
         assertFalse(result.isRepresentable());
+    }
+    
+    /**
+     * Test case: Invocation of a method that consumes and returns a polymorphic type.
+     */
+    @Test
+    void invocationWithPolymorphicTypes() {
+        ConsumerSubType parameter = new ConsumerSubType();
+        parameter.setInheritedField(1234);
+        parameter.setSubField(5678);
+
+        ConsumerApi consumerApi = this.loadAndResolveApi();
+        ConsumerSuperType result = consumerApi.polyOperation(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter.getInheritedField(), result.getInheritedField());
     }
 
     private ConsumerApi loadAndResolveApi() {

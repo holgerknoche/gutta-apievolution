@@ -53,5 +53,7 @@ api test.provider {
     operation operationWithRepresentableSubtype(TestParameter): SuperType
     
     operation operationWithUnrepresentableSubtype(TestParameter): SuperType
+    
+    operation polyOperation(SuperType) : SuperType
 
 }

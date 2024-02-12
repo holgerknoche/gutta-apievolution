@@ -60,5 +60,9 @@ public class ProviderApiV1 {
         
         return result;
     }
+    
+    public ProviderSuperType polyOperation(ProviderSuperType parameter) {
+        return parameter;
+    }
 
 }

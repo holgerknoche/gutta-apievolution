@@ -13,5 +13,7 @@ public interface ConsumerApi {
     ConsumerSuperType operationWithRepresentableSubtype(ConsumerParameter parameter);
     
     ConsumerSuperType operationWithUnrepresentableSubtype(ConsumerParameter parameter);
+    
+    ConsumerSuperType polyOperation(ConsumerSuperType parameter);
 
 }
