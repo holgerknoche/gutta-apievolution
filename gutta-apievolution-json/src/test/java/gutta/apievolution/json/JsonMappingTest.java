@@ -3,10 +3,14 @@ package gutta.apievolution.json;
 import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
+import gutta.apievolution.json.consumer.ConsumerStructureWithPolyField;
+import gutta.apievolution.json.consumer.ConsumerSubTypeA;
 import gutta.apievolution.json.consumer.ConsumerSubTypeB;
 import gutta.apievolution.json.consumer.ConsumerSuperType;
+import gutta.apievolution.json.consumer.PolyOperation2ConsumerProxy;
 import gutta.apievolution.json.consumer.PolyOperationConsumerProxy;
 import gutta.apievolution.json.consumer.TestOperationConsumerProxy;
+import gutta.apievolution.json.provider.PolyOperation2ProviderProxy;
 import gutta.apievolution.json.provider.PolyOperationProviderProxy;
 import gutta.apievolution.json.provider.TestOperationProviderProxy;
 import org.junit.jupiter.api.Test;
@@ -57,6 +61,27 @@ class JsonMappingTest {
         
         PolyOperationConsumerProxy consumerProxy = new PolyOperationConsumerProxy(router);
         ConsumerSuperType result = consumerProxy.invokeOperation(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter, result);
+    }
+
+    /**
+     * Test case: The invocation of a method with parameter and result structures that contain polymorphic values works as expected.
+     */
+    @Test
+    void containedPolymorphicTypes() {
+        PolyOperation2ProviderProxy providerProxy = new PolyOperation2ProviderProxy();
+        RequestRouter router = new SimpleJsonRequestRouter(providerProxy);
+        
+        ConsumerSubTypeA element = new ConsumerSubTypeA();
+        element.setFieldA("Test");
+        
+        ConsumerStructureWithPolyField parameter = new ConsumerStructureWithPolyField();
+        parameter.setField(element);
+        
+        PolyOperation2ConsumerProxy consumerProxy = new PolyOperation2ConsumerProxy(router);
+        ConsumerStructureWithPolyField result = consumerProxy.invokeOperation(parameter);
         
         assertNotSame(parameter, result);
         assertEquals(parameter, result);
