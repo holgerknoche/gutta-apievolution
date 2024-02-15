@@ -61,6 +61,11 @@ public class ApiMappingScript {
         operation.apply(0, source, target);
     }
     
+    /**
+     * Returns the type entries of this mapping script.
+     * 
+     * @return see above
+     */
     public List<TypeEntry> getTypeEntries() {
         return Collections.unmodifiableList(this.typeEntries);
     }
