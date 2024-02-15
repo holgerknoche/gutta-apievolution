@@ -29,5 +29,11 @@ abstract class TypeEntry {
     abstract ApiMappingOperation createMappingOperation();
     
     abstract <R> R accept(TypeEntryVisitor<R> visitor);
+    
+    protected boolean equalsInternal(TypeEntry that) {
+        return (this.entryIndex == that.entryIndex) &&
+               (this.typeId == that.typeId) &&
+               (this.dataSize == that.dataSize);
+    }
 
 }

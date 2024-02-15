@@ -1,5 +1,6 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
 import gutta.apievolution.fixedformat.objectmapping.Flags;
 
 import java.nio.ByteBuffer;
@@ -71,6 +72,21 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
         return Collections.unmodifiableCollection(this.idToRecordMapping.values());
     }
     
+    @Override
+    public int hashCode() {
+        return this.dataLength;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(PolymorphicRecordMappingOperation that) {
+        return (this.dataLength == that.dataLength) &&
+               this.idToRecordMapping.equals(that.idToRecordMapping);
+    }
+    
     static class PolymorphicRecordMapping {
         
         private final int sourceTypeId;
@@ -94,7 +110,23 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
         }
         
         public RecordTypeEntry getTypeEntry() {
-            return this.typeEntry;
+            return this.typeEntry;        
+        }
+        
+        @Override
+        public int hashCode() {
+            return (this.sourceTypeId + this.targetTypeId);
+        }
+        
+        @Override
+        public boolean equals(Object that) {
+            return EqualityUtil.equals(this, that, this::equalsInternal);
+        }
+        
+        private boolean equalsInternal(PolymorphicRecordMapping that) {
+            return (this.sourceTypeId == that.sourceTypeId) &&
+                   (this.targetTypeId == that.targetTypeId) &&
+                   this.typeEntry.equals(that.typeEntry);
         }
         
     }    

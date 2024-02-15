@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
 
 import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
@@ -32,6 +34,20 @@ class EnumMappingOperation extends UserDefinedTypeMappingOperation<EnumTypeEntry
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleEnumMappingOperation(this);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.getTypeEntry().hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(EnumMappingOperation that) {
+        return (this.getTypeEntry().equals(that.getTypeEntry()));
     }
     
     @Override

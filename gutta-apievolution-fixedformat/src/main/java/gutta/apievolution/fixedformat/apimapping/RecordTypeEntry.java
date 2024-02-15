@@ -1,9 +1,11 @@
 package gutta.apievolution.fixedformat.apimapping;
 
-import java.util.Iterator;
-import java.util.List;
+import gutta.apievolution.core.util.EqualityUtil;
 
-class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
+import java.util.List;
+import java.util.Objects;
+
+class RecordTypeEntry extends TypeEntry {
     
     private final List<FieldMapping> fieldMappings;
 
@@ -12,10 +14,9 @@ class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
         
         this.fieldMappings = fieldMappings;
     }
-    
-    @Override
-    public Iterator<FieldMapping> iterator() {
-        return this.fieldMappings.iterator();
+        
+    public List<FieldMapping> getFieldMappings() {
+        return this.fieldMappings;
     }
     
     @Override
@@ -26,6 +27,21 @@ class RecordTypeEntry extends TypeEntry implements Iterable<FieldMapping> {
     @Override
     <R> R accept(TypeEntryVisitor<R> visitor) {
         return visitor.handleRecordTypeEntry(this);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.fieldMappings.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(RecordTypeEntry that) {
+        return super.equalsInternal(that) &&
+               Objects.equals(this.fieldMappings, that.fieldMappings);
     }
     
 }
