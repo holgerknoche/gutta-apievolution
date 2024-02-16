@@ -120,6 +120,15 @@ public class ApiMappingScriptCodec {
 
         return candidate;
     }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends TypeEntry> T getOrReadTypeEntryEmbedded(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int currentOffset = buffer.position();
+        T entry = (T) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
+        buffer.position(currentOffset);
+        
+        return entry;
+    }
 
     private TypeEntry readTypeEntry(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         // Set the position of the buffer to the offset of the entry
@@ -207,13 +216,13 @@ public class ApiMappingScriptCodec {
 
     private ApiMappingOperation readMapEnumOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
-        EnumTypeEntry typeEntry = (EnumTypeEntry) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
+        EnumTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(entryIndex, entryOffsets, typeEntries, buffer);
         return new EnumMappingOperation(typeEntry);
     }
 
     private ApiMappingOperation readMapRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
-        RecordTypeEntry typeEntry = (RecordTypeEntry) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
+        RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(entryIndex, entryOffsets, typeEntries, buffer);
         return new RecordMappingOperation(typeEntry);
     }
 
