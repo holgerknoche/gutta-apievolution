@@ -12,17 +12,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ApiMappingScriptCodecTest {
     
     @Test
-    void scriptForNonPolymorphicRecordType() {
-        FieldMapping intFieldMapping = new FieldMapping(0, new CopyOperation(5)); 
+    void scriptForRecordWithElementaryOperations() {                
+        // Copy mapping operation
+        FieldMapping copyFieldMapping = new FieldMapping(0, new CopyOperation(1)); 
+        
+        // List mapping operation
+        ApiMappingOperation elementOperation = new CopyOperation(2);
+        FieldMapping listFieldMapping = new FieldMapping(1, new ListMappingOperation(5, 2, 2, elementOperation));
+        
+        // Enum mapping operation
+        EnumTypeEntry embeddedEnumTypeEntry = new EnumTypeEntry(1, 1, new int[] {4, 3, 2, 1});
+        FieldMapping enumFieldMapping = new FieldMapping(11, new EnumMappingOperation(embeddedEnumTypeEntry));
+        
+        // Skip operation
+        FieldMapping skipFieldMapping = new FieldMapping(16, new SkipOperation(4));
         
         List<FieldMapping> fieldMappings = asList(
-                intFieldMapping
+                copyFieldMapping,
+                listFieldMapping,
+                enumFieldMapping,
+                skipFieldMapping
         );
         
-        RecordTypeEntry typeEntry = new RecordTypeEntry(0, 0, 14, fieldMappings);
-        //OperationEntry operationEntry = new OperationEntry(0, "op", new RecordMappingOperation(typeEntry), new RecordMappingOperation(typeEntry));
+        RecordTypeEntry recordTypeEntry = new RecordTypeEntry(0, 0, 14, fieldMappings);
+        OperationEntry operationEntry = new OperationEntry(0, "op", new RecordMappingOperation(recordTypeEntry), new RecordMappingOperation(recordTypeEntry));
                 
-        ApiMappingScript script = new ApiMappingScript(singletonList(typeEntry), Collections.emptyList());
+        ApiMappingScript script = new ApiMappingScript(asList(recordTypeEntry, embeddedEnumTypeEntry), Collections.emptyList());
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] scriptBytes = codec.encodeScript(script);
