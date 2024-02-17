@@ -4,15 +4,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * This class provides operations to encode or decode an API mapping script to/from its binary representation.
  */
 public class ApiMappingScriptCodec {
+    
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private static final byte OPCODE_COPY = 0x01;
 
@@ -38,16 +41,19 @@ public class ApiMappingScriptCodec {
         try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(); DataOutputStream dataStream = new DataOutputStream(byteStream)) {
 
             // Write the actual script
-            int[] offsets = this.writeScriptToStream(script, dataStream);
+            ScriptOffsets offsets = this.writeScriptToStream(script, dataStream);
 
             // Fill the offset table at the beginning of the encoded script
             byte[] encodedScript = byteStream.toByteArray();
             ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
-
+            
             scriptBuffer.position(4);
-            for (int offset : offsets) {
+            for (int offset : offsets.typeEntryOffsets) {
                 scriptBuffer.putInt(offset);
             }
+            
+            // Fill the operations offset
+            scriptBuffer.putInt(offsets.operationsOffset);
 
             return encodedScript;
         } catch (IOException e) {
@@ -55,34 +61,51 @@ public class ApiMappingScriptCodec {
         }
     }
 
-    private int[] writeScriptToStream(ApiMappingScript script, DataOutputStream stream) throws IOException {
+    private ScriptOffsets writeScriptToStream(ApiMappingScript script, DataOutputStream stream) throws IOException {
         List<TypeEntry> typeEntries = script.getTypeEntries();
         int numberOfTypeEntries = typeEntries.size();
-        int[] offsets = new int[numberOfTypeEntries];
+        int[] typeEntryOffsets = new int[numberOfTypeEntries];
 
-        // Prepare the offset table, but zero the offsets for the time being. They are added after they are known.
+        // Prepare the offset table, but zero the offsets for the time being. They are filled later on.
         stream.writeInt(numberOfTypeEntries);
         for (int entry = 0; entry < numberOfTypeEntries; entry++) {
             stream.writeInt(0);
         }
+        
+        // Write a zero for the operations offset
+        stream.writeInt(0);
 
+        // Write the type entries
         TypeEntryWriter writer = new TypeEntryWriter(stream);
         for (TypeEntry typeEntry : typeEntries) {
-            offsets[typeEntry.getEntryIndex()] = stream.size();
+            typeEntryOffsets[typeEntry.getEntryIndex()] = stream.size();
             writer.writeEntry(typeEntry);
         }
 
-        List<OperationEntry> operationEntries = script.getOperationEntries();
+        // Write the operations entries
+        int operationsOffset = stream.size();
+        List<OperationEntry> operationEntries = script.getOperationEntries();        
         stream.writeInt(operationEntries.size());
         for (OperationEntry operationEntry : operationEntries) {
             this.writeOperationEntry(operationEntry, stream);
         }
 
-        return offsets;
+        return new ScriptOffsets(typeEntryOffsets, operationsOffset);
     }
 
     private void writeOperationEntry(OperationEntry entry, DataOutputStream stream) {
-        // TODO
+        try {
+            byte[] nameBytes = entry.getName().getBytes(CHARSET);
+        
+            stream.writeInt(nameBytes.length);
+            stream.write(nameBytes);
+            
+            OperationWriter operationWriter = new OperationWriter(stream);
+            operationWriter.writeOperation(entry.getParameterMappingOperation());
+            operationWriter.writeOperation(entry.getResultMappingOperation());            
+        } catch (IOException e) {
+            throw new ScriptEncodingException("Error writing operation entry '" + entry + "'.", e);
+        }
     }
 
     /**
@@ -94,19 +117,47 @@ public class ApiMappingScriptCodec {
     public ApiMappingScript decodeScript(byte[] encodedScript) {
         ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
 
+        // Read the type entry table
         int numberOfEntries = scriptBuffer.getInt();
-        int[] offsets = new int[numberOfEntries];
+        int[] typeEntryOffsets = new int[numberOfEntries];
         for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
-            offsets[entryIndex] = scriptBuffer.getInt();
+            typeEntryOffsets[entryIndex] = scriptBuffer.getInt();
         }
+        
+        // Read the operations offset
+        int operationsOffset = scriptBuffer.getInt();
 
+        // Read the type entries
         TypeEntry[] typeEntries = new TypeEntry[numberOfEntries];
         for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
-            this.getOrReadTypeEntry(entryIndex, offsets, typeEntries, scriptBuffer);
+            this.getOrReadTypeEntry(entryIndex, typeEntryOffsets, typeEntries, scriptBuffer);
         }
 
-        // TODO
-        return new ApiMappingScript(Arrays.asList(typeEntries), Collections.emptyList());
+        // Position the buffer at the correct offset, as the type entries may not be read
+        // in order due to nesting and the offset may therefore be off
+        scriptBuffer.position(operationsOffset);
+        
+        // Read the operation entries
+        int numberOfOperations = scriptBuffer.getInt();
+        List<OperationEntry> operationEntries = new ArrayList<>(numberOfOperations);
+        for (int operationIndex = 0; operationIndex < numberOfOperations; operationIndex++) {
+            OperationEntry operationEntry = this.readOperationEntry(operationIndex, typeEntryOffsets, typeEntries, scriptBuffer);
+            operationEntries.add(operationEntry);
+        }
+        
+        return new ApiMappingScript(Arrays.asList(typeEntries), operationEntries);
+    }
+    
+    private OperationEntry readOperationEntry(int operationIndex, int[] typeEntryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int nameLength = buffer.getInt();
+        byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        String operationName = new String(nameBytes, CHARSET);
+        
+        ApiMappingOperation parameterMappingOperation = this.readApiMappingOperation(typeEntryOffsets, typeEntries, buffer);
+        ApiMappingOperation resultMappingOperation = this.readApiMappingOperation(typeEntryOffsets, typeEntries, buffer);
+        
+        return new OperationEntry(operationIndex, operationName, parameterMappingOperation, resultMappingOperation);
     }
 
     private TypeEntry getOrReadTypeEntry(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
@@ -239,11 +290,11 @@ public class ApiMappingScriptCodec {
 
         private final DataOutputStream dataStream;
 
-        private final FieldWriter fieldWriter;
+        private final OperationWriter operationWriter;
 
         public TypeEntryWriter(DataOutputStream dataStream) {
             this.dataStream = dataStream;
-            this.fieldWriter = new FieldWriter(dataStream);
+            this.operationWriter = new OperationWriter(dataStream);
         }
 
         public void writeEntry(TypeEntry typeEntry) {
@@ -285,7 +336,7 @@ public class ApiMappingScriptCodec {
                 // Write the individual field mapping operations
                 outputStream.writeInt(fieldMappings.size());
                 for (FieldMapping fieldMapping : fieldMappings) {
-                    this.fieldWriter.writeFieldMapping(fieldMapping);
+                    this.writeFieldMapping(fieldMapping);
                 }
 
                 return null;
@@ -293,27 +344,27 @@ public class ApiMappingScriptCodec {
                 throw new ScriptEncodingException("Error writing record type entry to the script.", e);
             }
         }
-
-    }
-
-    private static class FieldWriter implements ApiMappingOperationVisitor<Void> {
-
-        private final DataOutputStream dataStream;
-
-        public FieldWriter(DataOutputStream dataStream) {
-            this.dataStream = dataStream;
-        }
-
-        public void writeFieldMapping(FieldMapping fieldMapping) {
+        
+        private void writeFieldMapping(FieldMapping fieldMapping) {
             try {
                 this.dataStream.writeInt(fieldMapping.getOffset());
-                this.writeOperation(fieldMapping.getMappingOperation());
+                this.operationWriter.writeOperation(fieldMapping.getMappingOperation());
             } catch (IOException e) {
                 throw new ScriptEncodingException("Error writing field mapping to the script.", e);
             }
         }
 
-        private void writeOperation(ApiMappingOperation operation) {
+    }
+
+    private static class OperationWriter implements ApiMappingOperationVisitor<Void> {
+
+        private final DataOutputStream dataStream;
+
+        public OperationWriter(DataOutputStream dataStream) {
+            this.dataStream = dataStream;
+        }
+
+        public void writeOperation(ApiMappingOperation operation) {
             operation.accept(this);
         }
 
@@ -393,6 +444,19 @@ public class ApiMappingScriptCodec {
 
     }
 
+    private static class ScriptOffsets {
+                
+        public final int[] typeEntryOffsets;
+        
+        public final int operationsOffset;
+
+        public ScriptOffsets(int[] typeEntryOffsets, int operationsOffset) {
+            this.typeEntryOffsets = typeEntryOffsets;
+            this.operationsOffset = operationsOffset;
+        }
+        
+    }
+    
     private static class ScriptEncodingException extends RuntimeException {
 
         private static final long serialVersionUID = 3095641281335853371L;
