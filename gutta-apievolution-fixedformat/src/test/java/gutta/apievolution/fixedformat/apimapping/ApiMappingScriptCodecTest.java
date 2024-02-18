@@ -56,7 +56,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x10, // Offset of the first type entry 
                 0x00, 0x00, 0x00, 0x4E, // Offset of the second type entry
                 0x00, 0x00, 0x00, 0x67, // Offset of the operation list
-                0x02, // Type flag for the first type entry (record type)
+                0x02, // Entry type for the first type entry (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x14, // Data size of the first type
                 0x00, 0x00, 0x00, 0x04, // Number of field mappings in the type
@@ -76,7 +76,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x10, // Offset of the fourth field
                 0x02, // Element operation type (skip)
                 0x00, 0x00, 0x00, 0x04, // Number of bytes to skip
-                0x01, // Type flag for the second type entry (enum type) 
+                0x01, // Entry type for the second type entry (enum type) 
                 0x00, 0x00, 0x00, 0x01, // Type id of the second type 
                 0x00, 0x00, 0x00, 0x04, // Number of member map entries 
                 0x00, 0x00, 0x00, 0x04, // Mapping for value 0
@@ -122,7 +122,50 @@ class ApiMappingScriptCodecTest {
         ApiMappingScript script = new ApiMappingScript(asList(typeAEntry, typeBEntry), singletonList(operationEntry));
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
+        byte[] expectedBytes = new byte[] {
+                // --- Type entries
+                0x00, 0x00, 0x00, 0x02, // Number of type entries
+                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry
+                0x00, 0x00, 0x00, 0x26, // Offset of the second type entry
+                0x00, 0x00, 0x00, 0x3C, // Offset of the operation list
+                0x02, // Entry type for the first type (record type)
+                0x00, 0x00, 0x00, 0x00, // Type id of the first type
+                0x00, 0x00, 0x00, 0x05, // Data size of the first type
+                0x00, 0x00, 0x00, 0x01, // Number of field mappings
+                0x00, 0x00, 0x00, 0x00, // Offset of the first field
+                0x01, // Operation type of the mapping (copy)
+                0x00, 0x00, 0x00, 0x05, // Number of bytes to copy
+                0x02, // Entry type for the second type (record type)
+                0x00, 0x00, 0x00, 0x01, // Type id of the second type
+                0x00, 0x00, 0x00, 0x0A, // Data size of the second type
+                0x00, 0x00, 0x00, 0x01, // Number of field mappings
+                0x00, 0x00, 0x00, 0x00, // Offset of the first field
+                0x01, // Operation type of the mapping (copy)
+                0x00, 0x00, 0x00, 0x0A, // Number of bytes to copy
+                // --- Operation entries
+                0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
+                0x6F, 0x70, // Name of the operation
+                0x06, // Operation type of the parameter mapping operation (poly record mapping)
+                0x00, 0x00, 0x00, 0x02, // Number of type mappings
+                0x00, 0x00, 0x00, 0x05, // Source type id of the first mapping
+                0x00, 0x00, 0x00, 0x00, // Target type id of the first mapping
+                0x00, 0x00, 0x00, 0x00, // Type index of the first mapping
+                0x00, 0x00, 0x00, 0x06, // Source type id of the second mapping
+                0x00, 0x00, 0x00, 0x01, // Target type id of the second mapping
+                0x00, 0x00, 0x00, 0x01, // Type index of the second mapping
+                0x06, // Operation type of the result mapping operation (poly record mapping)
+                0x00, 0x00, 0x00, 0x02, // Number of type mappings
+                0x00, 0x00, 0x00, 0x05, // Source type id of the first mapping
+                0x00, 0x00, 0x00, 0x00, // Target type id of the first mapping
+                0x00, 0x00, 0x00, 0x00, // Type index of the first mapping
+                0x00, 0x00, 0x00, 0x06, // Source type id of the second mapping
+                0x00, 0x00, 0x00, 0x01, // Target type id of the second mapping
+                0x00, 0x00, 0x00, 0x01 // Type index of the second mapping
+        };
+        
         byte[] scriptBytes = codec.encodeScript(script);
+        assertArrayEquals(expectedBytes, scriptBytes);
         
         ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
         assertEquals(script, decodedScript);
