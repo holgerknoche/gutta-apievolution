@@ -1,17 +1,19 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * This class represents an API mapping script for converting a fixed-format representation of an API into another.
  */
-public class ApiMappingScript implements Iterable<TypeEntry> {    
+public class ApiMappingScript {    
     
     private final List<TypeEntry> typeEntries;
     
@@ -59,13 +61,13 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
         operation.apply(0, source, target);
     }
     
-    @Override
-    public Iterator<TypeEntry> iterator() {
-        return this.typeEntries.iterator();
-    }
-
-    int size() {
-        return this.typeEntries.size();
+    /**
+     * Returns the type entries of this mapping script.
+     * 
+     * @return see above
+     */
+    public List<TypeEntry> getTypeEntries() {
+        return Collections.unmodifiableList(this.typeEntries);
     }
     
     /**
@@ -75,6 +77,21 @@ public class ApiMappingScript implements Iterable<TypeEntry> {
      */
     public List<OperationEntry> getOperationEntries() {
         return Collections.unmodifiableList(this.operationEntries);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.typeEntries, this.operationEntries);
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(ApiMappingScript that) {
+        return this.typeEntries.equals(that.typeEntries) &&
+               this.operationEntries.equals(that.operationEntries);
     }
 
 }

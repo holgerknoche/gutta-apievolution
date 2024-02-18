@@ -177,7 +177,12 @@ class ApiMappingScriptGeneratorTest {
     	
     	ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
     	
+    	String expectedScript = "type index 0:\n" + 
+    	        "record 0\n" + 
+    	        "operation testOperation param: map record 0 result: map record 0\n";
+    	
     	String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript);
+    	assertEquals(expectedScript, actualScript);
     }
     
     /**

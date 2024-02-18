@@ -1,10 +1,12 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
 
 class CopyOperation implements ApiMappingOperation {
     
-    final int length;
+    private final int length;
         
     public CopyOperation(int length) {
         this.length = length;
@@ -22,6 +24,10 @@ class CopyOperation implements ApiMappingOperation {
         target.put(copyBuffer);
     }
     
+    public int getLength() {
+        return this.length;
+    }
+    
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleCopyOperation(this);
@@ -30,6 +36,20 @@ class CopyOperation implements ApiMappingOperation {
     @Override
     public String toString() {
         return "copy " + this.length;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.length;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(CopyOperation that) {
+        return (this.length == that.length);
     }
     
 }

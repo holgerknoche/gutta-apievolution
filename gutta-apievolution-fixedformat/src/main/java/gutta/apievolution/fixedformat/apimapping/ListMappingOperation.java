@@ -1,6 +1,9 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 class ListMappingOperation extends NullableTypeMappingOperation {
     
@@ -56,6 +59,24 @@ class ListMappingOperation extends NullableTypeMappingOperation {
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
         return visitor.handleListMappingOperation(this);
+    }
+    
+    @Override
+    public int hashCode() {
+        return (this.maxElements + this.sourceElementSize + this.targetElementSize);
+    }    
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(ListMappingOperation that) {
+        return (this.maxElements == that.maxElements) &&
+               (this.sourceElementSize == that.sourceElementSize) &&
+               (this.targetElementSize == that.targetElementSize) &&
+               (this.targetDataLength == that.targetDataLength) &&
+               Objects.equals(this.elementMappingOperation, that.elementMappingOperation);
     }
     
     @Override

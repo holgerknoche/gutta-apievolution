@@ -1,11 +1,14 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
 import gutta.apievolution.fixedformat.objectmapping.Flags;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
 
@@ -15,9 +18,10 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
     
     private final int dataLength;
     
-    public PolymorphicRecordMappingOperation(Map<Integer, PolymorphicRecordMapping> idToRecordMapping) {
-        this.idToRecordMapping = idToRecordMapping;
-        this.dataLength = determineMaxDataLength(idToRecordMapping.values());
+    public PolymorphicRecordMappingOperation(Collection<PolymorphicRecordMapping> recordMappings) {
+        this.dataLength = determineMaxDataLength(recordMappings);
+        this.idToRecordMapping = recordMappings.stream()
+                .collect(Collectors.toMap(PolymorphicRecordMapping::getSourceTypeId, Function.identity()));
     }
     
     private static int determineMaxDataLength(Collection<PolymorphicRecordMapping> mappings) {
@@ -70,7 +74,25 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
     Collection<PolymorphicRecordMapping> getRecordMappings() {
         return Collections.unmodifiableCollection(this.idToRecordMapping.values());
     }
+        
+    @Override
+    public int hashCode() {
+        return this.dataLength;
+    }
     
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(PolymorphicRecordMappingOperation that) {
+        return (this.dataLength == that.dataLength) &&
+               this.idToRecordMapping.equals(that.idToRecordMapping);
+    }
+    
+    /**
+     * Mapping entry for a single record type.
+     */
     static class PolymorphicRecordMapping {
         
         private final int sourceTypeId;
@@ -94,7 +116,23 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
         }
         
         public RecordTypeEntry getTypeEntry() {
-            return this.typeEntry;
+            return this.typeEntry;        
+        }
+        
+        @Override
+        public int hashCode() {
+            return (this.sourceTypeId + this.targetTypeId);
+        }
+        
+        @Override
+        public boolean equals(Object that) {
+            return EqualityUtil.equals(this, that, this::equalsInternal);
+        }
+        
+        private boolean equalsInternal(PolymorphicRecordMapping that) {
+            return (this.sourceTypeId == that.sourceTypeId) &&
+                   (this.targetTypeId == that.targetTypeId) &&
+                   this.typeEntry.equals(that.typeEntry);
         }
         
     }    

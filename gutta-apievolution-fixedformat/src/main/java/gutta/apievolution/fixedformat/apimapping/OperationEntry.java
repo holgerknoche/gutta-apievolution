@@ -1,5 +1,9 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
+import java.util.Objects;
+
 class OperationEntry {
 
     private final int entryIndex;
@@ -32,6 +36,23 @@ class OperationEntry {
 
     public ApiMappingOperation getResultMappingOperation() {
         return this.resultMappingOperation;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.entryIndex;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(OperationEntry that) {
+        return (this.getEntryIndex() == that.getEntryIndex()) &&
+               Objects.equals(this.getName(), that.getName()) &&
+               Objects.equals(this.getParameterMappingOperation(),  that.getParameterMappingOperation()) &&
+               Objects.equals(this.getResultMappingOperation(),  that.getResultMappingOperation());
     }
 
 }

@@ -13,7 +13,7 @@ public class ApiMappingScriptPrinter {
         
         TypeEntryPrinter typeEntryPrinter = new TypeEntryPrinter(scriptBuilder);
         int typeIndex = 0;
-        for (TypeEntry typeEntry : script) {
+        for (TypeEntry typeEntry : script.getTypeEntries()) {
             scriptBuilder.append("type index " + typeIndex + ":\n");
             
             typeEntry.accept(typeEntryPrinter);
@@ -84,7 +84,7 @@ public class ApiMappingScriptPrinter {
         	builder.append(recordTypeEntry.getTypeId());
         	builder.append("\n");
         	
-        	for (FieldMapping fieldMapping : recordTypeEntry) {
+        	for (FieldMapping fieldMapping : recordTypeEntry.getFieldMappings()) {
         		builder.append("@");
         		builder.append(fieldMapping.getOffset());
         		builder.append(": ");
@@ -111,7 +111,7 @@ public class ApiMappingScriptPrinter {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("copy ");
-        	builder.append(copyOperation.length);
+        	builder.append(copyOperation.getLength());
         	builder.append(" bytes");
         	
         	return null;
@@ -185,7 +185,7 @@ public class ApiMappingScriptPrinter {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("skip ");
-        	builder.append(skipOperation.amount);
+        	builder.append(skipOperation.getAmount());
         	builder.append(" bytes");
         	
         	return null;

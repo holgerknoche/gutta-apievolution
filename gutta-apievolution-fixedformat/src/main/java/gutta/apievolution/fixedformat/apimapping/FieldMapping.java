@@ -1,6 +1,9 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 class FieldMapping {
     
@@ -24,6 +27,21 @@ class FieldMapping {
     public void apply(int baseOffset, ByteBuffer source, ByteBuffer target) {
         int effectiveOffset = (baseOffset + this.offset);
         this.mappingOperation.apply(effectiveOffset, source, target);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.offset;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(FieldMapping that) {
+        return (this.offset == that.offset) &&
+               Objects.equals(this.mappingOperation, that.mappingOperation);
     }
 
 }
