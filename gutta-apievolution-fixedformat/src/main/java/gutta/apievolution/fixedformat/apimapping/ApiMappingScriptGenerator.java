@@ -461,7 +461,7 @@ public class ApiMappingScriptGenerator {
                 return new RecordMappingOperation(typeEntry);
             } else {
                 // More than one possible type => polymorphic mapping operation
-                Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>(possibleTypes.size());
+                Set<PolymorphicRecordMapping> recordMappings = new HashSet<>(possibleTypes.size());
                 for (RecordType<?, ?, ?> targetType : possibleTypes) {
                     RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(targetType);
 
@@ -470,10 +470,10 @@ public class ApiMappingScriptGenerator {
                     RecordTypeEntry typeEntry = this.resolveTypeEntryFor(targetType);
 
                     PolymorphicRecordMapping recordMapping = new PolymorphicRecordMapping(sourceTypeId, targetTypeId, typeEntry);
-                    idToRecordMapping.put(recordMapping.getSourceTypeId(), recordMapping);
+                    recordMappings.add(recordMapping);
                 }
 
-                return new PolymorphicRecordMappingOperation(idToRecordMapping);
+                return new PolymorphicRecordMappingOperation(recordMappings);
             }
         }
 

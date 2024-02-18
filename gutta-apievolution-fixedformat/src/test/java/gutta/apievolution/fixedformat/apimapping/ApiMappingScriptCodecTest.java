@@ -1,7 +1,9 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -93,6 +95,34 @@ class ApiMappingScriptCodecTest {
         
         byte[] scriptBytes = codec.encodeScript(script);
         assertArrayEquals(expectedBytes, scriptBytes);
+        
+        ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
+        assertEquals(script, decodedScript);
+    }
+    
+    /**
+     * Test case: Serialization and deserialization of a script where a polymorphic type is used as a parameter and/or result type.
+     */
+    @Test
+    void scriptWithPolymorphicParameterType() {
+        // First subtype
+        FieldMapping fieldAMapping = new FieldMapping(0, new CopyOperation(5));
+        RecordTypeEntry typeAEntry = new RecordTypeEntry(0, 0, 5, singletonList(fieldAMapping));
+        
+        // Second subtype
+        FieldMapping fieldBMapping = new FieldMapping(0, new CopyOperation(10));
+        RecordTypeEntry typeBEntry = new RecordTypeEntry(1, 1, 10, singletonList(fieldBMapping));
+        
+        PolymorphicRecordMapping typeAMapping = new PolymorphicRecordMapping(5, 0, typeAEntry);
+        PolymorphicRecordMapping typeBMapping = new PolymorphicRecordMapping(6, 1, typeBEntry); 
+        PolymorphicRecordMappingOperation polyMappingOperation = new PolymorphicRecordMappingOperation(Arrays.asList(typeAMapping, typeBMapping));
+        
+        OperationEntry operationEntry = new OperationEntry(0, "op", polyMappingOperation, polyMappingOperation);
+        
+        ApiMappingScript script = new ApiMappingScript(asList(typeAEntry, typeBEntry), singletonList(operationEntry));
+        ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
+        
+        byte[] scriptBytes = codec.encodeScript(script);
         
         ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
         assertEquals(script, decodedScript);

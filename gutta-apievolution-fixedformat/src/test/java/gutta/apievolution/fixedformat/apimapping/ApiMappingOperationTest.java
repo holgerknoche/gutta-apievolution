@@ -4,12 +4,11 @@ import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperati
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
-
+import static gutta.apievolution.fixedformat.objectmapping.Flags.IS_PRESENT;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -202,11 +201,11 @@ class ApiMappingOperationTest {
         
         RecordTypeEntry typeEntry2 = new RecordTypeEntry(1, 2, 10, Arrays.asList(fieldMappingType21, fieldMappingType22));
         
-        Map<Integer, PolymorphicRecordMapping> idToRecordMapping = new HashMap<>();
-        idToRecordMapping.put(1, new PolymorphicRecordMapping(1, 2, typeEntry1));
-        idToRecordMapping.put(2, new PolymorphicRecordMapping(2, 1, typeEntry2));
+        List<PolymorphicRecordMapping> recordMappings = new ArrayList<>();
+        recordMappings.add(new PolymorphicRecordMapping(1, 2, typeEntry1));
+        recordMappings.add(new PolymorphicRecordMapping(2, 1, typeEntry2));
         
-        PolymorphicRecordMappingOperation operation = new PolymorphicRecordMappingOperation(idToRecordMapping);
+        PolymorphicRecordMappingOperation operation = new PolymorphicRecordMappingOperation(recordMappings);
         
         ByteBuffer sourceDataBuffer = ByteBuffer.allocate(15);
         ByteBuffer targetDataBuffer = ByteBuffer.allocate(15);

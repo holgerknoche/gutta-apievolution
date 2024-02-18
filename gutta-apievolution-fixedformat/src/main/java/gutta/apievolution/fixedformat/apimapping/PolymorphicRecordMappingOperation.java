@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
 
@@ -16,9 +18,10 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
     
     private final int dataLength;
     
-    public PolymorphicRecordMappingOperation(Map<Integer, PolymorphicRecordMapping> idToRecordMapping) {
-        this.idToRecordMapping = idToRecordMapping;
-        this.dataLength = determineMaxDataLength(idToRecordMapping.values());
+    public PolymorphicRecordMappingOperation(Collection<PolymorphicRecordMapping> recordMappings) {
+        this.dataLength = determineMaxDataLength(recordMappings);
+        this.idToRecordMapping = recordMappings.stream()
+                .collect(Collectors.toMap(PolymorphicRecordMapping::getSourceTypeId, Function.identity()));
     }
     
     private static int determineMaxDataLength(Collection<PolymorphicRecordMapping> mappings) {
@@ -71,7 +74,7 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
     Collection<PolymorphicRecordMapping> getRecordMappings() {
         return Collections.unmodifiableCollection(this.idToRecordMapping.values());
     }
-    
+        
     @Override
     public int hashCode() {
         return this.dataLength;
@@ -87,6 +90,9 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
                this.idToRecordMapping.equals(that.idToRecordMapping);
     }
     
+    /**
+     * Mapping entry for a single record type.
+     */
     static class PolymorphicRecordMapping {
         
         private final int sourceTypeId;

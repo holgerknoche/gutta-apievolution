@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.List;
  * This class provides operations to encode or decode an API mapping script to/from its binary representation.
  */
 public class ApiMappingScriptCodec {
-    
+
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private static final byte OPCODE_COPY = 0x01;
@@ -26,6 +28,8 @@ public class ApiMappingScriptCodec {
     private static final byte OPCODE_MAP_RECORD = 0x04;
 
     private static final byte OPCODE_MAP_LIST = 0x05;
+
+    private static final byte OPCODE_MAP_POLYMORPHIC_RECORD = 0x06;
 
     private static final byte ENTRY_TYPE_ENUM = 0x01;
 
@@ -46,12 +50,12 @@ public class ApiMappingScriptCodec {
             // Fill the offset table at the beginning of the encoded script
             byte[] encodedScript = byteStream.toByteArray();
             ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
-            
+
             scriptBuffer.position(4);
             for (int offset : offsets.typeEntryOffsets) {
                 scriptBuffer.putInt(offset);
             }
-            
+
             // Fill the operations offset
             scriptBuffer.putInt(offsets.operationsOffset);
 
@@ -71,7 +75,7 @@ public class ApiMappingScriptCodec {
         for (int entry = 0; entry < numberOfTypeEntries; entry++) {
             stream.writeInt(0);
         }
-        
+
         // Write a zero for the operations offset
         stream.writeInt(0);
 
@@ -84,7 +88,7 @@ public class ApiMappingScriptCodec {
 
         // Write the operations entries
         int operationsOffset = stream.size();
-        List<OperationEntry> operationEntries = script.getOperationEntries();        
+        List<OperationEntry> operationEntries = script.getOperationEntries();
         stream.writeInt(operationEntries.size());
         for (OperationEntry operationEntry : operationEntries) {
             this.writeOperationEntry(operationEntry, stream);
@@ -96,13 +100,13 @@ public class ApiMappingScriptCodec {
     private void writeOperationEntry(OperationEntry entry, DataOutputStream stream) {
         try {
             byte[] nameBytes = entry.getName().getBytes(CHARSET);
-        
+
             stream.writeInt(nameBytes.length);
             stream.write(nameBytes);
-            
+
             OperationWriter operationWriter = new OperationWriter(stream);
             operationWriter.writeOperation(entry.getParameterMappingOperation());
-            operationWriter.writeOperation(entry.getResultMappingOperation());            
+            operationWriter.writeOperation(entry.getResultMappingOperation());
         } catch (IOException e) {
             throw new ScriptEncodingException("Error writing operation entry '" + entry + "'.", e);
         }
@@ -123,7 +127,7 @@ public class ApiMappingScriptCodec {
         for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
             typeEntryOffsets[entryIndex] = scriptBuffer.getInt();
         }
-        
+
         // Read the operations offset
         int operationsOffset = scriptBuffer.getInt();
 
@@ -136,7 +140,7 @@ public class ApiMappingScriptCodec {
         // Position the buffer at the correct offset, as the type entries may not be read
         // in order due to nesting and the offset may therefore be off
         scriptBuffer.position(operationsOffset);
-        
+
         // Read the operation entries
         int numberOfOperations = scriptBuffer.getInt();
         List<OperationEntry> operationEntries = new ArrayList<>(numberOfOperations);
@@ -144,19 +148,19 @@ public class ApiMappingScriptCodec {
             OperationEntry operationEntry = this.readOperationEntry(operationIndex, typeEntryOffsets, typeEntries, scriptBuffer);
             operationEntries.add(operationEntry);
         }
-        
+
         return new ApiMappingScript(Arrays.asList(typeEntries), operationEntries);
     }
-    
+
     private OperationEntry readOperationEntry(int operationIndex, int[] typeEntryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int nameLength = buffer.getInt();
         byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);
         String operationName = new String(nameBytes, CHARSET);
-        
+
         ApiMappingOperation parameterMappingOperation = this.readApiMappingOperation(typeEntryOffsets, typeEntries, buffer);
         ApiMappingOperation resultMappingOperation = this.readApiMappingOperation(typeEntryOffsets, typeEntries, buffer);
-        
+
         return new OperationEntry(operationIndex, operationName, parameterMappingOperation, resultMappingOperation);
     }
 
@@ -171,13 +175,13 @@ public class ApiMappingScriptCodec {
 
         return candidate;
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T extends TypeEntry> T getOrReadTypeEntryEmbedded(int entryIndex, int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int currentOffset = buffer.position();
         T entry = (T) this.getOrReadTypeEntry(entryIndex, entryOffsets, typeEntries, buffer);
         buffer.position(currentOffset);
-        
+
         return entry;
     }
 
@@ -247,6 +251,9 @@ public class ApiMappingScriptCodec {
         case OPCODE_MAP_RECORD:
             return this.readMapRecordOperation(entryOffsets, typeEntries, buffer);
 
+        case OPCODE_MAP_POLYMORPHIC_RECORD:
+            return this.readMapPolymorphicRecordOperation(entryOffsets, typeEntries, buffer);
+
         case OPCODE_MAP_LIST:
             return this.readMapListOperation(entryOffsets, typeEntries, buffer);
 
@@ -275,6 +282,23 @@ public class ApiMappingScriptCodec {
         int entryIndex = buffer.getInt();
         RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(entryIndex, entryOffsets, typeEntries, buffer);
         return new RecordMappingOperation(typeEntry);
+    }
+
+    private ApiMappingOperation readMapPolymorphicRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int numberOfMappings = buffer.getInt();
+
+        List<PolymorphicRecordMapping> mappings = new ArrayList<>(numberOfMappings);
+        for (int mappingIndex = 0; mappingIndex < numberOfMappings; mappingIndex++) {
+            int sourceTypeId = buffer.getInt();
+            int targetTypeId = buffer.getInt();
+            int typeIndex = buffer.getInt();
+
+            RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(typeIndex, entryOffsets, typeEntries, buffer);
+            PolymorphicRecordMapping mapping = new PolymorphicRecordMapping(sourceTypeId, targetTypeId, typeEntry);
+            mappings.add(mapping);
+        }
+
+        return new PolymorphicRecordMappingOperation(mappings);
     }
 
     private ApiMappingOperation readMapListOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
@@ -344,7 +368,7 @@ public class ApiMappingScriptCodec {
                 throw new ScriptEncodingException("Error writing record type entry to the script.", e);
             }
         }
-        
+
         private void writeFieldMapping(FieldMapping fieldMapping) {
             try {
                 this.dataStream.writeInt(fieldMapping.getOffset());
@@ -429,6 +453,31 @@ public class ApiMappingScriptCodec {
         }
 
         @Override
+        public Void handlePolymorphicRecordMappingOperation(PolymorphicRecordMappingOperation polymorphicRecordMappingOperation) {
+            try {
+                DataOutputStream outputStream = this.dataStream;
+
+                outputStream.writeByte(OPCODE_MAP_POLYMORPHIC_RECORD);
+
+                List<PolymorphicRecordMapping> mappings = new ArrayList<>(polymorphicRecordMappingOperation.getRecordMappings());
+                outputStream.writeInt(mappings.size());
+                for (PolymorphicRecordMapping mapping : mappings) {
+                    this.writePolymorphicRecordMapping(mapping, outputStream);
+                }
+
+                return null;
+            } catch (IOException e) {
+                throw new ScriptEncodingException("Error writing polymorphic record mapping operation to the script.", e);
+            }
+        }
+
+        private void writePolymorphicRecordMapping(PolymorphicRecordMapping mapping, DataOutputStream outputStream) throws IOException {
+            outputStream.writeInt(mapping.getSourceTypeId());
+            outputStream.writeInt(mapping.getTargetTypeId());
+            outputStream.writeInt(mapping.getTypeEntry().getEntryIndex());
+        }
+
+        @Override
         public Void handleSkipOperation(SkipOperation skipOperation) {
             try {
                 DataOutputStream outputStream = this.dataStream;
@@ -445,18 +494,18 @@ public class ApiMappingScriptCodec {
     }
 
     private static class ScriptOffsets {
-                
+
         public final int[] typeEntryOffsets;
-        
+
         public final int operationsOffset;
 
         public ScriptOffsets(int[] typeEntryOffsets, int operationsOffset) {
             this.typeEntryOffsets = typeEntryOffsets;
             this.operationsOffset = operationsOffset;
         }
-        
+
     }
-    
+
     private static class ScriptEncodingException extends RuntimeException {
 
         private static final long serialVersionUID = 3095641281335853371L;
