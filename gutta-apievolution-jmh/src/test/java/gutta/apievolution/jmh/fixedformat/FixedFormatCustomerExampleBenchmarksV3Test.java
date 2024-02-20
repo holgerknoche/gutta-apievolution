@@ -15,7 +15,7 @@ class FixedFormatCustomerExampleBenchmarksV3Test {
     void invocationTests() {
         FixedFormatCustomerExampleBenchmarksV3 benchmarks = new FixedFormatCustomerExampleBenchmarksV3();
         
-        benchmarks.invokeFromV3Client();        
+        benchmarks.invokeFromV3Client_short();        
     }
 
 }

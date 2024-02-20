@@ -15,7 +15,7 @@ class ObjectMappingCustomerExampleBenchmarksV3Test {
     void invocationTests() {
         ObjectMappingCustomerExampleBenchmarksV3 benchmarks = new ObjectMappingCustomerExampleBenchmarksV3();
         
-        benchmarks.invokeFromV3Client();        
+        benchmarks.invokeFromV3Client_short();        
     }
 
 }

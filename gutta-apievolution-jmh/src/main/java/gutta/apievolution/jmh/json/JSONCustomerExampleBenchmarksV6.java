@@ -15,6 +15,8 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.concurrent.TimeUnit;
 
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class JSONCustomerExampleBenchmarksV6 extends JSONCustomerExampleBenchmarkTemplate {
     
     private static final DefinitionResolution DEFINITION_RESOLUTION = new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY,
@@ -48,9 +50,7 @@ public class JSONCustomerExampleBenchmarksV6 extends JSONCustomerExampleBenchmar
     private static final UpsertOperationConsumerProxyV6 CONSUMER_PROXY = new UpsertOperationConsumerProxyV6(CONSUMER_API_V6, CONSUMER_API_ID_V6, ROUTER);
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeFromV6Client() {
+    public void invokeFromV6Client_short() {
         CONSUMER_PROXY.invokeOperation(CUSTOMER);
     }
     

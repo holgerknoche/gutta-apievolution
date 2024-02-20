@@ -15,30 +15,30 @@ class JSONConversionBenchmarksTest {
     void invocationTests() throws IOException {
         JSONConversionBenchmarks benchmarks = new JSONConversionBenchmarks();
         
-        benchmarks.immediateJsonProcessing10();
-        benchmarks.immediateJsonProcessing25();
-        benchmarks.immediateJsonProcessing50();
-        benchmarks.immediateJsonProcessing75();
-        benchmarks.immediateJsonProcessing100();
-        benchmarks.immediateJsonProcessing250();
-        benchmarks.immediateJsonProcessing500();
+        benchmarks.immediateJsonProcessing010_short();
+        benchmarks.immediateJsonProcessing025_short();
+        benchmarks.immediateJsonProcessing050_short();
+        benchmarks.immediateJsonProcessing075_short();
+        benchmarks.immediateJsonProcessing100_short();
+        benchmarks.immediateJsonProcessing250_long();
+        benchmarks.immediateJsonProcessing500_long();
         
-        benchmarks.indirectProcessing10();
-        benchmarks.indirectProcessing25();
-        benchmarks.indirectProcessing50();
-        benchmarks.indirectProcessing75();
-        benchmarks.indirectProcessing100();
-        benchmarks.indirectProcessing250();
-        benchmarks.indirectProcessing500();
+        benchmarks.indirectProcessing010_short();
+        benchmarks.indirectProcessing025_short();
+        benchmarks.indirectProcessing050_short();
+        benchmarks.indirectProcessing075_short();
+        benchmarks.indirectProcessing100_short();
+        benchmarks.indirectProcessing250_long();
+        benchmarks.indirectProcessing500_long();
         
-        benchmarks.invokeEmptyResult();
-        benchmarks.invokeTestMethod10();
-        benchmarks.invokeTestMethod25();
-        benchmarks.invokeTestMethod50();
-        benchmarks.invokeTestMethod75();
-        benchmarks.invokeTestMethod100();
-        benchmarks.invokeTestMethod250();
-        benchmarks.invokeTestMethod500();
+        benchmarks.invokeEmptyResult_short();
+        benchmarks.invokeTestMethod010_short();
+        benchmarks.invokeTestMethod025_short();
+        benchmarks.invokeTestMethod050_short();
+        benchmarks.invokeTestMethod075_short();
+        benchmarks.invokeTestMethod100_short();
+        benchmarks.invokeTestMethod250_long();
+        benchmarks.invokeTestMethod500_long();
     }
     
 }

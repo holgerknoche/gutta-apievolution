@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * JMH benchmarks to determine the performance impact of format conversion in a JSON-based setting.
  */
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
 
     private static final JsonRequestRouter ROUTER = createRouter();
@@ -94,24 +96,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     private static final ProviderResult500 RESULT_500 = TestMethod500ProviderProxy.createResult();
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeEmptyResult() {
+    public void invokeEmptyResult_short() {
         TEST_METHOD_EMPTY_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing10() throws IOException {
+    public void immediateJsonProcessing010_short() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_10);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult10.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing10() throws IOException {
+    public void indirectProcessing010_short() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_10);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -119,24 +115,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod10() {
+    public void invokeTestMethod010_short() {
         TEST_METHOD_10_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing25() throws IOException {
+    public void immediateJsonProcessing025_short() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_25);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult25.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing25() throws IOException {
+    public void indirectProcessing025_short() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_25);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -144,24 +134,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod25() {
+    public void invokeTestMethod025_short() {
         TEST_METHOD_25_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing50() throws IOException {
+    public void immediateJsonProcessing050_short() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_50);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult50.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing50() throws IOException {
+    public void indirectProcessing050_short() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_50);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -169,24 +153,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod50() {
+    public void invokeTestMethod050_short() {
         TEST_METHOD_50_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing75() throws IOException {
+    public void immediateJsonProcessing075_short() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_75);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult75.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing75() throws IOException {
+    public void indirectProcessing075_short() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_75);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -194,24 +172,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod75() {
+    public void invokeTestMethod075_short() {
         TEST_METHOD_75_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing100() throws IOException {
+    public void immediateJsonProcessing100_short() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_100);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult100.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing100() throws IOException {
+    public void indirectProcessing100_short() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_100);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -219,24 +191,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod100() {
+    public void invokeTestMethod100_short() {
         TEST_METHOD_100_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing250() throws IOException {
+    public void immediateJsonProcessing250_long() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_250);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult250.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing250() throws IOException {
+    public void indirectProcessing250_long() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_250);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -244,24 +210,18 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod250() {
+    public void invokeTestMethod250_long() {
         TEST_METHOD_250_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void immediateJsonProcessing500() throws IOException {
+    public void immediateJsonProcessing500_long() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_500);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult500.class);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void indirectProcessing500() throws IOException {
+    public void indirectProcessing500_long() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_500);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -269,9 +229,7 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod500() {
+    public void invokeTestMethod500_long() {
         TEST_METHOD_500_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 

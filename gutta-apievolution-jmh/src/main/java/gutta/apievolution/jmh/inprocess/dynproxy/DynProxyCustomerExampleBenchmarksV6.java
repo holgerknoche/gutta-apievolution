@@ -13,6 +13,8 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.concurrent.TimeUnit;
 
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class DynProxyCustomerExampleBenchmarksV6 extends CustomerExampleDynProxyBenchmarkTemplate {
 
     private static final Customer CUSTOMER = createCustomer();
@@ -37,9 +39,7 @@ public class DynProxyCustomerExampleBenchmarksV6 extends CustomerExampleDynProxy
     private static final ConsumerApi CONSUMER_API = createApi(ConsumerApi.class, CONSUMER_API_V6);
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeFromV6Client() {
+    public void invokeFromV6Client_short() {
         CONSUMER_API.upsert(CUSTOMER);
     }
     

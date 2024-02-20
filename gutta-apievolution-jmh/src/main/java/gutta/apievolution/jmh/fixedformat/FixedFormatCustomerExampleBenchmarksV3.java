@@ -18,6 +18,8 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.concurrent.TimeUnit;
 
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class FixedFormatCustomerExampleBenchmarksV3 extends FixedFormatCustomerExampleBenchmarkTemplate {
 
     private static final FixedFormatMapper MAPPER = new FixedFormatMapper();
@@ -55,9 +57,7 @@ public class FixedFormatCustomerExampleBenchmarksV3 extends FixedFormatCustomerE
     private static final UpsertOperationConsumerProxyV3 CONSUMER_PROXY = new UpsertOperationConsumerProxyV3(REQUEST_ROUTER, MAPPER, CHARSET);
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeFromV3Client() {
+    public void invokeFromV3Client_short() {
         CONSUMER_PROXY.invoke(CUSTOMER);
     }
 

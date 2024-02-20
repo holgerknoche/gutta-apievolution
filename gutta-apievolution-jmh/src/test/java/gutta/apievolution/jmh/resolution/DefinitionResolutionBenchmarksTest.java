@@ -8,17 +8,17 @@ class DefinitionResolutionBenchmarksTest {
     void benchmarkInvocationTests() {
         DefinitionResolutionBenchmarks benchmarks = new DefinitionResolutionBenchmarks();
         
-        benchmarks.resolveHistoryDepth001();
-        benchmarks.resolveHistoryDepth010();
-        benchmarks.resolveHistoryDepth020();
-        benchmarks.resolveHistoryDepth030();
-        benchmarks.resolveHistoryDepth040();
-        benchmarks.resolveHistoryDepth050();
-        benchmarks.resolveHistoryDepth060();
-        benchmarks.resolveHistoryDepth070();
-        benchmarks.resolveHistoryDepth080();
-        benchmarks.resolveHistoryDepth090();
-        benchmarks.resolveHistoryDepth100();
+        benchmarks.resolveHistoryDepth001_short();
+        benchmarks.resolveHistoryDepth010_short();
+        benchmarks.resolveHistoryDepth020_short();
+        benchmarks.resolveHistoryDepth030_short();
+        benchmarks.resolveHistoryDepth040_short();
+        benchmarks.resolveHistoryDepth050_short();
+        benchmarks.resolveHistoryDepth060_short();
+        benchmarks.resolveHistoryDepth070_short();
+        benchmarks.resolveHistoryDepth080_short();
+        benchmarks.resolveHistoryDepth090_short();
+        benchmarks.resolveHistoryDepth100_short();
     }
 
 }

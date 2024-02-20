@@ -88,77 +88,77 @@ public class DefinitionResolutionBenchmarks {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth001() {
+    public void resolveHistoryDepth001_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_1, SUPPORTED_REVISIONS_1, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth010() {
+    public void resolveHistoryDepth010_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_10, SUPPORTED_REVISIONS_10, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth020() {
+    public void resolveHistoryDepth020_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_20, SUPPORTED_REVISIONS_20, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth030() {
+    public void resolveHistoryDepth030_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_30, SUPPORTED_REVISIONS_30, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth040() {
+    public void resolveHistoryDepth040_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_40, SUPPORTED_REVISIONS_40, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth050() {
+    public void resolveHistoryDepth050_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_50, SUPPORTED_REVISIONS_50, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth060() {
+    public void resolveHistoryDepth060_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_60, SUPPORTED_REVISIONS_60, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth070() {
+    public void resolveHistoryDepth070_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_70, SUPPORTED_REVISIONS_70, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth080() {
+    public void resolveHistoryDepth080_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_80, SUPPORTED_REVISIONS_80, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth090() {
+    public void resolveHistoryDepth090_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_90, SUPPORTED_REVISIONS_90, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth100() {
+    public void resolveHistoryDepth100_short() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_100, SUPPORTED_REVISIONS_100, CONSUMER_API);
     }
 

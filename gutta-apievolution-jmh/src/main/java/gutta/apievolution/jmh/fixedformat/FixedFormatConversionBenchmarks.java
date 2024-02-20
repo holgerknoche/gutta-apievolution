@@ -46,6 +46,8 @@ import java.util.function.Supplier;
 /**
  * JMH benchmarks to determine the performance impact of format conversion with our fixed-format conversion.
  */
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
 
     private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
@@ -113,16 +115,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     private static final ByteBuffer TARGET_BUFFER = ByteBuffer.allocate(32768);
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeEmptyResult() {
+    public void invokeEmptyResult_short() {
         TEST_METHOD_EMPTY_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly10() {
+    public void resultConversionOnly010_short() {
         ByteBuffer sourceBuffer = RESULT_10_DATA;
         sourceBuffer.position(0);
         
@@ -133,16 +131,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod10() {
+    public void invokeTestMethod010_short() {
         TEST_METHOD_10_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly25() {
+    public void resultConversionOnly025_short() {
         ByteBuffer sourceBuffer = RESULT_25_DATA;
         sourceBuffer.position(0);
         
@@ -153,16 +147,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod25() {
+    public void invokeTestMethod025_short() {
         TEST_METHOD_25_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly50() {
+    public void resultConversionOnly050_short() {
         ByteBuffer sourceBuffer = RESULT_50_DATA;
         sourceBuffer.position(0);
         
@@ -173,16 +163,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod50() {
+    public void invokeTestMethod050_short() {
         TEST_METHOD_50_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly75() {
+    public void resultConversionOnly075_short() {
         ByteBuffer sourceBuffer = RESULT_75_DATA;
         sourceBuffer.position(0);
         
@@ -193,16 +179,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod75() {
+    public void invokeTestMethod075_short() {
         TEST_METHOD_75_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly100() {
+    public void resultConversionOnly100_short() {
         ByteBuffer sourceBuffer = RESULT_100_DATA;
         sourceBuffer.position(0);
         
@@ -213,16 +195,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod100() {
+    public void invokeTestMethod100_short() {
         TEST_METHOD_100_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly250() {
+    public void resultConversionOnly250_long() {
     	ByteBuffer sourceBuffer = RESULT_250_DATA;
     	sourceBuffer.position(0);
     	
@@ -233,16 +211,12 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod250() {
+    public void invokeTestMethod250_long() {
         TEST_METHOD_250_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resultConversionOnly500() {
+    public void resultConversionOnly500_long() {
         ByteBuffer sourceBuffer = RESULT_500_DATA;
         sourceBuffer.position(0);
         
@@ -253,9 +227,7 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeTestMethod500() {
+    public void invokeTestMethod500_long() {
         TEST_METHOD_500_PROXY.invoke(CONSUMER_PARAMETER);
     }
     

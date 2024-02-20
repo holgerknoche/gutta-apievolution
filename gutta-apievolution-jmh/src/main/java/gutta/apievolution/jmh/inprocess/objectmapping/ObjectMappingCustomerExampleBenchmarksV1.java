@@ -10,6 +10,8 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.concurrent.TimeUnit;
 
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class ObjectMappingCustomerExampleBenchmarksV1 extends CustomerExampleObjectMappingBenchmarkTemplate {
 
     private static final Customer CUSTOMER = createCustomer();
@@ -33,9 +35,7 @@ public class ObjectMappingCustomerExampleBenchmarksV1 extends CustomerExampleObj
     private static final ConsumerApi CONSUMER_API = createApi(ConsumerApi.class, CONSUMER_API_V1);
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeFromV1Client() {
+    public void invokeFromV1Client_short() {
         CONSUMER_API.upsert(CUSTOMER);
     }
     

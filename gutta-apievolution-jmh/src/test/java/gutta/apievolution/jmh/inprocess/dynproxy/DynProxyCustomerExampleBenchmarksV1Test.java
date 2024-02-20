@@ -15,7 +15,7 @@ class DynProxyCustomerExampleBenchmarksV1Test {
     void invocationTests() {
         DynProxyCustomerExampleBenchmarksV1 benchmarks = new DynProxyCustomerExampleBenchmarksV1();
         
-        benchmarks.invokeFromV1Client();        
+        benchmarks.invokeFromV1Client_short();        
     }
 
 }

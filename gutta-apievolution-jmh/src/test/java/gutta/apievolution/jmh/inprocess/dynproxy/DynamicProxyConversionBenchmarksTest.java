@@ -11,21 +11,21 @@ class DynamicProxyConversionBenchmarksTest {
     void invocationTests() {
         DynamicProxyConversionBenchmarks benchmarks = new DynamicProxyConversionBenchmarks();
         
-        benchmarks.invokeEmptyResult();
-        benchmarks.invokeResult10();
-        benchmarks.invokeAndInspectResult10();
-        benchmarks.invokeResult25();
-        benchmarks.invokeAndInspectResult25();
-        benchmarks.invokeResult50();
-        benchmarks.invokeAndInspectResult50();
-        benchmarks.invokeResult75();
-        benchmarks.invokeAndInspectResult75();
-        benchmarks.invokeResult100();
-        benchmarks.invokeAndInspectResult100();
-        benchmarks.invokeResult250();
-        benchmarks.invokeAndInspectResult250();
-        benchmarks.invokeResult500();
-        benchmarks.invokeAndInspectResult500();
+        benchmarks.invokeEmptyResult_short();
+        benchmarks.invokeResult010_short();
+        benchmarks.invokeAndInspectResult010_short();
+        benchmarks.invokeResult025_short();
+        benchmarks.invokeAndInspectResult025_short();
+        benchmarks.invokeResult050_short();
+        benchmarks.invokeAndInspectResult050_short();
+        benchmarks.invokeResult075_short();
+        benchmarks.invokeAndInspectResult075_short();
+        benchmarks.invokeResult100_short();
+        benchmarks.invokeAndInspectResult100_short();
+        benchmarks.invokeResult250_long();
+        benchmarks.invokeAndInspectResult250_long();
+        benchmarks.invokeResult500_long();
+        benchmarks.invokeAndInspectResult500_long();
     }
     
 }

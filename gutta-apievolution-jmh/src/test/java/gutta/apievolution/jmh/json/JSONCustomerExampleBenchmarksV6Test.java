@@ -15,7 +15,7 @@ class JSONCustomerExampleBenchmarksV6Test {
     void invocationTests() {
         JSONCustomerExampleBenchmarksV6 benchmarks = new JSONCustomerExampleBenchmarksV6();
         
-        benchmarks.invokeFromV6Client();        
+        benchmarks.invokeFromV6Client_short();        
     }
 
 }

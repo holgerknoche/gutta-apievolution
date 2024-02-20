@@ -9,6 +9,8 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.concurrent.TimeUnit;
 
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchmarkTemplate {
 
     private static final ConsumerApi CONSUMER_API = createConsumerApi(ConsumerApi.class, new DynamicProxyApiMappingStrategy(),
@@ -17,23 +19,17 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     private static final ConsumerParameter CONSUMER_PARAMETER = new ConsumerParameterImpl();
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeEmptyResult() {
+    public void invokeEmptyResult_short() {
         CONSUMER_API.testMethodEmpty(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult10() {
+    public void invokeResult010_short() {
         CONSUMER_API.testMethod10(CONSUMER_PARAMETER);                    
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult10() {
+    public void invokeAndInspectResult010_short() {
         ConsumerResult10 result = CONSUMER_API.testMethod10(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -59,16 +55,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult25() {
+    public void invokeResult025_short() {
         CONSUMER_API.testMethod25(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult25() {
+    public void invokeAndInspectResult025_short() {
         ConsumerResult25 result = CONSUMER_API.testMethod25(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -125,16 +117,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult50() {
+    public void invokeResult050_short() {
         CONSUMER_API.testMethod50(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult50() {
+    public void invokeAndInspectResult050_short() {
         ConsumerResult50 result = CONSUMER_API.testMethod50(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -241,16 +229,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult75() {
+    public void invokeResult075_short() {
         CONSUMER_API.testMethod75(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult75() {
+    public void invokeAndInspectResult075_short() {
         ConsumerResult75 result = CONSUMER_API.testMethod75(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -407,16 +391,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult100() {
+    public void invokeResult100_short() {
         CONSUMER_API.testMethod100(CONSUMER_PARAMETER);                    
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult100() {
+    public void invokeAndInspectResult100_short() {
         ConsumerResult100 result = CONSUMER_API.testMethod100(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -623,16 +603,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult250() {
+    public void invokeResult250_long() {
         CONSUMER_API.testMethod250(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult250() {
+    public void invokeAndInspectResult250_long() {
         ConsumerResult250 result = CONSUMER_API.testMethod250(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -1139,16 +1115,12 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeResult500() {
+    public void invokeResult500_long() {
         CONSUMER_API.testMethod500(CONSUMER_PARAMETER);
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void invokeAndInspectResult500() {
+    public void invokeAndInspectResult500_long() {
         ConsumerResult500 result = CONSUMER_API.testMethod500(CONSUMER_PARAMETER);
 
         result.getIntField1();
