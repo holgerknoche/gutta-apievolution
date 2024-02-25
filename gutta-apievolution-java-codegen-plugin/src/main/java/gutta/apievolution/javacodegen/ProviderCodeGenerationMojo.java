@@ -72,12 +72,14 @@ public class ProviderCodeGenerationMojo
         return ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
     }
 
-    private NamedInputStream toInputStream(File file) {
-        try {
-            return new NamedInputStream(file.getName(), new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private NamedInputStream toInputStream(File file) {
+		return new NamedInputStream(file.getName(), () -> {
+			try {
+				return new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
 
 }

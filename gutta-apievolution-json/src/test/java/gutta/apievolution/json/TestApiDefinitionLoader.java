@@ -18,15 +18,8 @@ class TestApiDefinitionLoader {
     public static RevisionHistory loadRevisionHistory(String... fileNames) {
         try {
             List<NamedInputStream> streams = loadStreams(fileNames);
-
             List<ProviderApiDefinition> apiDefinitions = ProviderApiLoader.loadHistoryFromStreams(IntegerRange.unbounded(), false, streams);
-            RevisionHistory revisionHistory = new RevisionHistory(apiDefinitions);
-
-            for (NamedInputStream stream : streams) {
-                stream.close();
-            }
-
-            return revisionHistory;
+            return new RevisionHistory(apiDefinitions);
         } catch (IOException e) {
             throw new ApiLoadFailedException(e);
         }
@@ -40,7 +33,7 @@ class TestApiDefinitionLoader {
             InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
             if (inputStream != null) {
-                streams.add(new NamedInputStream(fileName, inputStream));
+                streams.add(new NamedInputStream(fileName, () -> inputStream));
             }
         }
 

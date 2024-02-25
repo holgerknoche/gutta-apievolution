@@ -7,6 +7,7 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +42,7 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * an optional predecessor.
      *
      * @param revision            The revision number to assign to the definition
-     * @param inputStream         The input stream to read the definition from
+     * @param namedStream         The named stream to read the definition from
      * @param ignoreReplacements  Flag whether to ignore replacement clauses in the
      *                            definition
      * @param optionalPredecessor An optional predecessor to resolve the loaded
@@ -49,10 +50,13 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * @return The loaded and resolved definition
      * @throws IOException If an I/O error occurs while loading the definition
      */
-    public static ProviderApiDefinition loadFromStream(final int revision, final NamedInputStream inputStream,
+    public static ProviderApiDefinition loadFromStream(final int revision, final NamedInputStream namedStream,
             boolean ignoreReplacements, final Optional<ProviderApiDefinition> optionalPredecessor) throws IOException {
-        ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream.getStream());
-        return load(inputStream.getName(), revision, specification, ignoreReplacements, optionalPredecessor);
+        
+        try (InputStream inputStream = namedStream.getStream()) {
+            ApiRevisionParser.ApiDefinitionContext specification = parseStream(inputStream);
+            return load(namedStream.getName(), revision, specification, ignoreReplacements, optionalPredecessor);
+        }
     }
 
     /**
@@ -98,8 +102,9 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * @param streams            The streams to load the definitions from
      * @return The loaded and resolved revision history
      */
-    public static List<ProviderApiDefinition> loadHistoryFromStreams(final Iterable<Integer> revisionIds,
-            boolean ignoreReplacements, final Collection<NamedInputStream> streams) {
+    public static List<ProviderApiDefinition> loadHistoryFromStreams(final Iterable<Integer> revisionIds, boolean ignoreReplacements,
+            final Collection<NamedInputStream> streams) {
+
         if (streams.isEmpty()) {
             return Collections.emptyList();
         }
@@ -112,19 +117,16 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
         try {
             // Convert the first stream (i.e. first revision in the history)
             ProviderApiDefinition currentRevision;
-            try (NamedInputStream stream = streamIterator.next()) {
-                currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements);
-                revisions.add(currentRevision);
-            }
+            NamedInputStream stream = streamIterator.next();
+            currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements);
+            revisions.add(currentRevision);
 
             // Convert the remaining streams
             while (streamIterator.hasNext()) {
-                try (NamedInputStream stream = streamIterator.next()) {
-                    Optional<ProviderApiDefinition> optionalPredecessor = Optional.of(currentRevision);
-                    currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements,
-                            optionalPredecessor);
-                    revisions.add(currentRevision);
-                }
+                stream = streamIterator.next();
+                Optional<ProviderApiDefinition> optionalPredecessor = Optional.of(currentRevision);
+                currentRevision = loadFromStream(revisionsIdsIterator.next(), stream, ignoreReplacements, optionalPredecessor);
+                revisions.add(currentRevision);
             }
         } catch (IOException e) {
             throw new ApiLoadException("Error loading provider APIs.", e);
@@ -155,21 +157,10 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
     public static RevisionHistory loadHistoryFromClasspath(boolean ignoreReplacements, String... fileNames) {
         ClassLoader classLoader = ProviderApiLoader.class.getClassLoader();
 
-        List<NamedInputStream> inputStreams = Stream.of(fileNames).map(name -> new NamedInputStream(name, classLoader.getResourceAsStream(name)))
+        List<NamedInputStream> inputStreams = Stream.of(fileNames).map(name -> new NamedInputStream(name, () -> classLoader.getResourceAsStream(name)))
                 .collect(Collectors.toList());
 
-        try {
-            return new RevisionHistory(
-                    loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
-        } finally {
-            for (NamedInputStream inputStream : inputStreams) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    throw new ApiLoadException("Error closing input stream '" + inputStream + "'.", e);
-                }
-            }
-        }
+        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), ignoreReplacements, inputStreams));
     }
 
     /**
@@ -179,21 +170,10 @@ public class ProviderApiLoader extends ApiDefinitionLoader {
      * @return The loaded revision history
      */
     public static RevisionHistory loadHistoryFromStrings(String... apis) {
-        List<NamedInputStream> inputStreams = Stream.of(apis).map(in -> new NamedInputStream("<none>", new ByteArrayInputStream(in.getBytes())))
+        List<NamedInputStream> inputStreams = Stream.of(apis).map(in -> new NamedInputStream("<none>", () -> new ByteArrayInputStream(in.getBytes())))
                 .collect(Collectors.toList());
 
-        try {
-            return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), false, inputStreams));
-        } finally {
-            for (NamedInputStream inputStream : inputStreams) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // We do not expect any exceptions here, as closing a byte array input stream
-                    // should not fail
-                }
-            }
-        }
+        return new RevisionHistory(loadHistoryFromStreams(IntegerRange.unbounded(), false, inputStreams));
     }
 
 }
