@@ -52,11 +52,13 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x6B, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x02, // Number of type entries
-                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry 
-                0x00, 0x00, 0x00, 0x4E, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x67, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry 
+                0x00, 0x00, 0x00, 0x52, // Offset of the second type entry                
                 0x02, // Entry type for the first type entry (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x14, // Data size of the first type
@@ -124,11 +126,13 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x40, // Offset of the operation list                
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x02, // Number of type entries
-                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x26, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x3C, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry
+                0x00, 0x00, 0x00, 0x2A, // Offset of the second type entry
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x05, // Data size of the first type
@@ -199,12 +203,14 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x72, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x03, // Number of type entries
-                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x2A, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x40, // Offset of the third type entry
-                0x00, 0x00, 0x00, 0x6E, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x18, // Offset of the first type entry
+                0x00, 0x00, 0x00, 0x2E, // Offset of the second type entry
+                0x00, 0x00, 0x00, 0x44, // Offset of the third type entry                
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x05, // Data size of the first type
@@ -263,10 +269,12 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+             // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x1D, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x01, // Number of type entries
-                0x00, 0x00, 0x00, 0x0C, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x19, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry                
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x00, // Data length of the first type

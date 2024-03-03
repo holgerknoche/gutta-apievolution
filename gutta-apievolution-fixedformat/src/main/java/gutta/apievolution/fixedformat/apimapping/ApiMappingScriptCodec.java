@@ -50,14 +50,17 @@ public class ApiMappingScriptCodec {
             // Fill the offset table at the beginning of the encoded script
             byte[] encodedScript = byteStream.toByteArray();
             ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
-
-            scriptBuffer.position(4);
+            
+            scriptBuffer.position(0);
+            // Offset of the type list
+            scriptBuffer.putInt(8);
+            // Offset of the operations list
+            scriptBuffer.putInt(offsets.operationsOffset);
+            
+            scriptBuffer.position(12);
             for (int offset : offsets.typeEntryOffsets) {
                 scriptBuffer.putInt(offset);
             }
-
-            // Fill the operations offset
-            scriptBuffer.putInt(offsets.operationsOffset);
 
             return encodedScript;
         } catch (IOException e) {
@@ -70,14 +73,15 @@ public class ApiMappingScriptCodec {
         int numberOfTypeEntries = typeEntries.size();
         int[] typeEntryOffsets = new int[numberOfTypeEntries];
 
+        // Insert placeholders for the type list offset and operation list offset
+        stream.writeInt(0);
+        stream.writeInt(0);
+        
         // Prepare the offset table, but zero the offsets for the time being. They are filled later on.
         stream.writeInt(numberOfTypeEntries);
         for (int entry = 0; entry < numberOfTypeEntries; entry++) {
             stream.writeInt(0);
         }
-
-        // Write a zero for the operations offset
-        stream.writeInt(0);
 
         // Write the type entries
         TypeEntryWriter writer = new TypeEntryWriter(stream);
@@ -121,15 +125,17 @@ public class ApiMappingScriptCodec {
     public ApiMappingScript decodeScript(byte[] encodedScript) {
         ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
 
+        // Read offsets for the type list and the operations list
+        int typesOffset = scriptBuffer.getInt();
+        int operationsOffset = scriptBuffer.getInt();
+        
         // Read the type entry table
+        scriptBuffer.position(typesOffset);
         int numberOfEntries = scriptBuffer.getInt();
         int[] typeEntryOffsets = new int[numberOfEntries];
         for (int entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
             typeEntryOffsets[entryIndex] = scriptBuffer.getInt();
         }
-
-        // Read the operations offset
-        int operationsOffset = scriptBuffer.getInt();
 
         // Read the type entries
         TypeEntry[] typeEntries = new TypeEntry[numberOfEntries];
