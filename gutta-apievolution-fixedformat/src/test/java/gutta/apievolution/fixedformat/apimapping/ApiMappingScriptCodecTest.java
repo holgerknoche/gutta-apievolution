@@ -88,6 +88,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x01, // Mapping for value 3
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries 
+                0x00, 0x00, 0x00, 0x73, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of operation name (in bytes) 
                 0x6F, 0x70, // Name of the operation 
                 0x04, // Operation type of the parameter mapping operation (record mapping)
@@ -149,6 +150,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x0A, // Number of bytes to copy
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x48, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
                 0x6F, 0x70, // Name of the operation
                 0x06, // Operation type of the parameter mapping operation (poly record mapping)
@@ -240,6 +242,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x01, // Type index of the second mapping
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x7A, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
                 0x6F, 0x70, // Name of the operation
                 0x04, // Operation type of the parameter mapping operation (record mapping)
@@ -281,6 +284,8 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x00, // Number of field mappings
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x02, // Number of operation entries
+                0x00, 0x00, 0x00, 0x29, // Offset of the first operation entry
+                0x00, 0x00, 0x00, 0x3A, // Offset of the second operation entry
                 0x00, 0x00, 0x00, 0x03, // Length of the operation name (in bytes)
                 0x6F, 0x70, 0x31, // Name of the operation
                 0x04, // Operation type of the parameter mapping operation (record mapping)
