@@ -39,7 +39,14 @@
            
        01 CUSTOMER-V3-OUT.
            COPY CUSTOMR3 REPLACING '*-' BY CS3O-.
+
+      * Structures for Customer, version 6
+       01 CUSTOMER-V6-IN.
+           COPY CUSTOMR6 REPLACING '*-' BY CS6I-.
            
+       01 CUSTOMER-V6-OUT.
+           COPY CUSTOMR6 REPLACING '*-' BY CS6O-.
+
       * Structures for Customer, provider view
        01 CUSTOMER-PROVIDER-IN.
            COPY CUSTOMRP REPLACING '*-' BY CSPI-.
@@ -54,7 +61,7 @@
       *    available
            CALL 'apimapper'      
            
-           PERFORM RUN-BENCHMARK-V3
+           PERFORM RUN-BENCHMARK-V6
                                   
            DISPLAY "Mapped first name '"
                    CSPI-FIRST-NAME
@@ -332,7 +339,135 @@
              BY REFERENCE CUSTOMER-PROVIDER-IN
            
            EXIT.
+
+      * ---
+      * Run invocation benchmark v6
+       RUN-BENCHMARK-V6 SECTION.
+           PERFORM LOAD-SCRIPTS-V6
+           PERFORM INIT-INPUT-DATA-V6
            
+           ACCEPT START-TIME FROM TIME
+           
+           PERFORM PERFORM-CONVERSION-V6 1 TIMES
+           
+           ACCEPT END-TIME FROM TIME
+           COMPUTE DURATION = (END-TIME - START-TIME)
+           DISPLAY 'Benchmark v6: ' DURATION 'cs' UPON CONSOLE
+           
+           PERFORM UNLOAD-SCRIPTS
+           
+           EXIT.
+      
+      * ---
+      * Load scripts for invocation benchmark v6
+       LOAD-SCRIPTS-V6 SECTION.
+           MOVE 'consumer-script-v6.dat'
+             TO CONSUMER-SCRIPT-NAME
+           MOVE 'provider-script-v6.dat'
+             TO PROVIDER-SCRIPT-NAME
+           
+           CALL 'loadScripts' USING
+                BY REFERENCE CONSUMER-SCRIPT-NAME
+                BY REFERENCE PROVIDER-SCRIPT-NAME
+           
+           EXIT.
+           
+      * ---
+      * Initialize input data for benchmark v6
+       INIT-INPUT-DATA-V6 SECTION.
+           SET VALUE-PRESENT IN CS6I-CUSTOMER-FLAGS
+            TO TRUE           
+           
+           SET VALUE-PRESENT IN CS6I-FIRST-NAME-FLAGS
+            TO TRUE
+           MOVE 'Test'
+             TO CS6I-FIRST-NAME
+           SET VALUE-PRESENT IN CS6I-LAST-NAME-FLAGS
+            TO TRUE
+           MOVE 'Tester'
+             TO CS6I-LAST-NAME
+           SET VALUE-PRESENT IN CS6I-GENDER-FLAGS
+            TO TRUE
+           MOVE 1
+             TO CS6I-GENDER
+
+      *    Primary addresses
+           SET VALUE-PRESENT IN CS6I-PRIMARY-ADDRESS-FLAGS
+            TO TRUE
+           
+           SET VALUE-PRESENT IN CS6I-STREET-FLAGS
+                             IN CS6I-PRIMARY-ADDRESS
+            TO TRUE
+           MOVE 'Test Street'
+             TO CS6I-STREET IN CS6I-PRIMARY-ADDRESS
+           SET VALUE-PRESENT IN CS6I-NUMBER-FLAGS
+                             IN CS6I-PRIMARY-ADDRESS
+             TO TRUE
+           MOVE 17
+             TO CS6I-NUMBER IN CS6I-PRIMARY-ADDRESS
+           SET VALUE-PRESENT IN CS6I-POSTAL-CODE-FLAGS
+                             IN CS6I-PRIMARY-ADDRESS
+            TO TRUE
+           MOVE 12345
+             TO CS6I-POSTAL-CODE IN CS6I-PRIMARY-ADDRESS
+           SET VALUE-PRESENT IN CS6I-CITY-FLAGS
+                             IN CS6I-PRIMARY-ADDRESS
+            TO TRUE
+           MOVE 'Test City'
+             TO CS6I-CITY IN CS6I-PRIMARY-ADDRESS
+             
+      *    Secondary addresses
+           SET VALUE-PRESENT IN CS6I-SEC-ADDR-LST-FLAGS
+            TO TRUE
+           MOVE 2
+             TO CS6I-SEC-ADDRESS-COUNT
+           
+           PERFORM VARYING I-1 FROM 1 BY 1
+                   UNTIL I-1 > 2
+                   
+             SET VALUE-PRESENT IN CS6I-SECONDARY-ADDRESS-FLAGS(I-1)
+              TO TRUE
+           
+             SET VALUE-PRESENT IN CS6I-STREET-FLAGS
+                               IN CS6I-SECONDARY-ADDRESS(I-1)
+              TO TRUE
+             MOVE 'Test Road'
+               TO CS6I-STREET IN CS6I-SECONDARY-ADDRESS(I-1)
+             SET VALUE-PRESENT IN CS6I-NUMBER-FLAGS
+                               IN CS6I-SECONDARY-ADDRESS(I-1)
+              TO TRUE
+             MOVE I-1
+               TO CS6I-NUMBER IN CS6I-SECONDARY-ADDRESS(I-1)
+             SET VALUE-PRESENT IN CS6I-POSTAL-CODE-FLAGS
+                               IN CS6I-SECONDARY-ADDRESS(I-1)
+              TO TRUE
+             MOVE 12345
+               TO CS6I-POSTAL-CODE IN CS6I-SECONDARY-ADDRESS(I-1)
+             SET VALUE-PRESENT IN CS6I-CITY-FLAGS
+                               IN CS6I-SECONDARY-ADDRESS(I-1)
+              TO TRUE
+             MOVE 'Test Town'
+               TO CS6I-CITY IN CS6I-SECONDARY-ADDRESS(I-1)
+           END-PERFORM
+
+           EXIT.
+           
+      * ---
+      * Perform conversion for benchmark v6
+       PERFORM-CONVERSION-V6 SECTION.
+           MOVE 0 TO OPERATION-INDEX
+           SET CONSUMER-TO-PROVIDER TO TRUE
+           SET PARAMETER-MAPPING TO TRUE
+
+           CALL 'convertData' USING
+             BY VALUE OPERATION-INDEX
+             BY VALUE MAPPING-DIRECTION
+             BY VALUE MAPPING-TYPE
+             BY REFERENCE CUSTOMER-V6-IN
+             BY REFERENCE CUSTOMER-PROVIDER-IN
+           
+           EXIT.
+
       * ---
       * Unload loaded conversion scripts (any benchmark)
        UNLOAD-SCRIPTS SECTION.
