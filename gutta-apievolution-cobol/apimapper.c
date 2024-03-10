@@ -302,7 +302,7 @@ int convertData(int operationIndex, int direction, int mappingType, void* source
     return convertStructureForOperation(sourceData, targetData, script, typeList, operationList, operationIndex, mappingType);
 }
 
-int determineSizeOfMappingOperation(void* operationData) {
+int skipMappingOperation(DataBuffer* scriptPosition) {
     // TODO
     return 0;
 }
@@ -367,6 +367,84 @@ int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEn
     return SUCCESS;
 }
 
+int performMapEnumOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 typeIndex = readInt32(scriptPosition);
+    void* savedPosition = getCurrentPosition(scriptPosition);
+    
+#ifdef DEBUG
+    printf("Mapping enum type with index %d\n", typeIndex);
+#endif
+
+    // Obtain a pointer to the referenced type entry
+    void* typeEntryPtr = elementFromList(typeList, typeIndex);
+    if (typeEntryPtr == NULL) {
+        return FAILURE;
+    }
+
+    // Adjust the script position
+    setCurrentPosition(scriptPosition, typeEntryPtr);
+    
+    byte entryType = readByte(scriptPosition);
+    if (entryType != ENTRY_TYPE_ENUM) {
+        snprintf(errorMessage, sizeof(errorMessage), "Unexpected entry type %d in enum mapping.", (int) entryType);
+        return reportError(errorMessage);
+    }
+
+    int result;
+    byte flags = readByte(sourceData);
+
+    switch (flags) {
+    case VALUE_ABSENT:
+    case VALUE_UNREPRESENTABLE:
+        writeByte(targetData, flags);
+        writeByte(targetData, 0);
+        result = SUCCESS;
+        break;
+        
+    case VALUE_PRESENT:
+        i32 sourceValue = readInt32(sourceData);
+        
+        // Skip the type id
+        readInt32(scriptPosition);
+        i32 numberOfValues = readInt32(scriptPosition);
+        
+#ifdef DEBUG
+        printf("Mapping value %d\n", sourceValue);
+#endif
+        
+        if (sourceValue > numberOfValues) {
+            snprintf(errorMessage, sizeof(errorMessage), "Unsupported enum value %d.", (int) sourceValue);
+            return reportError(errorMessage);    
+        }
+        
+        i32* mappedValues = (i32*) getCurrentPosition(scriptPosition);
+        i32 mappedValue = bigEndianIntToPlatform(mappedValues[sourceValue]);
+        
+        if (mappedValue >= 0) {
+#ifdef DEBUG
+            printf("Writing mapped value %d\n", mappedValue);
+#endif
+            writeByte(targetData, VALUE_PRESENT);
+            writeInt32(targetData, mappedValue);
+        } else {
+            writeByte(targetData, VALUE_UNREPRESENTABLE);
+            writeInt32(targetData, 0);
+        }
+        
+        result = SUCCESS;
+        break;
+
+    default:
+        snprintf(errorMessage, sizeof(errorMessage), "Unsupported value flags %d.", (int) flags);
+        result = reportError(errorMessage);
+        break;
+    }
+
+    // Restore the script position
+    setCurrentPosition(scriptPosition, savedPosition);
+    return result;
+}
+
 int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
     i32 typeIndex = readInt32(scriptPosition);
     void* savedPosition = getCurrentPosition(scriptPosition);
@@ -421,7 +499,7 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
         break;
     }
     
-    // Restore the script position if necessary
+    // Restore the script position
     setCurrentPosition(scriptPosition, savedPosition);
     return result;
 }
@@ -488,6 +566,9 @@ int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, Data
             
         case OPCODE_SKIP:
             return performSkipOperation(targetData, scriptPosition);
+            
+        case OPCODE_MAP_ENUM:
+            return performMapEnumOperation(sourceData, targetData, scriptPosition, typeList);
     
         case OPCODE_MAP_RECORD:
             return performMapRecordOperation(sourceData, targetData, scriptPosition, typeList);
@@ -529,8 +610,7 @@ int convertStructureForOperation(void* sourceData, void* targetData, void* scrip
         return performMappingOperation(&sourceBuffer, &targetBuffer, &scriptPosition, typeList);
     } else {
         // For result mapping, we need to skip the parameter mapping operation
-        int parameterOperationSize = determineSizeOfMappingOperation(currentPosition);
-        skipData(&scriptPosition, parameterOperationSize);
+        skipMappingOperation(&scriptPosition);
         
         return performMappingOperation(&sourceBuffer, &targetBuffer, &scriptPosition, typeList);
     }
