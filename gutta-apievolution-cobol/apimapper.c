@@ -13,6 +13,9 @@
 #define SUCCESS 0
 #define FAILURE 1
 
+typedef char byte;
+typedef int i32;
+
 enum {
     CONSUMER_TO_PROVIDER = 0,
     PROVIDER_TO_CONSUMER = 1
@@ -44,23 +47,21 @@ enum {
 } ValueFlags;
 
 typedef struct _offsetlist {
-    int length;
+    i32 length;
     void* basePtr;
-    int* offsets;
+    i32* offsets;
 } offsetlist;
 
 typedef struct _RecordTypeEntry {
-    int typeId;
-    int dataSize;
-    int numberOfFieldMappings;
+    i32 typeId;
+    i32 dataSize;
+    i32 numberOfFieldMappings;
 } RecordTypeEntry;
 
 typedef struct _DataBuffer {
     void* startPosition;
     void* currentPosition;
 } DataBuffer;
-
-typedef char byte;
 
 static void* consumerScript = NULL;
 static void* providerScript = NULL;
@@ -76,7 +77,7 @@ int reportError(char* message) {
     return FAILURE;
 }
 
-int bigEndianIntToPlatform(int value) {
+i32 bigEndianIntToPlatform(i32 value) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     return bswap_32(value);
 #else
@@ -84,7 +85,15 @@ int bigEndianIntToPlatform(int value) {
 #endif
 }
 
-void* elementFromList(offsetlist list, int index) {
+i32 platformIntToBigEndian(i32 value) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    return bswap_32(value);
+#else
+    return value;
+#endif
+}
+
+void* elementFromList(offsetlist list, i32 index) {
     if (index >= list.length) {
         snprintf(errorMessage, sizeof(errorMessage), "Invalid index %d (max index is %d).", index, list.length);
         reportError(errorMessage);
@@ -102,9 +111,9 @@ byte readByte(DataBuffer* buffer) {
     return value;
 }
 
-int readInt(DataBuffer* buffer) {
-    int value = bigEndianIntToPlatform(*((int*) buffer->currentPosition));
-    buffer->currentPosition += sizeof(int);
+i32 readInt32(DataBuffer* buffer) {
+    i32 value = bigEndianIntToPlatform(*((i32*) buffer->currentPosition));
+    buffer->currentPosition += sizeof(i32);
     
     return value;
 }
@@ -114,7 +123,12 @@ void writeByte(DataBuffer* buffer, byte value) {
     buffer->currentPosition += sizeof(byte);
 }
 
-void setToNull(DataBuffer* buffer, int amount) {
+void writeInt32(DataBuffer* buffer, i32 value) {
+    *((i32*) buffer->currentPosition) = platformIntToBigEndian(value);
+    buffer->currentPosition += sizeof(i32);
+}
+
+void setToNull(DataBuffer* buffer, i32 amount) {
     memset(buffer->currentPosition, 0, (size_t) amount);
     buffer->currentPosition += amount;
 }
@@ -130,7 +144,7 @@ void setStartPosition(DataBuffer *buffer, void* position) {
     buffer->currentPosition = position;
 }
 
-void skipData(DataBuffer *buffer, int amount) {
+void skipData(DataBuffer *buffer, i32 amount) {
     buffer->currentPosition += amount;
 }
 
@@ -275,9 +289,9 @@ int convertData(int operationIndex, int direction, int mappingType, void* source
     }
     
     // Determine offsets for type and operation lists
-    int* listPtr = (int*) script;
-    int typeListOffset = bigEndianIntToPlatform(listPtr[0]);
-    int operationListOffset = bigEndianIntToPlatform(listPtr[1]);
+    i32* listPtr = (i32*) script;
+    i32 typeListOffset = bigEndianIntToPlatform(listPtr[0]);
+    i32 operationListOffset = bigEndianIntToPlatform(listPtr[1]);
         
     // Prepare type and operation lists    
     offsetlist typeList;
@@ -293,7 +307,7 @@ int determineSizeOfMappingOperation(void* operationData) {
     return 0;
 }
 
-int writeNulls(DataBuffer *targetData, int amount) {
+int writeNulls(DataBuffer *targetData, i32 amount) {
 #ifdef DEBUG
     printf("Writing %d null bytes\n", amount);
 #endif
@@ -303,7 +317,7 @@ int writeNulls(DataBuffer *targetData, int amount) {
 }
 
 int performCopyOperation(DataBuffer* sourceData, DataBuffer *targetData, DataBuffer* scriptPosition) {
-    int bytesToCopy = readInt(scriptPosition);
+    i32 bytesToCopy = readInt32(scriptPosition);
 #ifdef DEBUG
     printf("copy %d bytes\n", bytesToCopy);
 #endif
@@ -314,7 +328,7 @@ int performCopyOperation(DataBuffer* sourceData, DataBuffer *targetData, DataBuf
 }
 
 int performSkipOperation(DataBuffer* targetData, DataBuffer* scriptPosition) {
-    int bytesToSkip = readInt(scriptPosition);
+    i32 bytesToSkip = readInt32(scriptPosition);
 #ifdef DEBUG
     printf("skip %d bytes\n", bytesToSkip);
 #endif
@@ -325,7 +339,7 @@ int performSkipOperation(DataBuffer* targetData, DataBuffer* scriptPosition) {
 }
 
 int mapField(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
-    int sourceFieldOffset = readInt(scriptPosition);        
+    i32 sourceFieldOffset = readInt32(scriptPosition);        
 #ifdef DEBUG
     printf("Field mapping at source offset: %d\n", sourceFieldOffset);
 #endif
@@ -339,12 +353,12 @@ int mapField(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptP
 }
 
 int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEntry* typeEntry, DataBuffer* scriptPosition, offsetlist typeList) {
-    int numberOfFieldMappings = bigEndianIntToPlatform(typeEntry->numberOfFieldMappings);
+    i32 numberOfFieldMappings = bigEndianIntToPlatform(typeEntry->numberOfFieldMappings);
 #ifdef DEBUG
     printf("Number of field mappings: %d\n", numberOfFieldMappings);
 #endif    
     
-    for (int fieldIndex = 0; fieldIndex < numberOfFieldMappings; fieldIndex++) {
+    for (i32 fieldIndex = 0; fieldIndex < numberOfFieldMappings; fieldIndex++) {
         if (mapField(sourceData, targetData, scriptPosition, typeList) != SUCCESS) {
             return FAILURE;
         }
@@ -354,7 +368,7 @@ int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEn
 }
 
 int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
-    int typeIndex = readInt(scriptPosition);
+    i32 typeIndex = readInt32(scriptPosition);
     void* savedPosition = getCurrentPosition(scriptPosition);
  
 #ifdef DEBUG
@@ -385,7 +399,7 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
     case VALUE_UNREPRESENTABLE:
         writeByte(targetData, flags);
         
-        int dataSize = bigEndianIntToPlatform(typeEntry->dataSize);
+        i32 dataSize = bigEndianIntToPlatform(typeEntry->dataSize);
         result = writeNulls(targetData, dataSize);
         break;
     
@@ -412,6 +426,59 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
     return result;
 }
 
+int performListMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    int returnCode;
+
+    i32 maxElementCount = readInt32(scriptPosition);
+    i32 sourceElementSize = readInt32(scriptPosition);
+    i32 targetElementSize = readInt32(scriptPosition);
+    
+#ifdef DEBUG
+    printf("List mapping: max elements %d, source size %d, target size %d\n", maxElementCount, sourceElementSize, targetElementSize);
+#endif
+
+    byte listFlags = readByte(sourceData);
+    if (listFlags != VALUE_PRESENT) {
+        // If no value is present, copy the flags as-is and set the target data to null
+        writeByte(targetData, listFlags);
+        // Set target element count to zero
+        writeInt32(targetData, 0);      
+        writeNulls(targetData, (maxElementCount * targetElementSize));
+    } else {
+        // If a value is present, convert values individually using the given operation
+        i32 actualElementCount = readInt32(sourceData);
+#ifdef DEBUG
+        printf("Actual element count: %d\n", actualElementCount);
+#endif
+        writeByte(targetData, VALUE_PRESENT);
+        writeInt32(targetData, actualElementCount);
+
+        // Save the pointer to the mapping operation, as we to reset it for each element
+        void* operationPtr = getCurrentPosition(scriptPosition);
+        void* currentSourceElementPtr = getCurrentPosition(sourceData);
+        for (i32 elementIndex = 0; elementIndex < actualElementCount; elementIndex++) {
+#ifdef DEBUG
+        printf("Mapping element %d, %p->%p\n", elementIndex, getCurrentPosition(sourceData), getCurrentPosition(targetData));
+#endif
+            setCurrentPosition(scriptPosition, operationPtr);            
+            // Map the individual elements
+            returnCode = performMappingOperation(sourceData, targetData, scriptPosition, typeList);
+            if (returnCode != SUCCESS) {
+                return FAILURE;
+            }
+            
+            // Position the source buffer at the beginning of the next element
+            currentSourceElementPtr += sourceElementSize;
+            setCurrentPosition(sourceData, currentSourceElementPtr);
+        }
+        
+        int remainingElements = maxElementCount - actualElementCount;
+        writeNulls(targetData, (remainingElements * targetElementSize));
+    }
+
+    return SUCCESS;
+}
+
 int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
     byte opcode = readByte(scriptPosition);
     
@@ -424,6 +491,9 @@ int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, Data
     
         case OPCODE_MAP_RECORD:
             return performMapRecordOperation(sourceData, targetData, scriptPosition, typeList);
+        
+        case OPCODE_MAP_LIST:
+            return performListMappingOperation(sourceData, targetData, scriptPosition, typeList);
         
         default:
             snprintf(errorMessage, sizeof(errorMessage), "Invalid opcode %d.", (int) opcode);
@@ -440,8 +510,8 @@ int convertStructureForOperation(void* sourceData, void* targetData, void* scrip
         return FAILURE;
     }
     
-    int nameLength = bigEndianIntToPlatform(*((int*) currentPosition));
-    currentPosition += sizeof(int);    
+    i32 nameLength = bigEndianIntToPlatform(*((int*) currentPosition));
+    currentPosition += sizeof(i32);    
     // Skip the name
     currentPosition += nameLength;
 
