@@ -53,13 +53,25 @@
            DISPLAY "Mapped last name '"
                    CSPI-LAST-NAME
                    "'" UPON CONSOLE
+                                      
+           DISPLAY "Mapped gender "
+                   CSPI-GENDER
+                   UPON CONSOLE
                    
-           DISPLAY "Mapped street name '"
+           DISPLAY "Mapped street '"
                    CSPI-STREET IN CSPI-PRIMARY-ADDRESS
                    "'" UPON CONSOLE
                    
-           DISPLAY "Mapped gender '"
-                   CSPI-GENDER
+           DISPLAY "Mapped number "
+                   CSPI-NUMBER IN CSPI-PRIMARY-ADDRESS
+                   UPON CONSOLE
+                   
+           DISPLAY "Mapped postal code "
+                   CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS
+                   UPON CONSOLE
+                   
+           DISPLAY "Mapped city '"
+                   CSPI-CITY IN CSPI-PRIMARY-ADDRESS
                    "'" UPON CONSOLE
                    
            GOBACK.
@@ -122,6 +134,18 @@
             TO TRUE
            MOVE 'Test Street'
              TO CS1I-STREET
+           SET VALUE-PRESENT IN CS1I-NUMBER-FLAGS
+             TO TRUE
+           MOVE 17
+             TO CS1I-NUMBER
+           SET VALUE-PRESENT IN CS1I-POSTAL-CODE-FLAGS
+            TO TRUE
+           MOVE 12345
+             TO CS1I-POSTAL-CODE
+           SET VALUE-PRESENT IN CS1I-CITY-FLAGS
+            TO TRUE
+           MOVE 'Test City'
+             TO CS1I-CITY
            
            EXIT.
            
