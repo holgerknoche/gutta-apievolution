@@ -38,11 +38,53 @@
            COPY CUSTOMRP REPLACING '*-' BY CSPO-.
        
        PROCEDURE DIVISION.
+           
+           
+      *    Initial call to load the module and make the other functions
+      *    available
+           CALL 'apimapper'      
+           
+           PERFORM RUN-BENCHMARK-V1
+                                  
+           DISPLAY "Mapped first name '"
+                   CSPI-FIRST-NAME
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped last name '"
+                   CSPI-LAST-NAME
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped street name '"
+                   CSPI-STREET IN CSPI-PRIMARY-ADDRESS
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped gender '"
+                   CSPI-GENDER
+                   "'" UPON CONSOLE
+                   
+           GOBACK.
+      
+      * ---
+      * Run invocation benchmark v1
+       RUN-BENCHMARK-V1 SECTION.
+           PERFORM LOAD-SCRIPTS-V1
+           PERFORM INIT-INPUT-DATA-V1
+           
            ACCEPT START-TIME FROM TIME
            
-      *    Call to load the module
-           CALL 'apimapper'
+           PERFORM PERFORM-CONVERSION-V1 1 TIMES
            
+           ACCEPT END-TIME FROM TIME
+           COMPUTE DURATION = (END-TIME - START-TIME)
+           DISPLAY 'Benchmark v1: ' DURATION 'cs' UPON CONSOLE
+           
+           PERFORM UNLOAD-SCRIPTS
+           
+           EXIT.
+      
+      * ---
+      * Load scripts for invocation benchmark v1
+       LOAD-SCRIPTS-V1 SECTION.
            MOVE 'consumer-script-v1.dat'
              TO CONSUMER-SCRIPT-NAME
            MOVE 'provider-script-v1.dat'
@@ -51,7 +93,12 @@
            CALL 'loadScripts' USING
                 BY REFERENCE CONSUMER-SCRIPT-NAME
                 BY REFERENCE PROVIDER-SCRIPT-NAME
-                
+           
+           EXIT.
+           
+      * ---
+      * Initialize input data for benchmark v1
+       INIT-INPUT-DATA-V1 SECTION.
            SET VALUE-PRESENT IN CS1I-CUSTOMER-FLAGS
             TO TRUE           
            
@@ -75,42 +122,29 @@
             TO TRUE
            MOVE 'Test Street'
              TO CS1I-STREET
-                
+           
+           EXIT.
+           
+      * ---
+      * Perform conversion for benchmark v1
+       PERFORM-CONVERSION-V1 SECTION.
            MOVE 0 TO OPERATION-INDEX
            SET CONSUMER-TO-PROVIDER TO TRUE
            SET PARAMETER-MAPPING TO TRUE
 
-           PERFORM 10000000 TIMES
-              CALL 'convertData' USING
-                BY VALUE OPERATION-INDEX
-                BY VALUE MAPPING-DIRECTION
-                BY VALUE MAPPING-TYPE
-                BY REFERENCE CUSTOMER-V1-IN
-                BY REFERENCE CUSTOMER-PROVIDER-IN
-           END-PERFORM
-
-           CALL 'unloadScripts'
+           CALL 'convertData' USING
+             BY VALUE OPERATION-INDEX
+             BY VALUE MAPPING-DIRECTION
+             BY VALUE MAPPING-TYPE
+             BY REFERENCE CUSTOMER-V1-IN
+             BY REFERENCE CUSTOMER-PROVIDER-IN
            
-           ACCEPT END-TIME FROM TIME
-           COMPUTE DURATION = (END-TIME - START-TIME)
-       
-           DISPLAY "Mapped first name '"
-                   CSPI-FIRST-NAME
-                   "'" UPON CONSOLE
-                   
-           DISPLAY "Mapped last name '"
-                   CSPI-LAST-NAME
-                   "'" UPON CONSOLE
-                   
-           DISPLAY "Mapped street name '"
-                   CSPI-STREET IN CSPI-PRIMARY-ADDRESS
-                   "'" UPON CONSOLE
-                   
-           DISPLAY "Mapped gender '"
-                   CSPI-GENDER
-                   "'" UPON CONSOLE
-       
-           DISPLAY 'Took ' DURATION 'cs' UPON CONSOLE
-       
-           GOBACK.
+           EXIT.
+           
+      * ---
+      * Unload loaded conversion scripts (any benchmark)
+       UNLOAD-SCRIPTS SECTION.
+           CALL 'unloadScripts'         
+           
+           EXIT.
            
