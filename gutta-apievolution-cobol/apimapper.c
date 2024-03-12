@@ -58,6 +58,12 @@ typedef struct _RecordTypeEntry {
     i32 numberOfFieldMappings;
 } RecordTypeEntry;
 
+typedef struct _PolymorphicRecordMapping {
+    i32 sourceTypeId;
+    i32 targetTypeId;
+    i32 typeEntryIndex;
+} PolymorphicRecordMapping;
+
 typedef struct _DataBuffer {
     void* startPosition;
     void* currentPosition;
@@ -114,6 +120,13 @@ byte readByte(DataBuffer* buffer) {
 i32 readInt32(DataBuffer* buffer) {
     i32 value = bigEndianIntToPlatform(*((i32*) buffer->currentPosition));
     buffer->currentPosition += sizeof(i32);
+    
+    return value;
+}
+
+void* readStruct(DataBuffer* buffer, size_t length) {
+    void* value = buffer->currentPosition;
+    buffer->currentPosition += length;
     
     return value;
 }
@@ -280,7 +293,7 @@ int convertData(int operationIndex, int direction, int mappingType, void* source
 #ifdef DEBUG
     printf("Converting using operation %d, direction %d.\n", operationIndex, direction);
 #endif
-    
+
     void* script;
     if (direction == CONSUMER_TO_PROVIDER) {
         script = consumerScript;
@@ -298,7 +311,7 @@ int convertData(int operationIndex, int direction, int mappingType, void* source
     readList((void*) script + typeListOffset, script, &typeList);
     offsetlist operationList;
     readList((void*) script + operationListOffset, script, &operationList);
-    
+
     return convertStructureForOperation(sourceData, targetData, script, typeList, operationList, operationIndex, mappingType);
 }
 
@@ -335,35 +348,6 @@ int performSkipOperation(DataBuffer* targetData, DataBuffer* scriptPosition) {
     
     skipData(targetData, bytesToSkip);
     
-    return SUCCESS;
-}
-
-int mapField(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
-    i32 sourceFieldOffset = readInt32(scriptPosition);        
-#ifdef DEBUG
-    printf("Field mapping at source offset: %d\n", sourceFieldOffset);
-#endif
-    
-    moveToOffset(sourceData, sourceFieldOffset);    
-    if (performMappingOperation(sourceData, targetData, scriptPosition, typeList) != SUCCESS) {
-        return FAILURE;
-    }
-    
-    return SUCCESS;
-}
-
-int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEntry* typeEntry, DataBuffer* scriptPosition, offsetlist typeList) {
-    i32 numberOfFieldMappings = bigEndianIntToPlatform(typeEntry->numberOfFieldMappings);
-#ifdef DEBUG
-    printf("Number of field mappings: %d\n", numberOfFieldMappings);
-#endif    
-    
-    for (i32 fieldIndex = 0; fieldIndex < numberOfFieldMappings; fieldIndex++) {
-        if (mapField(sourceData, targetData, scriptPosition, typeList) != SUCCESS) {
-            return FAILURE;
-        }
-    }
-
     return SUCCESS;
 }
 
@@ -445,6 +429,35 @@ int performMapEnumOperation(DataBuffer* sourceData, DataBuffer* targetData, Data
     return result;
 }
 
+int mapField(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 sourceFieldOffset = readInt32(scriptPosition);        
+#ifdef DEBUG
+    printf("Field mapping at source offset: %d\n", sourceFieldOffset);
+#endif
+    
+    moveToOffset(sourceData, sourceFieldOffset);    
+    if (performMappingOperation(sourceData, targetData, scriptPosition, typeList) != SUCCESS) {
+        return FAILURE;
+    }
+    
+    return SUCCESS;
+}
+
+int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEntry* typeEntry, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 numberOfFieldMappings = bigEndianIntToPlatform(typeEntry->numberOfFieldMappings);
+#ifdef DEBUG
+    printf("Number of field mappings: %d\n", numberOfFieldMappings);
+#endif    
+    
+    for (i32 fieldIndex = 0; fieldIndex < numberOfFieldMappings; fieldIndex++) {
+        if (mapField(sourceData, targetData, scriptPosition, typeList) != SUCCESS) {
+            return FAILURE;
+        }
+    }
+
+    return SUCCESS;
+}
+
 int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
     i32 typeIndex = readInt32(scriptPosition);
     void* savedPosition = getCurrentPosition(scriptPosition);
@@ -454,20 +467,21 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
 #endif 
     
     // Obtain a pointer to the referenced type entry
-    void* currentPosition = elementFromList(typeList, typeIndex);
-    if (currentPosition == NULL) {
+    void* typeEntryPtr = elementFromList(typeList, typeIndex);
+    if (typeEntryPtr == NULL) {
         return FAILURE;
     }
 
-    byte entryType = *((byte*) currentPosition);
-    currentPosition += sizeof(byte);
+    // Adjust the script position
+    setCurrentPosition(scriptPosition, typeEntryPtr);
+
+    byte entryType = readByte(scriptPosition);
     if (entryType != ENTRY_TYPE_RECORD) {
         snprintf(errorMessage, sizeof(errorMessage), "Unexpected entry type %d in record mapping.", (int) entryType);
         return reportError(errorMessage);
     }
     
-    RecordTypeEntry* typeEntry = (RecordTypeEntry*) currentPosition;    
-    currentPosition += sizeof(RecordTypeEntry);
+    RecordTypeEntry* typeEntry = (RecordTypeEntry*) readStruct(scriptPosition, sizeof(RecordTypeEntry));    
 
     byte flags = readByte(sourceData);
     int result;
@@ -483,10 +497,7 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
     
     case VALUE_PRESENT:
         writeByte(targetData, VALUE_PRESENT);
-    
-        // Adjust the script position
-        setCurrentPosition(scriptPosition, currentPosition);
-    
+        
         DataBuffer newSourceData;
         setStartPosition(&newSourceData, getCurrentPosition(sourceData));
         
@@ -557,6 +568,101 @@ int performListMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, 
     return SUCCESS;
 }
 
+i32 determineMaxSize(i32 numberOfMappings, PolymorphicRecordMapping* mappings) {
+    // TODO
+    return 0;
+}
+
+PolymorphicRecordMapping* findMatchingMapping(i32 sourceTypeId, i32 numberOfMappings, PolymorphicRecordMapping* mappings) {
+    for (i32 mappingIndex = 0; mappingIndex < numberOfMappings; mappingIndex++) {
+        PolymorphicRecordMapping mapping = mappings[mappingIndex];
+        
+        i32 currentSourceTypeId = bigEndianIntToPlatform(mapping.sourceTypeId);
+        if (currentSourceTypeId == sourceTypeId) {
+            return &mappings[mappingIndex];
+        }
+    }
+    
+    return NULL;
+}
+
+int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+#ifdef DEBUG
+    printf("Poly mapping operation at %p.\n", getCurrentPosition(scriptPosition));
+#endif
+    
+    i32 numberOfMappings = readInt32(scriptPosition);
+    void* currentScriptPosition = getCurrentPosition(scriptPosition);
+    PolymorphicRecordMapping* mappings = (PolymorphicRecordMapping*) currentScriptPosition;
+    void* scriptPositionAfterOperation = currentScriptPosition + (numberOfMappings * sizeof(PolymorphicRecordMapping));
+
+    int result = SUCCESS;
+    byte flags = readByte(sourceData);
+    
+    switch (flags) {
+    case VALUE_ABSENT:
+    case VALUE_UNREPRESENTABLE:
+        // If no (representable) value is present, copy the flags as-is, set the type id to zero and
+        // fill the data area with nulls
+        writeByte(targetData, flags);
+        writeInt32(targetData, 0);
+        i32 maxSize = determineMaxSize(numberOfMappings, mappings);
+        writeNulls(targetData, maxSize);        
+        break;
+    
+    case VALUE_PRESENT:
+        i32 sourceTypeId = readInt32(sourceData);
+#ifdef DEBUG
+        printf("Mapping source type id %d\n", sourceTypeId);
+#endif
+        PolymorphicRecordMapping* mapping = findMatchingMapping(sourceTypeId, numberOfMappings, mappings);
+        if (mapping != NULL) {
+            // Corresponding mapping found => value is representable
+            writeByte(targetData, VALUE_PRESENT);
+            writeInt32(targetData, mapping->targetTypeId);
+            
+            // Resolve the type entry id and map the fields 
+            i32 typeIndex = bigEndianIntToPlatform(mapping->typeEntryIndex);
+            void* typeEntryPtr = elementFromList(typeList, typeIndex);
+            if (typeEntryPtr == NULL) {
+                return FAILURE;
+            }
+
+            // Adjust the script position
+            setCurrentPosition(scriptPosition, typeEntryPtr);
+
+            byte entryType = readByte(scriptPosition);
+            if (entryType != ENTRY_TYPE_RECORD) {
+                snprintf(errorMessage, sizeof(errorMessage), "Unexpected entry type %d in polymorphic record mapping.", (int) entryType);
+                return reportError(errorMessage);
+            }
+    
+            RecordTypeEntry* typeEntry = (RecordTypeEntry*) readStruct(scriptPosition, sizeof(RecordTypeEntry));    
+
+            DataBuffer newSourceData;
+            setStartPosition(&newSourceData, getCurrentPosition(sourceData));
+        
+            result = mapRecordFields(&newSourceData, targetData, typeEntry, scriptPosition, typeList);            
+        } else {
+            // No corresponding mapping => value is unrepresentable
+            writeByte(targetData, VALUE_UNREPRESENTABLE);
+            writeInt32(targetData, 0);
+            i32 maxSize = determineMaxSize(numberOfMappings, mappings);
+            writeNulls(targetData, maxSize);
+        }
+        break;
+    
+    default:
+        snprintf(errorMessage, sizeof(errorMessage), "Unsupported value flags %d.", (int) flags);
+        return reportError(errorMessage);
+        break;
+    }
+
+    // Move the script position to the byte after the mapping operation
+    setCurrentPosition(scriptPosition, scriptPositionAfterOperation);
+    return result;
+}
+
 int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
     byte opcode = readByte(scriptPosition);
     
@@ -575,6 +681,9 @@ int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, Data
         
         case OPCODE_MAP_LIST:
             return performListMappingOperation(sourceData, targetData, scriptPosition, typeList);
+            
+        case OPCODE_MAP_POLYMORPHIC_RECORD:
+            return performMapPolymorphicRecordOperation(sourceData, targetData, scriptPosition, typeList);
         
         default:
             snprintf(errorMessage, sizeof(errorMessage), "Invalid opcode %d.", (int) opcode);
