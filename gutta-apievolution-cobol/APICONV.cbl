@@ -62,65 +62,9 @@
            CALL 'apimapper'      
            
            PERFORM RUN-BENCHMARK-V6
-                                  
-           DISPLAY "Mapped first name '"
-                   CSPI-FIRST-NAME
-                   "'" UPON CONSOLE
-                   
-           DISPLAY "Mapped last name '"
-                   CSPI-LAST-NAME
-                   "'" UPON CONSOLE
-                                      
-           DISPLAY "Mapped gender "
-                   CSPI-GENDER
-                   UPON CONSOLE
-                   
-           DISPLAY "Mapped street '"
-                   CSPI-STREET IN CSPI-PRIMARY-ADDRESS
-                   "'" UPON CONSOLE
-                   
-           DISPLAY "Mapped number "
-                   CSPI-NUMBER IN CSPI-PRIMARY-ADDRESS
-                   UPON CONSOLE
-                   
-           DISPLAY "Mapped postal code "
-                   CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS
-                   UPON CONSOLE
-                   
-           DISPLAY "Mapped city '"
-                   CSPI-CITY IN CSPI-PRIMARY-ADDRESS
-                   "'" UPON CONSOLE
            
-           DISPLAY "Secondary address count "
-                   CSPI-SEC-ADDRESS-COUNT 
-                   IN CSPI-SECONDARY-ADDRESSES
-                   UPON CONSOLE
-                   
-           PERFORM VARYING I-1 FROM 1 BY 1 UNTIL 
-                   I-1 > CSPI-SEC-ADDRESS-COUNT
-                   IN CSPI-SECONDARY-ADDRESSES
-                   
-               DISPLAY "Secondary address " I-1
-                       UPON CONSOLE
-
-               DISPLAY "Mapped street '"
-                       CSPI-STREET IN CSPI-SECONDARY-ADDRESS(I-1)
-                       "'" UPON CONSOLE
-                   
-               DISPLAY "Mapped number "
-                       CSPI-NUMBER IN CSPI-SECONDARY-ADDRESS(I-1)
-                       UPON CONSOLE
-                   
-               DISPLAY "Mapped postal code "
-                       CSPI-POSTAL-CODE IN CSPI-SECONDARY-ADDRESS(I-1)
-                       UPON CONSOLE
-                   
-                DISPLAY "Mapped city '"
-                       CSPI-CITY IN CSPI-SECONDARY-ADDRESS(I-1)
-                       "'" UPON CONSOLE
-                   
-           END-PERFORM
-
+           PERFORM PRINT-PROVIDER-DATA
+                                  
            GOBACK.
       
       * ---
@@ -347,13 +291,6 @@
       * ---
       * Run invocation benchmark v6
        RUN-BENCHMARK-V6 SECTION.
-           DISPLAY "Input length: "
-                   LENGTH OF CUSTOMER-V6-IN
-                   UPON CONSOLE
-           DISPLAY "Output length: "
-                   LENGTH OF CUSTOMER-PROVIDER-IN
-                   UPON CONSOLE
-       
            PERFORM LOAD-SCRIPTS-V6
            PERFORM INIT-INPUT-DATA-V6
            
@@ -504,6 +441,163 @@
              BY REFERENCE CUSTOMER-V6-IN
              BY REFERENCE CUSTOMER-PROVIDER-IN
            
+           EXIT.
+
+      * ---
+      * Print provider data structure for test purposes
+       PRINT-PROVIDER-DATA SECTION.
+           DISPLAY "Mapped first name '"
+                   CSPI-FIRST-NAME
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped last name '"
+                   CSPI-LAST-NAME
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped date of birth '"
+                   CSPI-DATE-OF-BIRTH
+                   "'" UPON CONSOLE
+                                      
+           DISPLAY "Mapped gender "
+                   CSPI-GENDER
+                   UPON CONSOLE
+                   
+           DISPLAY "Mapped street '"
+                   CSPI-STREET IN CSPI-PRIMARY-ADDRESS
+                   "'" UPON CONSOLE
+                   
+           DISPLAY "Mapped number "
+                   CSPI-NUMBER IN CSPI-PRIMARY-ADDRESS
+                   UPON CONSOLE
+                   
+           DISPLAY "Mapped postal code "
+                   CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS
+                   UPON CONSOLE
+                   
+           DISPLAY "Mapped city '"
+                   CSPI-CITY IN CSPI-PRIMARY-ADDRESS
+                   "'" UPON CONSOLE
+
+           EVALUATE TRUE
+           WHEN CSPI-STREET-ADDRESS IN CSPI-PRIMARY-ADDRESS-NEW
+               DISPLAY "Mapped street (new) '"
+                       CSPI-STREET IN CSPI-PRIMARY-ADDRESS-NEW
+                       "'" UPON CONSOLE
+                   
+               DISPLAY "Mapped number (new) "
+                       CSPI-NUMBER IN CSPI-PRIMARY-ADDRESS-NEW
+                       UPON CONSOLE
+                   
+               DISPLAY "Mapped postal code (new) "
+                       CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS-NEW
+                       UPON CONSOLE
+                   
+               DISPLAY "Mapped city (new) '"
+                       CSPI-CITY IN CSPI-PRIMARY-ADDRESS-NEW
+                       "'" UPON CONSOLE
+                    
+           WHEN CSPI-PO-BOX-ADDRESS IN CSPI-PRIMARY-ADDRESS-NEW
+           
+               DISPLAY "Mapped PO box number (new) "
+                       CSPI-BOX-NO IN CSPI-PRIMARY-ADDRESS-NEW
+                       UPON CONSOLE
+                   
+               DISPLAY "Mapped postal code (new) "
+                       CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS-NEW
+                       UPON CONSOLE
+                   
+               DISPLAY "Mapped city (new) '"
+                       CSPI-CITY IN CSPI-PRIMARY-ADDRESS-NEW
+                       "'" UPON CONSOLE           
+                       
+           WHEN OTHER
+               CONTINUE
+               
+           END-EVALUATE
+           
+           DISPLAY "Secondary address count "
+                   CSPI-SEC-ADDRESS-COUNT 
+                   IN CSPI-SECONDARY-ADDRESSES
+                   UPON CONSOLE
+                   
+           PERFORM VARYING I-1 FROM 1 BY 1 UNTIL 
+                   I-1 > CSPI-SEC-ADDRESS-COUNT
+                   IN CSPI-SECONDARY-ADDRESSES
+                   
+               DISPLAY "Secondary address " I-1
+                       UPON CONSOLE
+
+               DISPLAY "Mapped street '"
+                       CSPI-STREET IN CSPI-SECONDARY-ADDRESS(I-1)
+                       "'" UPON CONSOLE
+                   
+               DISPLAY "Mapped number "
+                       CSPI-NUMBER IN CSPI-SECONDARY-ADDRESS(I-1)
+                       UPON CONSOLE
+                   
+               DISPLAY "Mapped postal code "
+                       CSPI-POSTAL-CODE IN CSPI-SECONDARY-ADDRESS(I-1)
+                       UPON CONSOLE
+                   
+                DISPLAY "Mapped city '"
+                       CSPI-CITY IN CSPI-SECONDARY-ADDRESS(I-1)
+                       "'" UPON CONSOLE                   
+           END-PERFORM
+           
+           DISPLAY "Secondary address count (new) "
+                   CSPI-SEC-ADDR-NEW-COUNT 
+                   IN CSPI-SECONDARY-ADDRESSES-NEW
+                   UPON CONSOLE
+
+           PERFORM VARYING I-1 FROM 1 BY 1 UNTIL 
+                   I-1 > CSPI-SEC-ADDR-NEW-COUNT
+                   IN CSPI-SECONDARY-ADDRESSES-NEW
+
+               EVALUATE TRUE
+               WHEN CSPI-STREET-ADDRESS 
+                    IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+                    
+                   DISPLAY "Mapped street (new) '"
+                           CSPI-STREET 
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+                           "'" UPON CONSOLE
+                   
+                   DISPLAY "Mapped number (new) "
+                           CSPI-NUMBER 
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+                           UPON CONSOLE
+                   
+                   DISPLAY "Mapped postal code (new) "
+                           CSPI-POSTAL-CODE
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+                           UPON CONSOLE
+                   
+                   DISPLAY "Mapped city (new) '"
+                           CSPI-CITY
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+                           "'" UPON CONSOLE
+                    
+               WHEN CSPI-PO-BOX-ADDRESS 
+                    IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
+           
+                   DISPLAY "Mapped PO box number (new) "
+                           CSPI-BOX-NO IN CSPI-PRIMARY-ADDRESS-NEW
+                           UPON CONSOLE
+                   
+                   DISPLAY "Mapped postal code (new) "
+                           CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS-NEW
+                           UPON CONSOLE
+                   
+                   DISPLAY "Mapped city (new) '"
+                           CSPI-CITY IN CSPI-PRIMARY-ADDRESS-NEW
+                           "'" UPON CONSOLE           
+                       
+               WHEN OTHER
+                   CONTINUE
+               
+               END-EVALUATE
+           END-PERFORM
+
            EXIT.
 
       * ---

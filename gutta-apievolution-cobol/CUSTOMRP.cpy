@@ -36,8 +36,8 @@
                  88 VALUE-UNREPRESENTABLE VALUE 2.
                        
                15 '*-'TYPE-ID PIC S9(9) BINARY.
-                 88 '*-'STREET-ADDRESS VALUE 4.
-                 88 '*-'PO-BOX-ADDRESS VALUE 5.
+                 88 '*-'STREET-ADDRESS VALUE 3.
+                 88 '*-'PO-BOX-ADDRESS VALUE 4.
                    
                15 '*-'POSTAL-CODE-FLAGS PIC 9 BINARY.
                  88 VALUE-ABSENT VALUE 0.
@@ -88,8 +88,8 @@
                    88 VALUE-UNREPRESENTABLE VALUE 2.
 
                  20 '*-'TYPE-ID PIC S9(9) BINARY.
-                   88 '*-'STREET-ADDRESS VALUE 4.
-                   88 '*-'PO-BOX-ADDRESS VALUE 5.
+                   88 '*-'STREET-ADDRESS VALUE 3.
+                   88 '*-'PO-BOX-ADDRESS VALUE 4.
                 
                  20 '*-'POSTAL-CODE-FLAGS PIC 9 BINARY.
                    88 VALUE-ABSENT VALUE 0.
