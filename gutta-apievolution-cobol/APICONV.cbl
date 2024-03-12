@@ -581,15 +581,18 @@
                     IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
            
                    DISPLAY "Mapped PO box number (new) "
-                           CSPI-BOX-NO IN CSPI-PRIMARY-ADDRESS-NEW
+                           CSPI-BOX-NO
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
                            UPON CONSOLE
                    
                    DISPLAY "Mapped postal code (new) "
-                           CSPI-POSTAL-CODE IN CSPI-PRIMARY-ADDRESS-NEW
+                           CSPI-POSTAL-CODE
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
                            UPON CONSOLE
                    
                    DISPLAY "Mapped city (new) '"
-                           CSPI-CITY IN CSPI-PRIMARY-ADDRESS-NEW
+                           CSPI-CITY
+                           IN CSPI-SECONDARY-ADDRESS-NEW(I-1)
                            "'" UPON CONSOLE           
                        
                WHEN OTHER
