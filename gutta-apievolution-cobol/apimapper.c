@@ -141,6 +141,11 @@ void writeInt32(DataBuffer* buffer, i32 value) {
     buffer->currentPosition += sizeof(i32);
 }
 
+void writeInt32BigEndian(DataBuffer* buffer, i32 value) {
+    *((i32*) buffer->currentPosition) = value;
+    buffer->currentPosition += sizeof(i32);
+}
+
 void setToNull(DataBuffer* buffer, i32 amount) {
     memset(buffer->currentPosition, 0, (size_t) amount);
     buffer->currentPosition += amount;
@@ -619,7 +624,7 @@ int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* tar
         if (mapping != NULL) {
             // Corresponding mapping found => value is representable
             writeByte(targetData, VALUE_PRESENT);
-            writeInt32(targetData, mapping->targetTypeId);
+            writeInt32BigEndian(targetData, mapping->targetTypeId);
             
             // Resolve the type entry id and map the fields 
             i32 typeIndex = bigEndianIntToPlatform(mapping->typeEntryIndex);
