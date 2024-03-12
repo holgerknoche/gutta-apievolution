@@ -258,6 +258,10 @@
             TO TRUE
            MOVE 'Tester'
              TO CS3I-LAST-NAME
+           SET VALUE-PRESENT IN CS3I-DATE-OF-BIRTH-FLAGS
+            TO TRUE
+           MOVE '01.01.2000'
+             TO CS3I-DATE-OF-BIRTH             
            SET VALUE-PRESENT IN CS3I-GENDER-FLAGS
             TO TRUE
            MOVE 1
@@ -343,6 +347,13 @@
       * ---
       * Run invocation benchmark v6
        RUN-BENCHMARK-V6 SECTION.
+           DISPLAY "Input length: "
+                   LENGTH OF CUSTOMER-V6-IN
+                   UPON CONSOLE
+           DISPLAY "Output length: "
+                   LENGTH OF CUSTOMER-PROVIDER-IN
+                   UPON CONSOLE
+       
            PERFORM LOAD-SCRIPTS-V6
            PERFORM INIT-INPUT-DATA-V6
            
@@ -386,13 +397,19 @@
             TO TRUE
            MOVE 'Tester'
              TO CS6I-LAST-NAME
+           SET VALUE-PRESENT IN CS6I-DATE-OF-BIRTH-FLAGS
+            TO TRUE
+           MOVE '01.01.2000'
+             TO CS6I-DATE-OF-BIRTH
            SET VALUE-PRESENT IN CS6I-GENDER-FLAGS
             TO TRUE
            MOVE 1
              TO CS6I-GENDER
 
-      *    Primary addresses
+      *    Primary address
            SET VALUE-PRESENT IN CS6I-PRIMARY-ADDRESS-FLAGS
+            TO TRUE
+           SET CS6I-STREET-ADDRESS IN CS6I-PRIMARY-ADDRESS
             TO TRUE
            
            SET VALUE-PRESENT IN CS6I-STREET-FLAGS
@@ -421,34 +438,55 @@
             TO TRUE
            MOVE 2
              TO CS6I-SEC-ADDRESS-COUNT
+
+      *    First entry (street address)
+           SET VALUE-PRESENT IN CS6I-SECONDARY-ADDRESS-FLAGS(1)
+            TO TRUE
+           SET CS6I-STREET-ADDRESS IN CS6I-SECONDARY-ADDRESS(1)
+            TO TRUE
            
-           PERFORM VARYING I-1 FROM 1 BY 1
-                   UNTIL I-1 > 2
-                   
-             SET VALUE-PRESENT IN CS6I-SECONDARY-ADDRESS-FLAGS(I-1)
-              TO TRUE
+           SET VALUE-PRESENT IN CS6I-STREET-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(1)
+            TO TRUE
+           MOVE 'Test Road'
+             TO CS6I-STREET IN CS6I-SECONDARY-ADDRESS(1)
+           SET VALUE-PRESENT IN CS6I-NUMBER-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(1)
+            TO TRUE
+           MOVE 3
+             TO CS6I-NUMBER IN CS6I-SECONDARY-ADDRESS(1)
+           SET VALUE-PRESENT IN CS6I-POSTAL-CODE-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(1)
+            TO TRUE
+           MOVE 12345
+             TO CS6I-POSTAL-CODE IN CS6I-SECONDARY-ADDRESS(1)
+           SET VALUE-PRESENT IN CS6I-CITY-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(1)
+            TO TRUE
+           MOVE 'Test Town'
+             TO CS6I-CITY IN CS6I-SECONDARY-ADDRESS(1)
+
+      *    Second entry (PO box address)
+           SET VALUE-PRESENT IN CS6I-SECONDARY-ADDRESS-FLAGS(2)
+            TO TRUE
+           SET CS6I-PO-BOX-ADDRESS IN CS6I-SECONDARY-ADDRESS(2)
+            TO TRUE
            
-             SET VALUE-PRESENT IN CS6I-STREET-FLAGS
-                               IN CS6I-SECONDARY-ADDRESS(I-1)
-              TO TRUE
-             MOVE 'Test Road'
-               TO CS6I-STREET IN CS6I-SECONDARY-ADDRESS(I-1)
-             SET VALUE-PRESENT IN CS6I-NUMBER-FLAGS
-                               IN CS6I-SECONDARY-ADDRESS(I-1)
-              TO TRUE
-             MOVE I-1
-               TO CS6I-NUMBER IN CS6I-SECONDARY-ADDRESS(I-1)
-             SET VALUE-PRESENT IN CS6I-POSTAL-CODE-FLAGS
-                               IN CS6I-SECONDARY-ADDRESS(I-1)
-              TO TRUE
-             MOVE 12345
-               TO CS6I-POSTAL-CODE IN CS6I-SECONDARY-ADDRESS(I-1)
-             SET VALUE-PRESENT IN CS6I-CITY-FLAGS
-                               IN CS6I-SECONDARY-ADDRESS(I-1)
-              TO TRUE
-             MOVE 'Test Town'
-               TO CS6I-CITY IN CS6I-SECONDARY-ADDRESS(I-1)
-           END-PERFORM
+           SET VALUE-PRESENT IN CS6I-BOX-NO-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(2)
+            TO TRUE
+           MOVE 5678
+             TO CS6I-BOX-NO IN CS6I-SECONDARY-ADDRESS(2)
+           SET VALUE-PRESENT IN CS6I-POSTAL-CODE-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(2)
+            TO TRUE
+           MOVE 12346
+             TO CS6I-POSTAL-CODE IN CS6I-SECONDARY-ADDRESS(2)
+           SET VALUE-PRESENT IN CS6I-CITY-FLAGS
+                             IN CS6I-SECONDARY-ADDRESS(2)
+            TO TRUE
+           MOVE 'Test Town'
+             TO CS6I-CITY IN CS6I-SECONDARY-ADDRESS(2)
 
            EXIT.
            
