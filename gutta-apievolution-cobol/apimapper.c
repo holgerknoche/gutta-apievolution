@@ -321,8 +321,47 @@ int convertData(int operationIndex, int direction, int mappingType, void* source
 }
 
 int skipMappingOperation(DataBuffer* scriptPosition) {
-    // TODO
-    return 0;
+    byte opcode = readByte(scriptPosition);
+    
+    switch (opcode) {
+    case OPCODE_COPY:
+        // A copy operation only consists of the number of bytes to copy
+        skipData(scriptPosition, sizeof(i32));
+        break;
+    
+    case OPCODE_SKIP:
+        // A skip operation only consists of the number of bytes to skip
+        skipData(scriptPosition, sizeof(i32));
+        break;
+        
+    case OPCODE_MAP_ENUM:
+        // An enum mapping operation only consists of the index of the type entry
+        skipData(scriptPosition, sizeof(i32));
+        break;
+    
+    case OPCODE_MAP_RECORD:
+        // A record mapping operation only consists of the index of the type entry
+        skipData(scriptPosition, sizeof(i32));
+        break;
+        
+    case OPCODE_MAP_LIST:
+        // A list mapping operation consists of three i32 values plus the element mapping operation
+        skipData(scriptPosition, 3 * sizeof(i32));
+        skipMappingOperation(scriptPosition);
+        break;
+    
+    case OPCODE_MAP_POLYMORPHIC_RECORD:
+        // A polymorphic record mapping consists of a list of record mappings
+        i32 numberOfMappings = readInt32(scriptPosition);
+        skipData(scriptPosition, numberOfMappings * sizeof(PolymorphicRecordMapping));
+        break;
+    
+    default:
+        snprintf(errorMessage, sizeof(errorMessage), "Unsupported opcode %d to skip.", (int) opcode);
+        return reportError(errorMessage);
+    }
+    
+    return SUCCESS;
 }
 
 int writeNulls(DataBuffer *targetData, i32 amount) {
