@@ -612,9 +612,38 @@ int performListMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, 
     return SUCCESS;
 }
 
-i32 determineMaxSize(i32 numberOfMappings, PolymorphicRecordMapping* mappings) {
-    // TODO
-    return 0;
+i32 determineMaxTargetSize(i32 numberOfMappings, PolymorphicRecordMapping* mappings, offsetlist typeList) {
+    i32 maxSize = 0;
+    DataBuffer tempBuffer;
+    
+    for (i32 mappingIndex; mappingIndex < numberOfMappings; mappingIndex++) {
+        PolymorphicRecordMapping mapping = mappings[mappingIndex];
+        i32 typeIndex = bigEndianIntToPlatform(mapping.typeEntryIndex);
+        
+        void* typeEntryPtr = elementFromList(typeList, typeIndex);
+        if (typeEntryPtr == NULL) {
+            continue;
+        }
+        
+        setCurrentPosition(&tempBuffer, typeEntryPtr);
+        byte entryType = readByte(&tempBuffer);
+        if (entryType != ENTRY_TYPE_RECORD) {
+            continue;
+        }
+        
+        RecordTypeEntry* recordEntry = (RecordTypeEntry*) getCurrentPosition(&tempBuffer);
+        i32 typeSize = bigEndianIntToPlatform(recordEntry->dataSize);
+        
+        if (typeSize > maxSize) {
+            maxSize = typeSize;
+        }
+    }
+  
+#ifdef DEBUG
+    printf("Max size of poly type is %d bytes.\n", maxSize);
+#endif
+  
+    return maxSize;
 }
 
 PolymorphicRecordMapping* findMatchingMapping(i32 sourceTypeId, i32 numberOfMappings, PolymorphicRecordMapping* mappings) {
@@ -650,7 +679,7 @@ int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* tar
         // fill the data area with nulls
         writeByte(targetData, flags);
         writeInt32(targetData, 0);
-        i32 maxSize = determineMaxSize(numberOfMappings, mappings);
+        i32 maxSize = determineMaxTargetSize(numberOfMappings, mappings, typeList);
         writeNulls(targetData, maxSize);        
         break;
     
@@ -691,7 +720,7 @@ int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* tar
             // No corresponding mapping => value is unrepresentable
             writeByte(targetData, VALUE_UNREPRESENTABLE);
             writeInt32(targetData, 0);
-            i32 maxSize = determineMaxSize(numberOfMappings, mappings);
+            i32 maxSize = determineMaxTargetSize(numberOfMappings, mappings, typeList);
             writeNulls(targetData, maxSize);
         }
         break;
