@@ -5,10 +5,16 @@
        
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       01 CONSTANTS.
+           05 NUMBER-OF-ITERATIONS PIC S9(9) BINARY
+              VALUE 10000000.
+       
        01 TIMINGS.
-           05 START-TIME PIC 9(8).
-           05 END-TIME PIC 9(8).
-           05 DURATION PIC 9(8).
+           05 START-TIME-MS PIC S9(18) BINARY.
+           05 END-TIME-MS PIC S9(18) BINARY.
+           05 DURATION-MS PIC S9(18) BINARY.
+           
+           05 DURATION-DISP PIC 9(18).
 
        01 INDEXES.
            05 I-1 PIC S9(9) BINARY.
@@ -57,14 +63,15 @@
        PROCEDURE DIVISION.
            
            
-      *    Initial call to load the module and make the other functions
+      *    Initial call to load the modules and make the other functions
       *    available
+           CALL 'timer'
            CALL 'apimapper'      
            
+           PERFORM RUN-BENCHMARK-V1
+           PERFORM RUN-BENCHMARK-V3
            PERFORM RUN-BENCHMARK-V6
-           
-           PERFORM PRINT-PROVIDER-DATA
-                                  
+                                             
            GOBACK.
       
       * ---
@@ -73,13 +80,16 @@
            PERFORM LOAD-SCRIPTS-V1
            PERFORM INIT-INPUT-DATA-V1
            
-           ACCEPT START-TIME FROM TIME
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE START-TIME-MS 
            
-           PERFORM PERFORM-CONVERSION-V1 1 TIMES
+           PERFORM PERFORM-CONVERSION-V1 NUMBER-OF-ITERATIONS TIMES
            
-           ACCEPT END-TIME FROM TIME
-           COMPUTE DURATION = (END-TIME - START-TIME)
-           DISPLAY 'Benchmark v1: ' DURATION 'cs' UPON CONSOLE
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE END-TIME-MS
+           
+           COMPUTE DURATION-MS = (END-TIME-MS - START-TIME-MS)
+           DISPLAY 'Benchmark v1: ' DURATION-MS 'ms' UPON CONSOLE
            
            PERFORM UNLOAD-SCRIPTS
            
@@ -162,13 +172,16 @@
            PERFORM LOAD-SCRIPTS-V3
            PERFORM INIT-INPUT-DATA-V3
            
-           ACCEPT START-TIME FROM TIME
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE START-TIME-MS 
            
-           PERFORM PERFORM-CONVERSION-V3 1 TIMES
+           PERFORM PERFORM-CONVERSION-V3 NUMBER-OF-ITERATIONS TIMES
            
-           ACCEPT END-TIME FROM TIME
-           COMPUTE DURATION = (END-TIME - START-TIME)
-           DISPLAY 'Benchmark v3: ' DURATION 'cs' UPON CONSOLE
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE END-TIME-MS
+           
+           COMPUTE DURATION-MS = (END-TIME-MS - START-TIME-MS)
+           DISPLAY 'Benchmark v3: ' DURATION-MS 'ms' UPON CONSOLE
            
            PERFORM UNLOAD-SCRIPTS
            
@@ -294,13 +307,16 @@
            PERFORM LOAD-SCRIPTS-V6
            PERFORM INIT-INPUT-DATA-V6
            
-           ACCEPT START-TIME FROM TIME
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE START-TIME-MS 
            
-           PERFORM PERFORM-CONVERSION-V6 1 TIMES
+           PERFORM PERFORM-CONVERSION-V6 NUMBER-OF-ITERATIONS TIMES
            
-           ACCEPT END-TIME FROM TIME
-           COMPUTE DURATION = (END-TIME - START-TIME)
-           DISPLAY 'Benchmark v6: ' DURATION 'cs' UPON CONSOLE
+           CALL 'getCurrentTimeMs' USING
+                BY REFERENCE END-TIME-MS
+           
+           COMPUTE DURATION-MS = (END-TIME-MS - START-TIME-MS)
+           DISPLAY 'Benchmark v6: ' DURATION-MS 'ms' UPON CONSOLE
            
            PERFORM UNLOAD-SCRIPTS
            
