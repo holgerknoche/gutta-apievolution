@@ -92,7 +92,7 @@
            DISPLAY 'Benchmark v1: ' DURATION-MS 'ms' UPON CONSOLE
            
            PERFORM UNLOAD-SCRIPTS
-           
+                      
            EXIT.
       
       * ---
@@ -163,6 +163,16 @@
              BY VALUE MAPPING-TYPE
              BY REFERENCE CUSTOMER-V1-IN
              BY REFERENCE CUSTOMER-PROVIDER-IN
+             
+           SET PROVIDER-TO-CONSUMER TO TRUE
+           SET RESULT-MAPPING TO TRUE
+           
+           CALL 'convertData' USING
+             BY VALUE OPERATION-INDEX
+             BY VALUE MAPPING-DIRECTION
+             BY VALUE MAPPING-TYPE
+             BY REFERENCE CUSTOMER-PROVIDER-IN
+             BY REFERENCE CUSTOMER-V1-OUT           
            
            EXIT.
            
@@ -298,6 +308,16 @@
              BY VALUE MAPPING-TYPE
              BY REFERENCE CUSTOMER-V3-IN
              BY REFERENCE CUSTOMER-PROVIDER-IN
+             
+           SET PROVIDER-TO-CONSUMER TO TRUE
+           SET RESULT-MAPPING TO TRUE
+           
+           CALL 'convertData' USING
+             BY VALUE OPERATION-INDEX
+             BY VALUE MAPPING-DIRECTION
+             BY VALUE MAPPING-TYPE
+             BY REFERENCE CUSTOMER-PROVIDER-IN
+             BY REFERENCE CUSTOMER-V3-OUT           
            
            EXIT.
 
@@ -456,6 +476,16 @@
              BY VALUE MAPPING-TYPE
              BY REFERENCE CUSTOMER-V6-IN
              BY REFERENCE CUSTOMER-PROVIDER-IN
+             
+           SET PROVIDER-TO-CONSUMER TO TRUE
+           SET RESULT-MAPPING TO TRUE
+           
+           CALL 'convertData' USING
+             BY VALUE OPERATION-INDEX
+             BY VALUE MAPPING-DIRECTION
+             BY VALUE MAPPING-TYPE
+             BY REFERENCE CUSTOMER-PROVIDER-IN
+             BY REFERENCE CUSTOMER-V6-OUT                       
            
            EXIT.
 
