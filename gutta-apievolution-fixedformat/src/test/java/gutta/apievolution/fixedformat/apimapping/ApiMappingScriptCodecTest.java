@@ -52,11 +52,13 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x6B, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x02, // Number of type entries
-                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry 
-                0x00, 0x00, 0x00, 0x4E, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x67, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry 
+                0x00, 0x00, 0x00, 0x52, // Offset of the second type entry                
                 0x02, // Entry type for the first type entry (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x14, // Data size of the first type
@@ -86,6 +88,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x01, // Mapping for value 3
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries 
+                0x00, 0x00, 0x00, 0x73, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of operation name (in bytes) 
                 0x6F, 0x70, // Name of the operation 
                 0x04, // Operation type of the parameter mapping operation (record mapping)
@@ -124,11 +127,13 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x40, // Offset of the operation list                
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x02, // Number of type entries
-                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x26, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x3C, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry
+                0x00, 0x00, 0x00, 0x2A, // Offset of the second type entry
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x05, // Data size of the first type
@@ -145,6 +150,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x0A, // Number of bytes to copy
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x48, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
                 0x6F, 0x70, // Name of the operation
                 0x06, // Operation type of the parameter mapping operation (poly record mapping)
@@ -199,12 +205,14 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x72, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x03, // Number of type entries
-                0x00, 0x00, 0x00, 0x14, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x2A, // Offset of the second type entry
-                0x00, 0x00, 0x00, 0x40, // Offset of the third type entry
-                0x00, 0x00, 0x00, 0x6E, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x18, // Offset of the first type entry
+                0x00, 0x00, 0x00, 0x2E, // Offset of the second type entry
+                0x00, 0x00, 0x00, 0x44, // Offset of the third type entry                
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x05, // Data size of the first type
@@ -234,6 +242,7 @@ class ApiMappingScriptCodecTest {
                 0x00, 0x00, 0x00, 0x01, // Type index of the second mapping
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x7A, // Offset of the first operation entry
                 0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
                 0x6F, 0x70, // Name of the operation
                 0x04, // Operation type of the parameter mapping operation (record mapping)
@@ -263,16 +272,20 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
+             // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x1D, // Offset of the operation list
                 // --- Type entries
                 0x00, 0x00, 0x00, 0x01, // Number of type entries
-                0x00, 0x00, 0x00, 0x0C, // Offset of the first type entry
-                0x00, 0x00, 0x00, 0x19, // Offset of the operation list
+                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry                
                 0x02, // Entry type for the first type (record type)
                 0x00, 0x00, 0x00, 0x00, // Type id of the first type
                 0x00, 0x00, 0x00, 0x00, // Data length of the first type
                 0x00, 0x00, 0x00, 0x00, // Number of field mappings
                 // --- Operation entries
                 0x00, 0x00, 0x00, 0x02, // Number of operation entries
+                0x00, 0x00, 0x00, 0x29, // Offset of the first operation entry
+                0x00, 0x00, 0x00, 0x3A, // Offset of the second operation entry
                 0x00, 0x00, 0x00, 0x03, // Length of the operation name (in bytes)
                 0x6F, 0x70, 0x31, // Name of the operation
                 0x04, // Operation type of the parameter mapping operation (record mapping)

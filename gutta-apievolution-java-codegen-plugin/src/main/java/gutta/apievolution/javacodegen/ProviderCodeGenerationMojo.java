@@ -21,8 +21,7 @@ import java.util.stream.Stream;
  * Mojo for generating provider code from a revision of API definitions.
  */
 @Mojo(name = "generate-provider-code")
-public class ProviderCodeGenerationMojo
-        extends AbstractMojo {
+public class ProviderCodeGenerationMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", readonly = true)
     MavenProject project;
@@ -43,8 +42,7 @@ public class ProviderCodeGenerationMojo
         List<ProviderApiDefinition> definitions = this.loadApiDefinitions(revisionFiles);
         Set<Integer> supportedRevisionsSet = new HashSet<>(Arrays.asList(this.supportedRevisions));
 
-        List<ProviderApiDefinition> supportedDefinitions = definitions.stream()
-                .filter(definition -> supportedRevisionsSet.contains(definition.getRevision()))
+        List<ProviderApiDefinition> supportedDefinitions = definitions.stream().filter(definition -> supportedRevisionsSet.contains(definition.getRevision()))
                 .collect(Collectors.toList());
 
         this.getLog().info("Generating code for " + supportedDefinitions.size() + " supported revisions.");
@@ -73,11 +71,13 @@ public class ProviderCodeGenerationMojo
     }
 
     private NamedInputStream toInputStream(File file) {
-        try {
-            return new NamedInputStream(file.getName(), new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return new NamedInputStream(file.getName(), () -> {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }
