@@ -208,6 +208,36 @@ class ApiMappingScriptGeneratorTest {
         ScriptGenerationException exception = assertThrows(ScriptGenerationException.class, () -> this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER));
         assertTrue(exception.getMessage().contains("is unbounded"));
     }
+
+    /**
+     * Test case: Script generation for an operation with exceptions.
+     */
+    @Test
+    void operationMappingWithExceptions() {
+        String providerApi = "api test { record Parameter {} record Result {} exception SuperException { int32 fieldA } exception SubException extends SuperException { int32 fieldB } exception OtherException { string(10) otherValue } operation op(Parameter): Result throws SuperException, OtherException }";
+        String consumerApi = providerApi;
+        
+        ApiMappingScript mappingScript = this.createMappingScript(providerApi, consumerApi, MappingDirection.CONSUMER_TO_PROVIDER);
+        
+        String expectedScript = "type index 0:\n" + 
+                "record 0\n" + 
+                "type index 1:\n" + 
+                "record 1\n" + 
+                "type index 2:\n" + 
+                "record 2\n" + 
+                "@0: copy 5 bytes\n" + 
+                "type index 3:\n" + 
+                "record 3\n" + 
+                "@0: copy 5 bytes\n" + 
+                "@5: copy 5 bytes\n" + 
+                "type index 4:\n" + 
+                "record 4\n" + 
+                "@0: copy 11 bytes\n" + 
+                "operation op param: map record 0 result: map poly record 1->(1@1), 2->(2@2), 3->(3@3), 4->(4@4)\n";
+        
+        String actualScript = new ApiMappingScriptPrinter().printMappingScript(mappingScript);
+        assertEquals(expectedScript, actualScript);
+    }
     
     private ApiMappingScript createMappingScript(String providerApi, String consumerApi, MappingDirection mappingDirection) {
         ProviderApiDefinition providerDefinition = ProviderApiLoader.loadFromString(0, providerApi, false, Optional.empty());
