@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Supplier;
 
-class RecordTypeMapper extends TypeMapper<Object> {
+class RecordTypeMapper extends AbstractRecordTypeMapper {
             
     private final int dataLength;
     
@@ -30,12 +30,7 @@ class RecordTypeMapper extends TypeMapper<Object> {
             throw new RuntimeException(e);
         }
     }
-    
-    @Override
-    public boolean isCacheable() {
-        return true;
-    }
-        
+            
     @Override
     protected int getDataLength() {
         return this.dataLength;

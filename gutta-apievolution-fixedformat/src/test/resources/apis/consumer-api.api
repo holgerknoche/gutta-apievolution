@@ -32,10 +32,16 @@ api test.customer {
     	int32 fieldB
     }
     
+    exception TestException as ConsumerTestException {
+        int32 exceptionField
+    }
+    
     operation testOperation(TestParameter): TestResult
     
     operation polyOperation(SuperType): SuperType
     
     operation polyOperation2(StructureWithPolyField): StructureWithPolyField
+    
+    operation opWithException(TestParameter): TestResult throws TestException
 
 }

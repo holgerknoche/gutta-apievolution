@@ -23,6 +23,8 @@ import static java.lang.reflect.Modifier.isAbstract;
 public class FixedFormatMapper {
             
     private final ConcurrentMap<Class<?>, TypeMapper<?>> typeMappers = new ConcurrentHashMap<>();
+    
+    private final ConcurrentMap<OperationResultType<?>, TypeMapper<?>> resultTypeMappers = new ConcurrentHashMap<>();
             
     private synchronized TypeMapper<?> determineTypeMapperFor(Class<?> type) {
         TypeMapper<?> mapper = this.typeMappers.get(type);
@@ -31,6 +33,15 @@ public class FixedFormatMapper {
         }
         
         return this.createTypeMapperFor(type, null, type);
+    }
+    
+    private synchronized TypeMapper<?> determineTypeMapperFor(OperationResultType<?> resultType) {
+        TypeMapper<?> mapper = this.resultTypeMappers.get(resultType);
+        if (mapper != null) {
+            return mapper;
+        }
+        
+        return this.createTypeMapperFor(resultType);
     }
     
     private TypeMapper<?> createTypeMapperFor(Class<?> type, Type genericType, AnnotatedElement element) {
@@ -58,6 +69,33 @@ public class FixedFormatMapper {
             this.typeMappers.put(type, typeMapper);
         }
             
+        return typeMapper;
+    }
+    
+    private TypeMapper<?> createTypeMapperFor(OperationResultType<?> resultType) {                                
+        TypeMapper<?> resultTypeMapper = this.determineTypeMapperFor(resultType.getResultType());
+        
+        TypeMapper<?> typeMapper;
+        if (resultType.isPolymorphic()) {
+            // If exceptions are present, build a map of all regular result types and a map of all exception types            
+            Map<Integer, RecordTypeMapper> resultSubTypeMappers = this.mappersForAllConcreteSubtypes(resultType.getResultType());
+            
+            Map<Integer, RecordTypeMapper> allExceptionTypeMappers = new HashMap<>();
+            for (Class<?> exceptionType : resultType.getExceptionTypes()) {
+                Map<Integer, RecordTypeMapper> exceptionSubTypeMappers = this.mappersForAllConcreteSubtypes(exceptionType);
+                allExceptionTypeMappers.putAll(exceptionSubTypeMappers);
+            }
+            
+            typeMapper = new PolymorphicResultMapper(resultTypeMapper, resultSubTypeMappers, allExceptionTypeMappers);
+        } else {
+            // If no exceptions are present, simply wrap the mapper for the result type            
+            typeMapper = new NonPolymorphicResultMapper(resultTypeMapper);
+        }
+        
+        if (typeMapper.isCacheable()) {
+            this.resultTypeMappers.put(resultType, typeMapper);
+        }
+        
         return typeMapper;
     }
         
@@ -197,6 +235,11 @@ public class FixedFormatMapper {
         return typeMapper.getMaxLength();
     }
     
+    public int determineMaxSizeOf(OperationResultType<?> type) {
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
+        return typeMapper.getMaxLength();
+    }
+    
     /**
      * Reads an object of the given type from the given data.
      * @param <T> The type to read
@@ -209,7 +252,13 @@ public class FixedFormatMapper {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return (T) typeMapper.readValue(data);
     }
-        
+    
+    @SuppressWarnings("unchecked")
+    public <T> ValueOrException<T> readValueOrException(FixedFormatData data, OperationResultType<T> type) {
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
+        return (ValueOrException<T>) typeMapper.readValue(data);
+    }
+    
     /**
      * Writes an object to the given data object, using the type mapper of the
      * given formal type. The formal type needs to be the same type or a supertype of the 
@@ -218,12 +267,17 @@ public class FixedFormatMapper {
      * @param <T> The formal type of the value
      * @param <P> The actual type of the value
      * @param value The value to write
-     * @param formalType The formal type to use for writing the value
+     * @param type The formal type to use for writing the value
      * @param data The data object to write to
      */
-    public <T, P extends T> void writeValue(P value, Class<T> formalType, FixedFormatData data) {
-        TypeMapper<?> typeMapper = this.determineTypeMapperFor(formalType);
+    public <T, P extends T> void writeValue(P value, Class<T> type, FixedFormatData data) {
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         typeMapper.writeValue(value, data);
+    }
+    
+    public void writeValueOrException(Object valueOrException, OperationResultType<?> type, FixedFormatData data) {
+        TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
+        typeMapper.writeValue(valueOrException, data);
     }
     
 }

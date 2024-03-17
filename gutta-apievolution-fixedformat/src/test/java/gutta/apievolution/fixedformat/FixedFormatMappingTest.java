@@ -19,20 +19,26 @@ import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeA;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeB;
 import gutta.apievolution.fixedformat.consumer.ConsumerSuperType;
+import gutta.apievolution.fixedformat.consumer.ConsumerTestException;
+import gutta.apievolution.fixedformat.consumer.MappedConsumerTestException;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.provider.MappableProviderTestException;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
 import gutta.apievolution.fixedformat.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderSuperType;
+import gutta.apievolution.fixedformat.provider.ProviderTestException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FixedFormatMappingTest {
 
@@ -122,6 +128,26 @@ class FixedFormatMappingTest {
         assertNotSame(result, parameter);
         assertEquals(result, parameter);
     }
+    
+    /**
+     * Test case: A thrown exception is mapped as expected.
+     */
+    @Test
+    void exceptionMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+
+        OpWithExceptionProviderProxy providerProxy = new OpWithExceptionProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        OpWithExceptionConsumerProxy consumerProxy = new OpWithExceptionConsumerProxy(requestRouter, mapper);
+        
+        MappedConsumerTestException thrownException = assertThrows(MappedConsumerTestException.class, () -> consumerProxy.invoke(new ConsumerParameter()));
+        assertEquals(1234, thrownException.getExceptionField());
+    }
         
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
@@ -188,6 +214,30 @@ class FixedFormatMappingTest {
         @Override
         protected ProviderStructureWithPolyField invokeOperation(ProviderStructureWithPolyField parameter) {
             return parameter;
+        }
+        
+    }
+    
+    private static class OpWithExceptionConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithExceptionConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("opWithException", ConsumerParameter.class, ConsumerResult.class, Collections.singleton(ConsumerTestException.class), router, mapper, CHARSET);
+        }
+                
+    }
+    
+    private static class OpWithExceptionProviderProxy extends ProviderOperationProxy<ProviderParameter, ProviderResult> {
+
+        public OpWithExceptionProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("opWithException", ProviderParameter.class, ProviderResult.class, Collections.singleton(ProviderTestException.class), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
         }
         
     }

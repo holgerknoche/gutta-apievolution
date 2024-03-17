@@ -5,9 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
-class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
-
-    private static final int DISCRIMINATOR_SIZE = 4;
+class PolymorphicRecordTypeMapper extends AbstractRecordTypeMapper {
 
     private final Class<?> representedType;
     
@@ -31,11 +29,6 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
         }
 
         return (maxLength + DISCRIMINATOR_SIZE);
-    }
-
-    @Override
-    public boolean isCacheable() {
-        return true;
     }
 
     @Override
@@ -89,12 +82,7 @@ class PolymorphicRecordTypeMapper extends TypeMapper<Object> {
 
     @Override
     protected void writeRegularValue(Object value, FixedFormatData data) {
-        TypeId typeIdAnnotation = value.getClass().getAnnotation(TypeId.class);
-        if (typeIdAnnotation == null) {
-            throw new InvalidRepresentationElementException("Missing type id on type " + value.getClass() + ".");
-        }
-
-        int typeId = typeIdAnnotation.value();
+        int typeId = this.determineTypeIdFor(value);
         data.writeInt32(typeId);
 
         RecordTypeMapper typeMapper = this.getTypeMapperFor(typeId);
