@@ -27,9 +27,9 @@ public abstract class ProviderOperationProxy<P, R> {
     private final Class<P> parameterType;
 
     private final OperationResultType<R> resultType;
-    
+
     private final FixedFormatMapper mapper;
-    
+
     private final Charset charset;
 
     /**
@@ -46,10 +46,9 @@ public abstract class ProviderOperationProxy<P, R> {
     protected ProviderOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, ApiMappingScript consumerToProviderScript,
             ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper, Charset charset) {
 
-        this(operationName, parameterType, resultType, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript,
-                mapper, charset);
+        this(operationName, parameterType, resultType, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, charset);
     }
-    
+
     /**
      * Creates a new proxy using the given data for an operation without exceptions.
      * 
@@ -62,18 +61,18 @@ public abstract class ProviderOperationProxy<P, R> {
      * @param mapper                   The fixed-format data mapper to use
      * @param charset                  The charset to use
      */
-    protected ProviderOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes, ApiMappingScript consumerToProviderScript,
-            ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper, Charset charset) {
-        
+    protected ProviderOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes,
+            ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper, Charset charset) {
+
         this.operationName = operationName;
         this.consumerToProviderScript = consumerToProviderScript;
         this.providerToConsumerScript = providerToConsumerScript;
         this.parameterType = parameterType;
         this.resultType = OperationResultType.of(resultType, exceptionTypes);
         this.mapper = mapper;
-        this.charset = charset;        
+        this.charset = charset;
     }
-    
+
     /**
      * Invokes the representing operation using the given buffers.
      * 
@@ -84,36 +83,36 @@ public abstract class ProviderOperationProxy<P, R> {
      */
     public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {
         FixedFormatMapper formatMapper = this.mapper;
-        
+
         // Map the parameter data provided by the consumer
-        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));        
-        
+        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
+
         this.consumerToProviderScript.mapParameterFor(this.getOperationName(), consumerParameterBuffer, parameterBuffer);
         parameterBuffer.flip();
-        
+
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
         P parameter = this.mapper.readValue(parameterData, this.parameterType);
 
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
         FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
-        
+
         try {
-            R result = this.invokeOperation(parameter);            
+            R result = this.invokeOperation(parameter);
             this.mapper.writeValueOrException(result, this.resultType, resultData);
         } catch (MappableException e) {
             Object exceptionData = e.getExceptionData();
-            
+
             // Determine mapped supertype and write it to the buffer
             this.mapper.writeValueOrException(exceptionData, this.resultType, resultData);
         }
-        
+
         resultBuffer.flip();
         this.providerToConsumerScript.mapResultFor(this.getOperationName(), resultBuffer, consumerResultBuffer);
 
         consumerResultBuffer.flip();
         return consumerResultBuffer;
     }
-    
+
     /**
      * Returns the name of the represented operation.
      * 

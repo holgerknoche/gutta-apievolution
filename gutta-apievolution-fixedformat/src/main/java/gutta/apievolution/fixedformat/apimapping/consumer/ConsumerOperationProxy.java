@@ -26,9 +26,9 @@ public abstract class ConsumerOperationProxy<P, R> {
     private final String operationName;
 
     private final Class<P> parameterType;
-    
+
     private final OperationResultType<R> resultType;
-            
+
     private final Charset charset;
 
     /**
@@ -43,10 +43,10 @@ public abstract class ConsumerOperationProxy<P, R> {
      */
     protected ConsumerOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, RequestRouter router, FixedFormatMapper mapper,
             Charset charset) {
-        
+
         this(operationName, parameterType, resultType, Collections.emptySet(), router, mapper, charset);
     }
-    
+
     /**
      * Creates a new proxy with the given data.
      * 
@@ -57,9 +57,9 @@ public abstract class ConsumerOperationProxy<P, R> {
      * @param mapper        The fixed-format mapper to use
      * @param charset       The charset to use
      */
-    protected ConsumerOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes, RequestRouter router, FixedFormatMapper mapper,
-            Charset charset) {
-        
+    protected ConsumerOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes, RequestRouter router,
+            FixedFormatMapper mapper, Charset charset) {
+
         this.operationName = operationName;
         this.router = router;
         this.mapper = mapper;
@@ -76,20 +76,20 @@ public abstract class ConsumerOperationProxy<P, R> {
      */
     public R invoke(P parameter) {
         FixedFormatMapper formatMapper = this.mapper;
-        
+
         ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
-        
+
         this.mapper.writeValue(parameter, this.parameterType, parameterData);
         parameterBuffer.flip();
-        
+
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
 
         this.router.routeRequest(this.operationName, parameterBuffer, resultBuffer);
 
         FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
         ValueOrException<R> resultOrException = this.mapper.readValueOrException(resultData, this.resultType);
-        
+
         if (resultOrException.containsException()) {
             MappedExceptionData exceptionData = (MappedExceptionData) resultOrException.getException();
             throw exceptionData.createMappedException();

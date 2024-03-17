@@ -227,6 +227,7 @@ public class FixedFormatMapper {
     
     /**
      * Determines the size of the given type's representation.
+     * 
      * @param type The type to determine the size of
      * @return The size of the type's representation in bytes
      */
@@ -235,6 +236,12 @@ public class FixedFormatMapper {
         return typeMapper.getMaxLength();
     }
     
+    /**
+     * Determines the size of the given result type's representation.
+     * 
+     * @param type The result to determine the size of
+     * @return The size of the type's representation in bytes
+     */
     public int determineMaxSizeOf(OperationResultType<?> type) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         return typeMapper.getMaxLength();
@@ -242,6 +249,7 @@ public class FixedFormatMapper {
     
     /**
      * Reads an object of the given type from the given data.
+     * 
      * @param <T> The type to read
      * @param data The data to read from
      * @param type The runtime class of the type to read
@@ -253,6 +261,14 @@ public class FixedFormatMapper {
         return (T) typeMapper.readValue(data);
     }
     
+    /**
+     * Reads an object of the given type or an exception from the given data.
+     * 
+     * @param <T> The type of the "regular" type (i.e., no exception) to read
+     * @param data The data to read from
+     * @param type The result type to read
+     * @return The object read from the data
+     */
     @SuppressWarnings("unchecked")
     public <T> ValueOrException<T> readValueOrException(FixedFormatData data, OperationResultType<T> type) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
@@ -275,6 +291,13 @@ public class FixedFormatMapper {
         typeMapper.writeValue(value, data);
     }
     
+    /**
+     * Writes an object or exception to the given data object, using the type mapper for the given result type.
+     * 
+     * @param valueOrException The value or exception to write
+     * @param type The result data to govern serialization
+     * @param data The data object to write to
+     */
     public void writeValueOrException(Object valueOrException, OperationResultType<?> type, FixedFormatData data) {
         TypeMapper<?> typeMapper = this.determineTypeMapperFor(type);
         typeMapper.writeValue(valueOrException, data);
