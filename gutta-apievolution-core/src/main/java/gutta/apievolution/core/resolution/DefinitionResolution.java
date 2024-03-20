@@ -237,7 +237,7 @@ public class DefinitionResolution {
     /**
      * Maps a given consumer operation to the corresponding provider operation.
      *
-     * @param consumerOperation The provider operation to map
+     * @param providerOperation The provider operation to map
      * @return The corresponding operation, if it exists
      */
     public ConsumerOperation mapProviderOperation(ProviderOperation providerOperation) {
