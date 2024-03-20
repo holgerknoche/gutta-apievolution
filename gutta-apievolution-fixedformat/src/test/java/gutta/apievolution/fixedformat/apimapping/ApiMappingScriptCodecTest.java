@@ -46,7 +46,7 @@ class ApiMappingScriptCodecTest {
         
         // Create surrounding record type entry and operation entry
         RecordTypeEntry recordTypeEntry = new RecordTypeEntry(0, 0, 20, fieldMappings);
-        OperationEntry operationEntry = new OperationEntry(0, "op", new RecordMappingOperation(recordTypeEntry), new RecordMappingOperation(recordTypeEntry));
+        OperationEntry operationEntry = new OperationEntry(0, "op", new MonomorphicRecordMappingOperation(recordTypeEntry), new MonomorphicRecordMappingOperation(recordTypeEntry));
                 
         ApiMappingScript script = new ApiMappingScript(asList(recordTypeEntry, embeddedEnumTypeEntry), singletonList(operationEntry));
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
@@ -199,7 +199,7 @@ class ApiMappingScriptCodecTest {
         FieldMapping polyFieldMapping = new FieldMapping(0, polyMappingOperation);
         RecordTypeEntry containerTypeEntry = new RecordTypeEntry(2, 2, 10, singletonList(polyFieldMapping));
         
-        OperationEntry operationEntry = new OperationEntry(0, "op", new RecordMappingOperation(containerTypeEntry), new RecordMappingOperation(containerTypeEntry));
+        OperationEntry operationEntry = new OperationEntry(0, "op", new MonomorphicRecordMappingOperation(containerTypeEntry), new MonomorphicRecordMappingOperation(containerTypeEntry));
         
         ApiMappingScript script = new ApiMappingScript(asList(typeAEntry, typeBEntry, containerTypeEntry), singletonList(operationEntry));
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
@@ -265,8 +265,8 @@ class ApiMappingScriptCodecTest {
     void scriptWithMultipleOperations() {
         RecordTypeEntry typeEntry = new RecordTypeEntry(0, 0, 0, emptyList());
         
-        OperationEntry operationEntry1 = new OperationEntry(0, "op1", new RecordMappingOperation(typeEntry), new RecordMappingOperation(typeEntry));
-        OperationEntry operationEntry2 = new OperationEntry(1, "op2", new RecordMappingOperation(typeEntry), new RecordMappingOperation(typeEntry));        
+        OperationEntry operationEntry1 = new OperationEntry(0, "op1", new MonomorphicRecordMappingOperation(typeEntry), new MonomorphicRecordMappingOperation(typeEntry));
+        OperationEntry operationEntry2 = new OperationEntry(1, "op2", new MonomorphicRecordMappingOperation(typeEntry), new MonomorphicRecordMappingOperation(typeEntry));        
         
         ApiMappingScript script = new ApiMappingScript(singletonList(typeEntry), asList(operationEntry1, operationEntry2));
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();

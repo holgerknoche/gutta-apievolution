@@ -73,7 +73,7 @@ class ApiMappingOperationTest {
         FieldMapping fieldMapping3 = new FieldMapping(10, new CopyOperation(1));
         
         RecordTypeEntry entry = new RecordTypeEntry(0, 0, 16, Arrays.asList(fieldMapping1, fieldMapping2, fieldMapping3));
-        RecordMappingOperation operation = new RecordMappingOperation(entry);
+        MonomorphicRecordMappingOperation operation = new MonomorphicRecordMappingOperation(entry);
         
         ByteBuffer sourceDataBuffer = ByteBuffer.allocate(12);
         ByteBuffer targetDataBuffer = ByteBuffer.allocate(17);

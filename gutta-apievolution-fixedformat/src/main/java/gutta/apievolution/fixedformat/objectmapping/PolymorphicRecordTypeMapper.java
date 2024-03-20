@@ -1,20 +1,17 @@
 package gutta.apievolution.fixedformat.objectmapping;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
 class PolymorphicRecordTypeMapper extends AbstractRecordTypeMapper {
-
-    private final Class<?> representedType;
     
     private final int dataLength;
 
     private final Map<Integer, RecordTypeMapper> subTypeMappers;
 
-    public PolymorphicRecordTypeMapper(Class<?> representedType, Map<Integer, RecordTypeMapper> subTypeMappers) {
-        this.representedType = representedType;
+    public PolymorphicRecordTypeMapper(Class<?> formalResultType, Map<Integer, RecordTypeMapper> subTypeMappers) {
+        super(formalResultType);
+        
         this.subTypeMappers = subTypeMappers;
         this.dataLength = determineMaxDataLength(subTypeMappers.values());
     }
@@ -53,31 +50,6 @@ class PolymorphicRecordTypeMapper extends AbstractRecordTypeMapper {
         RecordTypeMapper typeMapper = this.getTypeMapperFor(typeId);
         // Null checks have already been performed, therefore invoke readRegularValue
         return typeMapper.readRegularValue(data);
-    }
-
-    private Method findUnrepresentableValueHandler() {
-        for (Method method : this.representedType.getMethods()) {
-            if (method.isAnnotationPresent(UnrepresentableValue.class)) {
-                return method;
-            }
-        }
-        
-        return null;
-    }
-    
-    @Override
-    public Object handleUnrepresentableValue() {
-        Method unrepresentableValueHandler = this.findUnrepresentableValueHandler();
-        if (unrepresentableValueHandler != null) {
-            try {
-                return unrepresentableValueHandler.invoke(null);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                throw new RuntimeException("An error occurred invoking the unrepresentable value handler on class '" + this.representedType + "'.", e);
-            }
-        } else {
-            throw new UnrepresentableValueException("An unrepresentable subtype of '" + this.representedType +
-                    "' was encountered, and no handler was defined.");
-        }
     }
 
     @Override

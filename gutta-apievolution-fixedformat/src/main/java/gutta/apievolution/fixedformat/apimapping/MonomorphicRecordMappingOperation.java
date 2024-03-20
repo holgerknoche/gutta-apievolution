@@ -4,9 +4,9 @@ import gutta.apievolution.core.util.EqualityUtil;
 
 import java.nio.ByteBuffer;
 
-class RecordMappingOperation extends UserDefinedTypeMappingOperation<RecordTypeEntry> {
+class MonomorphicRecordMappingOperation extends UserDefinedTypeMappingOperation<RecordTypeEntry> {
     
-    public RecordMappingOperation(RecordTypeEntry typeEntry) {
+    public MonomorphicRecordMappingOperation(RecordTypeEntry typeEntry) {
         super(typeEntry);
     }
     
@@ -21,7 +21,7 @@ class RecordMappingOperation extends UserDefinedTypeMappingOperation<RecordTypeE
 
     @Override
     public <R> R accept(ApiMappingOperationVisitor<R> visitor) {
-        return visitor.handleRecordMappingOperation(this);
+        return visitor.handleMonomorphicRecordMappingOperation(this);
     }
     
     @Override
@@ -34,13 +34,13 @@ class RecordMappingOperation extends UserDefinedTypeMappingOperation<RecordTypeE
         return EqualityUtil.equals(this, that, this::equalsInternal);
     }
     
-    private boolean equalsInternal(RecordMappingOperation that) {
+    private boolean equalsInternal(MonomorphicRecordMappingOperation that) {
         return this.getTypeEntry().equals(that.getTypeEntry());
     }
             
     @Override
     public String toString() {
-        return "map record " + this.getEntryIndex();
+        return "map monomorphic record " + this.getEntryIndex();
     }
 
 }

@@ -72,7 +72,7 @@ public class FixedFormatMapper {
         return typeMapper;
     }
     
-    private TypeMapper<?> createTypeMapperFor(OperationResultType<?> resultType) {                                
+    private TypeMapper<?> createTypeMapperFor(OperationResultType<?> resultType) {               
         TypeMapper<?> resultTypeMapper = this.determineTypeMapperFor(resultType.getResultType());
         
         TypeMapper<?> typeMapper;
@@ -86,10 +86,10 @@ public class FixedFormatMapper {
                 allExceptionTypeMappers.putAll(exceptionSubTypeMappers);
             }
             
-            typeMapper = new PolymorphicResultMapper(resultTypeMapper, resultSubTypeMappers, allExceptionTypeMappers);
+            typeMapper = new PolymorphicResultMapper(resultType.getResultType(), resultSubTypeMappers, allExceptionTypeMappers);
         } else {
             // If no exceptions are present, simply wrap the mapper for the result type            
-            typeMapper = new NonPolymorphicResultMapper(resultTypeMapper);
+            typeMapper = new NonPolymorphicResultMapper(resultType.getResultType(), resultTypeMapper);
         }
         
         if (typeMapper.isCacheable()) {

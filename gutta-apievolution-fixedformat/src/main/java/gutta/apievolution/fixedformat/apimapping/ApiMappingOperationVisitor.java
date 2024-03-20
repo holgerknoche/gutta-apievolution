@@ -18,7 +18,15 @@ interface ApiMappingOperationVisitor<R> {
         return null;
     }
     
-    default R handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+    default R handleMonomorphicRecordMappingOperation(MonomorphicRecordMappingOperation recordMappingOperation) {
+        return null;
+    }
+    
+    default R handleMonoToPolyRecordMappingOperation(MonoToPolyRecordMappingOperation recordMappingOperation) {
+        return null;
+    }
+    
+    default R handlePolyToMonoRecordMappingOperation(PolyToMonoRecordMappingOperation recordMappingOperation) {
         return null;
     }
     

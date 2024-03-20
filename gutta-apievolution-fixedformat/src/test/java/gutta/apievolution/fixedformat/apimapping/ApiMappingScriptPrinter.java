@@ -151,7 +151,7 @@ public class ApiMappingScriptPrinter {
         }
         
         @Override
-        public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+        public Void handleMonomorphicRecordMappingOperation(MonomorphicRecordMappingOperation recordMappingOperation) {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("map record ");

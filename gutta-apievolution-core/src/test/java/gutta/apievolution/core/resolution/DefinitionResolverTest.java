@@ -738,6 +738,62 @@ class DefinitionResolverTest {
         String actualResolution = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
         
         assertEquals(expectedResolution, actualResolution);
-    } 
+    }
+    
+    /**
+     * Test case: A record becomes polymorphic as part of its evolution, but the consumer still assumes it to be monomorphic.
+     */
+    @Test
+    void recordBecomesPolymorphic() {
+        // Consumer API
+        ConsumerApiDefinition consumerApi = TestFixtures.createConsumerApiDefinition("test", 0);
+        
+        ConsumerRecordType consumerRecord = consumerApi.newRecordType("RecordType", noInternalName(), 0, Abstract.NO, noSuperTypes());
+        consumerRecord.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+                
+        consumerApi.newOperation("operation", consumerRecord, consumerRecord); 
+        
+        consumerApi.finalizeDefinition();        
+        
+        // Provider revision 1
+        ProviderApiDefinition providerRevision1 = ProviderApiDefinition.create("test", 0);
+        
+        ProviderRecordType providerRecordV1 = providerRevision1.newRecordType("RecordType", noInternalName(), 0, Abstract.NO, noSuperTypes(), noPredecessor());
+        providerRecordV1.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+                
+        ProviderOperation providerOperationV1 = providerRevision1.newOperation("operation", providerRecordV1, providerRecordV1); 
+        
+        providerRevision1.finalizeDefinition();
+        
+        // Provider revision 2
+        ProviderApiDefinition providerRevision2 = ProviderApiDefinition.create("test", 1);
+        
+        ProviderRecordType providerRecordV2 = providerRevision2.newRecordType("RecordType", noInternalName(), 0, Abstract.NO, noSuperTypes(), providerRecordV1);
+        providerRecordV2.newField("field", AtomicType.INT_32, Optionality.MANDATORY);
+        
+        providerRevision2.newRecordType("SubType", noInternalName(), 0, Abstract.NO, Collections.singleton(providerRecordV2), noPredecessor());
+        providerRecordV2.newField("field2", AtomicType.INT_32, Optionality.MANDATORY);
+                
+        providerRevision2.newOperation("operation", noInternalName(), providerRecordV2, providerRecordV2, providerOperationV1); 
+        
+        providerRevision2.finalizeDefinition();
+        
+        // Definition resolution
+        RevisionHistory revisionHistory = new RevisionHistory(providerRevision1, providerRevision2);
+        Set<Integer> supportedRevisions = new HashSet<>(Arrays.asList(0, 1));
+
+        DefinitionResolution resolution = new DefinitionResolver().resolveConsumerDefinition(revisionHistory, supportedRevisions, consumerApi);
+        
+        // Make sure that there are no validation messages
+        assertTrue(resolution.getValidationMessages().isEmpty());
+        
+        final String expectedResolution = "RecordType -> RecordType@revision 0\n" + 
+                " field@RecordType -> field@RecordType@revision 0\n" + 
+                "operation -> operation\n";
+        
+        String actualResolution = new DefinitionResolutionPrinter().printDefinitionResolution(resolution);
+        
+        assertEquals(expectedResolution, actualResolution);
+    }
 
 }

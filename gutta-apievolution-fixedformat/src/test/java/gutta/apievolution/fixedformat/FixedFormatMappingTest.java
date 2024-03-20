@@ -22,6 +22,7 @@ import gutta.apievolution.fixedformat.consumer.ConsumerSuperType;
 import gutta.apievolution.fixedformat.consumer.ConsumerTestException;
 import gutta.apievolution.fixedformat.consumer.MappedConsumerTestException;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.objectmapping.UnrepresentableValueException;
 import gutta.apievolution.fixedformat.provider.MappableProviderTestException;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
@@ -148,6 +149,26 @@ class FixedFormatMappingTest {
         MappedConsumerTestException thrownException = assertThrows(MappedConsumerTestException.class, () -> consumerProxy.invoke(new ConsumerParameter()));
         assertEquals(1234, thrownException.getExceptionField());
     }
+    
+    // TODO Test case for monomorphic to polymorphic conversion and vice versa
+    
+    /**
+     * Test case: The provider throws an exception, but the consumer does not expect one. This results in an unrepresentable value.
+     */
+    @Test
+    void providerThrowsExceptionButConsumerDoesNotExpectOne() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+        
+        OpWithUnmappedExceptionProviderProxy providerProxy = new OpWithUnmappedExceptionProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        OpWithUnmappedExceptionConsumerProxy consumerProxy = new OpWithUnmappedExceptionConsumerProxy(requestRouter, mapper);
+        assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invoke(new ConsumerParameter()));
+    }
         
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
@@ -230,6 +251,30 @@ class FixedFormatMappingTest {
 
         public OpWithExceptionProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
             super("opWithException", ProviderParameter.class, ProviderResult.class, Collections.singleton(ProviderTestException.class), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
+        }
+        
+    }
+    
+    private static class OpWithUnmappedExceptionConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithUnmappedExceptionConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("opWithUnmappedException", ConsumerParameter.class, ConsumerResult.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+                
+    }
+    
+    private static class OpWithUnmappedExceptionProviderProxy extends ProviderOperationProxy<ProviderParameter, ProviderResult> {
+
+        public OpWithUnmappedExceptionProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("opWithUnmappedException", ProviderParameter.class, ProviderResult.class, Collections.singleton(ProviderTestException.class), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
         }
 
         @Override

@@ -15,7 +15,9 @@ class RecordTypeMapper extends AbstractRecordTypeMapper {
     
     public final List<FieldMapper> fieldMappers;
   
-    public RecordTypeMapper(int dataLength, Class<?> recordType, List<FieldMapper> fieldMappers) {        
+    public RecordTypeMapper(int dataLength, Class<?> recordType, List<FieldMapper> fieldMappers) {
+        super(recordType);
+        
         this.dataLength = dataLength;
         this.recordType = recordType;
         this.instanceSupplier = createInstanceSupplier(recordType);
@@ -46,13 +48,7 @@ class RecordTypeMapper extends AbstractRecordTypeMapper {
               
         return instance;
     }
-    
-    @Override
-    public Object handleUnrepresentableValue() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-                
+                    
     @Override
     protected void writeRegularValue(Object value, FixedFormatData data) {        
         this.fieldMappers.forEach(mapper -> mapper.writeValue(value, data));

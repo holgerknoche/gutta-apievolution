@@ -35,8 +35,7 @@ api test.provider {
     
     exception TestException as ProviderTestException {
         int32 exceptionField
-    }
-    
+    }    
     
     operation testOperation(TestParameter): TestResult
     
@@ -45,5 +44,7 @@ api test.provider {
     operation polyOperation2(StructureWithPolyField): StructureWithPolyField
     
     operation opWithException(TestParameter): TestResult throws TestException
+    
+    operation opWithUnmappedException(TestParameter): TestResult throws TestException
 
 }

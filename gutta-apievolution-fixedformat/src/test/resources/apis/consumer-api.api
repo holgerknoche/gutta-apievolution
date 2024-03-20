@@ -43,5 +43,7 @@ api test.customer {
     operation polyOperation2(StructureWithPolyField): StructureWithPolyField
     
     operation opWithException(TestParameter): TestResult throws TestException
+    
+    operation opWithUnmappedException(TestParameter): TestResult
 
 }

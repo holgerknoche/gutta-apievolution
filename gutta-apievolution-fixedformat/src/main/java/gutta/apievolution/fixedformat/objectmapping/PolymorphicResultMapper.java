@@ -6,15 +6,14 @@ import java.util.Map;
 
 class PolymorphicResultMapper extends AbstractRecordTypeMapper {
 
-    private final TypeMapper<?> resultTypeMapper;
-
     private final Map<Integer, MappingInfo> typeIdToMappingInfo;
 
     private final int dataLength;
 
-    public PolymorphicResultMapper(TypeMapper<?> resultTypeMapper, Map<Integer, RecordTypeMapper> resultTypeMappers,
+    public PolymorphicResultMapper(Class<?> formalResultType, Map<Integer, RecordTypeMapper> resultTypeMappers,
             Map<Integer, RecordTypeMapper> exceptionTypeMappers) {
-        this.resultTypeMapper = resultTypeMapper;
+
+        super(formalResultType);
         this.typeIdToMappingInfo = buildMappingInfo(resultTypeMappers, exceptionTypeMappers);
 
         this.dataLength = determineMaxLength(this.typeIdToMappingInfo.values()) + DISCRIMINATOR_SIZE;
@@ -62,11 +61,6 @@ class PolymorphicResultMapper extends AbstractRecordTypeMapper {
         } else {
             return ValueOrException.forValue(readValue);
         }
-    }
-
-    @Override
-    protected Object handleUnrepresentableValue() {
-        return this.resultTypeMapper.handleUnrepresentableValue();
     }
 
     private MappingInfo getMappingInfoFor(int typeId) {

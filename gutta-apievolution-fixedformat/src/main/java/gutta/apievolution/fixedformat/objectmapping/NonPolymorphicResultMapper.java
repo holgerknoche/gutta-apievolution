@@ -4,7 +4,9 @@ class NonPolymorphicResultMapper extends AbstractRecordTypeMapper {
     
     private final TypeMapper<?> resultTypeMapper;
         
-    public NonPolymorphicResultMapper(TypeMapper<?> resultTypeMapper) {
+    public NonPolymorphicResultMapper(Class<?> formalResultType, TypeMapper<?> resultTypeMapper) {
+        super(formalResultType);
+        
         this.resultTypeMapper = resultTypeMapper;
     }
 
@@ -18,16 +20,11 @@ class NonPolymorphicResultMapper extends AbstractRecordTypeMapper {
         data.skipBytes(this.getDataLength());
         return ValueOrException.forNull();
     }
-    
+        
     @Override
     protected Object readRegularValue(FixedFormatData data) {
         Object value = this.resultTypeMapper.readRegularValue(data);
         return ValueOrException.forValue(value);
-    }
-
-    @Override
-    protected Object handleUnrepresentableValue() {
-        return this.resultTypeMapper.handleUnrepresentableValue();
     }
 
     @Override

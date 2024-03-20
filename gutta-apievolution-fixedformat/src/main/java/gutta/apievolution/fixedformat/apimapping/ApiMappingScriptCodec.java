@@ -321,7 +321,7 @@ public class ApiMappingScriptCodec {
     private ApiMappingOperation readMapRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
         RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(entryIndex, entryOffsets, typeEntries, buffer);
-        return new RecordMappingOperation(typeEntry);
+        return new MonomorphicRecordMappingOperation(typeEntry);
     }
 
     private ApiMappingOperation readMapPolymorphicRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
@@ -479,7 +479,7 @@ public class ApiMappingScriptCodec {
         }
 
         @Override
-        public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+        public Void handleMonomorphicRecordMappingOperation(MonomorphicRecordMappingOperation recordMappingOperation) {
             try {
                 DataOutputStream outputStream = this.dataStream;
 
