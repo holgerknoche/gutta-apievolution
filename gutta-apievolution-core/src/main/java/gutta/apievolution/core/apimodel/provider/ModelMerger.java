@@ -192,16 +192,16 @@ public class ModelMerger {
             this.knownTypeNames.add(type.getInternalName());
         }
 
-        private ProviderRecordType convertRecordType(ProviderRecordType inType) {            
+        private ProviderRecordType convertRecordType(ProviderRecordType inType) {
             Abstract abstractness;
-            
+
             // The type is only abstract if it is abstract in all revisions
             if (inType.isAbstract()) {
-                 Optional<ProviderRecordType> concretePredecessor = inType.findFirstPredecessorMatching(ProviderRecordType::isConcrete);
-                 abstractness = (concretePredecessor.isPresent()) ? Abstract.NO : Abstract.YES;
+                Optional<ProviderRecordType> concretePredecessor = inType.findFirstPredecessorMatching(ProviderRecordType::isConcrete);
+                abstractness = (concretePredecessor.isPresent()) ? Abstract.NO : Abstract.YES;
             } else {
                 abstractness = Abstract.NO;
-            }                        
+            }
 
             if (inType.isException()) {
                 return this.mergedDefinition.newExceptionType(inType.getPublicName(), inType.getInternalName(), inType.getTypeId(), abstractness,
