@@ -471,12 +471,16 @@ public class ApiMappingScriptGenerator {
         }
         
         private ApiMappingOperation createPolyToMonoRecordMappingOperation(RecordType<?, ?, ?> recordType) {
-            RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(recordType);
-            
-            int sourceTypeId = sourceType.getTypeId();
             RecordTypeEntry typeEntry = this.resolveTypeEntryFor(recordType);
             
-            return new PolyToMonoRecordMappingOperation(sourceTypeId, typeEntry);
+            // The type itself and all its subtypes are mappable 
+            RecordType<?, ?, ?> sourceType = this.mappingInfoProvider.toSourceType(recordType);
+            Set<RecordType<?, ?, ?>> possibleSourceTypes = collectAllConcreteSubtypes(sourceType);
+            Set<Integer> mappableTypeIds = possibleSourceTypes.stream()
+                .map(RecordType::getTypeId)
+                .collect(Collectors.toSet());
+            
+            return new PolyToMonoRecordMappingOperation(mappableTypeIds, typeEntry);
         }
         
         private ApiMappingOperation createPolymorphicRecordMappingOperation(RecordType<?, ?, ?> recordType) {

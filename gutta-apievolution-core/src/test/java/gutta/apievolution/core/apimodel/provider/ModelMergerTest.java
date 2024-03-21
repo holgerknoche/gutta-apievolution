@@ -713,8 +713,59 @@ class ModelMergerTest {
                 "}\n";
         
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
-        assertEquals(expected, actual);
+        assertEquals(expected, actual);       
+    }
+    
+    /**
+     * Test case: The abstractness of types in the merged model is handled as expected.
+     */
+    @Test
+    void abstractnessOfTypes() {
+        // Revision 1
+        ProviderApiDefinition revision1 = ProviderApiDefinition.create("test", 0);
         
+        // Define one abstract and two concrete types
+        ProviderRecordType recordType1V1 = revision1.newRecordType("RecordType1", 0);
+        ProviderRecordType recordType2V1 = revision1.newRecordType("RecordType2", noInternalName(), 1, Abstract.YES, noSuperTypes(), noPredecessor());
+        ProviderRecordType recordType3V1 = revision1.newRecordType("RecordType3", 2);
+        
+        // Dummy operations to avoid warnings
+        ProviderOperation op1V1 = revision1.newOperation("operation", recordType1V1, recordType2V1);
+        ProviderOperation op2V1 = revision1.newOperation("operation2", recordType3V1, recordType3V1);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        ProviderApiDefinition revision2 = ProviderApiDefinition.create("test", 1);
+        
+        // In this revision, one of the concrete types becomes abstract
+        ProviderRecordType recordType1V2 = revision2.newRecordType("RecordType1", noInternalName(), 0, Abstract.YES, noSuperTypes(), recordType1V1);
+        ProviderRecordType recordType2V2 = revision2.newRecordType("RecordType2", noInternalName(), 1, Abstract.YES, noSuperTypes(), recordType2V1);
+        ProviderRecordType recordType3V2 = revision2.newRecordType("RecordType3", noInternalName(), 2, recordType3V1);
+        
+        // Dummy operations to avoid warnings
+        revision2.newOperation("operation", noInternalName(), recordType1V2, recordType2V2, op1V1);
+        revision2.newOperation("operation2", noInternalName(), recordType3V2, recordType3V2, op2V1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        RevisionHistory revisionHistory = new RevisionHistory(revision1, revision2);
+        ProviderApiDefinition mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        String expected = "api test [] {\n" + 
+                " record RecordType1(RecordType1) {\n" + 
+                " }\n" + 
+                " abstract record RecordType2(RecordType2) {\n" + 
+                " }\n" + 
+                " record RecordType3(RecordType3) {\n" + 
+                " }\n" + 
+                " operation operation(operation) (RecordType2@revision 0) : RecordType1@revision 0\n" + 
+                " operation operation2(operation2) (RecordType3@revision 0) : RecordType3@revision 0\n" + 
+                "}\n";
+        
+        String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
     }
 
 }

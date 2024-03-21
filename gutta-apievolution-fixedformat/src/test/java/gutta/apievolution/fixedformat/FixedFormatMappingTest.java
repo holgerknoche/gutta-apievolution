@@ -13,6 +13,7 @@ import gutta.apievolution.fixedformat.apimapping.RequestRouter;
 import gutta.apievolution.fixedformat.apimapping.consumer.ConsumerOperationProxy;
 import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
+import gutta.apievolution.fixedformat.consumer.ConsumerMonoToPolyType;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.consumer.ConsumerResult;
 import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithPolyField;
@@ -24,6 +25,8 @@ import gutta.apievolution.fixedformat.consumer.MappedConsumerTestException;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
 import gutta.apievolution.fixedformat.objectmapping.UnrepresentableValueException;
 import gutta.apievolution.fixedformat.provider.MappableProviderTestException;
+import gutta.apievolution.fixedformat.provider.ProviderMonoToPolySubTypeA;
+import gutta.apievolution.fixedformat.provider.ProviderMonoToPolyType;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
 import gutta.apievolution.fixedformat.provider.ProviderStructureWithPolyField;
@@ -150,7 +153,35 @@ class FixedFormatMappingTest {
         assertEquals(1234, thrownException.getExceptionField());
     }
     
-    // TODO Test case for monomorphic to polymorphic conversion and vice versa
+    /**
+     * Test case: Mono-to-poly mapping (parameter) and vice versa (result).
+     */
+    @Test
+    void monoToPolyTypeMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+
+        MonoToPolyMappingProviderProxy providerProxy = new MonoToPolyMappingProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        MonoToPolyMappingConsumerProxy consumerProxy = new MonoToPolyMappingConsumerProxy(requestRouter, mapper);
+        
+        // First variant: Returns the matching type
+        ConsumerMonoToPolyType parameter = new ConsumerMonoToPolyType();
+        parameter.setField1(3456);        
+        ConsumerMonoToPolyType result = consumerProxy.invoke(parameter);        
+        assertEquals(1234, result.getField1());
+        
+        // Second variant: A subtype is returned, which makes no difference
+        ConsumerMonoToPolyType parameter2 = new ConsumerMonoToPolyType();
+        // Set the magic value
+        parameter2.setField1(1);        
+        ConsumerMonoToPolyType result2 = consumerProxy.invoke(parameter2);        
+        assertEquals(5678, result2.getField1());
+    }
     
     /**
      * Test case: The provider throws an exception, but the consumer does not expect one. This results in an unrepresentable value.
@@ -285,6 +316,37 @@ class FixedFormatMappingTest {
             throw new MappableProviderTestException(exceptionData);
         }
         
+    }
+    
+    private static class MonoToPolyMappingConsumerProxy extends ConsumerOperationProxy<ConsumerMonoToPolyType, ConsumerMonoToPolyType> {
+        
+        public MonoToPolyMappingConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("monoToPolyMapping", ConsumerMonoToPolyType.class, ConsumerMonoToPolyType.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+        
+    }
+    
+    private static class MonoToPolyMappingProviderProxy extends ProviderOperationProxy<ProviderMonoToPolyType, ProviderMonoToPolyType> {
+        
+        public MonoToPolyMappingProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("monoToPolyMapping", ProviderMonoToPolyType.class, ProviderMonoToPolyType.class, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+        
+        @Override
+        protected ProviderMonoToPolyType invokeOperation(ProviderMonoToPolyType parameter) {
+            if (parameter.getField1() == 1) {
+                ProviderMonoToPolySubTypeA result = new ProviderMonoToPolySubTypeA();
+                result.setField1(5678);
+                result.setField2(4321);
+                
+                return result;                
+            } else {
+                ProviderMonoToPolyType result = new ProviderMonoToPolyType();
+                result.setField1(1234);
+                
+                return result;
+            }
+        }        
     }
 
 }

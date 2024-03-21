@@ -36,6 +36,10 @@ api test.customer {
         int32 exceptionField
     }
     
+    record MonoToPolyType as ConsumerMonoToPolyType {
+        int32 field1
+    }
+    
     operation testOperation(TestParameter): TestResult
     
     operation polyOperation(SuperType): SuperType
@@ -45,5 +49,7 @@ api test.customer {
     operation opWithException(TestParameter): TestResult throws TestException
     
     operation opWithUnmappedException(TestParameter): TestResult
+    
+    operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
 
 }
