@@ -20,6 +20,14 @@ class PolyToMonoRecordMappingOperation extends AbstractPolymorphicRecordMappingO
     protected int getTargetDataLength() {
         return this.delegate.getTargetDataLength();
     }
+    
+    public Set<Integer> getMappableTypeIds() {
+        return this.mappableTypeIds;
+    }
+    
+    public int getEntryIndex() {
+        return this.delegate.getEntryIndex();
+    }
 
     @Override
     protected boolean mayBeUnrepresentable() {

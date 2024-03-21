@@ -23,6 +23,14 @@ class MonoToPolyRecordMappingOperation extends AbstractPolymorphicRecordMappingO
         return false;
     }
     
+    public int getTargetTypeId() {
+        return this.targetTypeId;
+    }
+    
+    public int getEntryIndex() {
+        return this.delegate.getEntryIndex();
+    }
+    
     @Override
     protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         target.putInt(this.targetTypeId);

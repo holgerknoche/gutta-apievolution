@@ -1,16 +1,20 @@
 package gutta.apievolution.fixedformat.apimapping;
 
 import gutta.apievolution.fixedformat.apimapping.PolymorphicRecordMappingOperation.PolymorphicRecordMapping;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for the API mapping script codec.
@@ -302,6 +306,26 @@ class ApiMappingScriptCodecTest {
         
         byte[] scriptBytes = codec.encodeScript(script);
         assertArrayEquals(expectedBytes, scriptBytes);
+        
+        ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
+        assertEquals(script, decodedScript);
+    }
+    
+    /**
+     * Test case: Serialization and deserialization of a script with mono-to-poly and poly-to-mono mapping operations.
+     */
+    @Test
+    @Disabled
+    void scriptWithMonoToPolyMapping() {
+        RecordTypeEntry typeEntry = new RecordTypeEntry(0, 2, 0, emptyList());
+        
+        Set<Integer> typeIds = new HashSet<>(Arrays.asList(1, 3, 5));
+        OperationEntry operationEntry = new OperationEntry(0, "op", new MonoToPolyRecordMappingOperation(typeEntry), new PolyToMonoRecordMappingOperation(typeIds, typeEntry));
+        
+        ApiMappingScript script = new ApiMappingScript(singletonList(typeEntry), singletonList(operationEntry));
+        ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
+
+        byte[] scriptBytes = codec.encodeScript(script);
         
         ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
         assertEquals(script, decodedScript);

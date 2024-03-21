@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +31,10 @@ public class ApiMappingScriptCodec {
     private static final byte OPCODE_MAP_LIST = 0x05;
 
     private static final byte OPCODE_MAP_POLYMORPHIC_RECORD = 0x06;
+    
+    private static final byte OPCODE_MAP_MONO_TO_POLY_RECORD = 0x07;
+    
+    private static final byte OPCODE_MAP_POLY_TO_MONO_RECORD = 0x08;
 
     private static final byte ENTRY_TYPE_ENUM = 0x01;
 
@@ -488,7 +493,45 @@ public class ApiMappingScriptCodec {
 
                 return null;
             } catch (IOException e) {
-                throw new ScriptEncodingException("Error writing record mapping operation to the script.", e);
+                throw new ScriptEncodingException("Error writing monomorphic record mapping operation to the script.", e);
+            }
+        }
+        
+        @Override
+        public Void handleMonoToPolyRecordMappingOperation(MonoToPolyRecordMappingOperation recordMappingOperation) {
+            try {
+                DataOutputStream outputStream = this.dataStream;
+
+                outputStream.writeByte(OPCODE_MAP_MONO_TO_POLY_RECORD);
+                outputStream.writeInt(recordMappingOperation.getTargetTypeId());
+                outputStream.writeInt(recordMappingOperation.getEntryIndex());
+
+                return null;
+            } catch (IOException e) {
+                throw new ScriptEncodingException("Error writing mono-to-poly record mapping operation to the script.", e);
+            }
+        }
+        
+        @Override
+        public Void handlePolyToMonoRecordMappingOperation(PolyToMonoRecordMappingOperation recordMappingOperation) {
+            try {
+                DataOutputStream outputStream = this.dataStream;
+
+                outputStream.writeByte(OPCODE_MAP_POLY_TO_MONO_RECORD);
+                
+                List<Integer> mappableIds = new ArrayList<>(recordMappingOperation.getMappableTypeIds());
+                Collections.sort(mappableIds);
+
+                outputStream.writeInt(mappableIds.size());
+                for (Integer mappableId : mappableIds) {
+                    outputStream.writeInt(mappableId);
+                }
+                
+                outputStream.writeInt(recordMappingOperation.getEntryIndex());
+
+                return null;
+            } catch (IOException e) {
+                throw new ScriptEncodingException("Error writing poly-to-mono record mapping operation to the script.", e);
             }
         }
 
