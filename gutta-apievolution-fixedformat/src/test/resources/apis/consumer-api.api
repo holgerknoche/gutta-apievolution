@@ -36,6 +36,10 @@ api test.customer {
         int32 exceptionField
     }
     
+    record StructureWithMonoToPolyField as ConsumerStructureWithMonoToPolyField {
+        MonoToPolyType field
+    }
+    
     record MonoToPolyType as ConsumerMonoToPolyType {
         int32 field1
     }
@@ -51,5 +55,7 @@ api test.customer {
     operation opWithUnmappedException(TestParameter): TestResult
     
     operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
+    
+    operation embeddedMonoToPolyMapping(StructureWithMonoToPolyField): StructureWithMonoToPolyField
 
 }

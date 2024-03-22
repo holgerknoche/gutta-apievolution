@@ -3,7 +3,7 @@ package gutta.apievolution.fixedformat.provider;
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
 import gutta.apievolution.fixedformat.objectmapping.TypeId;
 
-@TypeId(5)
+@TypeId(6)
 public class ProviderMonoToPolySubTypeB extends ProviderMonoToPolyType {
     
     @MaxLength(10)

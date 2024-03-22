@@ -37,6 +37,10 @@ api test.provider {
         int32 exceptionField
     }
     
+    record StructureWithMonoToPolyField as ProviderStructureWithMonoToPolyField {
+        MonoToPolyType field
+    }
+    
     record MonoToPolyType as ProviderMonoToPolyType {
         int32 field1
     }
@@ -52,5 +56,7 @@ api test.provider {
     operation opWithUnmappedException(TestParameter): TestResult throws TestException
     
     operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
+    
+    operation embeddedMonoToPolyMapping(StructureWithMonoToPolyField): StructureWithMonoToPolyField
 
 }

@@ -3,7 +3,7 @@ package gutta.apievolution.fixedformat.provider;
 import gutta.apievolution.fixedformat.objectmapping.SubTypes;
 import gutta.apievolution.fixedformat.objectmapping.TypeId;
 
-@TypeId(3)
+@TypeId(4)
 @SubTypes({ProviderMonoToPolySubTypeA.class, ProviderMonoToPolySubTypeB.class})
 public class ProviderMonoToPolyType {
     

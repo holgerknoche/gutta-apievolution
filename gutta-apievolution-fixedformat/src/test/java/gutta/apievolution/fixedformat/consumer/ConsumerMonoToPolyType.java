@@ -1,5 +1,9 @@
 package gutta.apievolution.fixedformat.consumer;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
+import java.util.Objects;
+
 public class ConsumerMonoToPolyType {
     
     private Integer field1;
@@ -10,6 +14,20 @@ public class ConsumerMonoToPolyType {
     
     public void setField1(Integer field1) {
         this.field1 = field1;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.field1);
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(ConsumerMonoToPolyType that) {
+        return Objects.equals(this.field1, that.field1);
     }
 
 }

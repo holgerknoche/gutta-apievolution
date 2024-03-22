@@ -16,6 +16,7 @@ import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
 import gutta.apievolution.fixedformat.consumer.ConsumerMonoToPolyType;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.consumer.ConsumerResult;
+import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithMonoToPolyField;
 import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeA;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeB;
@@ -29,6 +30,7 @@ import gutta.apievolution.fixedformat.provider.ProviderMonoToPolySubTypeA;
 import gutta.apievolution.fixedformat.provider.ProviderMonoToPolyType;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
+import gutta.apievolution.fixedformat.provider.ProviderStructureWithMonoToPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderSuperType;
 import gutta.apievolution.fixedformat.provider.ProviderTestException;
@@ -181,6 +183,34 @@ class FixedFormatMappingTest {
         parameter2.setField1(1);        
         ConsumerMonoToPolyType result2 = consumerProxy.invoke(parameter2);        
         assertEquals(5678, result2.getField1());
+    }
+    
+    /**
+     * Test case: Mono-to-poly mapping (and vice versa) as part of structure mapping.
+     */
+    @Test
+    void embeddedMonoToPolyTypeMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+     
+        EmbeddedMonoToPolyMappingProviderProxy providerProxy = new EmbeddedMonoToPolyMappingProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        EmbeddedMonoToPolyMappingConsumerProxy consumerProxy = new EmbeddedMonoToPolyMappingConsumerProxy(requestRouter, mapper);
+        
+        ConsumerMonoToPolyType monoToPolyType = new ConsumerMonoToPolyType();
+        monoToPolyType.setField1(1234);
+        
+        ConsumerStructureWithMonoToPolyField parameter = new ConsumerStructureWithMonoToPolyField();
+        parameter.setField(monoToPolyType);
+        
+        ConsumerStructureWithMonoToPolyField result = consumerProxy.invoke(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter, result);
     }
     
     /**
@@ -346,6 +376,26 @@ class FixedFormatMappingTest {
                 
                 return result;
             }
+        }        
+    }
+    
+    private static class EmbeddedMonoToPolyMappingConsumerProxy extends ConsumerOperationProxy<ConsumerStructureWithMonoToPolyField, ConsumerStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("embeddedMonoToPolyMapping", ConsumerStructureWithMonoToPolyField.class, ConsumerStructureWithMonoToPolyField.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+        
+    }
+    
+    private static class EmbeddedMonoToPolyMappingProviderProxy extends ProviderOperationProxy<ProviderStructureWithMonoToPolyField, ProviderStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("embeddedMonoToPolyMapping", ProviderStructureWithMonoToPolyField.class, ProviderStructureWithMonoToPolyField.class, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+        
+        @Override
+        protected ProviderStructureWithMonoToPolyField invokeOperation(ProviderStructureWithMonoToPolyField parameter) {
+            return parameter;
         }        
     }
 

@@ -2,7 +2,7 @@ package gutta.apievolution.fixedformat.provider;
 
 import gutta.apievolution.fixedformat.objectmapping.TypeId;
 
-@TypeId(4)
+@TypeId(5)
 public class ProviderMonoToPolySubTypeA extends ProviderMonoToPolyType {
     
     private Integer field2;

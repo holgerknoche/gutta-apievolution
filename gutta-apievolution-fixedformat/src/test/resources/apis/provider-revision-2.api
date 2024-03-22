@@ -17,6 +17,10 @@ api test.provider {
         TestEnum[10] resultList
     }
     
+    record StructureWithMonoToPolyField as ProviderStructureWithMonoToPolyField {
+        MonoToPolyType field
+    }
+    
     abstract record MonoToPolyType as ProviderMonoToPolyType {
         int32 field1
     }
@@ -32,5 +36,7 @@ api test.provider {
     operation testOperation(TestParameter): TestResult
     
     operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
+    
+    operation embeddedMonoToPolyMapping(StructureWithMonoToPolyField): StructureWithMonoToPolyField
 
 }
