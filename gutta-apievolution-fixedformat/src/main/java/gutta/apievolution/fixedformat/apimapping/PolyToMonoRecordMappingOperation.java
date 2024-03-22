@@ -1,5 +1,6 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
 import gutta.apievolution.fixedformat.objectmapping.Flags;
 
 import java.nio.ByteBuffer;
@@ -46,6 +47,21 @@ class PolyToMonoRecordMappingOperation extends AbstractPolymorphicRecordMappingO
         
         target.put(Flags.IS_PRESENT);
         this.delegate.mapNonNullValue(source, target);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.mappableTypeIds.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(PolyToMonoRecordMappingOperation that) {
+        return (this.mappableTypeIds.equals(that.mappableTypeIds)) &&
+               (this.delegate.equals(that.delegate));
     }
     
     @Override

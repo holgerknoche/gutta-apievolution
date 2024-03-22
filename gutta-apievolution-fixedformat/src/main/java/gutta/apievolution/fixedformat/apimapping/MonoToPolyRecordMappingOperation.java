@@ -1,5 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping;
 
+import gutta.apievolution.core.util.EqualityUtil;
+
 import java.nio.ByteBuffer;
 
 class MonoToPolyRecordMappingOperation extends AbstractPolymorphicRecordMappingOperation {
@@ -35,6 +37,21 @@ class MonoToPolyRecordMappingOperation extends AbstractPolymorphicRecordMappingO
     protected void mapNonNullValue(ByteBuffer source, ByteBuffer target) {
         target.putInt(this.targetTypeId);
         this.delegate.mapNonNullValue(source, target);
+    }
+    
+    @Override
+    public int hashCode() {
+        return (this.targetTypeId + this.delegate.hashCode());
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        return EqualityUtil.equals(this, that, this::equalsInternal);
+    }
+    
+    private boolean equalsInternal(MonoToPolyRecordMappingOperation that) {
+        return (this.targetTypeId == that.targetTypeId) &&
+               this.delegate.equals(that.delegate); 
     }
     
     @Override

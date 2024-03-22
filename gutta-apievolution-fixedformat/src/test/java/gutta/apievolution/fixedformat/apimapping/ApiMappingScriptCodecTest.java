@@ -276,7 +276,7 @@ class ApiMappingScriptCodecTest {
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
         
         byte[] expectedBytes = new byte[] {
-             // --- Offsets
+                // --- Offsets
                 0x00, 0x00, 0x00, 0x08, // Offset of the type list
                 0x00, 0x00, 0x00, 0x1D, // Offset of the operation list
                 // --- Type entries
@@ -315,7 +315,6 @@ class ApiMappingScriptCodecTest {
      * Test case: Serialization and deserialization of a script with mono-to-poly and poly-to-mono mapping operations.
      */
     @Test
-    @Disabled
     void scriptWithMonoToPolyMapping() {
         RecordTypeEntry typeEntry = new RecordTypeEntry(0, 2, 0, emptyList());
         
@@ -325,7 +324,34 @@ class ApiMappingScriptCodecTest {
         ApiMappingScript script = new ApiMappingScript(singletonList(typeEntry), singletonList(operationEntry));
         ApiMappingScriptCodec codec = new ApiMappingScriptCodec();
 
+        byte[] expectedBytes = new byte[] {
+                // --- Offsets
+                0x00, 0x00, 0x00, 0x08, // Offset of the type list
+                0x00, 0x00, 0x00, 0x1D, // Offset of the operation list
+                // --- Type entries
+                0x00, 0x00, 0x00, 0x01, // Number of type entries
+                0x00, 0x00, 0x00, 0x10, // Offset of the first type entry
+                0x02, // Entry type for the first type (record type)
+                0x00, 0x00, 0x00, 0x02, // Type id of the first type
+                0x00, 0x00, 0x00, 0x00, // Data length of the first type
+                0x00, 0x00, 0x00, 0x00, // Number of field mappings
+                // --- Operation entries
+                0x00, 0x00, 0x00, 0x01, // Number of operation entries
+                0x00, 0x00, 0x00, 0x25, // Offset of the first operation entry
+                0x00, 0x00, 0x00, 0x02, // Length of the operation name (in bytes)
+                0x6F, 0x70, // Name of the operation
+                0x07, // Operation type of the parameter mapping operation (mono-to-poly record mapping)
+                0x00, 0x00, 0x00, 0x00, // Record index of the target type
+                0x08, // Operation type of the parameter mapping operation (poly-to-mono record mapping)
+                0x00, 0x00, 0x00, 0x03, // Number of type ids
+                0x00, 0x00, 0x00, 0x01, // First type id
+                0x00, 0x00, 0x00, 0x03, // Second type id
+                0x00, 0x00, 0x00, 0x05, // Third type id
+                0x00, 0x00, 0x00, 0x00 // Record index of the target type
+        };
+        
         byte[] scriptBytes = codec.encodeScript(script);
+        assertArrayEquals(expectedBytes, scriptBytes);
         
         ApiMappingScript decodedScript = codec.decodeScript(scriptBytes);
         assertEquals(script, decodedScript);
