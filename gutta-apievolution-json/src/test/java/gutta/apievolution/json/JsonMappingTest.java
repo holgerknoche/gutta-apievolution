@@ -1,6 +1,8 @@
 package gutta.apievolution.json;
 
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
@@ -9,9 +11,6 @@ import gutta.apievolution.json.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.json.consumer.ConsumerSubTypeA;
 import gutta.apievolution.json.consumer.ConsumerSubTypeB;
 import gutta.apievolution.json.consumer.ConsumerSuperType;
-import gutta.apievolution.json.consumer.PolyOperation2ConsumerProxy;
-import gutta.apievolution.json.consumer.PolyOperationConsumerProxy;
-import gutta.apievolution.json.consumer.TestOperationConsumerProxy;
 import gutta.apievolution.json.provider.ProviderEnum;
 import gutta.apievolution.json.provider.ProviderParameter;
 import gutta.apievolution.json.provider.ProviderResult;
@@ -106,6 +105,22 @@ class JsonMappingTest {
     void exceptionMapping() {
         fail();
     }
+
+    private abstract static class ConsumerOperationProxyTemplate<P, R> extends ConsumerOperationProxy<P, R> {
+                
+        private static final String API_ID = "apis/consumer-api.api";
+
+        private static final String REFERENCED_API_NAME = "test.provider";
+
+        private static final int REFERENCED_REVISION = 0;
+        
+        private static final ConsumerApiDefinition CONSUMER_API = ConsumerApiLoader.loadFromClasspath(API_ID, REFERENCED_API_NAME, REFERENCED_REVISION);
+        
+        protected ConsumerOperationProxyTemplate(String operationName, String parameterTypeName, String resultTypeName, Class<R> resultType, RequestRouter router) {
+            super(CONSUMER_API, API_ID, operationName, parameterTypeName, resultTypeName, resultType, router);
+        }
+        
+    }
     
     /**
      * Template type for provider operation proxies.
@@ -120,6 +135,14 @@ class JsonMappingTest {
         
         protected ProviderOperationProxyTemplate(String operationName, String parameterTypeName, String resultTypeName, Class<P> parameterType) {
             super(operationName, REVISION_HISTORY, SUPPORTED_REVISIONS, parameterTypeName, resultTypeName, parameterType);
+        }
+        
+    }
+    
+    private static class TestOperationConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerParameter, ConsumerResult> {
+        
+        public TestOperationConsumerProxy(RequestRouter router) {
+            super("testOperation", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, router);
         }
         
     }
@@ -145,6 +168,14 @@ class JsonMappingTest {
         
     }
     
+    private static class PolyOperationConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerSuperType, ConsumerSuperType> {
+        
+        public PolyOperationConsumerProxy(RequestRouter router) {
+            super("polyOperation", "ConsumerSuperType", "ConsumerSuperType", ConsumerSuperType.class, router);
+        }
+        
+    }
+    
     private static class PolyOperationProviderProxy extends ProviderOperationProxyTemplate<ProviderSuperType, ProviderSuperType> {
         
         public PolyOperationProviderProxy() {
@@ -154,6 +185,14 @@ class JsonMappingTest {
         @Override
         protected ProviderSuperType invokeOperation(ProviderSuperType parameter) {
             return parameter;
+        }
+        
+    }
+    
+    private static class PolyOperation2ConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerStructureWithPolyField, ConsumerStructureWithPolyField> {
+        
+        public PolyOperation2ConsumerProxy(RequestRouter router) {
+            super("polyOperation2", "ConsumerStructureWithPolyField", "ConsumerStructureWithPolyField", ConsumerStructureWithPolyField.class, router);
         }
         
     }
