@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.consumer;
 
 /**
  * Exception denoting that an invocation has failed due to another exception.

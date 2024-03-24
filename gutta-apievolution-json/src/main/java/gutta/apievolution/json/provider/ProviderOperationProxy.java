@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,8 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
+import gutta.apievolution.json.AbstractOperationProxy;
+import gutta.apievolution.json.InvalidDataException;
 
 import java.io.IOException;
 import java.util.Set;

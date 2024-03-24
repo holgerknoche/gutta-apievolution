@@ -27,7 +27,7 @@ import gutta.apievolution.jmh.json.provider.TestMethod500ProviderProxy;
 import gutta.apievolution.jmh.json.provider.TestMethod50ProviderProxy;
 import gutta.apievolution.jmh.json.provider.TestMethod75ProviderProxy;
 import gutta.apievolution.jmh.json.provider.TestMethodEmptyProviderProxy;
-import gutta.apievolution.json.ProviderOperationProxy;
+import gutta.apievolution.json.provider.ProviderOperationProxy;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;

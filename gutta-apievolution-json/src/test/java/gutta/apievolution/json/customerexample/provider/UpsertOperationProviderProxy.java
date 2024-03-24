@@ -1,7 +1,7 @@
 package gutta.apievolution.json.customerexample.provider;
 
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.json.ProviderOperationProxy;
+import gutta.apievolution.json.provider.ProviderOperationProxy;
 
 import java.util.Set;
 

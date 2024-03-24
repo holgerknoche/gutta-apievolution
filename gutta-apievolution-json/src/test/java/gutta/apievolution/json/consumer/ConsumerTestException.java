@@ -1,18 +1,15 @@
 package gutta.apievolution.json.consumer;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-@JsonTypeName("ConsumerTestException")
-public class ConsumerTestException {
+public class ConsumerTestException extends RuntimeException {
     
-    private int exceptionField;
+    private final ConsumerTestExceptionData data;
     
-    public int getExceptionField() {
-        return this.exceptionField;
+    public ConsumerTestException(ConsumerTestExceptionData data) {
+        this.data = data;
     }
     
-    public void setExceptionField(int exceptionField) {
-        this.exceptionField = exceptionField;
+    public Integer getExceptionField() {
+        return this.data.getExceptionField();
     }
 
 }

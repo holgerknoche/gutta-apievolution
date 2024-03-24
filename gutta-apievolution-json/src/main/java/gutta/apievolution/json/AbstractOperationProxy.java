@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
-abstract class AbstractOperationProxy<P, R> {
+public abstract class AbstractOperationProxy<P, R> {
 
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 

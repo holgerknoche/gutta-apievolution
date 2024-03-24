@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.consumer;
 
 /**
  * This exception is thrown by default if an unrepresentable value is encountered in the JSON.

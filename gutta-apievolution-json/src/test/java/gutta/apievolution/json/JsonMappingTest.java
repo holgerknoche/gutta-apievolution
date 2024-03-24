@@ -5,6 +5,7 @@ import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.consumer.ConsumerEnum;
+import gutta.apievolution.json.consumer.ConsumerOperationProxy;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
 import gutta.apievolution.json.consumer.ConsumerStructureWithPolyField;
@@ -12,14 +13,15 @@ import gutta.apievolution.json.consumer.ConsumerSubTypeA;
 import gutta.apievolution.json.consumer.ConsumerSubTypeB;
 import gutta.apievolution.json.consumer.ConsumerSuperType;
 import gutta.apievolution.json.consumer.ConsumerTestException;
+import gutta.apievolution.json.consumer.ConsumerTestExceptionData;
 import gutta.apievolution.json.provider.MappableProviderTestException;
 import gutta.apievolution.json.provider.ProviderEnum;
+import gutta.apievolution.json.provider.ProviderOperationProxy;
 import gutta.apievolution.json.provider.ProviderParameter;
 import gutta.apievolution.json.provider.ProviderResult;
 import gutta.apievolution.json.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.json.provider.ProviderSuperType;
 import gutta.apievolution.json.provider.ProviderTestException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test case for the JSON mapping functionality.
@@ -107,8 +109,9 @@ class JsonMappingTest {
         RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
         
         OpWithExceptionConsumerProxy consumerProxy = new OpWithExceptionConsumerProxy(requestRouter);
-        consumerProxy.invokeOperation(new ConsumerParameter());
-        fail();
+        ConsumerTestException exception = assertThrows(ConsumerTestException.class, () -> consumerProxy.invokeOperation(new ConsumerParameter()));
+        
+        assertEquals(1234, exception.getExceptionField());
     }
 
     private abstract static class ConsumerOperationProxyTemplate<P, R> extends ConsumerOperationProxy<P, R> {
@@ -222,7 +225,7 @@ class JsonMappingTest {
     private static class OpWithExceptionConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerParameter, ConsumerResult> {
         
         public OpWithExceptionConsumerProxy(RequestRouter router) {
-            super("opWithException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, Collections.singleton(ConsumerTestException.class), router);
+            super("opWithException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, Collections.singleton(ConsumerTestExceptionData.class), router);
         }
         
     }

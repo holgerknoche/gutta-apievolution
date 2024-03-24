@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.provider;
 
 public abstract class MappableException extends RuntimeException {
     

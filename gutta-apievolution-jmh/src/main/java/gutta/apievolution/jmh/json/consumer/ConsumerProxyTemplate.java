@@ -1,8 +1,8 @@
 package gutta.apievolution.jmh.json.consumer;
 
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.json.ConsumerOperationProxy;
 import gutta.apievolution.json.RequestRouter;
+import gutta.apievolution.json.consumer.ConsumerOperationProxy;
 
 import java.lang.reflect.ParameterizedType;
 

@@ -1,25 +1,24 @@
 package gutta.apievolution.json.unrepresentablevalues;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.dsl.ConsumerApiLoader;
+import gutta.apievolution.dsl.ProviderApiLoader;
+import gutta.apievolution.json.RequestRouter;
+import gutta.apievolution.json.SimpleJsonRequestRouter;
+import gutta.apievolution.json.consumer.ConsumerOperationProxy;
+import gutta.apievolution.json.consumer.OnUnrepresentableValue;
+import gutta.apievolution.json.consumer.UnrepresentableValueException;
+import gutta.apievolution.json.provider.ProviderOperationProxy;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
-
-import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
-import gutta.apievolution.core.apimodel.provider.RevisionHistory;
-import gutta.apievolution.dsl.ConsumerApiLoader;
-import gutta.apievolution.dsl.ProviderApiLoader;
-import gutta.apievolution.json.ConsumerOperationProxy;
-import gutta.apievolution.json.OnUnrepresentableValue;
-import gutta.apievolution.json.ProviderOperationProxy;
-import gutta.apievolution.json.RequestRouter;
-import gutta.apievolution.json.SimpleJsonRequestRouter;
-import gutta.apievolution.json.UnrepresentableValueException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UnrepresentableValuesTest {
     

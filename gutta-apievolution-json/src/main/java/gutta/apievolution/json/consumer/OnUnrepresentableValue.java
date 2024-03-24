@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -15,7 +15,7 @@ public interface OnUnrepresentableValue<T extends JsonNode> {
      * 
      * @return see above
      */
-    static OnUnrepresentableValue<NullNode> returnNull() {
+    public static OnUnrepresentableValue<NullNode> returnNull() {
         return NullNode::getInstance;
     }
     
@@ -24,7 +24,7 @@ public interface OnUnrepresentableValue<T extends JsonNode> {
      * 
      * @return see above
      */
-    static OnUnrepresentableValue<JsonNode> throwException() {
+    public static OnUnrepresentableValue<JsonNode> throwException() {
         return () -> {
             throw new UnrepresentableValueException("An unrepresentable value was encountered.");
         };
@@ -35,6 +35,6 @@ public interface OnUnrepresentableValue<T extends JsonNode> {
      * 
      * @return The default node if no (runtime) exception is thrown
      */
-    T throwExceptionOrReturnDefaultNode();
+    public T throwExceptionOrReturnDefaultNode();
 
 }

@@ -1,4 +1,4 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.consumer;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -10,6 +10,8 @@ import gutta.apievolution.core.apimodel.RecordType;
 import gutta.apievolution.core.apimodel.Type;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
+import gutta.apievolution.json.AbstractOperationProxy;
+import gutta.apievolution.json.RequestRouter;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -155,16 +157,19 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             // Determine the actual result type depending on its public name in the JSON. If no type is given, resolve the default type by its
             // internal name
-            Type resultType = determineSpecificTypeId(responseNode).map(this::resolveTypeByPublicName)
+            RecordType<?, ?, ?> resultType = (RecordType<?, ?, ?>) determineSpecificTypeId(responseNode).map(this::resolveTypeByPublicName)
                     .orElse(this.resolveTypeByInternalName(this.getResultTypeName()));
             responseNode = this.rewritePublicToConsumerInternal(resultType, this::resolveTypeByPublicName, responseNode, onUnrepresentableValue);
 
-            if (((RecordType<?, ?, ?>) resultType).isException()) {
+            if (resultType.isException()) {
+                // If the type is an exception, map the data and throw the associated exception
                 String exceptionTypeName = determineSpecificTypeId(responseNode).orElseThrow(NoSuchElementException::new);
-                Class<?> exceptionRepresentation = this.exceptionTypeMap.get(exceptionTypeName);
+                Class<?> exceptionTypeRepresentation = this.exceptionTypeMap.get(exceptionTypeName);
                 
-                return objectMapper.treeToValue(responseNode, exceptionTypeRepresentation);
+                MappedExceptionData exceptionData = (MappedExceptionData) objectMapper.treeToValue(responseNode, exceptionTypeRepresentation);
+                throw exceptionData.createMappedException();
             } else {
+                // Otherwise, return the value
                 return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
             }
         } catch (IOException e) {
