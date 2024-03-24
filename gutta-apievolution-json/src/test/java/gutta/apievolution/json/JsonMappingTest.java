@@ -1,5 +1,7 @@
 package gutta.apievolution.json;
 
+import gutta.apievolution.core.apimodel.provider.RevisionHistory;
+import gutta.apievolution.dsl.ProviderApiLoader;
 import gutta.apievolution.json.consumer.ConsumerEnum;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
@@ -10,15 +12,24 @@ import gutta.apievolution.json.consumer.ConsumerSuperType;
 import gutta.apievolution.json.consumer.PolyOperation2ConsumerProxy;
 import gutta.apievolution.json.consumer.PolyOperationConsumerProxy;
 import gutta.apievolution.json.consumer.TestOperationConsumerProxy;
-import gutta.apievolution.json.provider.PolyOperation2ProviderProxy;
-import gutta.apievolution.json.provider.PolyOperationProviderProxy;
-import gutta.apievolution.json.provider.TestOperationProviderProxy;
+import gutta.apievolution.json.provider.ProviderEnum;
+import gutta.apievolution.json.provider.ProviderParameter;
+import gutta.apievolution.json.provider.ProviderResult;
+import gutta.apievolution.json.provider.ProviderStructureWithPolyField;
+import gutta.apievolution.json.provider.ProviderSuperType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test case for the JSON mapping functionality.
@@ -85,6 +96,79 @@ class JsonMappingTest {
         
         assertNotSame(parameter, result);
         assertEquals(parameter, result);
+    }
+    
+    /**
+     * Test case: A thrown exception is mapped as expected.
+     */
+    @Test
+    @Disabled
+    void exceptionMapping() {
+        fail();
+    }
+    
+    /**
+     * Template type for provider operation proxies.
+     * @param <P> The parameter type of the operation
+     * @param <R> The result type of the operation
+     */
+    private abstract static class ProviderOperationProxyTemplate<P, R> extends ProviderOperationProxy<P, R> {
+        
+        private static final RevisionHistory REVISION_HISTORY = ProviderApiLoader.loadHistoryFromClasspath("apis/provider-revision-1.api", "apis/provider-revision-2.api");
+        
+        private static final Set<Integer> SUPPORTED_REVISIONS = new HashSet<>(Arrays.asList(0, 1));
+        
+        protected ProviderOperationProxyTemplate(String operationName, String parameterTypeName, String resultTypeName, Class<P> parameterType) {
+            super(operationName, REVISION_HISTORY, SUPPORTED_REVISIONS, parameterTypeName, resultTypeName, parameterType);
+        }
+        
+    }
+    
+    private static class TestOperationProviderProxy extends ProviderOperationProxyTemplate<ProviderParameter, ProviderResult> {
+
+        public TestOperationProviderProxy() {
+            super("testOperation", "ProviderParameter", "ProviderResult", ProviderParameter.class);
+        }
+        
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderResult result = new ProviderResult();
+            result.setRetField(parameter.getFieldA() + "X");
+            result.setResultEnum(ProviderEnum.VALUE_2);
+
+            List<ProviderEnum> resultList = new ArrayList<>(parameter.getTestList());
+            Collections.reverse(resultList);
+            result.setResultList(resultList);
+
+            return result;
+        }
+        
+    }
+    
+    private static class PolyOperationProviderProxy extends ProviderOperationProxyTemplate<ProviderSuperType, ProviderSuperType> {
+        
+        public PolyOperationProviderProxy() {
+            super("polyOperation", "ProviderSuperType", "ProviderSuperType", ProviderSuperType.class);
+        }
+        
+        @Override
+        protected ProviderSuperType invokeOperation(ProviderSuperType parameter) {
+            return parameter;
+        }
+        
+    }
+    
+    private static class PolyOperation2ProviderProxy extends ProviderOperationProxyTemplate<ProviderStructureWithPolyField, ProviderStructureWithPolyField> {
+        
+        public PolyOperation2ProviderProxy() {
+            super("polyOperation2", "ProviderStructureWithPolyField", "ProviderStructureWithPolyField", ProviderStructureWithPolyField.class);
+        }
+        
+        @Override
+        protected ProviderStructureWithPolyField invokeOperation(ProviderStructureWithPolyField parameter) {
+            return parameter;
+        }
+        
     }
 
 }
