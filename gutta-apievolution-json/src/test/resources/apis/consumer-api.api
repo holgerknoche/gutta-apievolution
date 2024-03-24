@@ -34,6 +34,14 @@ api test.customer {
     
     exception TestException as ConsumerTestException {
         int32 exceptionField
+    }
+    
+    record StructureWithMonoToPolyField as ConsumerStructureWithMonoToPolyField {
+        MonoToPolyType field
+    }
+    
+    record MonoToPolyType as ConsumerMonoToPolyType {
+        int32 field1
     }    
     
     operation testOperation(TestParameter): TestResult
@@ -43,5 +51,11 @@ api test.customer {
     operation polyOperation2(StructureWithPolyField): StructureWithPolyField
     
     operation opWithException(TestParameter): TestResult throws TestException
+    
+    operation opWithUnmappedException(TestParameter): TestResult
+    
+    operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
+    
+    operation embeddedMonoToPolyMapping(StructureWithMonoToPolyField): StructureWithMonoToPolyField
 
 }
