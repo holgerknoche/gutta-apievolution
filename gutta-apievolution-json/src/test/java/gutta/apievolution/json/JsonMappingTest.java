@@ -40,18 +40,16 @@ class JsonMappingTest {
      */
     @Test
     void testJsonConversation() {
-        TestRequestRouter requestRouter = new TestRequestRouter("test.provider");
-
-        TestOperationProviderProxy serviceProxy = new TestOperationProviderProxy();
-        requestRouter.registerProviderService(serviceProxy);
+        TestOperationProviderProxy providerProxy = new TestOperationProviderProxy();
+        RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
 
         ConsumerParameter parameter = new ConsumerParameter();
         parameter.setTestField("test value");
         parameter.setTestEnum(ConsumerEnum.VALUE_A);
         parameter.setTestList(Arrays.asList(ConsumerEnum.VALUE_A, ConsumerEnum.VALUE_B));
 
-        TestOperationConsumerProxy providerProxy = new TestOperationConsumerProxy(requestRouter);
-        ConsumerResult result = providerProxy.invokeOperation(parameter);
+        TestOperationConsumerProxy consumerProxy = new TestOperationConsumerProxy(requestRouter);
+        ConsumerResult result = consumerProxy.invokeOperation(parameter);
 
         assertEquals("test valueX", result.getResultField());
         assertEquals(ConsumerEnum.VALUE_B, result.getResultEnum());
@@ -103,6 +101,11 @@ class JsonMappingTest {
     @Test
     @Disabled
     void exceptionMapping() {
+        OpWithExceptionProviderProxy providerProxy = new OpWithExceptionProviderProxy();
+        RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+        
+        OpWithExceptionConsumerProxy consumerProxy = new OpWithExceptionConsumerProxy(requestRouter);
+        consumerProxy.invokeOperation(new ConsumerParameter());
         fail();
     }
 
@@ -206,6 +209,28 @@ class JsonMappingTest {
         @Override
         protected ProviderStructureWithPolyField invokeOperation(ProviderStructureWithPolyField parameter) {
             return parameter;
+        }
+        
+    }
+    
+    private static class OpWithExceptionConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithExceptionConsumerProxy(RequestRouter router) {
+            super("opWithException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, router);
+        }
+        
+    }
+    
+    private static class OpWithExceptionProviderProxy extends ProviderOperationProxyTemplate<ProviderParameter, ProviderResult> {
+        
+        public OpWithExceptionProviderProxy() {
+            super("opWithException", "ProviderParameter" , "ProviderResult", ProviderParameter.class);
+        }
+        
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            // TODO Auto-generated method stub
+            return null;
         }
         
     }
