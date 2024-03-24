@@ -11,11 +11,14 @@ import gutta.apievolution.json.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.json.consumer.ConsumerSubTypeA;
 import gutta.apievolution.json.consumer.ConsumerSubTypeB;
 import gutta.apievolution.json.consumer.ConsumerSuperType;
+import gutta.apievolution.json.consumer.ConsumerTestException;
+import gutta.apievolution.json.provider.MappableProviderTestException;
 import gutta.apievolution.json.provider.ProviderEnum;
 import gutta.apievolution.json.provider.ProviderParameter;
 import gutta.apievolution.json.provider.ProviderResult;
 import gutta.apievolution.json.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.json.provider.ProviderSuperType;
+import gutta.apievolution.json.provider.ProviderTestException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -122,6 +125,10 @@ class JsonMappingTest {
             super(CONSUMER_API, API_ID, operationName, parameterTypeName, resultTypeName, resultType, router);
         }
         
+        protected ConsumerOperationProxyTemplate(String operationName, String parameterTypeName, String resultTypeName, Class<R> resultType, Set<Class<?>> exceptionTypes, RequestRouter router) {
+            super(CONSUMER_API, API_ID, operationName, parameterTypeName, resultTypeName, resultType, exceptionTypes, router);
+        }
+        
     }
     
     /**
@@ -215,7 +222,7 @@ class JsonMappingTest {
     private static class OpWithExceptionConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerParameter, ConsumerResult> {
         
         public OpWithExceptionConsumerProxy(RequestRouter router) {
-            super("opWithException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, router);
+            super("opWithException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, Collections.singleton(ConsumerTestException.class), router);
         }
         
     }
@@ -228,8 +235,10 @@ class JsonMappingTest {
         
         @Override
         protected ProviderResult invokeOperation(ProviderParameter parameter) {
-            // TODO Auto-generated method stub
-            return null;
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
         }
         
     }

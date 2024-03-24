@@ -98,7 +98,7 @@ abstract class AbstractOperationProxy<P, R> {
         protected JsonNode representation;
         
         protected boolean requiresTypeIdentifier(RecordType<?, ?, ?> type) {
-            return (type.hasSuperTypes() || type.hasSubTypes());
+            return (type.hasSuperTypes() || type.hasSubTypes() || type.isException());
         }
         
         protected void handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {

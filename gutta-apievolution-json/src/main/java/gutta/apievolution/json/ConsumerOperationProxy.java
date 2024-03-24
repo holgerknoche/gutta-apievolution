@@ -1,5 +1,7 @@
 package gutta.apievolution.json;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,6 +12,12 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.consumer.ConsumerRecordType;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -23,6 +31,8 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
     private final String apiId;
 
     private final Class<R> resultTypeRepresentation;
+
+    private final Map<String, Class<?>> exceptionTypeMap;
 
     private final RequestRouter router;
 
@@ -39,12 +49,70 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
     protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String apiId, String operationName, String parameterTypeName, String resultTypeName,
             Class<R> resultTypeRepresentation, RequestRouter router) {
 
+        this(apiDefinition, apiId, operationName, parameterTypeName, resultTypeName, resultTypeRepresentation, Collections.emptySet(), router);
+    }
+
+    /**
+     * Creates a new proxy using the given data.
+     * 
+     * @param apiDefinition                The API definition to use
+     * @param apiId                        The API ID of the consumer API
+     * @param operationName                The name of the invoked operation
+     * @param parameterTypeName            The internal name of the parameter type in the API definition
+     * @param resultTypeName               The internal name of the result name in the API definition
+     * @param resultTypeRepresentation     The representation of the result type
+     * @param exceptionTypeRepresentations The representations of the exception types
+     * @param router                       The router to use for the invocation
+     */
+    protected ConsumerOperationProxy(ConsumerApiDefinition apiDefinition, String apiId, String operationName, String parameterTypeName, String resultTypeName,
+            Class<R> resultTypeRepresentation, Set<Class<?>> exceptionTypeRepresentations, RequestRouter router) {
+
         super(operationName, parameterTypeName, resultTypeName);
 
         this.apiDefinition = apiDefinition;
         this.apiId = apiId;
         this.resultTypeRepresentation = resultTypeRepresentation;
+        this.exceptionTypeMap = createExceptionMap(exceptionTypeRepresentations);
         this.router = router;
+    }
+    
+    private static Map<String, Class<?>> createExceptionMap(Set<Class<?>> exceptionTypeRepresentations) {
+        Set<Class<?>> allSubTypes = collectAllSubTypes(exceptionTypeRepresentations);
+        
+        Map<String, Class<?>> typeMapping = new HashMap<>(allSubTypes.size());
+        for (Class<?> type : allSubTypes) {
+            JsonTypeName nameAnnotation = type.getAnnotation(JsonTypeName.class);
+            if (nameAnnotation == null) {
+                continue;
+            }
+            
+            typeMapping.put(nameAnnotation.value(), type);
+        }
+        
+        return typeMapping;
+    }
+    
+    private static Set<Class<?>> collectAllSubTypes(Set<Class<?>> exceptionTypes) {
+        Set<Class<?>> allSubTypes = new HashSet<>();
+        
+        for (Class<?> exceptionType : exceptionTypes) {
+            collectAllSubTypes(exceptionType, allSubTypes);
+        }
+        
+        return allSubTypes;
+    }
+    
+    private static Set<Class<?>> collectAllSubTypes(Class<?> type, Set<Class<?>> collectedTypes) {
+        collectedTypes.add(type);
+        
+        JsonSubTypes subTypesAnnotation = type.getAnnotation(JsonSubTypes.class);
+        if (subTypesAnnotation != null) {
+            for (com.fasterxml.jackson.annotation.JsonSubTypes.Type subType : subTypesAnnotation.value()) {
+                collectAllSubTypes(subType.value(), collectedTypes);
+            }
+        }
+        
+        return collectedTypes;
     }
 
     private JsonNode rewritePublicToConsumerInternal(Type type, Function<String, Type> typeResolver, JsonNode representation,
@@ -85,10 +153,20 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
 
             JsonNode responseNode = objectMapper.readTree(responseJson);
 
-            Type resultType = this.resolveTypeByInternalName(this.getResultTypeName());
+            // Determine the actual result type depending on its public name in the JSON. If no type is given, resolve the default type by its
+            // internal name
+            Type resultType = determineSpecificTypeId(responseNode).map(this::resolveTypeByPublicName)
+                    .orElse(this.resolveTypeByInternalName(this.getResultTypeName()));
             responseNode = this.rewritePublicToConsumerInternal(resultType, this::resolveTypeByPublicName, responseNode, onUnrepresentableValue);
 
-            return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
+            if (((RecordType<?, ?, ?>) resultType).isException()) {
+                String exceptionTypeName = determineSpecificTypeId(responseNode).orElseThrow(NoSuchElementException::new);
+                Class<?> exceptionRepresentation = this.exceptionTypeMap.get(exceptionTypeName);
+                
+                return objectMapper.treeToValue(responseNode, exceptionTypeRepresentation);
+            } else {
+                return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
+            }
         } catch (IOException e) {
             throw new InvocationFailedException("Error while processing JSON on the consumer side.", e);
         }

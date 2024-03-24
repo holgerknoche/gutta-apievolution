@@ -99,11 +99,25 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
             JsonNode rewrittenRequestNode = this.rewritePublicToProviderInternal(parameterType, resolution, requestNode);
 
             P parameter = objectMapper.treeToValue(rewrittenRequestNode, this.parameterType);
-            R result = this.invokeOperation(parameter);
+            
+            Type resultType;
+            JsonNode responseNode;
+            try {
+                // Map the result to JSON
+                R result = this.invokeOperation(parameter);
+                
+                resultType = resolution.resolveProviderTypeByInternalName(this.getResultTypeName());
+                responseNode = objectMapper.valueToTree(result);
+            } catch (MappableException e) {
+                // Map the exception data to JSON
+                Object exceptionData = e.getExceptionData();
+                
+                String internalTypeName = exceptionData.getClass().getSimpleName();
+                resultType = resolution.resolveProviderTypeByInternalName(internalTypeName);
+                responseNode = objectMapper.valueToTree(exceptionData);
+            }
 
-            Type formalResultType = resolution.resolveProviderTypeByInternalName(this.getResultTypeName());           
-            JsonNode responseNode = objectMapper.valueToTree(result);
-            JsonNode rewrittenResponseNode = this.rewriteInternalToPublic(formalResultType, resolution, responseNode);
+            JsonNode rewrittenResponseNode = this.rewriteInternalToPublic(resultType, resolution, responseNode);
             return objectMapper.writeValueAsBytes(rewrittenResponseNode);
         } catch (IOException e) {
             throw new InvalidDataException("Could not rewrite JSON data on the provider side.", e);
