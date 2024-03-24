@@ -30,7 +30,7 @@ api test.provider {
     }
     
     record MonoToPolySubTypeB extends MonoToPolyType as ProviderMonoToPolySubTypeB {
-        string(10) field3
+        string field3
     }
     
     operation testOperation(TestParameter): TestResult
