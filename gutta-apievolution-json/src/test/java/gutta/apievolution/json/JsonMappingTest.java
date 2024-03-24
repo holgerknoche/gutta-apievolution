@@ -99,7 +99,6 @@ class JsonMappingTest {
      * Test case: A thrown exception is mapped as expected.
      */
     @Test
-    @Disabled
     void exceptionMapping() {
         OpWithExceptionProviderProxy providerProxy = new OpWithExceptionProviderProxy();
         RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);

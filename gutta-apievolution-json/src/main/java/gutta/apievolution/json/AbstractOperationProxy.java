@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.AtomicType;
@@ -110,6 +111,10 @@ abstract class AbstractOperationProxy<P, R> {
         
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
             ObjectNode objectNode = (ObjectNode) this.representation;
 
             Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
@@ -143,6 +148,10 @@ abstract class AbstractOperationProxy<P, R> {
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
             TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
@@ -210,7 +219,11 @@ abstract class AbstractOperationProxy<P, R> {
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
-            TextNode textNode = (TextNode) representation;
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
+            TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
             EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElse(null);
