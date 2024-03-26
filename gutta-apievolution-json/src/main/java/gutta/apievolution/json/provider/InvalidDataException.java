@@ -1,9 +1,9 @@
-package gutta.apievolution.json;
+package gutta.apievolution.json.provider;
 
 /**
  * This exception is thrown when invalid (JSON) data is encountered.
  */
-public class InvalidDataException extends RuntimeException {    
+class InvalidDataException extends RuntimeException {    
     
     private static final long serialVersionUID = -2621792519634892079L;
 

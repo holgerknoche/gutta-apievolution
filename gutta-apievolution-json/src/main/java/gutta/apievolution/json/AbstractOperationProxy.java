@@ -25,6 +25,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Abstract superclass for both consumer and provider operation proxies.
+ * 
+ * @param <P> The parameter type representation of the operation
+ * @param <R> The result type representation of the operation
+ */
 public abstract class AbstractOperationProxy<P, R> {
 
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
@@ -47,24 +53,52 @@ public abstract class AbstractOperationProxy<P, R> {
         return objectMapper;
     }
 
+    /**
+     * Creates a new operation proxy using the given data.
+     * 
+     * @param operationName The name of the represented operation
+     * @param parameterTypeName The name of the parameter type
+     * @param resultTypeName The name of the result type
+     */
     protected AbstractOperationProxy(String operationName, String parameterTypeName, String resultTypeName) {
         this.operationName = operationName;
         this.parameterTypeName = parameterTypeName;
         this.resultTypeName = resultTypeName;
     }
 
+    /**
+     * Returns the name of the represented operation.
+     * 
+     * @return see above
+     */
     public String getOperationName() {
         return this.operationName;
     }
 
+    /**
+     * Returns the name of the parameter type.
+     * 
+     * @return see above
+     */
     protected String getParameterTypeName() {
         return this.parameterTypeName;
     }
 
+    /**
+     * Returns the name of the result type.
+     * 
+     * @return see above
+     */
     protected String getResultTypeName() {
         return this.resultTypeName;
     }
 
+    /**
+     * Determines the specific type ID of the given JSON node, if present.
+     * 
+     * @param node The JSON node to determine the type ID of
+     * @return The type ID, if present
+     */
     protected static Optional<String> determineSpecificTypeId(JsonNode node) {
         JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
 
@@ -75,10 +109,21 @@ public abstract class AbstractOperationProxy<P, R> {
         return Optional.of(typePropertyNode.asText());
     }
 
+    /**
+     * Determines whether the given JSON node represents an unrepresentable value.
+     * 
+     * @param node The node to inspect
+     * @return {@code True} if the node represents an unrepresentable value, {@code false} otherwise
+     */
     protected static boolean isUnrepresentableValue(ObjectNode node) {
         return node.has(UNREPRESENTABLE_PROPERTY_NAME);
     }
 
+    /**
+     * Creates a JSON node representing an unrepresentable value. 
+     * 
+     * @return see above
+     */
     protected static ObjectNode createUnrepresentableValue() {
         ObjectNode node = OBJECT_MAPPER.createObjectNode();
         node.set(UNREPRESENTABLE_PROPERTY_NAME, BooleanNode.TRUE);
@@ -138,11 +183,23 @@ public abstract class AbstractOperationProxy<P, R> {
      */
     protected abstract static class AbstractInternalToPublicRewriter extends AbstractRepresentationRewriter {
 
+        /**
+         * Rewrites the given JSON node from internal to public representation according to the given type.
+         * 
+         * @param type The type that represents the JSON node
+         * @param representation The JSON representation of the type with internal names
+         * @return The rewritten JSON node with public names
+         */
         public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
         }
 
+        /**
+         * Returns a fork of this rewriter. 
+         * 
+         * @return see above
+         */
         protected abstract AbstractInternalToPublicRewriter fork();
 
         @Override
@@ -209,8 +266,18 @@ public abstract class AbstractOperationProxy<P, R> {
         }
     }
 
+    /**
+     * Abstract supertype for public-to-internal rewriters.
+     */
     protected abstract static class AbstractPublicToInternalRewriter extends AbstractRepresentationRewriter {
 
+        /**
+         * Rewrites the given JSON node from public to internal representation according to the given type.
+         * 
+         * @param type The type that represents the JSON node
+         * @param representation The JSON representation of the type with internal names
+         * @return The rewritten JSON node with public names
+         */
         public JsonNode rewritePublicToInternal(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
@@ -233,6 +300,12 @@ public abstract class AbstractOperationProxy<P, R> {
             }
         }
 
+        /**
+         * Handles an unrepresentable enum member with the given name.
+         * 
+         * @param name The name of the unrepresentable enum member
+         * @return The JSON object representing the unrepresentable member
+         */
         protected abstract JsonNode onUnrepresentableEnumMember(String name);
 
         @Override
@@ -245,6 +318,11 @@ public abstract class AbstractOperationProxy<P, R> {
             return this.representation;
         }        
 
+        /**
+         * Returns a fork of this rewriter. 
+         * 
+         * @return see above
+         */
         protected abstract AbstractPublicToInternalRewriter fork();
 
         private JsonNode handleListType(ListType listType) {

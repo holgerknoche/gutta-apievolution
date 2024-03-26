@@ -1,7 +1,7 @@
 package gutta.apievolution.fixedformat.apimapping.provider;
 
 /**
- * Special exception type to denote an exception that is mappable and transferrable to a remote client.
+ * Special exception type to denote an exception that is mappable and transferrable to a consumer.
  */
 public class MappableException extends RuntimeException {
     

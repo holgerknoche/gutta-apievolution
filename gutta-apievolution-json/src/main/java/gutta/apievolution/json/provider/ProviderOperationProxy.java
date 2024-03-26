@@ -15,7 +15,6 @@ import gutta.apievolution.core.resolution.DefinitionResolution;
 import gutta.apievolution.core.resolution.DefinitionResolver;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.json.AbstractOperationProxy;
-import gutta.apievolution.json.InvalidDataException;
 
 import java.io.IOException;
 import java.util.Set;
