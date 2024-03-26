@@ -1,5 +1,11 @@
 package gutta.apievolution.json.provider;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeInfo(use = Id.NAME)
+@JsonTypeName("ProviderMonoToPolyType")
 public class ProviderMonoToPolyType {
     
     private Integer field1;

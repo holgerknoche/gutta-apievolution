@@ -117,21 +117,19 @@ public abstract class AbstractOperationProxy<P, R> {
             
             ObjectNode objectNode = (ObjectNode) this.representation;
 
-            // TODO mono-to-poly and poly-to-mono mappings
             Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
             if (specificTypeId.isPresent()) {
-                // If a specific type ID is present, the actual type may be a subtype of
-                // the formal type
+                // If a specific type ID is present, the actual type may be a subtype of the formal type
                 return this.handlePolymorphicRecordType(specificTypeId.get(), objectNode);
             } else {
-                // If no type ID is present, simply rewrite the record with the given type
-                return this.rewriteRecord(recordType, objectNode);
+                // If no type ID is present, perform a monomorphic or mono-to-poly mapping
+                return this.handleMonomorphicRecordType(recordType, objectNode);
             }
         }
 
         protected abstract JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
 
-        protected abstract JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
+        protected abstract JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
         
     }
     

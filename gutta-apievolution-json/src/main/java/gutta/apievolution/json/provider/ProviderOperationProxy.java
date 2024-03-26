@@ -157,7 +157,11 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
         
         @Override
-        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
+        protected JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            return this.rewriteRecord(recordType, objectNode);
+        }
+        
+        private ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
             ObjectNode targetNode = OBJECT_MAPPER.createObjectNode();
             
             this.handleTypeIdentifier(targetNode, recordType, RecordType::getInternalName);
@@ -214,9 +218,13 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
                 return this.rewriteRecord(actualProviderType, objectNode);
             }
         }
-
+        
         @Override
-        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
+        protected JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            return this.rewriteRecord(recordType, objectNode);
+        }
+
+        private ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode sourceNode) {
             RecordType<?, ?, ?> consumerRecordType = (RecordType<?, ?, ?>) this.definitionResolution.mapProviderType(recordType);
             
             ObjectNode targetNode = OBJECT_MAPPER.createObjectNode();

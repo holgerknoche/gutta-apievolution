@@ -216,9 +216,14 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
             this.handleTypeIdentifier(objectNode, type, RecordType::getInternalName);
             return this.rewriteRecord(type, objectNode);
         }
-
+        
         @Override
-        protected JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+        protected JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            this.handleTypeIdentifier(objectNode, recordType, RecordType::getInternalName);
+            return this.rewriteRecord(recordType, objectNode);
+        }
+
+        private JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             if (isUnrepresentableValue(objectNode)) {
                 return this.onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
             }
@@ -267,9 +272,14 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
             this.handleTypeIdentifier(objectNode, type, RecordType::getPublicName);
             return this.rewriteRecord(type, objectNode);
         }
-
+        
         @Override
-        protected ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+        protected JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
+            this.handleTypeIdentifier(objectNode, recordType, RecordType::getPublicName);
+            return this.rewriteRecord(recordType, objectNode);
+        }
+
+        private ObjectNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             for (Field<?, ?> field : recordType) {
                 JsonNode value = objectNode.remove(field.getInternalName());
                 objectNode.set(field.getPublicName(), this.fork().rewriteInternalToPublic(field.getType(), value));
