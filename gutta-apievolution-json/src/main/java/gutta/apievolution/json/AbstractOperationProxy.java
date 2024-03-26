@@ -146,11 +146,22 @@ public abstract class AbstractOperationProxy<P, R> {
             return (type.hasSuperTypes() || type.hasSubTypes() || type.isException());
         }
         
-        protected void handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {
+        /**
+         * Handles the type identifier on the given object node, according to the given type. If the type
+         * requires a type identifier, it is added, otherwise, it is removed.
+         * 
+         * @param node The JSON node to process
+         * @param type The type determining whether or not an identifier is required
+         * @param nameAccessor An function that provides the name of the type
+         * @return {@code True} if an identifier is required, {@code false} otherwise
+         */
+        protected boolean handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {
             if (this.requiresTypeIdentifier(type)) {
                 node.set(TYPE_PROPERTY_NAME, new TextNode(nameAccessor.apply(type)));
+                return true;
             } else {
                 node.remove(TYPE_PROPERTY_NAME);
+                return false;
             }
         }
         
@@ -165,14 +176,14 @@ public abstract class AbstractOperationProxy<P, R> {
             Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
             if (specificTypeId.isPresent()) {
                 // If a specific type ID is present, the actual type may be a subtype of the formal type
-                return this.handlePolymorphicRecordType(specificTypeId.get(), objectNode);
+                return this.handlePolymorphicRecordType(specificTypeId.get(), recordType, objectNode);
             } else {
                 // If no type ID is present, perform a monomorphic or mono-to-poly mapping
                 return this.handleMonomorphicRecordType(recordType, objectNode);
             }
         }
 
-        protected abstract JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
+        protected abstract JsonNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> formalType, ObjectNode objectNode);
 
         protected abstract JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
         

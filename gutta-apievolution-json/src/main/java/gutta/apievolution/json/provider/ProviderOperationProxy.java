@@ -146,7 +146,7 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+        protected ObjectNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderTypeByPublicName(typeId);
             if (actualProviderType == null) {
                 throw new IllegalStateException("Missing type with public name '" + typeId + "'.");
@@ -207,12 +207,19 @@ public abstract class ProviderOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+        protected ObjectNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             ProviderRecordType actualProviderType = (ProviderRecordType) this.definitionResolution.resolveProviderTypeByInternalName(typeId);
-
+            
             if (actualProviderType == null) {
-                // If no mapped type with the given type id exists, we have an unrepresentable value
-                return createUnrepresentableValue();
+                RecordType<?, ?, ?> sourceType = (RecordType<?, ?, ?>) this.definitionResolution.mapProviderType(recordType);
+                
+                if (sourceType.hasSubTypes()) {
+                    // If no mapped type with the given type id exists, we have an unrepresentable value
+                    return createUnrepresentableValue();
+                } else {                
+                    // If the source type is not polymorphic, we can rewrite the value using the formal type
+                    return this.rewriteRecord(recordType, objectNode);                    
+                }
             } else {
                 return this.rewriteRecord(actualProviderType, objectNode);
             }

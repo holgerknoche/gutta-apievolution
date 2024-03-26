@@ -134,6 +134,24 @@ class JsonMappingTest {
         assertNotSame(parameter, result);
         assertEquals(parameter, result);
     }
+    
+    /**
+     * Mono-to-poly type mapping where a specialized type is returned that is unknown to the consumer.
+     * This does not lead to an error, as the type can be mapped to the formal type.
+     */
+    @Test
+    void monoToPolyTypeMappingWithSpecializedResult() {
+        MonoToPolyMappingProviderProxy providerProxy = new MonoToPolyMappingProviderProxy();
+        RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+        
+        ConsumerMonoToPolyType parameter = new ConsumerMonoToPolyType();
+        parameter.setField1(1);
+        
+        MonoToPolyMappingConsumerProxy consumerProxy = new MonoToPolyMappingConsumerProxy(requestRouter);
+        ConsumerMonoToPolyType result = consumerProxy.invokeOperation(parameter);
+        
+        assertEquals(5678, result.getField1());
+    }
 
     private abstract static class ConsumerOperationProxyTemplate<P, R> extends ConsumerOperationProxy<P, R> {
                 

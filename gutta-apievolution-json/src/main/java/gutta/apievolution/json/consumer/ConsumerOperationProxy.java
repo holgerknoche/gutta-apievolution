@@ -206,7 +206,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        protected JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+        protected JsonNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             ConsumerRecordType type = (ConsumerRecordType) this.typeResolver.apply(typeId);
             if (type == null) {
                 throw new IllegalArgumentException("Unknown type id '" + typeId + "'.");
@@ -262,7 +262,7 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
         }
 
         @Override
-        protected ObjectNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode) {
+        protected ObjectNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> recordType, ObjectNode objectNode) {
             ConsumerRecordType type = (ConsumerRecordType) this.typeResolver.apply(typeId);
             if (type == null) {
                 throw new IllegalArgumentException("Unknown type id '" + typeId + "'.");
