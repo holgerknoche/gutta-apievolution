@@ -9,6 +9,7 @@ import gutta.apievolution.json.consumer.ConsumerMonoToPolyType;
 import gutta.apievolution.json.consumer.ConsumerOperationProxy;
 import gutta.apievolution.json.consumer.ConsumerParameter;
 import gutta.apievolution.json.consumer.ConsumerResult;
+import gutta.apievolution.json.consumer.ConsumerStructureWithMonoToPolyField;
 import gutta.apievolution.json.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.json.consumer.ConsumerSubTypeA;
 import gutta.apievolution.json.consumer.ConsumerSubTypeB;
@@ -22,6 +23,7 @@ import gutta.apievolution.json.provider.ProviderMonoToPolyType;
 import gutta.apievolution.json.provider.ProviderOperationProxy;
 import gutta.apievolution.json.provider.ProviderParameter;
 import gutta.apievolution.json.provider.ProviderResult;
+import gutta.apievolution.json.provider.ProviderStructureWithMonoToPolyField;
 import gutta.apievolution.json.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.json.provider.ProviderSuperType;
 import gutta.apievolution.json.provider.ProviderTestException;
@@ -151,6 +153,27 @@ class JsonMappingTest {
         ConsumerMonoToPolyType result = consumerProxy.invokeOperation(parameter);
         
         assertEquals(5678, result.getField1());
+    }
+    
+    /**
+     * Test case: Mono-to-poly mapping (and vice versa) as part of structure mapping.
+     */
+    @Test
+    void embeddedMonoToPolyTypeMapping() {
+        EmbeddedMonoToPolyMappingProviderProxy providerProxy = new EmbeddedMonoToPolyMappingProviderProxy();
+        RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+                
+        ConsumerMonoToPolyType monoToPolyValue = new ConsumerMonoToPolyType();
+        monoToPolyValue.setField1(1234);
+        
+        ConsumerStructureWithMonoToPolyField parameter = new ConsumerStructureWithMonoToPolyField();
+        parameter.setField(monoToPolyValue);
+        
+        EmbeddedMonoToPolyMappingConsumerProxy consumerProxy = new EmbeddedMonoToPolyMappingConsumerProxy(requestRouter);
+        ConsumerStructureWithMonoToPolyField result = consumerProxy.invokeOperation(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter, result);
     }
 
     private abstract static class ConsumerOperationProxyTemplate<P, R> extends ConsumerOperationProxy<P, R> {
@@ -317,4 +340,25 @@ class JsonMappingTest {
         
     }
 
+    private static class EmbeddedMonoToPolyMappingConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerStructureWithMonoToPolyField, ConsumerStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingConsumerProxy(RequestRouter router) {
+            super("embeddedMonoToPolyMapping", "ConsumerStructureWithMonoToPolyField", "ConsumerStructureWithMonoToPolyField", ConsumerStructureWithMonoToPolyField.class, router);
+        }
+        
+    }
+    
+    private static class EmbeddedMonoToPolyMappingProviderProxy extends ProviderOperationProxyTemplate<ProviderStructureWithMonoToPolyField, ProviderStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingProviderProxy() {
+            super("embeddedMonoToPolyMapping", "ProviderStructureWithMonoToPolyField", "ProviderStructureWithMonoToPolyField", ProviderStructureWithMonoToPolyField.class);
+        }
+        
+        @Override
+        protected ProviderStructureWithMonoToPolyField invokeOperation(ProviderStructureWithMonoToPolyField parameter) {
+            return parameter;
+        }
+        
+    }
+    
 }
