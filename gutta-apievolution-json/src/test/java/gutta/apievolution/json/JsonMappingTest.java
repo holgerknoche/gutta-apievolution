@@ -16,6 +16,7 @@ import gutta.apievolution.json.consumer.ConsumerSubTypeB;
 import gutta.apievolution.json.consumer.ConsumerSuperType;
 import gutta.apievolution.json.consumer.ConsumerTestException;
 import gutta.apievolution.json.consumer.ConsumerTestExceptionData;
+import gutta.apievolution.json.consumer.UnrepresentableValueException;
 import gutta.apievolution.json.provider.MappableProviderTestException;
 import gutta.apievolution.json.provider.ProviderEnum;
 import gutta.apievolution.json.provider.ProviderMonoToPolySubTypeA;
@@ -175,6 +176,18 @@ class JsonMappingTest {
         assertNotSame(parameter, result);
         assertEquals(parameter, result);
     }
+    
+    /**
+     * Test case: The provider throws an exception, but the consumer does not expect one. This results in an unrepresentable value.
+     */
+    @Test
+    void providerThrowsExceptionButConsumerDoesNotExpectOne() {
+        OpWithUnmappedExceptionProviderProxy providerProxy = new OpWithUnmappedExceptionProviderProxy();
+        RequestRouter requestRouter = new SimpleJsonRequestRouter(providerProxy);
+   
+        OpWithUnmappedExceptionConsumerProxy consumerProxy = new OpWithUnmappedExceptionConsumerProxy(requestRouter);
+        assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invokeOperation(new ConsumerParameter()));
+    }
 
     private abstract static class ConsumerOperationProxyTemplate<P, R> extends ConsumerOperationProxy<P, R> {
                 
@@ -296,6 +309,30 @@ class JsonMappingTest {
         
         public OpWithExceptionProviderProxy() {
             super("opWithException", "ProviderParameter" , "ProviderResult", ProviderParameter.class);
+        }
+        
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
+        }
+        
+    }
+    
+    private static class OpWithUnmappedExceptionConsumerProxy extends ConsumerOperationProxyTemplate<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithUnmappedExceptionConsumerProxy(RequestRouter router) {
+            super("opWithUnmappedException", "ConsumerParameter", "ConsumerResult", ConsumerResult.class, Collections.emptySet(), router);
+        }
+        
+    }
+    
+    private static class OpWithUnmappedExceptionProviderProxy extends ProviderOperationProxyTemplate<ProviderParameter, ProviderResult> {
+        
+        public OpWithUnmappedExceptionProviderProxy() {
+            super("opWithUnmappedException", "ProviderParameter" , "ProviderResult", ProviderParameter.class);
         }
         
         @Override

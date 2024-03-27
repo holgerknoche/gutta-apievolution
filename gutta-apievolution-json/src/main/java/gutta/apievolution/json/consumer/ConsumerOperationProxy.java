@@ -166,8 +166,15 @@ public abstract class ConsumerOperationProxy<P, R> extends AbstractOperationProx
                 String exceptionTypeName = determineSpecificTypeId(responseNode).orElseThrow(NoSuchElementException::new);
                 Class<?> exceptionTypeRepresentation = this.exceptionTypeMap.get(exceptionTypeName);
                 
-                MappedExceptionData exceptionData = (MappedExceptionData) objectMapper.treeToValue(responseNode, exceptionTypeRepresentation);
-                throw exceptionData.createMappedException();
+                if (exceptionTypeRepresentation != null) {
+                    // If the exception type is mapped, create the appropriate exception
+                    MappedExceptionData exceptionData = (MappedExceptionData) objectMapper.treeToValue(responseNode, exceptionTypeRepresentation);
+                    throw exceptionData.createMappedException();
+                } else {
+                    // Otherwise, treat the exception as an unrepresentable value
+                    JsonNode resultNode = onUnrepresentableValue.throwExceptionOrReturnDefaultNode();
+                    return objectMapper.treeToValue(resultNode, this.resultTypeRepresentation);
+                }
             } else {
                 // Otherwise, return the value
                 return objectMapper.treeToValue(responseNode, this.resultTypeRepresentation);
