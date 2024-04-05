@@ -28,6 +28,9 @@
                88 VALUE-PRESENT VALUE 1.
                88 VALUE-UNREPRESENTABLE VALUE 2.
              10 '*-'GENDER-NEW PIC S9(9) BINARY.
+               88 MALE VALUE 0.
+               88 FEMALE VALUE 1.
+               88 THIRD VALUE 2.
 
              10 '*-'PRIMARY-ADDRESS-NEW.
                15 '*-'PRIMARY-ADDRESS-NEW-FLAGS PIC 9 BINARY.
@@ -106,7 +109,7 @@
                  20 '*-'DATA PIC X(26).
                    
                  20 '*-'STREET-ADDRESS-DATA REDEFINES '*-'DATA.
-                   25 '*-'STREET-ADDRESS-FLAGS PIC 9 BINARY.
+                   25 '*-'STREET-FLAGS PIC 9 BINARY.
                      88 VALUE-ABSENT VALUE 0.
                      88 VALUE-PRESENT VALUE 1.
                      88 VALUE-UNREPRESENTABLE VALUE 2.

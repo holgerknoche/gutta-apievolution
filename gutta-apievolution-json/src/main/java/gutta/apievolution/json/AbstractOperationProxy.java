@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import gutta.apievolution.core.apimodel.AtomicType;
@@ -24,7 +25,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
-abstract class AbstractOperationProxy<P, R> {
+/**
+ * Abstract superclass for both consumer and provider operation proxies.
+ * 
+ * @param <P> The parameter type representation of the operation
+ * @param <R> The result type representation of the operation
+ */
+public abstract class AbstractOperationProxy<P, R> {
 
     protected static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 
@@ -46,24 +53,52 @@ abstract class AbstractOperationProxy<P, R> {
         return objectMapper;
     }
 
+    /**
+     * Creates a new operation proxy using the given data.
+     * 
+     * @param operationName The name of the represented operation
+     * @param parameterTypeName The name of the parameter type
+     * @param resultTypeName The name of the result type
+     */
     protected AbstractOperationProxy(String operationName, String parameterTypeName, String resultTypeName) {
         this.operationName = operationName;
         this.parameterTypeName = parameterTypeName;
         this.resultTypeName = resultTypeName;
     }
 
+    /**
+     * Returns the name of the represented operation.
+     * 
+     * @return see above
+     */
     public String getOperationName() {
         return this.operationName;
     }
 
+    /**
+     * Returns the name of the parameter type.
+     * 
+     * @return see above
+     */
     protected String getParameterTypeName() {
         return this.parameterTypeName;
     }
 
+    /**
+     * Returns the name of the result type.
+     * 
+     * @return see above
+     */
     protected String getResultTypeName() {
         return this.resultTypeName;
     }
 
+    /**
+     * Determines the specific type ID of the given JSON node, if present.
+     * 
+     * @param node The JSON node to determine the type ID of
+     * @return The type ID, if present
+     */
     protected static Optional<String> determineSpecificTypeId(JsonNode node) {
         JsonNode typePropertyNode = node.get(TYPE_PROPERTY_NAME);
 
@@ -74,10 +109,21 @@ abstract class AbstractOperationProxy<P, R> {
         return Optional.of(typePropertyNode.asText());
     }
 
+    /**
+     * Determines whether the given JSON node represents an unrepresentable value.
+     * 
+     * @param node The node to inspect
+     * @return {@code True} if the node represents an unrepresentable value, {@code false} otherwise
+     */
     protected static boolean isUnrepresentableValue(ObjectNode node) {
         return node.has(UNREPRESENTABLE_PROPERTY_NAME);
     }
 
+    /**
+     * Creates a JSON node representing an unrepresentable value. 
+     * 
+     * @return see above
+     */
     protected static ObjectNode createUnrepresentableValue() {
         ObjectNode node = OBJECT_MAPPER.createObjectNode();
         node.set(UNREPRESENTABLE_PROPERTY_NAME, BooleanNode.TRUE);
@@ -97,35 +143,49 @@ abstract class AbstractOperationProxy<P, R> {
         protected JsonNode representation;
         
         protected boolean requiresTypeIdentifier(RecordType<?, ?, ?> type) {
-            return (type.hasSuperTypes() || type.hasSubTypes());
+            return (type.hasSuperTypes() || type.hasSubTypes() || type.isException());
         }
         
-        protected void handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {
+        /**
+         * Handles the type identifier on the given object node, according to the given type. If the type
+         * requires a type identifier, it is added, otherwise, it is removed.
+         * 
+         * @param node The JSON node to process
+         * @param type The type determining whether or not an identifier is required
+         * @param nameAccessor An function that provides the name of the type
+         * @return {@code True} if an identifier is required, {@code false} otherwise
+         */
+        protected boolean handleTypeIdentifier(ObjectNode node, RecordType<?, ?, ?> type, Function<RecordType<?, ?, ?>, String> nameAccessor) {
             if (this.requiresTypeIdentifier(type)) {
                 node.set(TYPE_PROPERTY_NAME, new TextNode(nameAccessor.apply(type)));
+                return true;
             } else {
                 node.remove(TYPE_PROPERTY_NAME);
+                return false;
             }
         }
         
         @Override
         public JsonNode handleRecordType(RecordType<?, ?, ?> recordType) {
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
             ObjectNode objectNode = (ObjectNode) this.representation;
 
             Optional<String> specificTypeId = determineSpecificTypeId(objectNode);
             if (specificTypeId.isPresent()) {
-                // If a specific type ID is present, the actual type may be a subtype of
-                // the formal type
-                return this.handlePolymorphicRecordType(specificTypeId.get(), objectNode);
+                // If a specific type ID is present, the actual type may be a subtype of the formal type
+                return this.handlePolymorphicRecordType(specificTypeId.get(), recordType, objectNode);
             } else {
-                // If no type ID is present, simply rewrite the record with the given type
-                return this.rewriteRecord(recordType, objectNode);
+                // If no type ID is present, perform a monomorphic or mono-to-poly mapping
+                return this.handleMonomorphicRecordType(recordType, objectNode);
             }
         }
 
-        protected abstract JsonNode handlePolymorphicRecordType(String typeId, ObjectNode objectNode);
+        protected abstract JsonNode handlePolymorphicRecordType(String typeId, RecordType<?, ?, ?> formalType, ObjectNode objectNode);
 
-        protected abstract JsonNode rewriteRecord(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
+        protected abstract JsonNode handleMonomorphicRecordType(RecordType<?, ?, ?> recordType, ObjectNode objectNode);
         
     }
     
@@ -134,15 +194,31 @@ abstract class AbstractOperationProxy<P, R> {
      */
     protected abstract static class AbstractInternalToPublicRewriter extends AbstractRepresentationRewriter {
 
+        /**
+         * Rewrites the given JSON node from internal to public representation according to the given type.
+         * 
+         * @param type The type that represents the JSON node
+         * @param representation The JSON representation of the type with internal names
+         * @return The rewritten JSON node with public names
+         */
         public JsonNode rewriteInternalToPublic(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
         }
 
+        /**
+         * Returns a fork of this rewriter. 
+         * 
+         * @return see above
+         */
         protected abstract AbstractInternalToPublicRewriter fork();
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
             TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
@@ -201,8 +277,18 @@ abstract class AbstractOperationProxy<P, R> {
         }
     }
 
+    /**
+     * Abstract supertype for public-to-internal rewriters.
+     */
     protected abstract static class AbstractPublicToInternalRewriter extends AbstractRepresentationRewriter {
 
+        /**
+         * Rewrites the given JSON node from public to internal representation according to the given type.
+         * 
+         * @param type The type that represents the JSON node
+         * @param representation The JSON representation of the type with internal names
+         * @return The rewritten JSON node with public names
+         */
         public JsonNode rewritePublicToInternal(Type type, JsonNode representation) {
             this.representation = representation;
             return type.accept(this);
@@ -210,7 +296,11 @@ abstract class AbstractOperationProxy<P, R> {
 
         @Override
         public JsonNode handleEnumType(EnumType<?, ?, ?> enumType) {
-            TextNode textNode = (TextNode) representation;
+            if (this.representation.isNull()) {
+                return NullNode.getInstance();
+            }
+            
+            TextNode textNode = (TextNode) this.representation;
             String value = textNode.asText();
 
             EnumMember<?, ?> enumMember = enumType.resolveMember(value).orElse(null);
@@ -221,6 +311,12 @@ abstract class AbstractOperationProxy<P, R> {
             }
         }
 
+        /**
+         * Handles an unrepresentable enum member with the given name.
+         * 
+         * @param name The name of the unrepresentable enum member
+         * @return The JSON object representing the unrepresentable member
+         */
         protected abstract JsonNode onUnrepresentableEnumMember(String name);
 
         @Override
@@ -233,6 +329,11 @@ abstract class AbstractOperationProxy<P, R> {
             return this.representation;
         }        
 
+        /**
+         * Returns a fork of this rewriter. 
+         * 
+         * @return see above
+         */
         protected abstract AbstractPublicToInternalRewriter fork();
 
         private JsonNode handleListType(ListType listType) {

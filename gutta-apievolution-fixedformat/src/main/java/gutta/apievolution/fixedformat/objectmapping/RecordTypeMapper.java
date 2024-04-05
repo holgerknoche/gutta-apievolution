@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Supplier;
 
-class RecordTypeMapper extends TypeMapper<Object> {
+class RecordTypeMapper extends AbstractRecordTypeMapper {
             
     private final int dataLength;
     
@@ -15,7 +15,9 @@ class RecordTypeMapper extends TypeMapper<Object> {
     
     public final List<FieldMapper> fieldMappers;
   
-    public RecordTypeMapper(int dataLength, Class<?> recordType, List<FieldMapper> fieldMappers) {        
+    public RecordTypeMapper(int dataLength, Class<?> recordType, List<FieldMapper> fieldMappers) {
+        super(recordType);
+        
         this.dataLength = dataLength;
         this.recordType = recordType;
         this.instanceSupplier = createInstanceSupplier(recordType);
@@ -30,12 +32,7 @@ class RecordTypeMapper extends TypeMapper<Object> {
             throw new RuntimeException(e);
         }
     }
-    
-    @Override
-    public boolean isCacheable() {
-        return true;
-    }
-        
+            
     @Override
     protected int getDataLength() {
         return this.dataLength;
@@ -51,13 +48,7 @@ class RecordTypeMapper extends TypeMapper<Object> {
               
         return instance;
     }
-    
-    @Override
-    public Object handleUnrepresentableValue() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-                
+                    
     @Override
     protected void writeRegularValue(Object value, FixedFormatData data) {        
         this.fieldMappers.forEach(mapper -> mapper.writeValue(value, data));

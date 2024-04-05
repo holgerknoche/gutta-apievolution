@@ -1,0 +1,47 @@
+api test.customer {
+
+    enum TestEnum as ConsumerEnum {
+        A as VALUE_A
+        B as VALUE_B
+    }
+
+    record TestParameter as ConsumerParameter {
+        string(30) renamedField as testField
+        TestEnum testEnum
+        TestEnum[10] testList
+    }
+
+    record TestResult as ConsumerResult {
+    	TestEnum resultEnum
+        string(30) renamedField as resultField        
+        TestEnum[10] resultList
+    }
+    
+    record StructureWithPolyField as ConsumerStructureWithPolyField {
+    	SuperType field
+    }
+    
+    record SuperType as ConsumerSuperType {
+    }
+    
+    record SubTypeA extends SuperType as ConsumerSubTypeA {
+    	string(10) fieldA
+    }
+    
+    record SubTypeB extends SuperType as ConsumerSubTypeB {
+    	int32 fieldB
+    }
+    
+    exception TestException as ConsumerTestException {
+        int32 exceptionField
+    }
+    
+    operation testOperation(TestParameter): TestResult
+    
+    operation polyOperation(SuperType): SuperType
+    
+    operation polyOperation2(StructureWithPolyField): StructureWithPolyField
+    
+    operation opWithException(TestParameter): TestResult throws TestException
+
+}

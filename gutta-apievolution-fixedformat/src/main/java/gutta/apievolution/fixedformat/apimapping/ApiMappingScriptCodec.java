@@ -10,7 +10,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class provides operations to encode or decode an API mapping script to/from its binary representation.
@@ -31,6 +34,10 @@ public class ApiMappingScriptCodec {
 
     private static final byte OPCODE_MAP_POLYMORPHIC_RECORD = 0x06;
 
+    private static final byte OPCODE_MAP_MONO_TO_POLY_RECORD = 0x07;
+
+    private static final byte OPCODE_MAP_POLY_TO_MONO_RECORD = 0x08;
+
     private static final byte ENTRY_TYPE_ENUM = 0x01;
 
     private static final byte ENTRY_TYPE_RECORD = 0x02;
@@ -50,19 +57,19 @@ public class ApiMappingScriptCodec {
             // Fill the offset table at the beginning of the encoded script
             byte[] encodedScript = byteStream.toByteArray();
             ByteBuffer scriptBuffer = ByteBuffer.wrap(encodedScript);
-            
+
             scriptBuffer.position(0);
             // Offset of the type list
             scriptBuffer.putInt(offsets.typeListOffset);
             // Offset of the operations list
             scriptBuffer.putInt(offsets.operationListOffset);
-            
+
             // Fill the type entry offset table
             scriptBuffer.position(offsets.typeListOffset + 4);
             for (int offset : offsets.typeEntryOffsets) {
                 scriptBuffer.putInt(offset);
             }
-            
+
             // Fill the operation offset table
             scriptBuffer.position(offsets.operationListOffset + 4);
             for (int offset : offsets.operationEntryOffsets) {
@@ -77,13 +84,13 @@ public class ApiMappingScriptCodec {
 
     private ScriptOffsets writeScriptToStream(ApiMappingScript script, DataOutputStream stream) throws IOException {
         List<TypeEntry> typeEntries = script.getTypeEntries();
-        int numberOfTypeEntries = typeEntries.size();        
+        int numberOfTypeEntries = typeEntries.size();
         int[] typeEntryOffsets = new int[numberOfTypeEntries];
 
         // Insert placeholders for the type list offset and operation list offset
         stream.writeInt(0);
         stream.writeInt(0);
-        
+
         // Prepare the offset table, but zero the offsets for the time being. They are filled later on.
         int typeEntryListOffset = stream.size();
         stream.writeInt(numberOfTypeEntries);
@@ -100,17 +107,17 @@ public class ApiMappingScriptCodec {
 
         List<OperationEntry> operationEntries = script.getOperationEntries();
         int numberOfOperationEntries = operationEntries.size();
-        
-        // Write the operations entries       
+
+        // Write the operations entries
         int operationsOffset = stream.size();
         int[] operationEntryOffsets = new int[numberOfOperationEntries];
-        
+
         // Prepare the offset table for the operation entries
         stream.writeInt(operationEntries.size());
         for (int entry = 0; entry < numberOfOperationEntries; entry++) {
             stream.writeInt(0);
         }
-        
+
         // Write the operation entries
         for (OperationEntry operationEntry : operationEntries) {
             operationEntryOffsets[operationEntry.getEntryIndex()] = stream.size();
@@ -147,11 +154,11 @@ public class ApiMappingScriptCodec {
         // Read offsets for the type list and the operations list
         int typesOffset = scriptBuffer.getInt();
         int operationsOffset = scriptBuffer.getInt();
-        
+
         // Read the type entry table
-        scriptBuffer.position(typesOffset);        
+        scriptBuffer.position(typesOffset);
         int[] typeEntryOffsets = this.readOffsetTable(scriptBuffer);
-        
+
         // Read the type entries
         int numberOfEntries = typeEntryOffsets.length;
         TypeEntry[] typeEntries = new TypeEntry[numberOfEntries];
@@ -164,10 +171,10 @@ public class ApiMappingScriptCodec {
         scriptBuffer.position(operationsOffset);
 
         // Read the operation offsets
-        int[] operationEntryOffsets = this.readOffsetTable(scriptBuffer);        
+        int[] operationEntryOffsets = this.readOffsetTable(scriptBuffer);
         int numberOfOperations = operationEntryOffsets.length;
         List<OperationEntry> operationEntries = new ArrayList<>(numberOfOperations);
-        
+
         // Read the operations themselves
         for (int operationIndex = 0; operationIndex < numberOfOperations; operationIndex++) {
             OperationEntry operationEntry = this.readOperationEntry(operationIndex, operationEntryOffsets, typeEntryOffsets, typeEntries, scriptBuffer);
@@ -176,23 +183,23 @@ public class ApiMappingScriptCodec {
 
         return new ApiMappingScript(Arrays.asList(typeEntries), operationEntries);
     }
-    
+
     private int[] readOffsetTable(ByteBuffer buffer) {
         int numberOfEntries = buffer.getInt();
-        
+
         int[] offsets = new int[numberOfEntries];
         for (int index = 0; index < numberOfEntries; index++) {
             offsets[index] = buffer.getInt();
         }
-        
+
         return offsets;
     }
 
     private OperationEntry readOperationEntry(int operationIndex, int[] operationEntryOffsets, int[] typeEntryOffsets, TypeEntry[] typeEntries,
             ByteBuffer buffer) {
-        
+
         buffer.position(operationEntryOffsets[operationIndex]);
-        
+
         int nameLength = buffer.getInt();
         byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);
@@ -297,6 +304,12 @@ public class ApiMappingScriptCodec {
         case OPCODE_MAP_LIST:
             return this.readMapListOperation(entryOffsets, typeEntries, buffer);
 
+        case OPCODE_MAP_MONO_TO_POLY_RECORD:
+            return this.readMapMonoToPolyRecordOperation(entryOffsets, typeEntries, buffer);
+
+        case OPCODE_MAP_POLY_TO_MONO_RECORD:
+            return this.readMapPolyToMonoRecordOperation(entryOffsets, typeEntries, buffer);
+
         default:
             throw new IllegalStateException("Unknown opcode " + opcode + " at offset " + buffer.position() + ".");
         }
@@ -321,7 +334,7 @@ public class ApiMappingScriptCodec {
     private ApiMappingOperation readMapRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
         int entryIndex = buffer.getInt();
         RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(entryIndex, entryOffsets, typeEntries, buffer);
-        return new RecordMappingOperation(typeEntry);
+        return new MonomorphicRecordMappingOperation(typeEntry);
     }
 
     private ApiMappingOperation readMapPolymorphicRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
@@ -348,6 +361,28 @@ public class ApiMappingScriptCodec {
         ApiMappingOperation elementMappingOperation = this.readApiMappingOperation(entryOffsets, typeEntries, buffer);
 
         return new ListMappingOperation(maxElements, sourceElementSize, targetElementSize, elementMappingOperation);
+    }
+
+    private ApiMappingOperation readMapMonoToPolyRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int typeIndex = buffer.getInt();
+
+        RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(typeIndex, entryOffsets, typeEntries, buffer);
+        return new MonoToPolyRecordMappingOperation(typeEntry);
+    }
+
+    private ApiMappingOperation readMapPolyToMonoRecordOperation(int[] entryOffsets, TypeEntry[] typeEntries, ByteBuffer buffer) {
+        int typeIndex = buffer.getInt();
+        RecordTypeEntry typeEntry = this.getOrReadTypeEntryEmbedded(typeIndex, entryOffsets, typeEntries, buffer);
+        
+        int numberOfIds = buffer.getInt();
+
+        Set<Integer> mappableTypeIds = new HashSet<>(numberOfIds);
+        for (int idIndex = 0; idIndex < numberOfIds; idIndex++) {
+            int mappableTypeId = buffer.getInt();
+            mappableTypeIds.add(mappableTypeId);
+        }
+
+        return new PolyToMonoRecordMappingOperation(mappableTypeIds, typeEntry);
     }
 
     private static class TypeEntryWriter implements TypeEntryVisitor<Void> {
@@ -479,7 +514,7 @@ public class ApiMappingScriptCodec {
         }
 
         @Override
-        public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+        public Void handleMonomorphicRecordMappingOperation(MonomorphicRecordMappingOperation recordMappingOperation) {
             try {
                 DataOutputStream outputStream = this.dataStream;
 
@@ -488,7 +523,44 @@ public class ApiMappingScriptCodec {
 
                 return null;
             } catch (IOException e) {
-                throw new ScriptEncodingException("Error writing record mapping operation to the script.", e);
+                throw new ScriptEncodingException("Error writing monomorphic record mapping operation to the script.", e);
+            }
+        }
+
+        @Override
+        public Void handleMonoToPolyRecordMappingOperation(MonoToPolyRecordMappingOperation recordMappingOperation) {
+            try {
+                DataOutputStream outputStream = this.dataStream;
+
+                outputStream.writeByte(OPCODE_MAP_MONO_TO_POLY_RECORD);
+                outputStream.writeInt(recordMappingOperation.getEntryIndex());
+
+                return null;
+            } catch (IOException e) {
+                throw new ScriptEncodingException("Error writing mono-to-poly record mapping operation to the script.", e);
+            }
+        }
+
+        @Override
+        public Void handlePolyToMonoRecordMappingOperation(PolyToMonoRecordMappingOperation recordMappingOperation) {
+            try {
+                DataOutputStream outputStream = this.dataStream;
+
+                outputStream.writeByte(OPCODE_MAP_POLY_TO_MONO_RECORD);
+
+                outputStream.writeInt(recordMappingOperation.getEntryIndex());
+                
+                List<Integer> mappableIds = new ArrayList<>(recordMappingOperation.getMappableTypeIds());
+                Collections.sort(mappableIds);
+
+                outputStream.writeInt(mappableIds.size());
+                for (Integer mappableId : mappableIds) {
+                    outputStream.writeInt(mappableId);
+                }
+
+                return null;
+            } catch (IOException e) {
+                throw new ScriptEncodingException("Error writing poly-to-mono record mapping operation to the script.", e);
             }
         }
 
@@ -534,13 +606,13 @@ public class ApiMappingScriptCodec {
     }
 
     private static class ScriptOffsets {
-        
+
         public final int typeListOffset;
 
         public final int[] typeEntryOffsets;
 
         public final int operationListOffset;
-        
+
         public final int[] operationEntryOffsets;
 
         public ScriptOffsets(int typeListOffset, int[] typeEntryOffsets, int operationListOffset, int[] operationEntryOffsets) {

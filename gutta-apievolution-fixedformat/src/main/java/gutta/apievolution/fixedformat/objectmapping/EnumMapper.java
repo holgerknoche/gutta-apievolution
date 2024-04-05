@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class EnumMapper extends TypeMapper<Object> {
+class EnumMapper extends UserDefinedTypeMapper {
     
     private final Class<?> enumType;
     
@@ -36,11 +36,6 @@ class EnumMapper extends TypeMapper<Object> {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    protected boolean isCacheable() {
-        return true;
     }
     
     @Override

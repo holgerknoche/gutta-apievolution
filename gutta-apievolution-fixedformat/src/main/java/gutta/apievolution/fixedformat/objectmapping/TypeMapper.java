@@ -2,8 +2,8 @@ package gutta.apievolution.fixedformat.objectmapping;
 
 import static gutta.apievolution.fixedformat.objectmapping.Flags.*;
 
-abstract class TypeMapper<T> {
-
+abstract class TypeMapper<T> {    
+    
     protected boolean isCacheable() {
         return false;
     }
@@ -19,8 +19,7 @@ abstract class TypeMapper<T> {
 
         switch (flags) {
         case IS_ABSENT:
-            data.skipBytes(this.getDataLength());
-            return null;
+            return this.handleAbsentValue(data);
 
         case IS_PRESENT:
             return this.readRegularValue(data);
@@ -33,6 +32,11 @@ abstract class TypeMapper<T> {
         }
     }
 
+    protected T handleAbsentValue(FixedFormatData data) {
+        data.skipBytes(this.getDataLength());
+        return null;
+    }
+    
     protected abstract T readRegularValue(FixedFormatData data);
 
     protected abstract T handleUnrepresentableValue();

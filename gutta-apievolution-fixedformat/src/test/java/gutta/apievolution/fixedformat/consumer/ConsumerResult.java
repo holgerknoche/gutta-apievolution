@@ -1,9 +1,11 @@
 package gutta.apievolution.fixedformat.consumer;
 
 import gutta.apievolution.fixedformat.objectmapping.MaxLength;
+import gutta.apievolution.fixedformat.objectmapping.TypeId;
 
 import java.util.List;
 
+@TypeId(2)
 public class ConsumerResult {
 	
 	private ConsumerEnum resultEnum;

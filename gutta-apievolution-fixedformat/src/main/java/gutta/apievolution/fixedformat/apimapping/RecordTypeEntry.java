@@ -21,7 +21,7 @@ class RecordTypeEntry extends TypeEntry {
     
     @Override
     ApiMappingOperation createMappingOperation() {
-        return new RecordMappingOperation(this);
+        return new MonomorphicRecordMappingOperation(this);
     }
     
     @Override

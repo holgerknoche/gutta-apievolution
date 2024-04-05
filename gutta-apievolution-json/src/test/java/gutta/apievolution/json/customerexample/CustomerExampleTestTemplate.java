@@ -4,9 +4,9 @@ import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.dsl.ConsumerApiLoader;
 import gutta.apievolution.dsl.ProviderApiLoader;
-import gutta.apievolution.json.ConsumerOperationProxy;
 import gutta.apievolution.json.RequestRouter;
 import gutta.apievolution.json.SimpleJsonRequestRouter;
+import gutta.apievolution.json.consumer.ConsumerOperationProxy;
 import gutta.apievolution.json.customerexample.provider.UpsertOperationProviderProxy;
 
 import java.util.Arrays;

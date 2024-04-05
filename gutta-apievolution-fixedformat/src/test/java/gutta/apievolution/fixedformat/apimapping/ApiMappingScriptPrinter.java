@@ -29,12 +29,14 @@ public class ApiMappingScriptPrinter {
     }
     
     private void printOperationEntry(OperationEntry entry, StringBuilder builder) {
+        MappingOperationPrinter operationPrinter = new MappingOperationPrinter(builder);
+        
         builder.append("operation ");
         builder.append(entry.getName());
         builder.append(" param: ");
-        builder.append(entry.getParameterMappingOperation());
+        operationPrinter.printOperation(entry.getParameterMappingOperation());
         builder.append(" result: ");
-        builder.append(entry.getResultMappingOperation());
+        operationPrinter.printOperation(entry.getResultMappingOperation());
         builder.append("\n");        
     }
     
@@ -89,7 +91,7 @@ public class ApiMappingScriptPrinter {
         		builder.append(fieldMapping.getOffset());
         		builder.append(": ");
         		
-        		fieldMapping.getMappingOperation().accept(this.operationPrinter);
+        		this.operationPrinter.printOperation(fieldMapping.getMappingOperation());
         		builder.append("\n");
         	}
         	
@@ -104,6 +106,10 @@ public class ApiMappingScriptPrinter {
         
         public MappingOperationPrinter(StringBuilder scriptBuilder) {
             this.scriptBuilder = scriptBuilder;
+        }
+        
+        public void printOperation(ApiMappingOperation operation) {
+            operation.accept(this);
         }
         
         @Override
@@ -145,7 +151,7 @@ public class ApiMappingScriptPrinter {
         }
         
         @Override
-        public Void handleRecordMappingOperation(RecordMappingOperation recordMappingOperation) {
+        public Void handleMonomorphicRecordMappingOperation(MonomorphicRecordMappingOperation recordMappingOperation) {
         	StringBuilder builder = this.scriptBuilder;
         	
         	builder.append("map record ");

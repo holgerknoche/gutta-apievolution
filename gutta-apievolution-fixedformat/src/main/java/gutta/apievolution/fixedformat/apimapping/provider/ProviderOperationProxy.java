@@ -3,9 +3,12 @@ package gutta.apievolution.fixedformat.apimapping.provider;
 import gutta.apievolution.fixedformat.apimapping.ApiMappingScript;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.objectmapping.OperationResultType;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A {@link ProviderOperationProxy} encapsulates a provider operation and transparently handles the required format conversion.
@@ -23,14 +26,14 @@ public abstract class ProviderOperationProxy<P, R> {
 
     private final Class<P> parameterType;
 
-    private final Class<R> resultType;
+    private final OperationResultType<R> resultType;
 
     private final FixedFormatMapper mapper;
-    
+
     private final Charset charset;
 
     /**
-     * Creates a new proxy using the given data.
+     * Creates a new proxy using the given data for an operation without exceptions.
      * 
      * @param operationName            The name of the operation
      * @param parameterType            The parameter type of the operation
@@ -43,11 +46,29 @@ public abstract class ProviderOperationProxy<P, R> {
     protected ProviderOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, ApiMappingScript consumerToProviderScript,
             ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper, Charset charset) {
 
+        this(operationName, parameterType, resultType, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, charset);
+    }
+
+    /**
+     * Creates a new proxy using the given data for an operation without exceptions.
+     * 
+     * @param operationName            The name of the operation
+     * @param parameterType            The parameter type of the operation
+     * @param resultType               The result type of the operation
+     * @param exceptionTypes           The possible exception types of the operations
+     * @param consumerToProviderScript The consumer-to-provider script to use for the parameter conversion
+     * @param providerToConsumerScript The provider-to-consumer script to use for the result conversion
+     * @param mapper                   The fixed-format data mapper to use
+     * @param charset                  The charset to use
+     */
+    protected ProviderOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes,
+            ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper, Charset charset) {
+
         this.operationName = operationName;
         this.consumerToProviderScript = consumerToProviderScript;
         this.providerToConsumerScript = providerToConsumerScript;
         this.parameterType = parameterType;
-        this.resultType = resultType;
+        this.resultType = OperationResultType.of(resultType, exceptionTypes);
         this.mapper = mapper;
         this.charset = charset;
     }
@@ -62,22 +83,29 @@ public abstract class ProviderOperationProxy<P, R> {
      */
     public ByteBuffer invoke(ByteBuffer consumerParameterBuffer, ByteBuffer consumerResultBuffer) {
         FixedFormatMapper formatMapper = this.mapper;
-        
+
         // Map the parameter data provided by the consumer
-        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));        
-        
+        ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
+
         this.consumerToProviderScript.mapParameterFor(this.getOperationName(), consumerParameterBuffer, parameterBuffer);
         parameterBuffer.flip();
-        
+
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
         P parameter = this.mapper.readValue(parameterData, this.parameterType);
 
-        R result = this.invokeOperation(parameter);
-        
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
         FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
-                
-        this.mapper.writeValue(result, this.resultType, resultData);
+
+        try {
+            R result = this.invokeOperation(parameter);
+            this.mapper.writeValueOrException(result, this.resultType, resultData);
+        } catch (MappableException e) {
+            Object exceptionData = e.getExceptionData();
+
+            // Determine mapped supertype and write it to the buffer
+            this.mapper.writeValueOrException(exceptionData, this.resultType, resultData);
+        }
+
         resultBuffer.flip();
         this.providerToConsumerScript.mapResultFor(this.getOperationName(), resultBuffer, consumerResultBuffer);
 

@@ -1,5 +1,7 @@
 package gutta.apievolution.json;
 
+import gutta.apievolution.json.provider.ProviderOperationProxy;
+
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;

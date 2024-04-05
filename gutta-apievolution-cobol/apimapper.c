@@ -1,14 +1,12 @@
 #include <byteswap.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#define TRUE 1
-#define FALSE 0
 
 #define SUCCESS 0
 #define FAILURE 1
@@ -32,7 +30,9 @@ enum {
     OPCODE_MAP_ENUM = 0x03,
     OPCODE_MAP_RECORD = 0x04,
     OPCODE_MAP_LIST = 0x05,
-    OPCODE_MAP_POLYMORPHIC_RECORD = 0x06
+    OPCODE_MAP_POLYMORPHIC_RECORD = 0x06,
+    OPCODE_MAP_MONO_TO_POLY_RECORD = 0x07,
+    OPCODE_MAP_POLY_TO_MONO_RECORD = 0x08
 } Opcode;
 
 enum {
@@ -296,7 +296,7 @@ int readList(void* position, void* basePtr, offsetlist* list) {
 
 int convertData(int operationIndex, int direction, int mappingType, void* sourceData, void* targetData) {
 #ifdef DEBUG
-    printf("Converting using operation %d, direction %d.\n", operationIndex, direction);
+    printf("Converting using operation %d, direction %d, from %p to %p..\n", operationIndex, direction, sourceData, targetData);
 #endif
 
     void* script;
@@ -355,6 +355,18 @@ int skipMappingOperation(DataBuffer* scriptPosition) {
         i32 numberOfMappings = readInt32(scriptPosition);
         skipData(scriptPosition, numberOfMappings * sizeof(PolymorphicRecordMapping));
         break;
+        
+    case OPCODE_MAP_MONO_TO_POLY_RECORD:
+        // Mono-to-poly mapping consists only of the target index
+        skipData(scriptPosition, sizeof(i32));
+        break;
+    
+    case OPCODE_MAP_POLY_TO_MONO_RECORD:
+        // Poly-to-mono mapping consists of the target index as well as alist of type ids
+        skipData(scriptPosition, sizeof(i32));
+        i32 numberOfIds = readInt32(scriptPosition);
+        skipData(scriptPosition, (numberOfIds * sizeof(i32)));
+        break;
     
     default:
         snprintf(errorMessage, sizeof(errorMessage), "Unsupported opcode %d to skip.", (int) opcode);
@@ -366,7 +378,7 @@ int skipMappingOperation(DataBuffer* scriptPosition) {
 
 int writeNulls(DataBuffer *targetData, i32 amount) {
 #ifdef DEBUG
-    printf("Writing %d null bytes\n", amount);
+    printf("Writing %d null bytes at %p.\n", amount, getCurrentPosition(targetData));
 #endif
 
     setToNull(targetData, amount);
@@ -390,7 +402,7 @@ int performSkipOperation(DataBuffer* targetData, DataBuffer* scriptPosition) {
     printf("skip %d bytes\n", bytesToSkip);
 #endif
     
-    skipData(targetData, bytesToSkip);
+    writeNulls(targetData, bytesToSkip);
     
     return SUCCESS;
 }
@@ -502,18 +514,11 @@ int mapRecordFields(DataBuffer* sourceData, DataBuffer* targetData, RecordTypeEn
     return SUCCESS;
 }
 
-int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
-    i32 typeIndex = readInt32(scriptPosition);
-    void* savedPosition = getCurrentPosition(scriptPosition);
- 
-#ifdef DEBUG
-    printf("Mapping record type index %d.\n", typeIndex);
-#endif 
-    
+RecordTypeEntry* getTypeEntry(i32 typeIndex, DataBuffer* scriptPosition, offsetlist typeList) {
     // Obtain a pointer to the referenced type entry
     void* typeEntryPtr = elementFromList(typeList, typeIndex);
     if (typeEntryPtr == NULL) {
-        return FAILURE;
+        return NULL;
     }
 
     // Adjust the script position
@@ -522,11 +527,26 @@ int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, Da
     byte entryType = readByte(scriptPosition);
     if (entryType != ENTRY_TYPE_RECORD) {
         snprintf(errorMessage, sizeof(errorMessage), "Unexpected entry type %d in record mapping.", (int) entryType);
-        return reportError(errorMessage);
+        reportError(errorMessage);
+        return NULL;
     }
     
-    RecordTypeEntry* typeEntry = (RecordTypeEntry*) readStruct(scriptPosition, sizeof(RecordTypeEntry));    
+    return (RecordTypeEntry*) readStruct(scriptPosition, sizeof(RecordTypeEntry));
+}
 
+int performMapRecordOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 typeIndex = readInt32(scriptPosition);
+    void* savedPosition = getCurrentPosition(scriptPosition);
+ 
+#ifdef DEBUG
+    printf("Mapping record type index %d.\n", typeIndex);
+#endif 
+    
+    RecordTypeEntry* typeEntry = getTypeEntry(typeIndex, scriptPosition, typeList);
+    if (typeEntry == NULL) {
+        return FAILURE;
+    }
+    
     byte flags = readByte(sourceData);
     int result;
 
@@ -612,11 +632,133 @@ int performListMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, 
     return SUCCESS;
 }
 
+int performMonoToPolyMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 typeIndex = readInt32(scriptPosition);
+    void* savedPosition = getCurrentPosition(scriptPosition);
+    
+    RecordTypeEntry* typeEntry = getTypeEntry(typeIndex, scriptPosition, typeList);
+    if (typeEntry == NULL) {
+        return FAILURE;
+    }
+    
+    int targetTypeId = bigEndianIntToPlatform(typeEntry->typeId);
+
+#ifdef DEBUG
+    printf("Mapping type index %d to type id %d\n", typeIndex, targetTypeId);
+#endif
+
+    byte flags = readByte(sourceData);
+    int result;
+
+    switch (flags) {
+    case VALUE_ABSENT:
+    case VALUE_UNREPRESENTABLE:
+        writeByte(targetData, flags);
+        
+        i32 dataSize = bigEndianIntToPlatform(typeEntry->dataSize);
+        result = writeNulls(targetData, dataSize);
+        break;
+    
+    case VALUE_PRESENT:
+        writeByte(targetData, VALUE_PRESENT);
+        writeInt32(targetData, targetTypeId);
+        
+        DataBuffer newSourceData;
+        setStartPosition(&newSourceData, getCurrentPosition(sourceData));
+        
+        result = mapRecordFields(&newSourceData, targetData, typeEntry, scriptPosition, typeList);
+        break;
+    
+    default:
+        snprintf(errorMessage, sizeof(errorMessage), "Unsupported value flags %d.", (int) flags);
+        result = reportError(errorMessage);
+        break;
+    }
+    
+    // Restore the script position
+    setCurrentPosition(scriptPosition, savedPosition);
+    return result;
+}
+
+int performPolyToMonoMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, DataBuffer* scriptPosition, offsetlist typeList) {
+    i32 typeEntryIndex = readInt32(scriptPosition);
+    i32 numberOfTypeIds = readInt32(scriptPosition);
+    void* typeMappingPosition = getCurrentPosition(scriptPosition);
+    void* scriptPositionAfterOperation = typeMappingPosition + (numberOfTypeIds * sizeof(i32));
+
+    RecordTypeEntry* typeEntry = getTypeEntry(typeEntryIndex, scriptPosition, typeList);
+
+    byte flags = readByte(sourceData);
+    int result;
+    
+    switch (flags) {
+    case VALUE_ABSENT:
+    case VALUE_UNREPRESENTABLE:
+        writeByte(targetData, flags);
+        
+        i32 dataSize = bigEndianIntToPlatform(typeEntry->dataSize);
+        result = writeNulls(targetData, dataSize);
+        break;
+    
+    case VALUE_PRESENT:
+        i32 sourceTypeId = readInt32(sourceData);
+
+#ifdef DEBUG
+    printf("Mapping poly-to-mono record for type id %d\n", sourceTypeId);
+#endif
+        // Save the current script position, which points to the field mapping operations
+        // to be performed
+        void* operationPtr = getCurrentPosition(scriptPosition);
+        
+        // Set the script position to where the admissible type ids are stored
+        setCurrentPosition(scriptPosition, typeMappingPosition);
+        
+        // Check whether the id is mappable
+        bool mappableId = false;
+        for (i32 typeIndex = 0; typeIndex < numberOfTypeIds; typeIndex++) {
+            i32 currentTypeId = readInt32(scriptPosition);
+                        
+            if (currentTypeId == sourceTypeId) {
+                mappableId = true;
+                break;
+            }
+        }
+    
+        if (mappableId) {
+            // If the ID is mappable, proceed as for a monomorphic type
+            writeByte(targetData, VALUE_PRESENT);
+        
+            DataBuffer newSourceData;
+            setStartPosition(&newSourceData, getCurrentPosition(sourceData));
+            
+            // Restore the script position to the field mapping operation
+            setCurrentPosition(scriptPosition, operationPtr);
+        
+            result = mapRecordFields(&newSourceData, targetData, typeEntry, scriptPosition, typeList);
+        } else {
+            // If the ID is not mappable, proceed as for an unmapped value
+            writeByte(targetData, VALUE_UNREPRESENTABLE);
+        
+            i32 dataSize = bigEndianIntToPlatform(typeEntry->dataSize);
+            result = writeNulls(targetData, dataSize);
+        }
+        break;
+    
+    default:
+        snprintf(errorMessage, sizeof(errorMessage), "Unsupported value flags %d.", (int) flags);
+        result = reportError(errorMessage);
+        break;
+    }
+
+    setCurrentPosition(scriptPosition, scriptPositionAfterOperation);
+    return result;
+}
+
 i32 determineMaxTargetSize(i32 numberOfMappings, PolymorphicRecordMapping* mappings, offsetlist typeList) {
     i32 maxSize = 0;
     DataBuffer tempBuffer;
-    
-    for (i32 mappingIndex; mappingIndex < numberOfMappings; mappingIndex++) {
+
+    for (i32 mappingIndex = 0; mappingIndex < numberOfMappings; mappingIndex++) {
         PolymorphicRecordMapping mapping = mappings[mappingIndex];
         i32 typeIndex = bigEndianIntToPlatform(mapping.typeEntryIndex);
         
@@ -633,7 +775,7 @@ i32 determineMaxTargetSize(i32 numberOfMappings, PolymorphicRecordMapping* mappi
         
         RecordTypeEntry* recordEntry = (RecordTypeEntry*) getCurrentPosition(&tempBuffer);
         i32 typeSize = bigEndianIntToPlatform(recordEntry->dataSize);
-        
+                
         if (typeSize > maxSize) {
             maxSize = typeSize;
         }
@@ -693,7 +835,7 @@ int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* tar
             // Corresponding mapping found => value is representable
             writeByte(targetData, VALUE_PRESENT);
             writeInt32BigEndian(targetData, mapping->targetTypeId);
-            
+                        
             // Resolve the type entry id and map the fields 
             i32 typeIndex = bigEndianIntToPlatform(mapping->typeEntryIndex);
             void* typeEntryPtr = elementFromList(typeList, typeIndex);
@@ -715,7 +857,15 @@ int performMapPolymorphicRecordOperation(DataBuffer* sourceData, DataBuffer* tar
             DataBuffer newSourceData;
             setStartPosition(&newSourceData, getCurrentPosition(sourceData));
         
-            result = mapRecordFields(&newSourceData, targetData, typeEntry, scriptPosition, typeList);            
+            result = mapRecordFields(&newSourceData, targetData, typeEntry, scriptPosition, typeList);
+            
+            // Pad the remainder of the record with nulls, if necessary
+            i32 maxSize = determineMaxTargetSize(numberOfMappings, mappings, typeList);
+            i32 actualSize = bigEndianIntToPlatform(typeEntry->dataSize);
+
+            if (actualSize < maxSize) {
+                writeNulls(targetData, (maxSize - actualSize));
+            }
         } else {
             // No corresponding mapping => value is unrepresentable
             writeByte(targetData, VALUE_UNREPRESENTABLE);
@@ -757,9 +907,15 @@ int performMappingOperation(DataBuffer* sourceData, DataBuffer* targetData, Data
             
         case OPCODE_MAP_POLYMORPHIC_RECORD:
             return performMapPolymorphicRecordOperation(sourceData, targetData, scriptPosition, typeList);
+            
+        case OPCODE_MAP_MONO_TO_POLY_RECORD:
+            return performMonoToPolyMappingOperation(sourceData, targetData, scriptPosition, typeList);
+        
+        case OPCODE_MAP_POLY_TO_MONO_RECORD:
+            return performPolyToMonoMappingOperation(sourceData, targetData, scriptPosition, typeList);
         
         default:
-            snprintf(errorMessage, sizeof(errorMessage), "Invalid opcode %d.", (int) opcode);
+            snprintf(errorMessage, sizeof(errorMessage), "Invalid opcode %d at %p.", (int) opcode, getCurrentPosition(scriptPosition) - 1);
             return reportError(errorMessage);
     }
 

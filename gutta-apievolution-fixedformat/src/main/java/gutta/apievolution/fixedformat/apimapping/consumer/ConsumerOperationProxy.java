@@ -3,9 +3,13 @@ package gutta.apievolution.fixedformat.apimapping.consumer;
 import gutta.apievolution.fixedformat.apimapping.RequestRouter;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatData;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.objectmapping.OperationResultType;
+import gutta.apievolution.fixedformat.objectmapping.ValueOrException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A {@link ConsumerOperationProxy} encapsulates the format conversions and other technical details for invoking a provider operation with fixed-format data.
@@ -22,9 +26,9 @@ public abstract class ConsumerOperationProxy<P, R> {
     private final String operationName;
 
     private final Class<P> parameterType;
-    
-    private final Class<R> resultType;
-    
+
+    private final OperationResultType<R> resultType;
+
     private final Charset charset;
 
     /**
@@ -39,11 +43,28 @@ public abstract class ConsumerOperationProxy<P, R> {
      */
     protected ConsumerOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, RequestRouter router, FixedFormatMapper mapper,
             Charset charset) {
+
+        this(operationName, parameterType, resultType, Collections.emptySet(), router, mapper, charset);
+    }
+
+    /**
+     * Creates a new proxy with the given data.
+     * 
+     * @param operationName The name of the represented operation
+     * @param parameterType The parameter type of the operation
+     * @param resultType    The result type of the operation
+     * @param router        The request router to use for finding the appropriate provider proxy
+     * @param mapper        The fixed-format mapper to use
+     * @param charset       The charset to use
+     */
+    protected ConsumerOperationProxy(String operationName, Class<P> parameterType, Class<R> resultType, Set<Class<?>> exceptionTypes, RequestRouter router,
+            FixedFormatMapper mapper, Charset charset) {
+
         this.operationName = operationName;
         this.router = router;
         this.mapper = mapper;
         this.parameterType = parameterType;
-        this.resultType = resultType;
+        this.resultType = OperationResultType.of(resultType, exceptionTypes);
         this.charset = charset;
     }
 
@@ -55,19 +76,26 @@ public abstract class ConsumerOperationProxy<P, R> {
      */
     public R invoke(P parameter) {
         FixedFormatMapper formatMapper = this.mapper;
-        
+
         ByteBuffer parameterBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.parameterType));
         FixedFormatData parameterData = FixedFormatData.of(parameterBuffer, this.charset);
-        
+
         this.mapper.writeValue(parameter, this.parameterType, parameterData);
         parameterBuffer.flip();
-        
+
         ByteBuffer resultBuffer = ByteBuffer.allocate(formatMapper.determineMaxSizeOf(this.resultType));
 
         this.router.routeRequest(this.operationName, parameterBuffer, resultBuffer);
 
         FixedFormatData resultData = FixedFormatData.of(resultBuffer, this.charset);
-        return this.mapper.readValue(resultData, this.resultType);
+        ValueOrException<R> resultOrException = this.mapper.readValueOrException(resultData, this.resultType);
+
+        if (resultOrException.containsException()) {
+            MappedExceptionData exceptionData = (MappedExceptionData) resultOrException.getException();
+            throw exceptionData.createMappedException();
+        } else {
+            return resultOrException.getValue();
+        }
     }
 
 }

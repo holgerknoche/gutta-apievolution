@@ -13,26 +13,38 @@ import gutta.apievolution.fixedformat.apimapping.RequestRouter;
 import gutta.apievolution.fixedformat.apimapping.consumer.ConsumerOperationProxy;
 import gutta.apievolution.fixedformat.apimapping.provider.ProviderOperationProxy;
 import gutta.apievolution.fixedformat.consumer.ConsumerEnum;
+import gutta.apievolution.fixedformat.consumer.ConsumerMonoToPolyType;
 import gutta.apievolution.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.fixedformat.consumer.ConsumerResult;
+import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithMonoToPolyField;
 import gutta.apievolution.fixedformat.consumer.ConsumerStructureWithPolyField;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeA;
 import gutta.apievolution.fixedformat.consumer.ConsumerSubTypeB;
 import gutta.apievolution.fixedformat.consumer.ConsumerSuperType;
+import gutta.apievolution.fixedformat.consumer.ConsumerTestException;
+import gutta.apievolution.fixedformat.consumer.MappedConsumerTestException;
 import gutta.apievolution.fixedformat.objectmapping.FixedFormatMapper;
+import gutta.apievolution.fixedformat.objectmapping.UnrepresentableValueException;
+import gutta.apievolution.fixedformat.provider.MappableProviderTestException;
+import gutta.apievolution.fixedformat.provider.ProviderMonoToPolySubTypeA;
+import gutta.apievolution.fixedformat.provider.ProviderMonoToPolyType;
 import gutta.apievolution.fixedformat.provider.ProviderParameter;
 import gutta.apievolution.fixedformat.provider.ProviderResult;
+import gutta.apievolution.fixedformat.provider.ProviderStructureWithMonoToPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderStructureWithPolyField;
 import gutta.apievolution.fixedformat.provider.ProviderSuperType;
+import gutta.apievolution.fixedformat.provider.ProviderTestException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FixedFormatMappingTest {
 
@@ -122,6 +134,102 @@ class FixedFormatMappingTest {
         assertNotSame(result, parameter);
         assertEquals(result, parameter);
     }
+    
+    /**
+     * Test case: A thrown exception is mapped as expected.
+     */
+    @Test
+    void exceptionMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+
+        OpWithExceptionProviderProxy providerProxy = new OpWithExceptionProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        OpWithExceptionConsumerProxy consumerProxy = new OpWithExceptionConsumerProxy(requestRouter, mapper);
+        
+        MappedConsumerTestException thrownException = assertThrows(MappedConsumerTestException.class, () -> consumerProxy.invoke(new ConsumerParameter()));
+        assertEquals(1234, thrownException.getExceptionField());
+    }
+    
+    /**
+     * Test case: Mono-to-poly mapping (parameter) and vice versa (result).
+     */
+    @Test
+    void monoToPolyTypeMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+
+        MonoToPolyMappingProviderProxy providerProxy = new MonoToPolyMappingProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        MonoToPolyMappingConsumerProxy consumerProxy = new MonoToPolyMappingConsumerProxy(requestRouter, mapper);
+        
+        // First variant: Returns the matching type
+        ConsumerMonoToPolyType parameter = new ConsumerMonoToPolyType();
+        parameter.setField1(3456);        
+        ConsumerMonoToPolyType result = consumerProxy.invoke(parameter);        
+        assertEquals(1234, result.getField1());
+        
+        // Second variant: A subtype is returned, which makes no difference
+        ConsumerMonoToPolyType parameter2 = new ConsumerMonoToPolyType();
+        // Set the magic value
+        parameter2.setField1(1);        
+        ConsumerMonoToPolyType result2 = consumerProxy.invoke(parameter2);        
+        assertEquals(5678, result2.getField1());
+    }
+    
+    /**
+     * Test case: Mono-to-poly mapping (and vice versa) as part of structure mapping.
+     */
+    @Test
+    void embeddedMonoToPolyTypeMapping() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+     
+        EmbeddedMonoToPolyMappingProviderProxy providerProxy = new EmbeddedMonoToPolyMappingProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        EmbeddedMonoToPolyMappingConsumerProxy consumerProxy = new EmbeddedMonoToPolyMappingConsumerProxy(requestRouter, mapper);
+        
+        ConsumerMonoToPolyType monoToPolyType = new ConsumerMonoToPolyType();
+        monoToPolyType.setField1(1234);
+        
+        ConsumerStructureWithMonoToPolyField parameter = new ConsumerStructureWithMonoToPolyField();
+        parameter.setField(monoToPolyType);
+        
+        ConsumerStructureWithMonoToPolyField result = consumerProxy.invoke(parameter);
+        
+        assertNotSame(parameter, result);
+        assertEquals(parameter, result);
+    }
+    
+    /**
+     * Test case: The provider throws an exception, but the consumer does not expect one. This results in an unrepresentable value.
+     */
+    @Test
+    void providerThrowsExceptionButConsumerDoesNotExpectOne() {
+        ApiMappingScriptGenerator scriptGenerator = new ApiMappingScriptGenerator();
+        ApiMappingScript consumerToProviderScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.CONSUMER_TO_PROVIDER);
+        ApiMappingScript providerToConsumerScript = scriptGenerator.generateMappingScript(DEFINITION_RESOLUTION, MappingDirection.PROVIDER_TO_CONSUMER);
+
+        FixedFormatMapper mapper = new FixedFormatMapper();
+        
+        OpWithUnmappedExceptionProviderProxy providerProxy = new OpWithUnmappedExceptionProviderProxy(consumerToProviderScript, providerToConsumerScript, mapper);
+        RequestRouter requestRouter = new RequestRouter(providerProxy);
+        
+        OpWithUnmappedExceptionConsumerProxy consumerProxy = new OpWithUnmappedExceptionConsumerProxy(requestRouter, mapper);
+        assertThrows(UnrepresentableValueException.class, () -> consumerProxy.invoke(new ConsumerParameter()));
+    }
         
     private static class TestOperationConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
 
@@ -190,6 +298,105 @@ class FixedFormatMappingTest {
             return parameter;
         }
         
+    }
+    
+    private static class OpWithExceptionConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithExceptionConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("opWithException", ConsumerParameter.class, ConsumerResult.class, Collections.singleton(ConsumerTestException.class), router, mapper, CHARSET);
+        }
+                
+    }
+    
+    private static class OpWithExceptionProviderProxy extends ProviderOperationProxy<ProviderParameter, ProviderResult> {
+
+        public OpWithExceptionProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("opWithException", ProviderParameter.class, ProviderResult.class, Collections.singleton(ProviderTestException.class), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
+        }
+        
+    }
+    
+    private static class OpWithUnmappedExceptionConsumerProxy extends ConsumerOperationProxy<ConsumerParameter, ConsumerResult> {
+        
+        public OpWithUnmappedExceptionConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("opWithUnmappedException", ConsumerParameter.class, ConsumerResult.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+                
+    }
+    
+    private static class OpWithUnmappedExceptionProviderProxy extends ProviderOperationProxy<ProviderParameter, ProviderResult> {
+
+        public OpWithUnmappedExceptionProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("opWithUnmappedException", ProviderParameter.class, ProviderResult.class, Collections.singleton(ProviderTestException.class), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+
+        @Override
+        protected ProviderResult invokeOperation(ProviderParameter parameter) {
+            ProviderTestException exceptionData = new ProviderTestException();
+            exceptionData.setExceptionField(1234);
+            
+            throw new MappableProviderTestException(exceptionData);
+        }
+        
+    }
+    
+    private static class MonoToPolyMappingConsumerProxy extends ConsumerOperationProxy<ConsumerMonoToPolyType, ConsumerMonoToPolyType> {
+        
+        public MonoToPolyMappingConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("monoToPolyMapping", ConsumerMonoToPolyType.class, ConsumerMonoToPolyType.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+        
+    }
+    
+    private static class MonoToPolyMappingProviderProxy extends ProviderOperationProxy<ProviderMonoToPolyType, ProviderMonoToPolyType> {
+        
+        public MonoToPolyMappingProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("monoToPolyMapping", ProviderMonoToPolyType.class, ProviderMonoToPolyType.class, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+        
+        @Override
+        protected ProviderMonoToPolyType invokeOperation(ProviderMonoToPolyType parameter) {
+            if (parameter.getField1() == 1) {
+                ProviderMonoToPolySubTypeA result = new ProviderMonoToPolySubTypeA();
+                result.setField1(5678);
+                result.setField2(4321);
+                
+                return result;                
+            } else {
+                ProviderMonoToPolyType result = new ProviderMonoToPolyType();
+                result.setField1(1234);
+                
+                return result;
+            }
+        }        
+    }
+    
+    private static class EmbeddedMonoToPolyMappingConsumerProxy extends ConsumerOperationProxy<ConsumerStructureWithMonoToPolyField, ConsumerStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingConsumerProxy(RequestRouter router, FixedFormatMapper mapper) {
+            super("embeddedMonoToPolyMapping", ConsumerStructureWithMonoToPolyField.class, ConsumerStructureWithMonoToPolyField.class, Collections.emptySet(), router, mapper, CHARSET);
+        }
+        
+    }
+    
+    private static class EmbeddedMonoToPolyMappingProviderProxy extends ProviderOperationProxy<ProviderStructureWithMonoToPolyField, ProviderStructureWithMonoToPolyField> {
+        
+        public EmbeddedMonoToPolyMappingProviderProxy(ApiMappingScript consumerToProviderScript, ApiMappingScript providerToConsumerScript, FixedFormatMapper mapper) {
+            super("embeddedMonoToPolyMapping", ProviderStructureWithMonoToPolyField.class, ProviderStructureWithMonoToPolyField.class, Collections.emptySet(), consumerToProviderScript, providerToConsumerScript, mapper, CHARSET);
+        }
+        
+        @Override
+        protected ProviderStructureWithMonoToPolyField invokeOperation(ProviderStructureWithMonoToPolyField parameter) {
+            return parameter;
+        }        
     }
 
 }

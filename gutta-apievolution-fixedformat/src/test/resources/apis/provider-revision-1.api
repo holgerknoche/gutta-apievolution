@@ -33,10 +33,30 @@ api test.provider {
     	int32 fieldB
     }
     
+    exception TestException as ProviderTestException {
+        int32 exceptionField
+    }
+    
+    record StructureWithMonoToPolyField as ProviderStructureWithMonoToPolyField {
+        MonoToPolyType field
+    }
+    
+    record MonoToPolyType as ProviderMonoToPolyType {
+        int32 field1
+    }
+    
     operation testOperation(TestParameter): TestResult
     
     operation polyOperation(SuperType): SuperType
     
     operation polyOperation2(StructureWithPolyField): StructureWithPolyField
+    
+    operation opWithException(TestParameter): TestResult throws TestException
+    
+    operation opWithUnmappedException(TestParameter): TestResult throws TestException
+    
+    operation monoToPolyMapping(MonoToPolyType): MonoToPolyType
+    
+    operation embeddedMonoToPolyMapping(StructureWithMonoToPolyField): StructureWithMonoToPolyField
 
 }

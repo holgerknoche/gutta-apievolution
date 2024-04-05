@@ -235,6 +235,16 @@ public class DefinitionResolution {
     }
 
     /**
+     * Maps a given consumer operation to the corresponding provider operation.
+     *
+     * @param providerOperation The provider operation to map
+     * @return The corresponding operation, if it exists
+     */
+    public ConsumerOperation mapProviderOperation(ProviderOperation providerOperation) {
+        return this.providerToConsumerMap.mapProviderOperation(providerOperation);
+    }
+    
+    /**
      * Maps a given consumer field to the corresponding provider field.
      *
      * @param consumerField The provider field to map

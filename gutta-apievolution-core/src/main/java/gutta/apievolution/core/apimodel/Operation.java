@@ -100,6 +100,15 @@ public abstract class Operation<A extends ApiDefinition<A, O>, O extends Operati
     }
     
     /**
+     * Returns whether this operation may throw an exception.
+     * 
+     * @return see above
+     */
+    public boolean hasExceptions() {
+        return !(this.thrownExceptions.isEmpty());
+    }
+    
+    /**
      * Returns the user-defined types reachable by this operation.
      * 
      * @return see above

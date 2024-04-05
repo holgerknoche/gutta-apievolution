@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
-
-    private static final int TYPE_ID_SIZE = 4;
+class PolymorphicRecordMappingOperation extends AbstractPolymorphicRecordMappingOperation {    
     
     private final Map<Integer, PolymorphicRecordMapping> idToRecordMapping;
     
@@ -62,7 +60,7 @@ class PolymorphicRecordMappingOperation extends NullableTypeMappingOperation {
         target.put(Flags.IS_PRESENT);
         target.putInt(recordMapping.getTargetTypeId());
         
-        RecordMappingOperation actualMappingOperation = new RecordMappingOperation(recordMapping.getTypeEntry());
+        MonomorphicRecordMappingOperation actualMappingOperation = new MonomorphicRecordMappingOperation(recordMapping.getTypeEntry());
         actualMappingOperation.mapNonNullValue(source, target);
     }
 

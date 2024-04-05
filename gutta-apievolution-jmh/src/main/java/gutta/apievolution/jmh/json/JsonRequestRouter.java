@@ -1,8 +1,8 @@
 package gutta.apievolution.jmh.json;
 
 import gutta.apievolution.core.resolution.DefinitionResolution;
-import gutta.apievolution.json.ProviderOperationProxy;
 import gutta.apievolution.json.RequestRouter;
+import gutta.apievolution.json.provider.ProviderOperationProxy;
 
 import java.util.Map;
 import java.util.function.Function;
