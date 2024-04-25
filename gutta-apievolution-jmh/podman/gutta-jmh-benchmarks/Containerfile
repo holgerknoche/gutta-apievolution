@@ -1,0 +1,17 @@
+FROM java:21
+
+ENV USERNAME=jmh
+
+RUN mkdir -p /opt/jmh
+COPY --chown=root:root *.jar /opt/jmh
+
+RUN useradd -m $USERNAME
+USER $USERNAME
+
+ENV FORKS=3
+ENV WARMUP_ITERATIONS=100
+ENV ITERATIONS=10
+ENV FORMAT=csv
+ENV BENCHMARKS=".*"
+
+ENTRYPOINT ["sh", "-xc", "java -jar /opt/jmh/gutta-apievolution-jmh-1.0-SNAPSHOT.jar -f $FORKS -wi $WARMUP_ITERATIONS -i $ITERATIONS -rf $FORMAT -rff /home/$USERNAME/jmh-results-$FORKS-$WARMUP_ITERATIONS-$ITERATIONS.$FORMAT $BENCHMARKS"]

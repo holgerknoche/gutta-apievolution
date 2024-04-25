@@ -1,0 +1,10 @@
+FROM debian:bookworm-slim
+
+ARG jdkVersion
+ARG jdkPath=/opt/${jdkVersion}
+
+RUN mkdir -p "${jdkPath}"
+COPY --chown=root:root "jdk-${jdkVersion}" ${jdkPath}
+
+RUN update-alternatives --install "/usr/bin/java" "java" ${jdkPath}/bin/java 1
+RUN update-alternatives --set "java" ${jdkPath}/bin/java
