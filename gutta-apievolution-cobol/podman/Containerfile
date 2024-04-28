@@ -1,0 +1,17 @@
+FROM debian:bookworm-slim
+
+ENV NUMBER_OF_FORKS=10
+
+RUN apt-get update
+RUN apt-get install -y libcob4
+
+RUN useradd -m benchmark
+
+RUN mkdir -p /home/benchmark/cobol
+COPY dist/* /home/benchmark/cobol/
+
+RUN chown -R benchmark:benchmark /home/benchmark/cobol
+
+USER benchmark
+ENTRYPOINT ["sh", "-xc", "cd /home/benchmark/cobol; ./run-benchmark.sh"]
+
