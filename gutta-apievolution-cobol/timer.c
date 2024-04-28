@@ -20,6 +20,6 @@ int getCurrentTimeMs(long* timeMs) {
         
     clock_gettime(CLOCK_MONOTONIC, &time);
     
-    *timeMs = platformLongToBigEndian((long) (time.tv_sec * 1000) + (time.tv_nsec / 10000000));
+    *timeMs = platformLongToBigEndian((long) (time.tv_sec * 1000) + (time.tv_nsec / 1000000));
     return SUCCESS;
 }
