@@ -1,0 +1,6007 @@
+      * Test structure with 500 elements
+           05 '*-'TEST-STRUCT-500.
+             10 '*-'TEST-STRUCT-500-FLAGS PIC 9 BINARY.
+                88 VALUE-ABSENT VALUE 0.
+                88 VALUE-PRESENT VALUE 1.
+                88 VALUE-UNREPRESENTABLE VALUE 2.
+
+             10 '*-'INT-FIELD-1-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-1 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-2-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-2 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-3-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-3 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-4-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-4 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-5-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-5 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-6-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-6 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-7-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-7 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-8-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-8 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-9-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-9 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-10-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-10 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-11-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-11 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-12-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-12 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-13-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-13 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-14-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-14 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-15-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-15 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-16-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-16 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-17-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-17 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-18-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-18 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-19-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-19 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-20-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-20 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-21-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-21 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-22-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-22 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-23-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-23 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-24-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-24 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-25-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-25 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-26-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-26 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-27-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-27 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-28-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-28 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-29-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-29 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-30-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-30 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-31-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-31 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-32-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-32 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-33-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-33 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-34-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-34 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-35-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-35 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-36-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-36 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-37-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-37 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-38-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-38 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-39-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-39 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-40-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-40 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-41-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-41 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-42-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-42 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-43-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-43 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-44-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-44 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-45-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-45 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-46-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-46 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-47-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-47 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-48-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-48 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-49-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-49 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-50-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-50 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-51-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-51 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-52-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-52 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-53-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-53 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-54-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-54 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-55-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-55 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-56-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-56 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-57-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-57 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-58-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-58 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-59-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-59 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-60-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-60 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-61-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-61 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-62-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-62 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-63-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-63 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-64-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-64 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-65-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-65 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-66-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-66 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-67-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-67 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-68-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-68 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-69-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-69 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-70-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-70 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-71-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-71 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-72-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-72 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-73-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-73 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-74-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-74 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-75-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-75 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-76-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-76 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-77-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-77 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-78-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-78 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-79-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-79 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-80-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-80 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-81-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-81 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-82-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-82 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-83-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-83 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-84-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-84 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-85-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-85 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-86-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-86 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-87-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-87 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-88-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-88 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-89-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-89 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-90-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-90 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-91-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-91 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-92-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-92 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-93-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-93 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-94-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-94 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-95-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-95 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-96-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-96 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-97-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-97 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-98-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-98 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-99-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-99 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-100-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-100 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-101-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-101 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-102-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-102 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-103-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-103 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-104-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-104 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-105-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-105 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-106-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-106 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-107-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-107 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-108-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-108 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-109-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-109 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-110-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-110 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-111-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-111 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-112-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-112 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-113-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-113 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-114-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-114 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-115-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-115 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-116-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-116 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-117-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-117 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-118-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-118 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-119-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-119 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-120-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-120 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-121-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-121 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-122-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-122 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-123-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-123 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-124-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-124 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-125-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-125 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-126-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-126 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-127-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-127 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-128-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-128 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-129-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-129 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-130-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-130 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-131-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-131 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-132-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-132 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-133-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-133 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-134-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-134 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-135-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-135 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-136-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-136 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-137-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-137 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-138-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-138 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-139-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-139 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-140-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-140 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-141-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-141 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-142-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-142 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-143-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-143 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-144-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-144 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-145-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-145 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-146-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-146 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-147-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-147 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-148-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-148 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-149-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-149 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-150-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-150 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-151-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-151 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-152-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-152 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-153-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-153 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-154-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-154 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-155-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-155 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-156-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-156 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-157-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-157 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-158-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-158 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-159-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-159 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-160-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-160 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-161-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-161 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-162-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-162 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-163-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-163 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-164-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-164 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-165-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-165 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-166-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-166 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-167-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-167 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-168-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-168 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-169-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-169 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-170-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-170 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-171-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-171 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-172-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-172 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-173-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-173 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-174-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-174 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-175-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-175 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-176-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-176 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-177-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-177 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-178-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-178 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-179-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-179 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-180-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-180 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-181-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-181 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-182-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-182 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-183-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-183 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-184-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-184 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-185-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-185 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-186-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-186 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-187-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-187 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-188-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-188 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-189-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-189 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-190-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-190 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-191-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-191 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-192-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-192 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-193-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-193 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-194-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-194 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-195-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-195 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-196-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-196 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-197-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-197 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-198-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-198 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-199-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-199 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-200-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-200 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-201-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-201 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-202-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-202 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-203-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-203 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-204-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-204 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-205-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-205 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-206-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-206 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-207-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-207 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-208-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-208 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-209-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-209 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-210-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-210 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-211-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-211 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-212-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-212 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-213-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-213 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-214-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-214 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-215-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-215 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-216-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-216 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-217-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-217 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-218-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-218 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-219-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-219 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-220-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-220 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-221-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-221 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-222-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-222 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-223-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-223 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-224-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-224 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-225-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-225 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-226-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-226 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-227-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-227 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-228-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-228 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-229-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-229 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-230-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-230 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-231-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-231 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-232-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-232 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-233-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-233 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-234-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-234 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-235-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-235 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-236-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-236 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-237-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-237 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-238-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-238 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-239-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-239 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-240-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-240 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-241-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-241 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-242-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-242 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-243-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-243 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-244-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-244 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-245-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-245 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-246-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-246 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-247-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-247 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-248-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-248 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-249-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-249 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-250-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-250 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-251-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-251 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-252-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-252 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-253-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-253 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-254-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-254 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-255-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-255 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-256-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-256 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-257-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-257 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-258-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-258 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-259-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-259 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-260-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-260 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-261-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-261 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-262-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-262 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-263-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-263 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-264-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-264 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-265-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-265 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-266-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-266 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-267-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-267 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-268-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-268 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-269-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-269 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-270-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-270 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-271-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-271 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-272-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-272 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-273-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-273 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-274-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-274 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-275-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-275 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-276-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-276 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-277-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-277 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-278-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-278 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-279-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-279 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-280-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-280 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-281-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-281 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-282-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-282 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-283-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-283 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-284-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-284 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-285-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-285 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-286-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-286 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-287-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-287 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-288-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-288 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-289-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-289 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-290-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-290 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-291-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-291 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-292-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-292 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-293-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-293 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-294-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-294 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-295-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-295 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-296-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-296 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-297-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-297 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-298-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-298 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-299-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-299 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-300-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-300 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-301-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-301 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-302-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-302 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-303-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-303 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-304-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-304 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-305-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-305 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-306-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-306 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-307-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-307 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-308-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-308 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-309-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-309 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-310-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-310 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-311-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-311 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-312-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-312 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-313-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-313 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-314-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-314 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-315-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-315 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-316-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-316 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-317-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-317 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-318-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-318 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-319-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-319 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-320-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-320 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-321-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-321 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-322-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-322 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-323-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-323 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-324-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-324 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-325-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-325 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-326-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-326 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-327-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-327 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-328-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-328 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-329-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-329 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-330-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-330 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-331-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-331 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-332-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-332 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-333-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-333 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-334-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-334 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-335-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-335 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-336-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-336 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-337-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-337 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-338-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-338 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-339-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-339 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-340-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-340 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-341-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-341 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-342-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-342 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-343-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-343 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-344-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-344 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-345-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-345 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-346-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-346 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-347-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-347 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-348-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-348 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-349-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-349 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-350-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-350 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-351-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-351 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-352-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-352 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-353-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-353 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-354-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-354 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-355-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-355 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-356-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-356 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-357-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-357 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-358-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-358 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-359-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-359 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-360-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-360 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-361-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-361 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-362-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-362 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-363-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-363 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-364-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-364 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-365-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-365 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-366-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-366 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-367-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-367 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-368-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-368 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-369-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-369 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-370-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-370 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-371-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-371 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-372-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-372 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-373-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-373 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-374-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-374 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-375-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-375 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-376-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-376 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-377-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-377 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-378-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-378 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-379-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-379 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-380-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-380 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-381-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-381 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-382-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-382 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-383-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-383 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-384-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-384 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-385-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-385 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-386-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-386 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-387-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-387 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-388-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-388 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-389-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-389 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-390-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-390 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-391-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-391 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-392-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-392 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-393-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-393 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-394-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-394 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-395-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-395 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-396-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-396 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-397-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-397 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-398-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-398 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-399-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-399 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-400-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-400 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-401-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-401 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-402-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-402 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-403-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-403 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-404-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-404 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-405-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-405 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-406-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-406 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-407-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-407 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-408-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-408 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-409-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-409 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-410-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-410 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-411-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-411 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-412-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-412 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-413-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-413 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-414-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-414 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-415-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-415 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-416-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-416 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-417-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-417 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-418-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-418 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-419-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-419 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-420-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-420 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-421-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-421 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-422-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-422 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-423-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-423 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-424-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-424 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-425-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-425 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-426-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-426 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-427-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-427 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-428-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-428 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-429-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-429 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-430-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-430 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-431-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-431 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-432-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-432 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-433-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-433 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-434-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-434 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-435-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-435 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-436-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-436 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-437-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-437 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-438-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-438 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-439-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-439 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-440-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-440 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-441-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-441 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-442-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-442 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-443-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-443 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-444-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-444 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-445-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-445 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-446-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-446 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-447-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-447 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-448-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-448 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-449-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-449 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-450-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-450 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-451-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-451 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-452-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-452 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-453-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-453 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-454-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-454 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-455-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-455 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-456-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-456 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-457-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-457 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-458-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-458 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-459-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-459 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-460-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-460 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-461-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-461 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-462-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-462 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-463-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-463 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-464-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-464 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-465-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-465 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-466-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-466 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-467-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-467 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-468-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-468 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-469-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-469 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-470-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-470 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-471-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-471 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-472-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-472 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-473-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-473 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-474-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-474 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-475-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-475 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-476-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-476 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-477-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-477 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-478-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-478 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-479-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-479 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-480-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-480 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-481-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-481 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-482-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-482 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-483-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-483 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-484-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-484 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-485-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-485 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-486-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-486 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-487-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-487 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-488-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-488 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-489-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-489 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-490-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-490 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-491-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-491 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-492-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-492 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-493-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-493 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-494-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-494 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-495-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-495 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-496-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-496 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-497-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-497 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-498-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-498 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-499-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-499 PIC S9(9) BINARY.
+
+             10 '*-'INT-FIELD-500-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'INT-FIELD-500 PIC S9(9) BINARY.
+
+             10 '*-'STRING-FIELD-1-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-1 PIC X(10).
+
+             10 '*-'STRING-FIELD-2-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-2 PIC X(10).
+
+             10 '*-'STRING-FIELD-3-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-3 PIC X(10).
+
+             10 '*-'STRING-FIELD-4-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-4 PIC X(10).
+
+             10 '*-'STRING-FIELD-5-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-5 PIC X(10).
+
+             10 '*-'STRING-FIELD-6-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-6 PIC X(10).
+
+             10 '*-'STRING-FIELD-7-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-7 PIC X(10).
+
+             10 '*-'STRING-FIELD-8-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-8 PIC X(10).
+
+             10 '*-'STRING-FIELD-9-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-9 PIC X(10).
+
+             10 '*-'STRING-FIELD-10-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-10 PIC X(10).
+
+             10 '*-'STRING-FIELD-11-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-11 PIC X(10).
+
+             10 '*-'STRING-FIELD-12-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-12 PIC X(10).
+
+             10 '*-'STRING-FIELD-13-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-13 PIC X(10).
+
+             10 '*-'STRING-FIELD-14-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-14 PIC X(10).
+
+             10 '*-'STRING-FIELD-15-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-15 PIC X(10).
+
+             10 '*-'STRING-FIELD-16-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-16 PIC X(10).
+
+             10 '*-'STRING-FIELD-17-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-17 PIC X(10).
+
+             10 '*-'STRING-FIELD-18-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-18 PIC X(10).
+
+             10 '*-'STRING-FIELD-19-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-19 PIC X(10).
+
+             10 '*-'STRING-FIELD-20-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-20 PIC X(10).
+
+             10 '*-'STRING-FIELD-21-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-21 PIC X(10).
+
+             10 '*-'STRING-FIELD-22-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-22 PIC X(10).
+
+             10 '*-'STRING-FIELD-23-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-23 PIC X(10).
+
+             10 '*-'STRING-FIELD-24-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-24 PIC X(10).
+
+             10 '*-'STRING-FIELD-25-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-25 PIC X(10).
+
+             10 '*-'STRING-FIELD-26-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-26 PIC X(10).
+
+             10 '*-'STRING-FIELD-27-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-27 PIC X(10).
+
+             10 '*-'STRING-FIELD-28-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-28 PIC X(10).
+
+             10 '*-'STRING-FIELD-29-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-29 PIC X(10).
+
+             10 '*-'STRING-FIELD-30-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-30 PIC X(10).
+
+             10 '*-'STRING-FIELD-31-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-31 PIC X(10).
+
+             10 '*-'STRING-FIELD-32-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-32 PIC X(10).
+
+             10 '*-'STRING-FIELD-33-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-33 PIC X(10).
+
+             10 '*-'STRING-FIELD-34-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-34 PIC X(10).
+
+             10 '*-'STRING-FIELD-35-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-35 PIC X(10).
+
+             10 '*-'STRING-FIELD-36-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-36 PIC X(10).
+
+             10 '*-'STRING-FIELD-37-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-37 PIC X(10).
+
+             10 '*-'STRING-FIELD-38-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-38 PIC X(10).
+
+             10 '*-'STRING-FIELD-39-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-39 PIC X(10).
+
+             10 '*-'STRING-FIELD-40-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-40 PIC X(10).
+
+             10 '*-'STRING-FIELD-41-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-41 PIC X(10).
+
+             10 '*-'STRING-FIELD-42-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-42 PIC X(10).
+
+             10 '*-'STRING-FIELD-43-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-43 PIC X(10).
+
+             10 '*-'STRING-FIELD-44-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-44 PIC X(10).
+
+             10 '*-'STRING-FIELD-45-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-45 PIC X(10).
+
+             10 '*-'STRING-FIELD-46-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-46 PIC X(10).
+
+             10 '*-'STRING-FIELD-47-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-47 PIC X(10).
+
+             10 '*-'STRING-FIELD-48-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-48 PIC X(10).
+
+             10 '*-'STRING-FIELD-49-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-49 PIC X(10).
+
+             10 '*-'STRING-FIELD-50-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-50 PIC X(10).
+
+             10 '*-'STRING-FIELD-51-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-51 PIC X(10).
+
+             10 '*-'STRING-FIELD-52-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-52 PIC X(10).
+
+             10 '*-'STRING-FIELD-53-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-53 PIC X(10).
+
+             10 '*-'STRING-FIELD-54-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-54 PIC X(10).
+
+             10 '*-'STRING-FIELD-55-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-55 PIC X(10).
+
+             10 '*-'STRING-FIELD-56-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-56 PIC X(10).
+
+             10 '*-'STRING-FIELD-57-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-57 PIC X(10).
+
+             10 '*-'STRING-FIELD-58-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-58 PIC X(10).
+
+             10 '*-'STRING-FIELD-59-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-59 PIC X(10).
+
+             10 '*-'STRING-FIELD-60-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-60 PIC X(10).
+
+             10 '*-'STRING-FIELD-61-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-61 PIC X(10).
+
+             10 '*-'STRING-FIELD-62-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-62 PIC X(10).
+
+             10 '*-'STRING-FIELD-63-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-63 PIC X(10).
+
+             10 '*-'STRING-FIELD-64-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-64 PIC X(10).
+
+             10 '*-'STRING-FIELD-65-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-65 PIC X(10).
+
+             10 '*-'STRING-FIELD-66-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-66 PIC X(10).
+
+             10 '*-'STRING-FIELD-67-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-67 PIC X(10).
+
+             10 '*-'STRING-FIELD-68-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-68 PIC X(10).
+
+             10 '*-'STRING-FIELD-69-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-69 PIC X(10).
+
+             10 '*-'STRING-FIELD-70-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-70 PIC X(10).
+
+             10 '*-'STRING-FIELD-71-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-71 PIC X(10).
+
+             10 '*-'STRING-FIELD-72-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-72 PIC X(10).
+
+             10 '*-'STRING-FIELD-73-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-73 PIC X(10).
+
+             10 '*-'STRING-FIELD-74-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-74 PIC X(10).
+
+             10 '*-'STRING-FIELD-75-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-75 PIC X(10).
+
+             10 '*-'STRING-FIELD-76-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-76 PIC X(10).
+
+             10 '*-'STRING-FIELD-77-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-77 PIC X(10).
+
+             10 '*-'STRING-FIELD-78-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-78 PIC X(10).
+
+             10 '*-'STRING-FIELD-79-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-79 PIC X(10).
+
+             10 '*-'STRING-FIELD-80-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-80 PIC X(10).
+
+             10 '*-'STRING-FIELD-81-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-81 PIC X(10).
+
+             10 '*-'STRING-FIELD-82-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-82 PIC X(10).
+
+             10 '*-'STRING-FIELD-83-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-83 PIC X(10).
+
+             10 '*-'STRING-FIELD-84-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-84 PIC X(10).
+
+             10 '*-'STRING-FIELD-85-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-85 PIC X(10).
+
+             10 '*-'STRING-FIELD-86-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-86 PIC X(10).
+
+             10 '*-'STRING-FIELD-87-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-87 PIC X(10).
+
+             10 '*-'STRING-FIELD-88-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-88 PIC X(10).
+
+             10 '*-'STRING-FIELD-89-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-89 PIC X(10).
+
+             10 '*-'STRING-FIELD-90-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-90 PIC X(10).
+
+             10 '*-'STRING-FIELD-91-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-91 PIC X(10).
+
+             10 '*-'STRING-FIELD-92-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-92 PIC X(10).
+
+             10 '*-'STRING-FIELD-93-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-93 PIC X(10).
+
+             10 '*-'STRING-FIELD-94-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-94 PIC X(10).
+
+             10 '*-'STRING-FIELD-95-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-95 PIC X(10).
+
+             10 '*-'STRING-FIELD-96-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-96 PIC X(10).
+
+             10 '*-'STRING-FIELD-97-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-97 PIC X(10).
+
+             10 '*-'STRING-FIELD-98-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-98 PIC X(10).
+
+             10 '*-'STRING-FIELD-99-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-99 PIC X(10).
+
+             10 '*-'STRING-FIELD-100-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-100 PIC X(10).
+
+             10 '*-'STRING-FIELD-101-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-101 PIC X(10).
+
+             10 '*-'STRING-FIELD-102-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-102 PIC X(10).
+
+             10 '*-'STRING-FIELD-103-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-103 PIC X(10).
+
+             10 '*-'STRING-FIELD-104-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-104 PIC X(10).
+
+             10 '*-'STRING-FIELD-105-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-105 PIC X(10).
+
+             10 '*-'STRING-FIELD-106-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-106 PIC X(10).
+
+             10 '*-'STRING-FIELD-107-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-107 PIC X(10).
+
+             10 '*-'STRING-FIELD-108-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-108 PIC X(10).
+
+             10 '*-'STRING-FIELD-109-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-109 PIC X(10).
+
+             10 '*-'STRING-FIELD-110-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-110 PIC X(10).
+
+             10 '*-'STRING-FIELD-111-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-111 PIC X(10).
+
+             10 '*-'STRING-FIELD-112-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-112 PIC X(10).
+
+             10 '*-'STRING-FIELD-113-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-113 PIC X(10).
+
+             10 '*-'STRING-FIELD-114-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-114 PIC X(10).
+
+             10 '*-'STRING-FIELD-115-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-115 PIC X(10).
+
+             10 '*-'STRING-FIELD-116-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-116 PIC X(10).
+
+             10 '*-'STRING-FIELD-117-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-117 PIC X(10).
+
+             10 '*-'STRING-FIELD-118-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-118 PIC X(10).
+
+             10 '*-'STRING-FIELD-119-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-119 PIC X(10).
+
+             10 '*-'STRING-FIELD-120-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-120 PIC X(10).
+
+             10 '*-'STRING-FIELD-121-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-121 PIC X(10).
+
+             10 '*-'STRING-FIELD-122-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-122 PIC X(10).
+
+             10 '*-'STRING-FIELD-123-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-123 PIC X(10).
+
+             10 '*-'STRING-FIELD-124-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-124 PIC X(10).
+
+             10 '*-'STRING-FIELD-125-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-125 PIC X(10).
+
+             10 '*-'STRING-FIELD-126-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-126 PIC X(10).
+
+             10 '*-'STRING-FIELD-127-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-127 PIC X(10).
+
+             10 '*-'STRING-FIELD-128-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-128 PIC X(10).
+
+             10 '*-'STRING-FIELD-129-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-129 PIC X(10).
+
+             10 '*-'STRING-FIELD-130-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-130 PIC X(10).
+
+             10 '*-'STRING-FIELD-131-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-131 PIC X(10).
+
+             10 '*-'STRING-FIELD-132-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-132 PIC X(10).
+
+             10 '*-'STRING-FIELD-133-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-133 PIC X(10).
+
+             10 '*-'STRING-FIELD-134-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-134 PIC X(10).
+
+             10 '*-'STRING-FIELD-135-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-135 PIC X(10).
+
+             10 '*-'STRING-FIELD-136-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-136 PIC X(10).
+
+             10 '*-'STRING-FIELD-137-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-137 PIC X(10).
+
+             10 '*-'STRING-FIELD-138-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-138 PIC X(10).
+
+             10 '*-'STRING-FIELD-139-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-139 PIC X(10).
+
+             10 '*-'STRING-FIELD-140-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-140 PIC X(10).
+
+             10 '*-'STRING-FIELD-141-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-141 PIC X(10).
+
+             10 '*-'STRING-FIELD-142-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-142 PIC X(10).
+
+             10 '*-'STRING-FIELD-143-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-143 PIC X(10).
+
+             10 '*-'STRING-FIELD-144-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-144 PIC X(10).
+
+             10 '*-'STRING-FIELD-145-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-145 PIC X(10).
+
+             10 '*-'STRING-FIELD-146-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-146 PIC X(10).
+
+             10 '*-'STRING-FIELD-147-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-147 PIC X(10).
+
+             10 '*-'STRING-FIELD-148-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-148 PIC X(10).
+
+             10 '*-'STRING-FIELD-149-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-149 PIC X(10).
+
+             10 '*-'STRING-FIELD-150-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-150 PIC X(10).
+
+             10 '*-'STRING-FIELD-151-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-151 PIC X(10).
+
+             10 '*-'STRING-FIELD-152-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-152 PIC X(10).
+
+             10 '*-'STRING-FIELD-153-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-153 PIC X(10).
+
+             10 '*-'STRING-FIELD-154-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-154 PIC X(10).
+
+             10 '*-'STRING-FIELD-155-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-155 PIC X(10).
+
+             10 '*-'STRING-FIELD-156-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-156 PIC X(10).
+
+             10 '*-'STRING-FIELD-157-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-157 PIC X(10).
+
+             10 '*-'STRING-FIELD-158-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-158 PIC X(10).
+
+             10 '*-'STRING-FIELD-159-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-159 PIC X(10).
+
+             10 '*-'STRING-FIELD-160-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-160 PIC X(10).
+
+             10 '*-'STRING-FIELD-161-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-161 PIC X(10).
+
+             10 '*-'STRING-FIELD-162-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-162 PIC X(10).
+
+             10 '*-'STRING-FIELD-163-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-163 PIC X(10).
+
+             10 '*-'STRING-FIELD-164-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-164 PIC X(10).
+
+             10 '*-'STRING-FIELD-165-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-165 PIC X(10).
+
+             10 '*-'STRING-FIELD-166-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-166 PIC X(10).
+
+             10 '*-'STRING-FIELD-167-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-167 PIC X(10).
+
+             10 '*-'STRING-FIELD-168-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-168 PIC X(10).
+
+             10 '*-'STRING-FIELD-169-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-169 PIC X(10).
+
+             10 '*-'STRING-FIELD-170-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-170 PIC X(10).
+
+             10 '*-'STRING-FIELD-171-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-171 PIC X(10).
+
+             10 '*-'STRING-FIELD-172-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-172 PIC X(10).
+
+             10 '*-'STRING-FIELD-173-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-173 PIC X(10).
+
+             10 '*-'STRING-FIELD-174-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-174 PIC X(10).
+
+             10 '*-'STRING-FIELD-175-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-175 PIC X(10).
+
+             10 '*-'STRING-FIELD-176-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-176 PIC X(10).
+
+             10 '*-'STRING-FIELD-177-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-177 PIC X(10).
+
+             10 '*-'STRING-FIELD-178-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-178 PIC X(10).
+
+             10 '*-'STRING-FIELD-179-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-179 PIC X(10).
+
+             10 '*-'STRING-FIELD-180-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-180 PIC X(10).
+
+             10 '*-'STRING-FIELD-181-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-181 PIC X(10).
+
+             10 '*-'STRING-FIELD-182-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-182 PIC X(10).
+
+             10 '*-'STRING-FIELD-183-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-183 PIC X(10).
+
+             10 '*-'STRING-FIELD-184-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-184 PIC X(10).
+
+             10 '*-'STRING-FIELD-185-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-185 PIC X(10).
+
+             10 '*-'STRING-FIELD-186-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-186 PIC X(10).
+
+             10 '*-'STRING-FIELD-187-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-187 PIC X(10).
+
+             10 '*-'STRING-FIELD-188-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-188 PIC X(10).
+
+             10 '*-'STRING-FIELD-189-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-189 PIC X(10).
+
+             10 '*-'STRING-FIELD-190-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-190 PIC X(10).
+
+             10 '*-'STRING-FIELD-191-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-191 PIC X(10).
+
+             10 '*-'STRING-FIELD-192-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-192 PIC X(10).
+
+             10 '*-'STRING-FIELD-193-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-193 PIC X(10).
+
+             10 '*-'STRING-FIELD-194-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-194 PIC X(10).
+
+             10 '*-'STRING-FIELD-195-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-195 PIC X(10).
+
+             10 '*-'STRING-FIELD-196-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-196 PIC X(10).
+
+             10 '*-'STRING-FIELD-197-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-197 PIC X(10).
+
+             10 '*-'STRING-FIELD-198-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-198 PIC X(10).
+
+             10 '*-'STRING-FIELD-199-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-199 PIC X(10).
+
+             10 '*-'STRING-FIELD-200-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-200 PIC X(10).
+
+             10 '*-'STRING-FIELD-201-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-201 PIC X(10).
+
+             10 '*-'STRING-FIELD-202-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-202 PIC X(10).
+
+             10 '*-'STRING-FIELD-203-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-203 PIC X(10).
+
+             10 '*-'STRING-FIELD-204-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-204 PIC X(10).
+
+             10 '*-'STRING-FIELD-205-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-205 PIC X(10).
+
+             10 '*-'STRING-FIELD-206-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-206 PIC X(10).
+
+             10 '*-'STRING-FIELD-207-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-207 PIC X(10).
+
+             10 '*-'STRING-FIELD-208-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-208 PIC X(10).
+
+             10 '*-'STRING-FIELD-209-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-209 PIC X(10).
+
+             10 '*-'STRING-FIELD-210-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-210 PIC X(10).
+
+             10 '*-'STRING-FIELD-211-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-211 PIC X(10).
+
+             10 '*-'STRING-FIELD-212-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-212 PIC X(10).
+
+             10 '*-'STRING-FIELD-213-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-213 PIC X(10).
+
+             10 '*-'STRING-FIELD-214-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-214 PIC X(10).
+
+             10 '*-'STRING-FIELD-215-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-215 PIC X(10).
+
+             10 '*-'STRING-FIELD-216-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-216 PIC X(10).
+
+             10 '*-'STRING-FIELD-217-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-217 PIC X(10).
+
+             10 '*-'STRING-FIELD-218-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-218 PIC X(10).
+
+             10 '*-'STRING-FIELD-219-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-219 PIC X(10).
+
+             10 '*-'STRING-FIELD-220-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-220 PIC X(10).
+
+             10 '*-'STRING-FIELD-221-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-221 PIC X(10).
+
+             10 '*-'STRING-FIELD-222-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-222 PIC X(10).
+
+             10 '*-'STRING-FIELD-223-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-223 PIC X(10).
+
+             10 '*-'STRING-FIELD-224-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-224 PIC X(10).
+
+             10 '*-'STRING-FIELD-225-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-225 PIC X(10).
+
+             10 '*-'STRING-FIELD-226-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-226 PIC X(10).
+
+             10 '*-'STRING-FIELD-227-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-227 PIC X(10).
+
+             10 '*-'STRING-FIELD-228-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-228 PIC X(10).
+
+             10 '*-'STRING-FIELD-229-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-229 PIC X(10).
+
+             10 '*-'STRING-FIELD-230-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-230 PIC X(10).
+
+             10 '*-'STRING-FIELD-231-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-231 PIC X(10).
+
+             10 '*-'STRING-FIELD-232-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-232 PIC X(10).
+
+             10 '*-'STRING-FIELD-233-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-233 PIC X(10).
+
+             10 '*-'STRING-FIELD-234-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-234 PIC X(10).
+
+             10 '*-'STRING-FIELD-235-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-235 PIC X(10).
+
+             10 '*-'STRING-FIELD-236-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-236 PIC X(10).
+
+             10 '*-'STRING-FIELD-237-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-237 PIC X(10).
+
+             10 '*-'STRING-FIELD-238-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-238 PIC X(10).
+
+             10 '*-'STRING-FIELD-239-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-239 PIC X(10).
+
+             10 '*-'STRING-FIELD-240-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-240 PIC X(10).
+
+             10 '*-'STRING-FIELD-241-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-241 PIC X(10).
+
+             10 '*-'STRING-FIELD-242-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-242 PIC X(10).
+
+             10 '*-'STRING-FIELD-243-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-243 PIC X(10).
+
+             10 '*-'STRING-FIELD-244-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-244 PIC X(10).
+
+             10 '*-'STRING-FIELD-245-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-245 PIC X(10).
+
+             10 '*-'STRING-FIELD-246-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-246 PIC X(10).
+
+             10 '*-'STRING-FIELD-247-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-247 PIC X(10).
+
+             10 '*-'STRING-FIELD-248-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-248 PIC X(10).
+
+             10 '*-'STRING-FIELD-249-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-249 PIC X(10).
+
+             10 '*-'STRING-FIELD-250-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-250 PIC X(10).
+
+             10 '*-'STRING-FIELD-251-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-251 PIC X(10).
+
+             10 '*-'STRING-FIELD-252-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-252 PIC X(10).
+
+             10 '*-'STRING-FIELD-253-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-253 PIC X(10).
+
+             10 '*-'STRING-FIELD-254-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-254 PIC X(10).
+
+             10 '*-'STRING-FIELD-255-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-255 PIC X(10).
+
+             10 '*-'STRING-FIELD-256-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-256 PIC X(10).
+
+             10 '*-'STRING-FIELD-257-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-257 PIC X(10).
+
+             10 '*-'STRING-FIELD-258-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-258 PIC X(10).
+
+             10 '*-'STRING-FIELD-259-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-259 PIC X(10).
+
+             10 '*-'STRING-FIELD-260-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-260 PIC X(10).
+
+             10 '*-'STRING-FIELD-261-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-261 PIC X(10).
+
+             10 '*-'STRING-FIELD-262-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-262 PIC X(10).
+
+             10 '*-'STRING-FIELD-263-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-263 PIC X(10).
+
+             10 '*-'STRING-FIELD-264-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-264 PIC X(10).
+
+             10 '*-'STRING-FIELD-265-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-265 PIC X(10).
+
+             10 '*-'STRING-FIELD-266-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-266 PIC X(10).
+
+             10 '*-'STRING-FIELD-267-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-267 PIC X(10).
+
+             10 '*-'STRING-FIELD-268-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-268 PIC X(10).
+
+             10 '*-'STRING-FIELD-269-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-269 PIC X(10).
+
+             10 '*-'STRING-FIELD-270-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-270 PIC X(10).
+
+             10 '*-'STRING-FIELD-271-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-271 PIC X(10).
+
+             10 '*-'STRING-FIELD-272-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-272 PIC X(10).
+
+             10 '*-'STRING-FIELD-273-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-273 PIC X(10).
+
+             10 '*-'STRING-FIELD-274-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-274 PIC X(10).
+
+             10 '*-'STRING-FIELD-275-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-275 PIC X(10).
+
+             10 '*-'STRING-FIELD-276-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-276 PIC X(10).
+
+             10 '*-'STRING-FIELD-277-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-277 PIC X(10).
+
+             10 '*-'STRING-FIELD-278-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-278 PIC X(10).
+
+             10 '*-'STRING-FIELD-279-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-279 PIC X(10).
+
+             10 '*-'STRING-FIELD-280-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-280 PIC X(10).
+
+             10 '*-'STRING-FIELD-281-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-281 PIC X(10).
+
+             10 '*-'STRING-FIELD-282-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-282 PIC X(10).
+
+             10 '*-'STRING-FIELD-283-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-283 PIC X(10).
+
+             10 '*-'STRING-FIELD-284-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-284 PIC X(10).
+
+             10 '*-'STRING-FIELD-285-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-285 PIC X(10).
+
+             10 '*-'STRING-FIELD-286-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-286 PIC X(10).
+
+             10 '*-'STRING-FIELD-287-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-287 PIC X(10).
+
+             10 '*-'STRING-FIELD-288-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-288 PIC X(10).
+
+             10 '*-'STRING-FIELD-289-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-289 PIC X(10).
+
+             10 '*-'STRING-FIELD-290-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-290 PIC X(10).
+
+             10 '*-'STRING-FIELD-291-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-291 PIC X(10).
+
+             10 '*-'STRING-FIELD-292-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-292 PIC X(10).
+
+             10 '*-'STRING-FIELD-293-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-293 PIC X(10).
+
+             10 '*-'STRING-FIELD-294-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-294 PIC X(10).
+
+             10 '*-'STRING-FIELD-295-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-295 PIC X(10).
+
+             10 '*-'STRING-FIELD-296-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-296 PIC X(10).
+
+             10 '*-'STRING-FIELD-297-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-297 PIC X(10).
+
+             10 '*-'STRING-FIELD-298-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-298 PIC X(10).
+
+             10 '*-'STRING-FIELD-299-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-299 PIC X(10).
+
+             10 '*-'STRING-FIELD-300-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-300 PIC X(10).
+
+             10 '*-'STRING-FIELD-301-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-301 PIC X(10).
+
+             10 '*-'STRING-FIELD-302-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-302 PIC X(10).
+
+             10 '*-'STRING-FIELD-303-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-303 PIC X(10).
+
+             10 '*-'STRING-FIELD-304-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-304 PIC X(10).
+
+             10 '*-'STRING-FIELD-305-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-305 PIC X(10).
+
+             10 '*-'STRING-FIELD-306-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-306 PIC X(10).
+
+             10 '*-'STRING-FIELD-307-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-307 PIC X(10).
+
+             10 '*-'STRING-FIELD-308-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-308 PIC X(10).
+
+             10 '*-'STRING-FIELD-309-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-309 PIC X(10).
+
+             10 '*-'STRING-FIELD-310-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-310 PIC X(10).
+
+             10 '*-'STRING-FIELD-311-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-311 PIC X(10).
+
+             10 '*-'STRING-FIELD-312-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-312 PIC X(10).
+
+             10 '*-'STRING-FIELD-313-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-313 PIC X(10).
+
+             10 '*-'STRING-FIELD-314-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-314 PIC X(10).
+
+             10 '*-'STRING-FIELD-315-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-315 PIC X(10).
+
+             10 '*-'STRING-FIELD-316-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-316 PIC X(10).
+
+             10 '*-'STRING-FIELD-317-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-317 PIC X(10).
+
+             10 '*-'STRING-FIELD-318-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-318 PIC X(10).
+
+             10 '*-'STRING-FIELD-319-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-319 PIC X(10).
+
+             10 '*-'STRING-FIELD-320-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-320 PIC X(10).
+
+             10 '*-'STRING-FIELD-321-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-321 PIC X(10).
+
+             10 '*-'STRING-FIELD-322-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-322 PIC X(10).
+
+             10 '*-'STRING-FIELD-323-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-323 PIC X(10).
+
+             10 '*-'STRING-FIELD-324-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-324 PIC X(10).
+
+             10 '*-'STRING-FIELD-325-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-325 PIC X(10).
+
+             10 '*-'STRING-FIELD-326-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-326 PIC X(10).
+
+             10 '*-'STRING-FIELD-327-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-327 PIC X(10).
+
+             10 '*-'STRING-FIELD-328-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-328 PIC X(10).
+
+             10 '*-'STRING-FIELD-329-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-329 PIC X(10).
+
+             10 '*-'STRING-FIELD-330-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-330 PIC X(10).
+
+             10 '*-'STRING-FIELD-331-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-331 PIC X(10).
+
+             10 '*-'STRING-FIELD-332-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-332 PIC X(10).
+
+             10 '*-'STRING-FIELD-333-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-333 PIC X(10).
+
+             10 '*-'STRING-FIELD-334-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-334 PIC X(10).
+
+             10 '*-'STRING-FIELD-335-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-335 PIC X(10).
+
+             10 '*-'STRING-FIELD-336-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-336 PIC X(10).
+
+             10 '*-'STRING-FIELD-337-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-337 PIC X(10).
+
+             10 '*-'STRING-FIELD-338-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-338 PIC X(10).
+
+             10 '*-'STRING-FIELD-339-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-339 PIC X(10).
+
+             10 '*-'STRING-FIELD-340-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-340 PIC X(10).
+
+             10 '*-'STRING-FIELD-341-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-341 PIC X(10).
+
+             10 '*-'STRING-FIELD-342-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-342 PIC X(10).
+
+             10 '*-'STRING-FIELD-343-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-343 PIC X(10).
+
+             10 '*-'STRING-FIELD-344-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-344 PIC X(10).
+
+             10 '*-'STRING-FIELD-345-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-345 PIC X(10).
+
+             10 '*-'STRING-FIELD-346-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-346 PIC X(10).
+
+             10 '*-'STRING-FIELD-347-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-347 PIC X(10).
+
+             10 '*-'STRING-FIELD-348-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-348 PIC X(10).
+
+             10 '*-'STRING-FIELD-349-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-349 PIC X(10).
+
+             10 '*-'STRING-FIELD-350-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-350 PIC X(10).
+
+             10 '*-'STRING-FIELD-351-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-351 PIC X(10).
+
+             10 '*-'STRING-FIELD-352-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-352 PIC X(10).
+
+             10 '*-'STRING-FIELD-353-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-353 PIC X(10).
+
+             10 '*-'STRING-FIELD-354-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-354 PIC X(10).
+
+             10 '*-'STRING-FIELD-355-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-355 PIC X(10).
+
+             10 '*-'STRING-FIELD-356-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-356 PIC X(10).
+
+             10 '*-'STRING-FIELD-357-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-357 PIC X(10).
+
+             10 '*-'STRING-FIELD-358-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-358 PIC X(10).
+
+             10 '*-'STRING-FIELD-359-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-359 PIC X(10).
+
+             10 '*-'STRING-FIELD-360-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-360 PIC X(10).
+
+             10 '*-'STRING-FIELD-361-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-361 PIC X(10).
+
+             10 '*-'STRING-FIELD-362-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-362 PIC X(10).
+
+             10 '*-'STRING-FIELD-363-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-363 PIC X(10).
+
+             10 '*-'STRING-FIELD-364-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-364 PIC X(10).
+
+             10 '*-'STRING-FIELD-365-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-365 PIC X(10).
+
+             10 '*-'STRING-FIELD-366-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-366 PIC X(10).
+
+             10 '*-'STRING-FIELD-367-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-367 PIC X(10).
+
+             10 '*-'STRING-FIELD-368-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-368 PIC X(10).
+
+             10 '*-'STRING-FIELD-369-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-369 PIC X(10).
+
+             10 '*-'STRING-FIELD-370-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-370 PIC X(10).
+
+             10 '*-'STRING-FIELD-371-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-371 PIC X(10).
+
+             10 '*-'STRING-FIELD-372-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-372 PIC X(10).
+
+             10 '*-'STRING-FIELD-373-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-373 PIC X(10).
+
+             10 '*-'STRING-FIELD-374-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-374 PIC X(10).
+
+             10 '*-'STRING-FIELD-375-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-375 PIC X(10).
+
+             10 '*-'STRING-FIELD-376-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-376 PIC X(10).
+
+             10 '*-'STRING-FIELD-377-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-377 PIC X(10).
+
+             10 '*-'STRING-FIELD-378-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-378 PIC X(10).
+
+             10 '*-'STRING-FIELD-379-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-379 PIC X(10).
+
+             10 '*-'STRING-FIELD-380-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-380 PIC X(10).
+
+             10 '*-'STRING-FIELD-381-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-381 PIC X(10).
+
+             10 '*-'STRING-FIELD-382-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-382 PIC X(10).
+
+             10 '*-'STRING-FIELD-383-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-383 PIC X(10).
+
+             10 '*-'STRING-FIELD-384-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-384 PIC X(10).
+
+             10 '*-'STRING-FIELD-385-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-385 PIC X(10).
+
+             10 '*-'STRING-FIELD-386-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-386 PIC X(10).
+
+             10 '*-'STRING-FIELD-387-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-387 PIC X(10).
+
+             10 '*-'STRING-FIELD-388-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-388 PIC X(10).
+
+             10 '*-'STRING-FIELD-389-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-389 PIC X(10).
+
+             10 '*-'STRING-FIELD-390-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-390 PIC X(10).
+
+             10 '*-'STRING-FIELD-391-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-391 PIC X(10).
+
+             10 '*-'STRING-FIELD-392-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-392 PIC X(10).
+
+             10 '*-'STRING-FIELD-393-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-393 PIC X(10).
+
+             10 '*-'STRING-FIELD-394-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-394 PIC X(10).
+
+             10 '*-'STRING-FIELD-395-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-395 PIC X(10).
+
+             10 '*-'STRING-FIELD-396-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-396 PIC X(10).
+
+             10 '*-'STRING-FIELD-397-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-397 PIC X(10).
+
+             10 '*-'STRING-FIELD-398-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-398 PIC X(10).
+
+             10 '*-'STRING-FIELD-399-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-399 PIC X(10).
+
+             10 '*-'STRING-FIELD-400-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-400 PIC X(10).
+
+             10 '*-'STRING-FIELD-401-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-401 PIC X(10).
+
+             10 '*-'STRING-FIELD-402-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-402 PIC X(10).
+
+             10 '*-'STRING-FIELD-403-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-403 PIC X(10).
+
+             10 '*-'STRING-FIELD-404-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-404 PIC X(10).
+
+             10 '*-'STRING-FIELD-405-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-405 PIC X(10).
+
+             10 '*-'STRING-FIELD-406-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-406 PIC X(10).
+
+             10 '*-'STRING-FIELD-407-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-407 PIC X(10).
+
+             10 '*-'STRING-FIELD-408-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-408 PIC X(10).
+
+             10 '*-'STRING-FIELD-409-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-409 PIC X(10).
+
+             10 '*-'STRING-FIELD-410-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-410 PIC X(10).
+
+             10 '*-'STRING-FIELD-411-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-411 PIC X(10).
+
+             10 '*-'STRING-FIELD-412-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-412 PIC X(10).
+
+             10 '*-'STRING-FIELD-413-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-413 PIC X(10).
+
+             10 '*-'STRING-FIELD-414-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-414 PIC X(10).
+
+             10 '*-'STRING-FIELD-415-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-415 PIC X(10).
+
+             10 '*-'STRING-FIELD-416-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-416 PIC X(10).
+
+             10 '*-'STRING-FIELD-417-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-417 PIC X(10).
+
+             10 '*-'STRING-FIELD-418-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-418 PIC X(10).
+
+             10 '*-'STRING-FIELD-419-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-419 PIC X(10).
+
+             10 '*-'STRING-FIELD-420-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-420 PIC X(10).
+
+             10 '*-'STRING-FIELD-421-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-421 PIC X(10).
+
+             10 '*-'STRING-FIELD-422-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-422 PIC X(10).
+
+             10 '*-'STRING-FIELD-423-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-423 PIC X(10).
+
+             10 '*-'STRING-FIELD-424-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-424 PIC X(10).
+
+             10 '*-'STRING-FIELD-425-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-425 PIC X(10).
+
+             10 '*-'STRING-FIELD-426-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-426 PIC X(10).
+
+             10 '*-'STRING-FIELD-427-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-427 PIC X(10).
+
+             10 '*-'STRING-FIELD-428-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-428 PIC X(10).
+
+             10 '*-'STRING-FIELD-429-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-429 PIC X(10).
+
+             10 '*-'STRING-FIELD-430-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-430 PIC X(10).
+
+             10 '*-'STRING-FIELD-431-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-431 PIC X(10).
+
+             10 '*-'STRING-FIELD-432-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-432 PIC X(10).
+
+             10 '*-'STRING-FIELD-433-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-433 PIC X(10).
+
+             10 '*-'STRING-FIELD-434-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-434 PIC X(10).
+
+             10 '*-'STRING-FIELD-435-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-435 PIC X(10).
+
+             10 '*-'STRING-FIELD-436-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-436 PIC X(10).
+
+             10 '*-'STRING-FIELD-437-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-437 PIC X(10).
+
+             10 '*-'STRING-FIELD-438-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-438 PIC X(10).
+
+             10 '*-'STRING-FIELD-439-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-439 PIC X(10).
+
+             10 '*-'STRING-FIELD-440-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-440 PIC X(10).
+
+             10 '*-'STRING-FIELD-441-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-441 PIC X(10).
+
+             10 '*-'STRING-FIELD-442-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-442 PIC X(10).
+
+             10 '*-'STRING-FIELD-443-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-443 PIC X(10).
+
+             10 '*-'STRING-FIELD-444-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-444 PIC X(10).
+
+             10 '*-'STRING-FIELD-445-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-445 PIC X(10).
+
+             10 '*-'STRING-FIELD-446-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-446 PIC X(10).
+
+             10 '*-'STRING-FIELD-447-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-447 PIC X(10).
+
+             10 '*-'STRING-FIELD-448-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-448 PIC X(10).
+
+             10 '*-'STRING-FIELD-449-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-449 PIC X(10).
+
+             10 '*-'STRING-FIELD-450-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-450 PIC X(10).
+
+             10 '*-'STRING-FIELD-451-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-451 PIC X(10).
+
+             10 '*-'STRING-FIELD-452-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-452 PIC X(10).
+
+             10 '*-'STRING-FIELD-453-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-453 PIC X(10).
+
+             10 '*-'STRING-FIELD-454-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-454 PIC X(10).
+
+             10 '*-'STRING-FIELD-455-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-455 PIC X(10).
+
+             10 '*-'STRING-FIELD-456-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-456 PIC X(10).
+
+             10 '*-'STRING-FIELD-457-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-457 PIC X(10).
+
+             10 '*-'STRING-FIELD-458-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-458 PIC X(10).
+
+             10 '*-'STRING-FIELD-459-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-459 PIC X(10).
+
+             10 '*-'STRING-FIELD-460-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-460 PIC X(10).
+
+             10 '*-'STRING-FIELD-461-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-461 PIC X(10).
+
+             10 '*-'STRING-FIELD-462-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-462 PIC X(10).
+
+             10 '*-'STRING-FIELD-463-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-463 PIC X(10).
+
+             10 '*-'STRING-FIELD-464-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-464 PIC X(10).
+
+             10 '*-'STRING-FIELD-465-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-465 PIC X(10).
+
+             10 '*-'STRING-FIELD-466-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-466 PIC X(10).
+
+             10 '*-'STRING-FIELD-467-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-467 PIC X(10).
+
+             10 '*-'STRING-FIELD-468-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-468 PIC X(10).
+
+             10 '*-'STRING-FIELD-469-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-469 PIC X(10).
+
+             10 '*-'STRING-FIELD-470-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-470 PIC X(10).
+
+             10 '*-'STRING-FIELD-471-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-471 PIC X(10).
+
+             10 '*-'STRING-FIELD-472-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-472 PIC X(10).
+
+             10 '*-'STRING-FIELD-473-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-473 PIC X(10).
+
+             10 '*-'STRING-FIELD-474-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-474 PIC X(10).
+
+             10 '*-'STRING-FIELD-475-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-475 PIC X(10).
+
+             10 '*-'STRING-FIELD-476-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-476 PIC X(10).
+
+             10 '*-'STRING-FIELD-477-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-477 PIC X(10).
+
+             10 '*-'STRING-FIELD-478-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-478 PIC X(10).
+
+             10 '*-'STRING-FIELD-479-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-479 PIC X(10).
+
+             10 '*-'STRING-FIELD-480-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-480 PIC X(10).
+
+             10 '*-'STRING-FIELD-481-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-481 PIC X(10).
+
+             10 '*-'STRING-FIELD-482-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-482 PIC X(10).
+
+             10 '*-'STRING-FIELD-483-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-483 PIC X(10).
+
+             10 '*-'STRING-FIELD-484-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-484 PIC X(10).
+
+             10 '*-'STRING-FIELD-485-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-485 PIC X(10).
+
+             10 '*-'STRING-FIELD-486-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-486 PIC X(10).
+
+             10 '*-'STRING-FIELD-487-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-487 PIC X(10).
+
+             10 '*-'STRING-FIELD-488-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-488 PIC X(10).
+
+             10 '*-'STRING-FIELD-489-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-489 PIC X(10).
+
+             10 '*-'STRING-FIELD-490-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-490 PIC X(10).
+
+             10 '*-'STRING-FIELD-491-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-491 PIC X(10).
+
+             10 '*-'STRING-FIELD-492-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-492 PIC X(10).
+
+             10 '*-'STRING-FIELD-493-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-493 PIC X(10).
+
+             10 '*-'STRING-FIELD-494-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-494 PIC X(10).
+
+             10 '*-'STRING-FIELD-495-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-495 PIC X(10).
+
+             10 '*-'STRING-FIELD-496-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-496 PIC X(10).
+
+             10 '*-'STRING-FIELD-497-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-497 PIC X(10).
+
+             10 '*-'STRING-FIELD-498-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-498 PIC X(10).
+
+             10 '*-'STRING-FIELD-499-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-499 PIC X(10).
+
+             10 '*-'STRING-FIELD-500-FLAGS PIC 9 BINARY.
+               88 VALUE-ABSENT VALUE 0.
+               88 VALUE-PRESENT VALUE 1.
+               88 VALUE-UNREPRESENTABLE VALUE 2.
+             10 '*-'STRING-FIELD-500 PIC X(10).
+

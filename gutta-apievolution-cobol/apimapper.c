@@ -967,5 +967,7 @@ int unloadScripts() {
         free(providerScript);
         providerScript = NULL;
     }
+    
+    return SUCCESS;
 }
 
