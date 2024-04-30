@@ -1,7 +1,7 @@
 FROM debian:bookworm-slim
 
 ARG jdkVersion
-ARG jdkPath=/opt/${jdkVersion}
+ARG jdkPath=/opt/jdk/${jdkVersion}
 
 RUN mkdir -p "${jdkPath}"
 COPY --chown=root:root "jdk-${jdkVersion}" ${jdkPath}
