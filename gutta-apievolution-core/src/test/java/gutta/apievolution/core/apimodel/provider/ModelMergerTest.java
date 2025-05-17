@@ -767,5 +767,260 @@ class ModelMergerTest {
         String actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
     }
+    
+    /**
+     * Test case: Adds a type to an inheritance hierarchy by setting the supertype of a type that previously had none.
+     */
+    @Test
+    void addTypeToInheritanceHierarchy() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeXV1 = revision1.newRecordType("TypeX", 10);
+
+        revision1.finalizeDefinition();
+
+        // Revision 2
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+
+        // Set TypeA as the supertype of TypeX in the second revision
+        revision2.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeAV2), typeXV1);
+
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        var revisionHistory = new RevisionHistory(revision1, revision2);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        var expected = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeX(TypeX) extends TypeA {
+  inherited optin fieldA(fieldA):string
+ }
+}
+""";
+        
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
+     * Test case: Removes a type to an inheritance hierarchy by removing the supertype.
+     */
+    @Test
+    void removeTypeFromInheritanceHierarchy() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeXV1 = revision1.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeAV1), noPredecessor());
+
+        revision1.finalizeDefinition();
+
+        // Revision 2
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+
+        // Remove the supertype from TypeX
+        revision2.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(), typeXV1);
+
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        var revisionHistory = new RevisionHistory(revision1, revision2);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        var expected = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeX(TypeX) extends TypeA {
+  inherited optin fieldA(fieldA):string
+ }
+}
+""";
+        
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
+     * Test case: Moves a given type from one type hierarchy to another by changing the supertype.
+     */
+    @Test
+    void moveTypeToAnotherInheritanceHierarchy() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeBV1 = revision1.newRecordType("TypeB", 1);
+        var fieldBV1 = typeBV1.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeXV1 = revision1.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeAV1), noPredecessor());
+
+        revision1.finalizeDefinition();
+
+        // Revision 2
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+
+        var typeBV2 = revision2.newRecordType("TypeB", noInternalName(), 1, typeBV1);
+        typeBV2.newField("fieldB", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldBV1);
+
+        // Set TypeA as the supertype of TypeX in the second revision
+        revision2.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeBV2), typeXV1);
+
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        var revisionHistory = new RevisionHistory(revision1, revision2);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+
+        var expected = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeB(TypeB) {
+  mandatory fieldB(fieldB):string
+ }
+ record TypeX(TypeX) extends TypeB, TypeA {
+  inherited optin fieldB(fieldB):string
+  inherited optin fieldA(fieldA):string
+ }
+}
+""";
+
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
+     * Test case: Move a type up in the inheritance hierarchy by changing its supertype to a supertype of the previous supertype.
+     */
+    @Test
+    void moveTypeUpInHierarchy() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeBV1 = revision1.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV1), noPredecessor());
+        var fieldBV1 = typeBV1.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeXV1 = revision1.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeBV1), noPredecessor());
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+
+        var typeBV2 = revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV2), typeBV1);
+        typeBV2.newField("fieldB", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldBV1);
+
+        revision2.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeAV2), typeXV1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        var revisionHistory = new RevisionHistory(revision1, revision2);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        var expected = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeB(TypeB) extends TypeA {
+  inherited optin fieldA(fieldA):string
+  mandatory fieldB(fieldB):string
+ }
+ record TypeX(TypeX) extends TypeA, TypeB {
+  inherited optin fieldA(fieldA):string
+  inherited optin fieldB(fieldB):string
+ }
+}
+""";
+        
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
+    
+    /**
+     * Test case: Move a type down in the inheritance hierarchy by changing its supertype to a subtype of the previous supertype.
+     */
+    @Test
+    void moveTypeDownInHierarchy() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeBV1 = revision1.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV1), noPredecessor());
+        var fieldBV1 = typeBV1.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
+
+        var typeXV1 = revision1.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeAV1), noPredecessor());
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+
+        var typeBV2 = revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV2), typeBV1);
+        typeBV2.newField("fieldB", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldBV1);
+
+        revision2.newRecordType("TypeX", noInternalName(), 10, Abstract.NO, Set.of(typeBV2), typeXV1);
+        
+        revision2.finalizeDefinition();
+        
+        // Create and merge the revision history
+        var revisionHistory = new RevisionHistory(revision1, revision2);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+        
+        var expected = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeB(TypeB) extends TypeA {
+  inherited optin fieldA(fieldA):string
+  mandatory fieldB(fieldB):string
+ }
+ record TypeX(TypeX) extends TypeB, TypeA {
+  inherited optin fieldA(fieldA):string
+  inherited optin fieldB(fieldB):string
+ }
+}
+""";
+        
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
 
 }

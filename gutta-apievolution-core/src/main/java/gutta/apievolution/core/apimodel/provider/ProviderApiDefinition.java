@@ -18,6 +18,7 @@ import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
 import static gutta.apievolution.core.apimodel.Conventions.noSuperTypes;
 import static gutta.apievolution.core.util.UtilityFunctions.ifPresent;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provider-specific implementation of an {@link ApiDefinition}.
@@ -39,6 +40,18 @@ public class ProviderApiDefinition extends ApiDefinition<ProviderApiDefinition, 
      */
     public static ProviderApiDefinition create(String name, int revision) {
         return new ProviderApiDefinition(name, noAnnotations(), revision, noPredecessor());
+    }
+
+    /**
+     * Creates a new API definition from the given data.
+     * 
+     * @param name        The definition's name
+     * @param revision    The revision number
+     * @param predecessor The predecessor of this API definition
+     * @return The created revision
+     */
+    public static ProviderApiDefinition create(String name, int revision, ProviderApiDefinition predecessor) {
+        return new ProviderApiDefinition(name, noAnnotations(), revision, requireNonNull(predecessor));
     }
 
     /**
