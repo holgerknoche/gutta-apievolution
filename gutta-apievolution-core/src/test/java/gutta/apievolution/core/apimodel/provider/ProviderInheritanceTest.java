@@ -6,8 +6,7 @@ import gutta.apievolution.core.apimodel.Optionality;
 import gutta.apievolution.core.apimodel.StringType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -32,13 +31,13 @@ class ProviderInheritanceTest {
         var typeA = definition.newRecordType("TypeA", noInternalName(), 0, Abstract.YES, noSuperTypes(), noPredecessor());
         typeA.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
 
-        var typeB = definition.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Collections.singleton(typeA), noPredecessor());
+        var typeB = definition.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeA), noPredecessor());
         typeB.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
 
-        var typeC = definition.newRecordType("TypeC", noInternalName(), 2, Abstract.NO, Collections.singleton(typeB), noPredecessor());
+        var typeC = definition.newRecordType("TypeC", noInternalName(), 2, Abstract.NO, Set.of(typeB), noPredecessor());
         typeC.newField("fieldC", StringType.unbounded(), Optionality.MANDATORY);
 
-        definition.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Collections.singleton(typeB), noPredecessor());
+        definition.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Set.of(typeB), noPredecessor());
 
         // Finalize the API definition
         definition.finalizeDefinition();
@@ -68,6 +67,59 @@ api test [] {
         var actual = new ProviderApiDefinitionPrinter().printApiDefinition(definition);
         assertEquals(expected, actual);
     }
+    
+    /**
+     * Test case: Predecessors of inherited fields are identified correctly.
+     */
+    @Test
+    void predecessorsOfInheritedFields() {
+       // Revision 1
+       var revision1 = ProviderApiDefinition.create("test", 0);
+       
+       var typeAV1 = revision1.newRecordType("TypeA", 0);
+       var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+       
+       var typeBV1 = revision1.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV1), noPredecessor());
+       
+       revision1.finalizeDefinition();
+       
+       // Revision 2
+       var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+       
+       var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+       typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+       
+       revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeAV2), typeBV1);
+       
+       revision2.finalizeDefinition();
+       
+       // Compare the expected revisions with the results       
+       var expectedRevision1 = """
+api test [] {
+ record TypeA(TypeA) {
+  mandatory fieldA(fieldA):string
+ }
+ record TypeB(TypeB) extends TypeA {
+  inherited mandatory fieldA(fieldA):string
+ }
+}
+""";
+       
+       var expectedRevision2 = """
+api test [] {
+ record TypeA(TypeA) <- TypeA {
+  mandatory fieldA(fieldA):string <- fieldA
+ }
+ record TypeB(TypeB) extends TypeA <- TypeB {
+  inherited mandatory fieldA(fieldA):string <- fieldA
+ }
+}
+""";
+       
+       var printer = new ProviderApiDefinitionPrinter();
+       assertEquals(expectedRevision1, printer.printApiDefinition(revision1));
+       assertEquals(expectedRevision2, printer.printApiDefinition(revision2));
+    }
 
     /**
      * Test case: Attributes are "pulled up" to a supertype. In the initial revision, there are two types A and B, each with a single field. In the second
@@ -89,12 +141,12 @@ api test [] {
         var revision2 = new ProviderApiDefinition("test", noAnnotations(), 1, revision1);
 
         var typeC = revision2.newRecordType("TypeC", noInternalName(), 2, Abstract.YES, noSuperTypes(), noPredecessor());
-        typeC.newField("fieldC", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, Inherited.NO, Arrays.asList(fieldA1, fieldB1),
+        typeC.newField("fieldC", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, Inherited.NO, List.of(fieldA1, fieldB1),
                 noPredecessor());
 
-        revision2.newRecordType("TypeA", noInternalName(), 0, Abstract.NO, Collections.singleton(typeC), typeA1);
-        revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Collections.singleton(typeC), typeB1);
-        revision2.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Collections.singleton(typeC), noPredecessor());
+        revision2.newRecordType("TypeA", noInternalName(), 0, Abstract.NO, Set.of(typeC), typeA1);
+        revision2.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(typeC), typeB1);
+        revision2.newRecordType("TypeD", noInternalName(), 3, Abstract.NO, Set.of(typeC), noPredecessor());
 
         // Finalize the API definition
         revision2.finalizeDefinition();
@@ -131,9 +183,9 @@ api test [] {
         var superTypeV1 = revision1.newRecordType("SuperType", noInternalName(), 0, Abstract.YES, noSuperTypes(), noPredecessor());
         superTypeV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
 
-        var subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Collections.singleton(superTypeV1),
+        var subTypeAV1 = revision1.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Set.of(superTypeV1),
                 noPredecessor());
-        var subTypeBV1 = revision1.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Collections.singleton(superTypeV1),
+        var subTypeBV1 = revision1.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Set.of(superTypeV1),
                 noPredecessor());
 
         revision1.finalizeDefinition();
@@ -145,10 +197,10 @@ api test [] {
         var superTypeV2 = revision2.newRecordType("SuperType", noInternalName(), 0, Abstract.YES, noSuperTypes(), superTypeV1);
 
         var previousField = subTypeAV1.resolveField("fieldA").orElseThrow(NoSuchElementException::new);
-        var subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Collections.singleton(superTypeV2), subTypeAV1);
+        var subTypeAV2 = revision2.newRecordType("SubTypeA", noInternalName(), 1, Abstract.NO, Set.of(superTypeV2), subTypeAV1);
         subTypeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, previousField);
 
-        revision2.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Collections.singleton(superTypeV2), subTypeBV1);
+        revision2.newRecordType("SubTypeB", noInternalName(), 2, Abstract.NO, Set.of(superTypeV2), subTypeBV1);
 
         revision2.finalizeDefinition();
 
