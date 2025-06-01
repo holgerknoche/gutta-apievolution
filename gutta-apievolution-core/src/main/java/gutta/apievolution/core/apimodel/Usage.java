@@ -44,7 +44,7 @@ public enum Usage {
 
         case INPUT_ONLY:
         case OUTPUT_ONLY:
-            return (usage == NONE) ? this : IN_OUT;
+            return (usage == this || usage == NONE) ? this : IN_OUT;
 
         case IN_OUT:
             return this;
