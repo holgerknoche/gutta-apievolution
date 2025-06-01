@@ -88,6 +88,11 @@ public abstract class AbstractUserDefinedType<A extends ApiDefinition<A, ?>> ext
         }
     }
     
+    /**
+     * Propagates the given change in usage to the sub-elements of this type.
+     * 
+     * @param newUsage The new usage of this type to be propagated to the sub-elements
+     */
     protected void propagateUsageChange(Usage newUsage) {
         // Do nothing by default
     }

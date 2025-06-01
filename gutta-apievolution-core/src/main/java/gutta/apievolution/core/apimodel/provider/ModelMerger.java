@@ -558,7 +558,7 @@ public class ModelMerger {
         /**
          * Abstract supertype of all collectors to determine the merged optionality of a revision history.
          */
-        private static abstract class MergedOptionalityCollector implements Consumer<ProviderField> {
+        private abstract static class MergedOptionalityCollector implements Consumer<ProviderField> {
             
             private Optionality mergedOptionality;
             
