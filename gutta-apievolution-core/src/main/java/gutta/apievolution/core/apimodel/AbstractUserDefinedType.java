@@ -80,7 +80,16 @@ public abstract class AbstractUserDefinedType<A extends ApiDefinition<A, ?>> ext
     void registerUsage(Usage usage) {
         this.assertMutability();
 
-        this.usage = this.usage.lubOfThisAnd(usage);
+        var newUsage = this.usage.lubOfThisAnd(usage);
+        
+        if (newUsage != this.usage) {
+            this.usage = newUsage;
+            this.propagateUsageChange(newUsage);
+        }
+    }
+    
+    protected void propagateUsageChange(Usage newUsage) {
+        // Do nothing by default
     }
 
 }

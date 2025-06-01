@@ -23,14 +23,14 @@ public enum Usage {
     IN_OUT;
     
     /**
-     * Returns whether the element annotated with this usage may be used for output. 
+     * Returns whether the element annotated with this usage may be used for input. 
      * 
-     * @return {@code True} if the element can be used for output, {@code false} otherwise
+     * @return {@code True} if the element can be used for input, {@code false} otherwise
      */
-    public boolean maybeOutput() {
-        return (this == OUTPUT_ONLY || this == IN_OUT);
-    }    
-    
+    public boolean maybeInput() {
+        return (this == INPUT_ONLY || this == IN_OUT);
+    }
+        
     /**
      * Computes the least upper bound of this usage and the given one.
      *
