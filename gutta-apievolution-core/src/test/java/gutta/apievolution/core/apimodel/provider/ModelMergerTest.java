@@ -1089,5 +1089,79 @@ api test [] {
         var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
         assertEquals(expected, actual);
     }
+    
+    /**
+     * Test case: Pulling up a field from two types with different histories: In one type, the original field is present in all revisions, but not in the other.
+     */
+    @Test
+    void pullUpFieldWithDifferentHistories() {
+        // Revision 1
+        var revision1 = ProviderApiDefinition.create("test", 0);
+        
+        var typeAV1 = revision1.newRecordType("TypeA", 0);
+        var fieldAV1 = typeAV1.newField("fieldA", StringType.unbounded(), Optionality.MANDATORY);
+        
+        var typeBV1 = revision1.newRecordType("TypeB", 1);
+        
+        // Operations so that the types are also used for input
+        var operation1V1 = revision1.newOperation("op1", typeAV1, typeAV1);
+        var operation2V1 = revision1.newOperation("op2", typeBV1, typeBV1);
+        
+        revision1.finalizeDefinition();
+        
+        // Revision 2: Addition of field fieldB
+        var revision2 = ProviderApiDefinition.create("test", 1, revision1);
+        
+        var typeAV2 = revision2.newRecordType("TypeA", noInternalName(), 0, typeAV1);
+        var fieldAV2 = typeAV2.newField("fieldA", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, fieldAV1);
+        
+        var typeBV2 = revision2.newRecordType("TypeB", noInternalName(), 1, typeBV1);
+        var fieldBV2 = typeBV2.newField("fieldB", StringType.unbounded(), Optionality.MANDATORY);
+                
+        var operation1V2 = revision2.newOperation("op1", noInternalName(), typeAV2, typeAV2, operation1V1);
+        var operation2V2 = revision2.newOperation("op2", noInternalName(), typeBV2, typeBV2, operation2V1);
+        
+        revision2.finalizeDefinition();
+        
+        // Revision 3: Pull-up of fields into a new type
+        var revision3 = ProviderApiDefinition.create("test", 2, revision2);
+        
+        var superType = revision3.newRecordType("SuperType", 2);
+        superType.newField("field", noInternalName(), StringType.unbounded(), Optionality.MANDATORY, Inherited.NO, List.of(fieldAV2, fieldBV2), noPredecessor());
+        
+        var typeAV3 = revision3.newRecordType("TypeA", noInternalName(), 0, Abstract.NO, Set.of(superType), typeAV2);
+        
+        var typeBV3 = revision3.newRecordType("TypeB", noInternalName(), 1, Abstract.NO, Set.of(superType), typeBV2);
+        
+        revision3.newOperation("op1", noInternalName(), typeAV3, typeAV3, operation1V2);
+        revision3.newOperation("op2", noInternalName(), typeBV3, typeBV3, operation2V2);
+        
+        revision3.finalizeDefinition();
+        
+        // Merge revisions
+        var revisionHistory = new RevisionHistory(revision1, revision2, revision3);
+        var mergedDefinition = new ModelMerger().createMergedDefinition(revisionHistory);
+ 
+        // The field is mandatory in SuperType and TypeA, because it exists in all revisions of this type. It is only optin for TypeB because it does not exist 
+        // in all revisions of this type
+        var expected = """
+api test [] {
+ record SuperType(SuperType) {
+  mandatory field(field):string
+ }
+ record TypeA(TypeA) extends SuperType {
+  inherited mandatory field(field):string
+ }
+ record TypeB(TypeB) extends SuperType {
+  inherited optin field(field):string
+ }
+ operation op1(op1) (TypeA@revision 0) : TypeA@revision 0
+ operation op2(op2) (TypeB@revision 0) : TypeB@revision 0
+}
+""";
+        
+        var actual = new ProviderApiDefinitionPrinter().printApiDefinition(mergedDefinition);
+        assertEquals(expected, actual);
+    }
 
 }
