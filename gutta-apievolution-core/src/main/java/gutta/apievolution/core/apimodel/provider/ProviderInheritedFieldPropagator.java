@@ -22,14 +22,13 @@ class ProviderInheritedFieldPropagator
         }
         
         var targetTypePredecessor = targetType.getPredecessor().get();       
-        var numberOfDeclaredPredecessors = originalField.getDeclaredPredecessors().size();
+        var declaredPredecessors = originalField.getDeclaredPredecessors();
         
-        if (numberOfDeclaredPredecessors > 1) {
-            // If more than one predecessor is explicitly declared (esp. when pulling up multiple fields into one), we have
-            // to look for the matching one for this particular type
-            for (var potentialPredecessorField : originalField.getDeclaredPredecessors()) {
+        if (!declaredPredecessors.isEmpty()) {           
+            // If there are explicitly declared predecessors, look for a matching field in the type's predecessor 
+            for (var potentialPredecessorField : declaredPredecessors) {
                 if (targetTypePredecessor.equals(potentialPredecessorField.getOwner())) {
-                    // If the field is contained in the predecessor type of the target type, we have a match
+                    // If the field is contained in the predecessor type of the target type, we have found a predecessor
                     return potentialPredecessorField;
                 }
             }
@@ -38,8 +37,8 @@ class ProviderInheritedFieldPropagator
             // have it
             return null;
         } else if (originalField.getPredecessor().isPresent()) {
-            // If the original field has a predecessor (whether explicit or implicit), we look for a matching (possibly also inherited)
-            // field in the predecessor type of the target type
+            // If the original field has an implicit predecessor, look up a potential match in the predecessor type. Implicit predecessors
+            // cannot be from subtypes.
             var originalPredecessorField = originalField.getPredecessor().get();
             return targetTypePredecessor.resolveFieldByInternalName(originalPredecessorField.getInternalName()).orElse(null);
         } else {

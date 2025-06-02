@@ -252,7 +252,7 @@ public class ModelMerger {
         private final Map<ProviderEnumMember, ProviderEnumMember> mappedMembers = new HashMap<>();
 
         private final Map<ProviderOperation, ProviderOperation> mappedOperations = new HashMap<>();
-
+        
         private ProviderRecordType currentRecordType;
 
         private ProviderEnumType currentEnumType;
@@ -339,7 +339,7 @@ public class ModelMerger {
 
             // See if there is already a matching field in the merged type that can be reused
             ProviderField potentialMatch = this.currentRecordType.resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
-            if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, optionality, type)) {
+            if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, type)) {
                 // If there is a matching type, reuse it
                 return potentialMatch;
             }
@@ -358,11 +358,12 @@ public class ModelMerger {
             return newField;
         }
 
-        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Optionality optionality, Type type) {
-            // See if the candidate actually matches with respect to the relevant properties
+        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Type type) {
+            // See if the candidate actually matches with respect to the relevant properties. Note that the optionality may be different for inherited fields,
+            // so that we cannot include it in identifying matching fields
             return matchCandidate.getPublicName().equals(originalField.getPublicName()) &&
                     matchCandidate.getInternalName().equals(originalField.getInternalName()) && matchCandidate.getType().equals(type) &&
-                    matchCandidate.getOptionality().equals(optionality) && matchCandidate.isInherited() == originalField.isInherited();
+                    matchCandidate.isInherited() == originalField.isInherited();
         }
 
         protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
