@@ -15,7 +15,6 @@ import gutta.apievolution.dsl.parser.ApiRevisionParser;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,8 +66,8 @@ class ProviderApiRevisionModelBuilderPass2
             declaredPredecessors = this.resolvePredecessorFields(predecessorSpecs, context.replaces);
 
             // Use the (first) predecessor owned by the current type as the
-            // actual predecessor. For inherited fields, there may be no matching
-            // predecessor
+            // actual predecessor. There may be no such predecessor when fields are referenced from subtypes,
+            // e.g., when pulling up a field in an inheritance hierarchy
             predecessor = declaredPredecessors.stream().filter(field -> {
                 Optional<ProviderRecordType> optionalPredecessor = owner.getPredecessor();
 
@@ -83,13 +82,13 @@ class ProviderApiRevisionModelBuilderPass2
         case IMPLICIT:
             // Perform implicit predecessor resolution
             predecessor = this.resolvePredecessorField(new FieldPredecessorSpec(name), false, context.name.start, context.name.start);
-            declaredPredecessors = Collections.emptyList();
+            declaredPredecessors = List.of();
             break;
 
         case NONE:
         default:
             predecessor = Optional.empty();
-            declaredPredecessors = Collections.emptyList();
+            declaredPredecessors = List.of();
             break;
         }
 
@@ -114,7 +113,7 @@ class ProviderApiRevisionModelBuilderPass2
     private List<ProviderField> resolvePredecessorFields(List<FieldPredecessorSpec> specs, ApiRevisionParser.FieldReplacesClauseContext context) {
         // If replacements are ignored, just return "no predecessor"
         if (this.ignoreReplacements) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         int specCount = specs.size();
@@ -157,8 +156,8 @@ class ProviderApiRevisionModelBuilderPass2
 
         ProviderRecordType predecessorRecordType;
 
-        if (predecessorSpec.typeName.isPresent()) {
-            String predecessorTypeName = predecessorSpec.typeName.get();
+        if (predecessorSpec.hasTypeName()) {
+            String predecessorTypeName = predecessorSpec.getTypeName();
             ProviderApiDefinition previousRevision = this.currentRevision.getPredecessor()
                     .orElseThrow(() -> new APIResolutionException(refToken, "No predecessor revision available."));
 
@@ -292,20 +291,25 @@ class ProviderApiRevisionModelBuilderPass2
 
     private static class FieldPredecessorSpec {
 
-        private final Optional<String> typeName;
+        private final String typeName;
 
         private final String fieldName;
 
         public FieldPredecessorSpec(final String fieldName) {
-            this(Optional.empty(), fieldName);
-        }
-
-        public FieldPredecessorSpec(final Optional<String> typeName, final String fieldName) {
-            this.typeName = typeName;
+            this.typeName = null;
             this.fieldName = fieldName;
         }
 
-        public Optional<String> getTypeName() {
+        public FieldPredecessorSpec(final Optional<String> typeName, final String fieldName) {
+            this.typeName = typeName.orElse(null);
+            this.fieldName = fieldName;
+        }
+
+        public boolean hasTypeName() {
+            return (this.typeName != null);
+        }
+        
+        public String getTypeName() {
             return this.typeName;
         }
 
