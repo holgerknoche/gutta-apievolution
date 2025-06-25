@@ -232,7 +232,7 @@ public class ModelMerger {
     }
 
     /**
-     * This class embodies the second pass of the revision merge process. In this pass, fields and enum members as well as services and service operations are
+     * This class embodies the second pass of the revision merge process. In this pass, fields and enum members as well as operations are
      * merged. These elements require access to the merged types, which are passed on from the first pass.
      */
     private static class RevisionMergePass2 implements ProviderApiDefinitionElementVisitor<Void> {
@@ -252,7 +252,7 @@ public class ModelMerger {
         private final Map<ProviderEnumMember, ProviderEnumMember> mappedMembers = new HashMap<>();
 
         private final Map<ProviderOperation, ProviderOperation> mappedOperations = new HashMap<>();
-
+        
         private ProviderRecordType currentRecordType;
 
         private ProviderEnumType currentEnumType;
@@ -279,7 +279,6 @@ public class ModelMerger {
             // Set supertypes, if applicable
             recordType.getSuperTypes().forEach(originalSuperType -> {
                 ProviderRecordType superType = this.typeMap.mapType(originalSuperType);
-
                 this.currentRecordType.addSuperType(superType);
             });
 
@@ -312,7 +311,7 @@ public class ModelMerger {
         @Override
         public Void handleProviderField(ProviderField field) {
             Optional<ProviderField> optionalMappedSuccessor = field.findFirstSuccessorMatching(this.mappedFields::containsKey);
-
+            
             boolean typeChange = false;
             if (optionalMappedSuccessor.isPresent()) {
                 Type currentFieldType = field.getType();
@@ -340,7 +339,7 @@ public class ModelMerger {
 
             // See if there is already a matching field in the merged type that can be reused
             ProviderField potentialMatch = this.currentRecordType.resolveFieldByInternalName(originalField.getInternalName()).orElse(null);
-            if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, optionality, type)) {
+            if (potentialMatch != null && this.fieldMatches(originalField, potentialMatch, type)) {
                 // If there is a matching type, reuse it
                 return potentialMatch;
             }
@@ -359,11 +358,12 @@ public class ModelMerger {
             return newField;
         }
 
-        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Optionality optionality, Type type) {
-            // See if the candidate actually matches with respect to the relevant properties
+        private boolean fieldMatches(Field<?, ?> originalField, Field<?, ?> matchCandidate, Type type) {
+            // See if the candidate actually matches with respect to the relevant properties. Note that the optionality may be different for inherited fields,
+            // so that we cannot include it in identifying matching fields
             return matchCandidate.getPublicName().equals(originalField.getPublicName()) &&
                     matchCandidate.getInternalName().equals(originalField.getInternalName()) && matchCandidate.getType().equals(type) &&
-                    matchCandidate.getOptionality().equals(optionality) && matchCandidate.isInherited() == originalField.isInherited();
+                    matchCandidate.isInherited() == originalField.isInherited();
         }
 
         protected void registerFieldMapping(ProviderField originalField, ProviderField mappedField) {
@@ -371,43 +371,60 @@ public class ModelMerger {
         }
 
         private Optionality determineOptionalityForField(ProviderField field) {
-            // First, determine the minimal specified optionality. Note that the field is
+            var fieldUsage = field.getUsage();
+                        
+            // Otherwise, determine the optionality depending on the usage of the field. Note that the field is
             // always from the latest revision in which it exists, as we iterate backwards through the revision
-            // history. Therefore, we only have to take predecessors into account
-            MaxOptionalityCollector maxOptionalityCollector = new MaxOptionalityCollector();
-            field.predecessorStream(true).forEach(maxOptionalityCollector);
-            Optionality specifiedOptionality = maxOptionalityCollector.getMaxOptionality();
+            // history. Therefore, we only have to take predecessors into account            
+            var optionalityCollector = createOptionalityCollector(fieldUsage);            
+            field.predecessorStream(true).forEach(optionalityCollector);
+            var specifiedOptionality = optionalityCollector.getMergedOptionality();
 
-            // Then, check whether the field exists in all supported revisions in which the owning type also exists
-            boolean existsInAllRevisions;
-            ProviderRecordType owningType = field.getOwner();
+            if (fieldUsage.maybeInput()) {
+                // If the field can be used for input, it cannot be mandatory if it does not exist in all supported revisions
+                // of its containing type, since clients may not be aware of its existence and therefore cannot provide it
+                boolean existsInAllRevisions = this.existsInAllRevisions(field);
+                
+                if (!existsInAllRevisions && specifiedOptionality == Optionality.MANDATORY) {
+                    // Fields that do not exist in all revisions cannot be mandatory, but must be opt-in for clients
+                    // that are not aware of them
+                    return Optionality.OPT_IN;
+                } else {
+                    // Otherwise, the merged specified optionality can be used
+                    return specifiedOptionality;
+                }                
+            } else {
+                // If the field cannot be used for input, the optionality is not affected if the field does not exist
+                // in all revisions
+                return specifiedOptionality;
+            }
+        }
+        
+        private static MergedOptionalityCollector createOptionalityCollector(Usage fieldUsage) {
+            return switch (fieldUsage) {
+            case INPUT_ONLY -> new InputOnlyOptionalityCollector();                
+            case OUTPUT_ONLY -> new OutputOnlyOptionalityCollector();                
+            case IN_OUT -> new InputOutputOptionalityCollector();                
+            case NONE -> new UnusedFieldOptionalityCollector();
+            };
+        }
+        
+        private boolean existsInAllRevisions(ProviderField field) {
+            var owningType = field.getOwner();
 
             if (owningType.findFirstSuccessorMatching(succType -> this.supportedRevisions.contains(succType.getOwner())).isPresent()) {
                 // If the owning type has a successor within a supported revision, the field cannot be present in all
                 // relevant revisions
-                existsInAllRevisions = false;
+                return false;
             } else {
                 // If there is no successor in a supported revision, we need to check all predecessors
-                Set<ProviderApiDefinition> defsInWhichFieldExists = new HashSet<>();
+                var defsInWhichFieldExists = new HashSet<ProviderApiDefinition>();
                 field.predecessorStream(true).forEach(fld -> defsInWhichFieldExists.add(fld.getOwner().getOwner()));
 
-                Set<ProviderApiDefinition> defsInWhichOwningTypeExists = new HashSet<>();
+                var defsInWhichOwningTypeExists = new HashSet<ProviderApiDefinition>();
                 owningType.predecessorStream(true).forEach(type -> defsInWhichOwningTypeExists.add(type.getOwner()));
-                existsInAllRevisions = defsInWhichFieldExists.containsAll(defsInWhichOwningTypeExists);
+                return defsInWhichFieldExists.containsAll(defsInWhichOwningTypeExists);
             }
-
-            Optionality minimalOptionality;
-            if (existsInAllRevisions) {
-                // If the field exists in all revisions in which its owning type exists, it can be mandatory
-                minimalOptionality = Optionality.MANDATORY;
-            } else {
-                // If the field does not exist in all revisions, it must be optional in some
-                // way. If it is used as output, it must be fully optional, otherwise, it may be opt-in.
-                Usage fieldUsage = field.getUsage();
-                minimalOptionality = (fieldUsage.maybeOutput()) ? Optionality.OPTIONAL : Optionality.OPT_IN;
-            }
-
-            return Optionality.max(specifiedOptionality, minimalOptionality);
         }
 
         @Override
@@ -540,23 +557,101 @@ public class ModelMerger {
         }
 
         /**
-         * Collector operation to determine the most permissive optionality from a revision history of provider fields.
+         * Abstract supertype of all collectors to determine the merged optionality of a revision history.
          */
-        private static class MaxOptionalityCollector implements Consumer<ProviderField> {
-
-            private Optionality maxOptionality = Optionality.MANDATORY;
-
+        private abstract static class MergedOptionalityCollector implements Consumer<ProviderField> {
+            
+            private Optionality mergedOptionality;
+            
+            protected MergedOptionalityCollector(Optionality initialOptionality) {
+                this.mergedOptionality = initialOptionality;
+            }
+            
+            public Optionality getMergedOptionality() {
+                return this.mergedOptionality;
+            }
+            
             @Override
-            public void accept(ProviderField providerField) {
-                Optionality fieldOptionality = providerField.getOptionality();
-
-                this.maxOptionality = Optionality.max(this.maxOptionality, fieldOptionality);
+            public final void accept(ProviderField field) {
+                this.mergedOptionality = this.merge(this.mergedOptionality, field.getOptionality());                
             }
-
-            public Optionality getMaxOptionality() {
-                return this.maxOptionality;
+            
+            protected abstract Optionality merge(Optionality mergedOptionality, Optionality fieldOptionality);
+            
+        }
+        
+        /**
+         * Specific collector to determine the merged optionality of a field that is only used for input.
+         */
+        private static class InputOnlyOptionalityCollector extends MergedOptionalityCollector {
+            
+            public InputOnlyOptionalityCollector() {
+                super(Optionality.MANDATORY);
             }
-
+            
+            @Override
+            protected Optionality merge(Optionality mergedOptionality, Optionality fieldOptionality) {
+                // For input fields, return the more permissive optionality, since at least one revision allows it
+                return (fieldOptionality.isMorePermissiveThan(mergedOptionality)) ? fieldOptionality : mergedOptionality;
+            }
+            
+        }
+        
+        /**
+         * Specific collector to determine the merged optionality of a field that is only used for output.
+         */
+        private static class OutputOnlyOptionalityCollector extends MergedOptionalityCollector {
+            
+            public OutputOnlyOptionalityCollector() {
+                super(Optionality.OPTIONAL);
+            }
+            
+            @Override
+            protected Optionality merge(Optionality mergedOptionality, Optionality fieldOptionality) {
+                // For output fields, return the less permissive optionality, since at least one revision requires it
+                return (fieldOptionality.isMorePermissiveThan(mergedOptionality)) ? mergedOptionality : fieldOptionality;
+            }
+            
+        }
+        
+        /**
+         * Specific collector to determine the merged optionality of a field that is used for both input and output.
+         */
+        private static class InputOutputOptionalityCollector extends MergedOptionalityCollector {
+            
+            public InputOutputOptionalityCollector() {
+                super(null);
+            }
+            
+            @Override
+            protected Optionality merge(Optionality mergedOptionality, Optionality fieldOptionality) {
+                if (mergedOptionality == null) {
+                    // On the first field, just return the field's optionality 
+                    return fieldOptionality;
+                } else {
+                    // In general, the optionality can only be different from opt-in if either all revisions are optional
+                    // or all revisions are mandatory. Therefore, if the field optionality differs from the merged one,
+                    // the result is always opt-in.
+                    return (mergedOptionality != fieldOptionality) ? Optionality.OPT_IN : mergedOptionality;
+                }
+            }
+            
+        }
+        
+        /**
+         * Specific collector to determine the merged optionality for unused fields.
+         */
+        private static class UnusedFieldOptionalityCollector extends MergedOptionalityCollector {
+            
+            public UnusedFieldOptionalityCollector() {
+                super(null);
+            }
+            
+            protected Optionality merge(Optionality mergedOptionality, Optionality fieldOptionality) {
+                // For unused fields, simply use the specified optionality of the newest revision
+                return (mergedOptionality != null) ? mergedOptionality : fieldOptionality;
+            }
+            
         }
 
     }

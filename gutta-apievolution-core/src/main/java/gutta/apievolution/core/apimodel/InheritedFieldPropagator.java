@@ -48,7 +48,7 @@ public abstract class InheritedFieldPropagator<R extends RecordType<?, R, F>, F 
             this.processedTypes.add(recordType);
         }
 
-        // Add the current type's declared field to the inherited types
+        // Add the current type's declared fields to the inherited ones
         inheritedFields.addAll(recordType.getDeclaredFields());
         
         return inheritedFields;

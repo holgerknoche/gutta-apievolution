@@ -330,6 +330,22 @@ public abstract class RecordType<A extends ApiDefinition<A, ?>, R extends Record
         return this.typeIdSet(this.superTypes);
     }
     
+    @Override
+    protected void propagateUsageChange(Usage newUsage) {
+        // Propagate the usage change to the supertypes
+        this.getSuperTypes().forEach(superType -> superType.registerUsage(newUsage));
+        
+        // Propagate the usage change to the field types
+        this.getFields().forEach(field -> {
+            var fieldType = field.getType();
+            
+            if (fieldType instanceof AbstractUserDefinedType fieldUdt) {
+                // If the field has a user-defined type, inform the type of the usage
+                fieldUdt.registerUsage(newUsage);
+            }
+        });
+    }
+    
     /**
      * Compares this record type's state against the state of the given member.
      *
