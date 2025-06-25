@@ -1,1 +1,26 @@
+# Fixed format conversion benchmarks
 gutta.apievolution.benchmarks.fixedformat.FixedFormatConversionBenchmarks
+gutta.apievolution.benchmarks.fixedformat.FixedFormatCustomerExampleBenchmarksV1
+gutta.apievolution.benchmarks.fixedformat.FixedFormatCustomerExampleBenchmarksV3
+gutta.apievolution.benchmarks.fixedformat.FixedFormatCustomerExampleBenchmarksV6
+
+# Dynamic proxy mapping benchmarks
+gutta.apievolution.benchmarks.inprocess.dynproxy.DynamicProxyConversionBenchmarks
+gutta.apievolution.benchmarks.inprocess.dynproxy.DynProxyCustomerExampleBenchmarksV1
+gutta.apievolution.benchmarks.inprocess.dynproxy.DynProxyCustomerExampleBenchmarksV3
+gutta.apievolution.benchmarks.inprocess.dynproxy.DynProxyCustomerExampleBenchmarksV6
+
+# Object mapping benchmarks
+gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingConversionBenchmarks
+gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingCustomerExampleBenchmarksV1
+gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingCustomerExampleBenchmarksV3
+gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingCustomerExampleBenchmarksV6
+
+# JSON mapping benchmarks
+gutta.apievolution.benchmarks.json.JSONConversionBenchmarks
+gutta.apievolution.benchmarks.json.JSONCustomerExampleBenchmarksV1
+gutta.apievolution.benchmarks.json.JSONCustomerExampleBenchmarksV3
+gutta.apievolution.benchmarks.json.JSONCustomerExampleBenchmarksV6
+
+# Definition resolution benchmarks
+gutta.apievolution.benchmarks.resolution.DefinitionResolutionBenchmarks
