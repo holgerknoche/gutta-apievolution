@@ -2,6 +2,8 @@ package gutta.apievolution.benchmarks;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +26,8 @@ public class BenchmarkRunner {
     private static final int DEFAULT_TIMED_ITERATIONS = 100000;
     
     private static final int REPORT_INTERVAL = 5000;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(BenchmarkRunner.class);
     
     public static void main(String[] arguments) {
         var runner = new BenchmarkRunner();
@@ -100,7 +104,7 @@ public class BenchmarkRunner {
                     var benchmarkClass = Class.forName(currentLine.trim());
                     benchmarkClasses.add(benchmarkClass);
                 } catch (ClassNotFoundException e) {
-                    // TODO
+                    LOGGER.warn("Benchmark class '{}' does not exist.", currentLine);
                 }
             }   
         }
@@ -133,7 +137,8 @@ public class BenchmarkRunner {
     }
     
     private void runBenchmark(BenchmarkRunConfiguration configuration) {
-        configuration.print();
+        LOGGER.info("Running benchmark '{}' with {} warmup iterations and {} timed iterations.",configuration.benchmarkName, configuration.warmupIterations,
+                configuration.timedIterations);
         
         var benchmarkMethod = configuration.benchmarkMethod;
         
@@ -142,7 +147,7 @@ public class BenchmarkRunner {
             benchmarkMethod.invoke();
             
             if (iterationCount > 0 && (iterationCount % REPORT_INTERVAL) == 0) {
-                System.out.println("Warmup iteration " + iterationCount + " completed.");
+                LOGGER.info("Warmup iteration {} completed.", iterationCount);
             }
         }
         
@@ -153,15 +158,14 @@ public class BenchmarkRunner {
             durationsMus[iterationCount] = (double) TimeUnit.NANOSECONDS.toMicros(durationNs);
             
             if (iterationCount > 0 && (iterationCount % REPORT_INTERVAL) == 0) {
-                System.out.println("Timed iteration " + iterationCount + " completed.");
+                LOGGER.info("Timed iteration {} completed.", iterationCount);
             }            
         }
     
         var averageDurationMus = StatUtils.mean(durationsMus);
         var standardDevMus = Math.sqrt(StatUtils.variance(durationsMus, averageDurationMus));
         
-        System.out.println(String.format("# Benchmark '%s': Average: %.02f µs, Std. Dev.: %.02f µs", configuration.benchmarkName, averageDurationMus, standardDevMus));        
-        // TODO Write to logger
+        LOGGER.info("# Benchmark '{}': Average: {} µs, Std. Dev.: {} µs", configuration.benchmarkName, averageDurationMus, standardDevMus);        
     }
         
     private static class BenchmarkMethod {
@@ -220,11 +224,7 @@ public class BenchmarkRunner {
             this.benchmarkName = benchmarkName;
             this.benchmarkMethod = benchmarkMethod;
         }
-        
-        public void print() {
-            System.out.println("Running benchmark '" + this.benchmarkName + "' with " + this.warmupIterations + " warmup iterations and " + this.timedIterations + " timed iterations.");
-        }
-        
+                
     }
     
     private static class BenchmarkException extends RuntimeException {
