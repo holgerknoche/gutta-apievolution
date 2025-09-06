@@ -175,7 +175,7 @@
         <module>gutta-apievolution-json</module>
         <module>gutta-apievolution-repository</module>
         <module>gutta-apievolution-fixedformat</module>
-        <module>gutta-apievolution-jmh</module>
+        <module>gutta-apievolution-benchmarks</module>
         <module>gutta-apievolution-inprocess</module>
         <module>gutta-apievolution-customerexample</module>
         <module>gutta-apievolution-tools</module>
