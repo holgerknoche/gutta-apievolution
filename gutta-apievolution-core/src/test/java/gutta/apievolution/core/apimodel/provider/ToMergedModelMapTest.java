@@ -1,21 +1,20 @@
 package gutta.apievolution.core.apimodel.provider;
 
-import gutta.apievolution.core.apimodel.Abstract;
-import gutta.apievolution.core.apimodel.TypeMap;
-import gutta.apievolution.core.validation.ValidationMessage;
-import gutta.apievolution.core.validation.ValidationResult;
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-
 import static gutta.apievolution.core.apimodel.Conventions.noInternalName;
 import static gutta.apievolution.core.apimodel.Conventions.noPredecessor;
-import static gutta.apievolution.core.util.MapUtil.mapOf;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import gutta.apievolution.core.apimodel.Abstract;
+import gutta.apievolution.core.apimodel.TypeMap;
+import gutta.apievolution.core.validation.ValidationMessage;
 
 /**
  * Test cases for the map to the merged provider model.
@@ -27,18 +26,18 @@ class ToMergedModelMapTest {
      */
     @Test
     void noSuperTypes() {
-        ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
+        var sourceDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType recordA = sourceDefinition.newRecordType("Test", 0);
+        var recordA = sourceDefinition.newRecordType("Test", 0);
         
-        ProviderApiDefinition targetDefinition = ProviderApiDefinition.create("target", 0);
+        var targetDefinition = ProviderApiDefinition.create("target", 0);
         
-        ProviderRecordType recordB = targetDefinition.newRecordType("Test", 0);
+        var recordB = targetDefinition.newRecordType("Test", 0);
         
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
-        ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
+        var typeMap = new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(Map.of(recordA, recordB));
+        var map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, Map.of(), Map.of(), Map.of());
     
-        ValidationResult result = map.checkConsistency();
+        var result = map.checkConsistency();
         assertFalse(result.hasError());
     }
 
@@ -48,20 +47,20 @@ class ToMergedModelMapTest {
      */
     @Test
     void noSourceSuperType() {
-        ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
+        var sourceDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType recordA = sourceDefinition.newRecordType("Test", 0);
+        var recordA = sourceDefinition.newRecordType("Test", 0);
         
-        ProviderApiDefinition targetDefinition = ProviderApiDefinition.create("target", 0);
+        var targetDefinition = ProviderApiDefinition.create("target", 0);
         
-        ProviderRecordType superRecordB = targetDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordB), noPredecessor());
+        var superRecordB = targetDefinition.newRecordType("SuperType", 0);
+        var recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordB), noPredecessor());
         
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
-        ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
+        var typeMap = new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(Map.of(recordA, recordB));
+        var map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, Map.of(), Map.of(), Map.of());
     
-        ValidationResult result = map.checkConsistency();
+        var result = map.checkConsistency();
         assertFalse(result.hasError());
     }
     
@@ -70,23 +69,23 @@ class ToMergedModelMapTest {
      */
     @Test
     void consistentSuperTypes() {
-        ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
+        var sourceDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType superRecordA = sourceDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordA), noPredecessor());
+        var superRecordA = sourceDefinition.newRecordType("SuperType", 0);
+        var recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordA), noPredecessor());
         
-        ProviderApiDefinition targetDefinition = ProviderApiDefinition.create("target", 0);
+        var targetDefinition = ProviderApiDefinition.create("target", 0);
         
-        ProviderRecordType superRecordB = targetDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordB), noPredecessor());
+        var superRecordB = targetDefinition.newRecordType("SuperType", 0);
+        var recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordB), noPredecessor());
         
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB,
+        var typeMap = new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(Map.of(recordA, recordB,
                 superRecordA, superRecordB));
-        ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
+        var map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, Map.of(), Map.of(), Map.of());
     
-        ValidationResult result = map.checkConsistency();
+        var result = map.checkConsistency();
         assertFalse(result.hasError());
     }
     
@@ -95,24 +94,24 @@ class ToMergedModelMapTest {
      */
     @Test
     void unmappedSuperType() {
-        ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
+        var sourceDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType superRecordA = sourceDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordA), noPredecessor());
+        var superRecordA = sourceDefinition.newRecordType("SuperType", 0);
+        var recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordA), noPredecessor());
         
-        ProviderApiDefinition targetDefinition = ProviderApiDefinition.create("target", 0);
+        var targetDefinition = ProviderApiDefinition.create("target", 0);
         
-        ProviderRecordType superRecordB = targetDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordB), noPredecessor());
+        var superRecordB = targetDefinition.newRecordType("SuperType", 0);
+        var recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordB), noPredecessor());
         
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB));
-        ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
+        var typeMap = new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(Map.of(recordA, recordB));
+        var map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, Map.of(), Map.of(), Map.of());
     
-        ValidationResult result = map.checkConsistency();
+        var result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(asList(ValidationMessage.error("Supertype 'SuperType@revision 0' of 'Test@revision 0' is not mapped.")),
+        assertEquals(List.of(ValidationMessage.error("Supertype 'SuperType@revision 0' of 'Test@revision 0' is not mapped.")),
                 result.getMessages());
     }
 
@@ -121,26 +120,26 @@ class ToMergedModelMapTest {
      */
     @Test
     void inconsistentSuperType() {
-        ProviderApiDefinition sourceDefinition = ProviderApiDefinition.create("test", 0);
+        var sourceDefinition = ProviderApiDefinition.create("test", 0);
         
-        ProviderRecordType superRecordA = sourceDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordA), noPredecessor());
+        var superRecordA = sourceDefinition.newRecordType("SuperType", 0);
+        var recordA = sourceDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordA), noPredecessor());
         
-        ProviderApiDefinition targetDefinition = ProviderApiDefinition.create("target", 0);
+        var targetDefinition = ProviderApiDefinition.create("target", 0);
         
-        ProviderRecordType superRecordB = targetDefinition.newRecordType("SuperType", 0);
-        ProviderRecordType recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
-                Collections.singleton(superRecordB), noPredecessor());
-        ProviderRecordType otherRecordB = targetDefinition.newRecordType("OtherType", 2);
+        var superRecordB = targetDefinition.newRecordType("SuperType", 0);
+        var recordB = targetDefinition.newRecordType("Test", noInternalName(), 1, Abstract.NO,
+                Set.of(superRecordB), noPredecessor());
+        var otherRecordB = targetDefinition.newRecordType("OtherType", 2);
         
-        TypeMap<ProviderUserDefinedType, ProviderUserDefinedType> typeMap = new TypeMap<>(mapOf(recordA, recordB,
+        var typeMap = new TypeMap<ProviderUserDefinedType, ProviderUserDefinedType>(Map.of(recordA, recordB,
                 superRecordA, otherRecordB));
-        ToMergedModelMap map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, emptyMap(), emptyMap(), emptyMap());
+        var map = new ToMergedModelMap(sourceDefinition, targetDefinition, typeMap, Map.of(), Map.of(), Map.of());
     
-        ValidationResult result = map.checkConsistency();
+        var result = map.checkConsistency();
         assertTrue(result.hasError());
-        assertEquals(asList(ValidationMessage.error("Mapped supertype 'OtherType@revision 0' of 'Test@revision 0' is not a supertype of 'Test@revision 0'.")),
+        assertEquals(List.of(ValidationMessage.error("Mapped supertype 'OtherType@revision 0' of 'Test@revision 0' is not a supertype of 'Test@revision 0'.")),
                 result.getMessages());
     }
     

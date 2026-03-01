@@ -1,6 +1,5 @@
 package gutta.apievolution.core.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -57,62 +56,6 @@ public class MapUtil {
         }
 
         return invertedMap;
-    }
-
-    /**
-     * Creates a singleton map.
-     * 
-     * @param <K>   The domain of the map
-     * @param <V>   The codomain of the map
-     * @param key   The key to put in the map
-     * @param value The value to put in the map
-     * @return The created map
-     */
-    public static <K, V> Map<K, V> mapOf(K key, V value) {
-        return Collections.singletonMap(key, value);
-    }
-
-    /**
-     * Creates a map with two pairs.
-     * 
-     * @param <K>    The domain of the map
-     * @param <V>    The codomain of the map
-     * @param key1   The first key to put in the map
-     * @param value1 The first value to put in the map
-     * @param key2   The second key to put in the map
-     * @param value2 The second value to put in the map
-     * @return The created map
-     */
-    public static <K, V> Map<K, V> mapOf(K key1, V value1, K key2, V value2) {
-        Map<K, V> map = new HashMap<>(2);
-
-        map.put(key1, value1);
-        map.put(key2, value2);
-
-        return Collections.unmodifiableMap(map);
-    }
-
-    /**
-     * Creates a map with two pairs.
-     * 
-     * @param <K>    The domain of the map
-     * @param <V>    The codomain of the map
-     * @param key1   The first key to put in the map
-     * @param value1 The first value to put in the map
-     * @param key2   The second key to put in the map
-     * @param value2 The second value to put in the map
-     * @param key3   The third key to put in the map
-     * @param value3 The third value to put in the map
-     * @return The created map
-     */
-    public static <K, V> Map<K, V> mapOf(K key1, V value1, K key2, V value2, K key3, V value3) {
-        Map<K, V> map = new HashMap<>(2);
-
-        map.put(key1, value1);
-        map.put(key2, value2);
-        map.put(key3, value3);
-
-        return Collections.unmodifiableMap(map);
     }
 
     private MapUtil() {
