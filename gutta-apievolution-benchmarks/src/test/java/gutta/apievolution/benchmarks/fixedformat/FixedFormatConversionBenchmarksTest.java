@@ -1,6 +1,5 @@
 package gutta.apievolution.benchmarks.fixedformat;
 
-import gutta.apievolution.benchmarks.fixedformat.FixedFormatConversionBenchmarks;
 import org.junit.jupiter.api.Test;
 
 class FixedFormatConversionBenchmarksTest {

@@ -199,7 +199,7 @@ public class BenchmarkRunner {
         var averageDurationMus = StatUtils.mean(durationsMus);
         var standardDevMus = Math.sqrt(StatUtils.variance(durationsMus, averageDurationMus));
         
-        LOGGER.info("# Benchmark '{}': Average: {} µs, Std. Dev.: {} µs", configuration.benchmarkName, averageDurationMus, standardDevMus);        
+        LOGGER.info("# Results for Benchmark '{}': Average: {} µs, Std. Dev.: {} µs", configuration.benchmarkName, averageDurationMus, standardDevMus);        
     }
         
     private static class BenchmarkMethod {
