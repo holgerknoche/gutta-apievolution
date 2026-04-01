@@ -1,10 +1,5 @@
 package gutta.apievolution.benchmarks;
 
-import org.apache.commons.math3.stat.StatUtils;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BenchmarkRunner {
     
     private static final String BENCHMARKS_FILE_NAME = "META-INF/benchmarks.txt";
@@ -26,7 +25,7 @@ public class BenchmarkRunner {
     
     private static final int DEFAULT_TIMED_ITERATIONS = 100000;
     
-    private static final int REPORT_INTERVAL = 5000;
+    private static final int DEFAULT_REPORT_INTERVAL = 1000;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BenchmarkRunner.class);
     
@@ -45,7 +44,8 @@ public class BenchmarkRunner {
     private BenchmarkRunConfiguration parseArguments(String[] arguments) {
         var listOnly = false;
         var warmupIterations = DEFAULT_WARMUP_ITERATIONS;
-        var timedIterations = DEFAULT_TIMED_ITERATIONS;        
+        var timedIterations = DEFAULT_TIMED_ITERATIONS;  
+        var reportInterval = DEFAULT_REPORT_INTERVAL;
         String benchmarkName = null;
         
         var currentArgumentIndex = 0;
@@ -61,6 +61,10 @@ public class BenchmarkRunner {
                 timedIterations = Math.max(0, Integer.parseInt(arguments[++currentArgumentIndex]));
                 break;
                 
+            case "-ri":
+            	reportInterval = Math.max(0, Integer.parseInt(arguments[++currentArgumentIndex]));
+            	break;
+                
             case "-l":
                 listOnly = true;
                 break;
@@ -74,7 +78,7 @@ public class BenchmarkRunner {
         }
                 
         if (listOnly) {
-            return new BenchmarkRunConfiguration(true, 0, 0, benchmarkName, null);
+            return new BenchmarkRunConfiguration(true, 0, 0, 0, benchmarkName, null);
         } else {
             var availableBenchmarks = this.findAvailableBenchmarks();
             var benchmarkMethod = availableBenchmarks.get(benchmarkName);
@@ -88,7 +92,7 @@ public class BenchmarkRunner {
                 throw new BenchmarkException("No benchmark named '" + benchmarkName + "'.");
             }
             
-            return new BenchmarkRunConfiguration(listOnly, warmupIterations, timedIterations, benchmarkName, benchmarkMethod);
+            return new BenchmarkRunConfiguration(listOnly, warmupIterations, timedIterations, reportInterval, benchmarkName, benchmarkMethod);
         }
     }
     
@@ -171,35 +175,41 @@ public class BenchmarkRunner {
     }
     
     private void runBenchmark(BenchmarkRunConfiguration configuration) {
-        LOGGER.info("Running benchmark '{}' with {} warmup iterations and {} timed iterations.",configuration.benchmarkName, configuration.warmupIterations,
-                configuration.timedIterations);
+    	var benchmarkName = configuration.benchmarkName();
+        var reportInterval = configuration.reportInterval();
+        var warmupIterations = configuration.warmupIterations();
+        var timedIterations = configuration.timedIterations();
+    	
+        LOGGER.info("Running benchmark '{}' with {} warmup iterations and {} timed iterations.", benchmarkName, warmupIterations, timedIterations);
         
-        var benchmarkMethod = configuration.benchmarkMethod;
+        var benchmarkMethod = configuration.benchmarkMethod();
         
         // Run warmup iterations
-        for (var iterationCount = 1; iterationCount <= configuration.warmupIterations; iterationCount++) {
+        for (var iterationCount = 1; iterationCount <= warmupIterations; iterationCount++) {
             benchmarkMethod.invoke();
             
-            if ((iterationCount % REPORT_INTERVAL) == 0) {
+            if ((iterationCount % reportInterval) == 0) {
                 LOGGER.info("Warmup iteration {} completed.", iterationCount);
             }
         }
         
         // Run timed iterations
-        var durationsMus = new double[configuration.timedIterations];
-        for (var iterationCount = 1; iterationCount <= configuration.timedIterations; iterationCount++) {
-            var durationNs = benchmarkMethod.invoke();
-            durationsMus[(iterationCount - 1)] = (double) TimeUnit.NANOSECONDS.toMicros(durationNs);
+        var startTimeNs = System.nanoTime();    
+        for (var iterationCount = 1; iterationCount <= timedIterations; iterationCount++) {
+            benchmarkMethod.invoke();
             
-            if ((iterationCount % REPORT_INTERVAL) == 0) {
-                LOGGER.info("Timed iteration {} completed.", iterationCount);
+            if ((iterationCount % reportInterval) == 0) {
+            	var endTimeNs = System.nanoTime();
+            	var durationMs = TimeUnit.NANOSECONDS.toMillis(endTimeNs - startTimeNs);
+            	
+                LOGGER.info("Timed iteration {} completed, last block took {} ms.", iterationCount, durationMs);
+                LOGGER.info("# {};{};{}", configuration.benchmarkName, iterationCount, durationMs);
+                
+                startTimeNs = System.nanoTime();
             }            
         }
     
-        var averageDurationMus = StatUtils.mean(durationsMus);
-        var standardDevMus = Math.sqrt(StatUtils.variance(durationsMus, averageDurationMus));
-        
-        LOGGER.info("# Results for Benchmark '{}': Average: {} µs, Std. Dev.: {} µs", configuration.benchmarkName, averageDurationMus, standardDevMus);        
+        LOGGER.info("End of benchmark '{}'.", configuration.benchmarkName);        
     }
         
     private static class BenchmarkMethod {
@@ -242,26 +252,7 @@ public class BenchmarkRunner {
         
     }
     
-    private static class BenchmarkRunConfiguration {
-        
-        private final boolean listOnly;
-        
-        private final int warmupIterations;
-        
-        private final int timedIterations;
-        
-        private final String benchmarkName;
-        
-        private final BenchmarkMethod benchmarkMethod;
-        
-        public BenchmarkRunConfiguration(boolean listOnly, int warmupIterations, int timedIterations, String benchmarkName, BenchmarkMethod benchmarkMethod) {
-            this.listOnly = listOnly;
-            this.warmupIterations = warmupIterations;
-            this.timedIterations = timedIterations;
-            this.benchmarkName = benchmarkName;
-            this.benchmarkMethod = benchmarkMethod;
-        }
-                
+    private record BenchmarkRunConfiguration(boolean listOnly, int warmupIterations, int timedIterations, int reportInterval, String benchmarkName, BenchmarkMethod benchmarkMethod) {                        
     }
     
     private static class BenchmarkException extends RuntimeException {
