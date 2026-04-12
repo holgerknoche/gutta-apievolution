@@ -1,9 +1,8 @@
 package gutta.apievolution.benchmarks.inprocess.objectmapping;
 
-import gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingCustomerExampleBenchmarksV6;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 class ObjectMappingCustomerExampleBenchmarksV6Test {
     
@@ -16,7 +15,7 @@ class ObjectMappingCustomerExampleBenchmarksV6Test {
     void invocationTests() {
         ObjectMappingCustomerExampleBenchmarksV6 benchmarks = new ObjectMappingCustomerExampleBenchmarksV6();
         
-        benchmarks.invokeFromV6Client_short();        
+        benchmarks.invokeFromV6Client();        
     }
 
 }

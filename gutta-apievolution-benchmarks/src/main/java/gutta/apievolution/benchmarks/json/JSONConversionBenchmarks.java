@@ -2,6 +2,8 @@ package gutta.apievolution.benchmarks.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gutta.apievolution.benchmarks.ExperimentSize;
 import gutta.apievolution.benchmarks.JMHBenchmarkTemplate;
 import gutta.apievolution.benchmarks.json.consumer.ConsumerParameter;
 import gutta.apievolution.benchmarks.json.consumer.TestMethod100ConsumerProxy;
@@ -96,18 +98,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     private static final ProviderResult500 RESULT_500 = TestMethod500ProviderProxy.createResult();
 
     @Benchmark
-    public void invokeEmptyResult_short() {
+    @ExperimentSize(0)
+    public void invokeEmptyResult() {
         TEST_METHOD_EMPTY_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 
     @Benchmark
-    public void immediateJsonProcessing010_short() throws IOException {
+    @ExperimentSize(10)
+    public void immediateJsonProcessing010() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_10);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult10.class);
     }
 
     @Benchmark
-    public void indirectProcessing010_short() throws IOException {
+    @ExperimentSize(10)
+    public void indirectProcessing010() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_10);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -115,18 +120,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod010_short() {
+    @ExperimentSize(10)
+    public void invokeTestMethod010() {
         TEST_METHOD_10_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing025_short() throws IOException {
+    @ExperimentSize(25)
+    public void immediateJsonProcessing025() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_25);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult25.class);
     }
 
     @Benchmark
-    public void indirectProcessing025_short() throws IOException {
+    @ExperimentSize(25)
+    public void indirectProcessing025() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_25);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -134,18 +142,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod025_short() {
+    @ExperimentSize(25)
+    public void invokeTestMethod025() {
         TEST_METHOD_25_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing050_short() throws IOException {
+    @ExperimentSize(50)
+    public void immediateJsonProcessing050() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_50);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult50.class);
     }
 
     @Benchmark
-    public void indirectProcessing050_short() throws IOException {
+    @ExperimentSize(50)
+    public void indirectProcessing050() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_50);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -153,18 +164,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod050_short() {
+    @ExperimentSize(50)
+    public void invokeTestMethod050() {
         TEST_METHOD_50_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing075_short() throws IOException {
+    @ExperimentSize(75)
+    public void immediateJsonProcessing075() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_75);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult75.class);
     }
 
     @Benchmark
-    public void indirectProcessing075_short() throws IOException {
+    @ExperimentSize(75)
+    public void indirectProcessing075() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_75);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -172,18 +186,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod075_short() {
+    @ExperimentSize(75)
+    public void invokeTestMethod075() {
         TEST_METHOD_75_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing100_short() throws IOException {
+    @ExperimentSize(100)
+    public void immediateJsonProcessing100() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_100);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult100.class);
     }
 
     @Benchmark
-    public void indirectProcessing100_short() throws IOException {
+    @ExperimentSize(100)
+    public void indirectProcessing100() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_100);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -191,18 +208,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod100_short() {
+    @ExperimentSize(100)
+    public void invokeTestMethod100() {
         TEST_METHOD_100_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing250_long() throws IOException {
+    @ExperimentSize(250)
+    public void immediateJsonProcessing250() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_250);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult250.class);
     }
 
     @Benchmark
-    public void indirectProcessing250_long() throws IOException {
+    @ExperimentSize(250)
+    public void indirectProcessing250() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_250);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -210,18 +230,21 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod250_long() {
+    @ExperimentSize(250)
+    public void invokeTestMethod250() {
         TEST_METHOD_250_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void immediateJsonProcessing500_long() throws IOException {
+    @ExperimentSize(500)
+    public void immediateJsonProcessing500() throws IOException {
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(RESULT_500);
         OBJECT_MAPPER.readValue(jsonBytes, ProviderResult500.class);
     }
 
     @Benchmark
-    public void indirectProcessing500_long() throws IOException {
+    @ExperimentSize(500)
+    public void indirectProcessing500() throws IOException {
         JsonNode tree = OBJECT_MAPPER.valueToTree(RESULT_500);
         byte[] jsonBytes = OBJECT_MAPPER.writeValueAsBytes(tree);
         JsonNode readTree = OBJECT_MAPPER.readTree(jsonBytes);
@@ -229,7 +252,8 @@ public class JSONConversionBenchmarks extends JMHBenchmarkTemplate {
     }
 
     @Benchmark
-    public void invokeTestMethod500_long() {
+    @ExperimentSize(500)
+    public void invokeTestMethod500() {
         TEST_METHOD_500_PROXY.invokeOperation(CONSUMER_PARAMETER);
     }
 

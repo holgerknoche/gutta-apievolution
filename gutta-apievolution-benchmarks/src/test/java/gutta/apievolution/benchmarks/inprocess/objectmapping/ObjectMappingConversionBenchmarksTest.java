@@ -1,6 +1,5 @@
 package gutta.apievolution.benchmarks.inprocess.objectmapping;
 
-import gutta.apievolution.benchmarks.inprocess.objectmapping.ObjectMappingConversionBenchmarks;
 import org.junit.jupiter.api.Test;
 
 class ObjectMappingConversionBenchmarksTest {
@@ -12,21 +11,21 @@ class ObjectMappingConversionBenchmarksTest {
     void invocationTests() {
         ObjectMappingConversionBenchmarks benchmarks = new ObjectMappingConversionBenchmarks();
         
-        benchmarks.invokeEmptyResult_short();
-        benchmarks.invokeResult010_short();
-        benchmarks.invokeAndInspectResult010_short();
-        benchmarks.invokeResult025_short();
-        benchmarks.invokeAndInspectResult025_short();
-        benchmarks.invokeResult050_short();
-        benchmarks.invokeAndInspectResult050_short();
-        benchmarks.invokeResult075_short();
-        benchmarks.invokeAndInspectResult075_short();
-        benchmarks.invokeResult100_short();
-        benchmarks.invokeAndInspectResult100_short();
-        benchmarks.invokeResult250_long();
-        benchmarks.invokeAndInspectResult250_long();
-        benchmarks.invokeResult500_long();
-        benchmarks.invokeAndInspectResult500_long();
+        benchmarks.invokeEmptyResult();
+        benchmarks.invokeResult010();
+        benchmarks.invokeAndInspectResult010();
+        benchmarks.invokeResult025();
+        benchmarks.invokeAndInspectResult025();
+        benchmarks.invokeResult050();
+        benchmarks.invokeAndInspectResult050();
+        benchmarks.invokeResult075();
+        benchmarks.invokeAndInspectResult075();
+        benchmarks.invokeResult100();
+        benchmarks.invokeAndInspectResult100();
+        benchmarks.invokeResult250();
+        benchmarks.invokeAndInspectResult250();
+        benchmarks.invokeResult500();
+        benchmarks.invokeAndInspectResult500();
     }
 
 }

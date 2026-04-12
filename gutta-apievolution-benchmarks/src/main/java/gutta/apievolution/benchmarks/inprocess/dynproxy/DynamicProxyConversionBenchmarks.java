@@ -1,5 +1,6 @@
 package gutta.apievolution.benchmarks.inprocess.dynproxy;
 
+import gutta.apievolution.benchmarks.ExperimentSize;
 import gutta.apievolution.benchmarks.inprocess.InProcessConversionBenchmarkTemplate;
 import gutta.apievolution.inprocess.dynproxy.DynamicProxyApiMappingStrategy;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -19,17 +20,20 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     private static final ConsumerParameter CONSUMER_PARAMETER = new ConsumerParameterImpl();
     
     @Benchmark
-    public void invokeEmptyResult_short() {
+    @ExperimentSize(0)
+    public void invokeEmptyResult() {
         CONSUMER_API.testMethodEmpty(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void invokeResult010_short() {
+    @ExperimentSize(10)
+    public void invokeResult010() {
         CONSUMER_API.testMethod10(CONSUMER_PARAMETER);                    
     }
     
     @Benchmark
-    public void invokeAndInspectResult010_short() {
+    @ExperimentSize(10)
+    public void invokeAndInspectResult010() {
         ConsumerResult10 result = CONSUMER_API.testMethod10(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -55,12 +59,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult025_short() {
+    @ExperimentSize(25)
+    public void invokeResult025() {
         CONSUMER_API.testMethod25(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void invokeAndInspectResult025_short() {
+    @ExperimentSize(25)
+    public void invokeAndInspectResult025() {
         ConsumerResult25 result = CONSUMER_API.testMethod25(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -117,12 +123,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult050_short() {
+    @ExperimentSize(50)
+    public void invokeResult050() {
         CONSUMER_API.testMethod50(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void invokeAndInspectResult050_short() {
+    @ExperimentSize(50)
+    public void invokeAndInspectResult050() {
         ConsumerResult50 result = CONSUMER_API.testMethod50(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -229,12 +237,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult075_short() {
+    @ExperimentSize(75)
+    public void invokeResult075() {
         CONSUMER_API.testMethod75(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void invokeAndInspectResult075_short() {
+    @ExperimentSize(75)
+    public void invokeAndInspectResult075() {
         ConsumerResult75 result = CONSUMER_API.testMethod75(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -391,12 +401,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult100_short() {
+    @ExperimentSize(100)
+    public void invokeResult100() {
         CONSUMER_API.testMethod100(CONSUMER_PARAMETER);                    
     }
     
     @Benchmark
-    public void invokeAndInspectResult100_short() {
+    @ExperimentSize(100)
+    public void invokeAndInspectResult100() {
         ConsumerResult100 result = CONSUMER_API.testMethod100(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -603,12 +615,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult250_long() {
+    @ExperimentSize(250)
+    public void invokeResult250() {
         CONSUMER_API.testMethod250(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void invokeAndInspectResult250_long() {
+    @ExperimentSize(250)
+    public void invokeAndInspectResult250() {
         ConsumerResult250 result = CONSUMER_API.testMethod250(CONSUMER_PARAMETER);
         
         result.getIntField1();
@@ -1115,12 +1129,14 @@ public class DynamicProxyConversionBenchmarks extends InProcessConversionBenchma
     }
     
     @Benchmark
-    public void invokeResult500_long() {
+    @ExperimentSize(500)
+    public void invokeResult500() {
         CONSUMER_API.testMethod500(CONSUMER_PARAMETER);
     }
 
     @Benchmark
-    public void invokeAndInspectResult500_long() {
+    @ExperimentSize(500)
+    public void invokeAndInspectResult500() {
         ConsumerResult500 result = CONSUMER_API.testMethod500(CONSUMER_PARAMETER);
 
         result.getIntField1();

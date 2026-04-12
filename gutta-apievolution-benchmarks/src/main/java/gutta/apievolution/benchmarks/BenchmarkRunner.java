@@ -17,6 +17,8 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.commons.math3.stat.StatUtils.*;
+
 public class BenchmarkRunner {
     
     private static final String BENCHMARKS_FILE_NAME = "META-INF/benchmarks.txt";
@@ -26,6 +28,8 @@ public class BenchmarkRunner {
     private static final int DEFAULT_TIMED_ITERATIONS = 100000;
     
     private static final int DEFAULT_REPORT_INTERVAL = 1000;
+
+    private static final int DEFAULT_EXPERIMENT_SIZE = 1;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BenchmarkRunner.class);
     
@@ -157,7 +161,10 @@ public class BenchmarkRunner {
             var methodName = method.getName();
             var methodKey = className + "." + methodName;
             
-            var benchmarkMethod = new BenchmarkMethod(benchmarkClass, method);
+            var experimentSizeAnnotation = method.getAnnotation(ExperimentSize.class);
+            var experimentSize = (experimentSizeAnnotation != null) ? experimentSizeAnnotation.value() : DEFAULT_EXPERIMENT_SIZE;
+            
+            var benchmarkMethod = new BenchmarkMethod(benchmarkClass, method, experimentSize);
             benchmarkMethods.put(methodKey, benchmarkMethod);
         }
     }
@@ -193,22 +200,36 @@ public class BenchmarkRunner {
             }
         }
         
-        // Run timed iterations
-        var startTimeNs = System.nanoTime();    
-        for (var iterationCount = 1; iterationCount <= timedIterations; iterationCount++) {
-            benchmarkMethod.invoke();
-            
-            if ((iterationCount % reportInterval) == 0) {
-            	var endTimeNs = System.nanoTime();
-            	var durationMs = TimeUnit.NANOSECONDS.toMillis(endTimeNs - startTimeNs);
-            	
-                LOGGER.info("Timed iteration {} completed, last block took {} ms.", iterationCount, durationMs);
-                LOGGER.info("# {};{};{}", configuration.benchmarkName, iterationCount, durationMs);
-                
-                startTimeNs = System.nanoTime();
-            }            
+        // Run timed iterations. We execute the timed iterations in blocks to report statistics per block.
+        var remainingIterations = timedIterations;        
+        while (remainingIterations > 0) {
+        	// Determine the size of the next block
+        	var blockSize = Math.min(reportInterval, remainingIterations);
+        	remainingIterations -= blockSize;
+        	
+        	var durationsMus = new double[blockSize];
+        	var blockStartTimeNs = System.nanoTime();
+        	
+        	// Execute the current block
+        	for (var iterationCount = 0; iterationCount < blockSize; iterationCount++) {
+        		var startTimeNs = System.nanoTime();
+        		benchmarkMethod.invoke();
+        		var endTimeNs = System.nanoTime();
+        		
+        		durationsMus[iterationCount] = TimeUnit.NANOSECONDS.toMicros(endTimeNs - startTimeNs);
+        	}
+        	
+        	var blockEndTimeNs = System.nanoTime();
+        	var blockDurationMs = TimeUnit.NANOSECONDS.toMillis(blockEndTimeNs - blockStartTimeNs);
+        	
+        	var averageDurationMus = mean(durationsMus);
+            var standardDevMus = Math.sqrt(variance(durationsMus, averageDurationMus)); 
+        	
+            var iterationCount = (timedIterations - remainingIterations);
+        	LOGGER.info("Timed iteration {} completed, last block took {} ms. Average {} mus, std. dev. {} mus.", iterationCount, blockDurationMs, averageDurationMus, standardDevMus);
+        	LOGGER.info("# {};{};{};{};{};{}", configuration.benchmarkName, benchmarkMethod.experimentSize, iterationCount, blockDurationMs, averageDurationMus, standardDevMus);
         }
-    
+                    
         LOGGER.info("End of benchmark '{}'.", configuration.benchmarkName);        
     }
         
@@ -218,11 +239,14 @@ public class BenchmarkRunner {
         
         private final Method benchmarkMethod;
         
-        private Object benchmarkObject;
+        private final int experimentSize;
         
-        public BenchmarkMethod(Class<?> benchmarkClass, Method benchmarkMethod) {
+        private Object benchmarkObject;
+                
+        public BenchmarkMethod(Class<?> benchmarkClass, Method benchmarkMethod, int experimentSize) {
             this.benchmarkClass = benchmarkClass;
             this.benchmarkMethod = benchmarkMethod;
+            this.experimentSize = experimentSize;
         }
         
         private void initialize() {

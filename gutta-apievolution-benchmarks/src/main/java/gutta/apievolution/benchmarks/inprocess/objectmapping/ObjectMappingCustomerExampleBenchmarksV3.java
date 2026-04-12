@@ -36,7 +36,7 @@ public class ObjectMappingCustomerExampleBenchmarksV3 extends CustomerExampleObj
     private static final ConsumerApi CONSUMER_API = createApi(ConsumerApi.class, CONSUMER_API_V3);
     
     @Benchmark
-    public void invokeFromV3Client_short() {
+    public void invokeFromV3Client() {
         CONSUMER_API.upsert(CUSTOMER);
     }
     

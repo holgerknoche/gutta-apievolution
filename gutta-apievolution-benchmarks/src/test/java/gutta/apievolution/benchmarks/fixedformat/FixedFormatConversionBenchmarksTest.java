@@ -8,21 +8,21 @@ class FixedFormatConversionBenchmarksTest {
     void invocationTests() {
         FixedFormatConversionBenchmarks benchmarks = new FixedFormatConversionBenchmarks();
         
-        benchmarks.invokeEmptyResult_short();
-        benchmarks.resultConversionOnly010_short();
-        benchmarks.invokeTestMethod010_short();
-        benchmarks.resultConversionOnly025_short();
-        benchmarks.invokeTestMethod025_short();
-        benchmarks.resultConversionOnly050_short();
-        benchmarks.invokeTestMethod050_short();
-        benchmarks.resultConversionOnly075_short();
-        benchmarks.invokeTestMethod075_short();
-        benchmarks.resultConversionOnly100_short();
-        benchmarks.invokeTestMethod100_short();
-        benchmarks.resultConversionOnly250_long();
-        benchmarks.invokeTestMethod250_long();
-        benchmarks.resultConversionOnly500_long();
-        benchmarks.invokeTestMethod500_long();
+        benchmarks.invokeEmptyResult();
+        benchmarks.resultConversionOnly010();
+        benchmarks.invokeTestMethod010();
+        benchmarks.resultConversionOnly025();
+        benchmarks.invokeTestMethod025();
+        benchmarks.resultConversionOnly050();
+        benchmarks.invokeTestMethod050();
+        benchmarks.resultConversionOnly075();
+        benchmarks.invokeTestMethod075();
+        benchmarks.resultConversionOnly100();
+        benchmarks.invokeTestMethod100();
+        benchmarks.resultConversionOnly250();
+        benchmarks.invokeTestMethod250();
+        benchmarks.resultConversionOnly500();
+        benchmarks.invokeTestMethod500();
     }
 
 }

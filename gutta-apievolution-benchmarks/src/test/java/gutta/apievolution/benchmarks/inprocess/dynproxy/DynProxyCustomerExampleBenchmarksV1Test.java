@@ -1,9 +1,8 @@
 package gutta.apievolution.benchmarks.inprocess.dynproxy;
 
-import gutta.apievolution.benchmarks.inprocess.dynproxy.DynProxyCustomerExampleBenchmarksV1;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 class DynProxyCustomerExampleBenchmarksV1Test {
     
@@ -16,7 +15,7 @@ class DynProxyCustomerExampleBenchmarksV1Test {
     void invocationTests() {
         DynProxyCustomerExampleBenchmarksV1 benchmarks = new DynProxyCustomerExampleBenchmarksV1();
         
-        benchmarks.invokeFromV1Client_short();        
+        benchmarks.invokeFromV1Client();        
     }
 
 }

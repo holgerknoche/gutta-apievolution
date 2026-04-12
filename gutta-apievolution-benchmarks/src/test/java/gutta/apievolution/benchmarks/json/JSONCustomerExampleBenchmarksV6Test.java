@@ -1,9 +1,8 @@
 package gutta.apievolution.benchmarks.json;
 
-import gutta.apievolution.benchmarks.json.JSONCustomerExampleBenchmarksV6;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 class JSONCustomerExampleBenchmarksV6Test {
     
@@ -16,7 +15,7 @@ class JSONCustomerExampleBenchmarksV6Test {
     void invocationTests() {
         JSONCustomerExampleBenchmarksV6 benchmarks = new JSONCustomerExampleBenchmarksV6();
         
-        benchmarks.invokeFromV6Client_short();        
+        benchmarks.invokeFromV6Client();        
     }
 
 }

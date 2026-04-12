@@ -49,7 +49,7 @@ public class JSONCustomerExampleBenchmarksV3 extends JSONCustomerExampleBenchmar
     private static final UpsertOperationConsumerProxyV3 CONSUMER_PROXY = new UpsertOperationConsumerProxyV3(CONSUMER_API_V3, CONSUMER_API_ID_V3, ROUTER);
 
     @Benchmark
-    public void invokeFromV3Client_short() {
+    public void invokeFromV3Client() {
         CONSUMER_PROXY.invokeOperation(CUSTOMER);
     }
     

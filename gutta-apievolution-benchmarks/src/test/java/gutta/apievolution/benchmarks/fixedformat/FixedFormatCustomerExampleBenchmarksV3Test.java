@@ -1,9 +1,8 @@
 package gutta.apievolution.benchmarks.fixedformat;
 
-import gutta.apievolution.benchmarks.fixedformat.FixedFormatCustomerExampleBenchmarksV3;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 class FixedFormatCustomerExampleBenchmarksV3Test {
     
@@ -16,7 +15,7 @@ class FixedFormatCustomerExampleBenchmarksV3Test {
     void invocationTests() {
         FixedFormatCustomerExampleBenchmarksV3 benchmarks = new FixedFormatCustomerExampleBenchmarksV3();
         
-        benchmarks.invokeFromV3Client_short();        
+        benchmarks.invokeFromV3Client();        
     }
 
 }

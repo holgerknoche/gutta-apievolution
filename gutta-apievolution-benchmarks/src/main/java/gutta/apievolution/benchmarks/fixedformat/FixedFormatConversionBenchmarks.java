@@ -1,5 +1,6 @@
 package gutta.apievolution.benchmarks.fixedformat;
 
+import gutta.apievolution.benchmarks.ExperimentSize;
 import gutta.apievolution.benchmarks.JMHBenchmarkTemplate;
 import gutta.apievolution.benchmarks.fixedformat.consumer.ConsumerParameter;
 import gutta.apievolution.benchmarks.fixedformat.consumer.EmptyTestMethodConsumerProxy;
@@ -115,12 +116,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     private static final ByteBuffer TARGET_BUFFER = ByteBuffer.allocate(32768);
     
     @Benchmark
-    public void invokeEmptyResult_short() {
+    @ExperimentSize(0)
+    public void invokeEmptyResult() {
         TEST_METHOD_EMPTY_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly010_short() {
+    @ExperimentSize(10)
+    public void resultConversionOnly010() {
         ByteBuffer sourceBuffer = RESULT_10_DATA;
         sourceBuffer.position(0);
         
@@ -131,12 +134,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod010_short() {
+    @ExperimentSize(10)
+    public void invokeTestMethod010() {
         TEST_METHOD_10_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly025_short() {
+    @ExperimentSize(25)
+    public void resultConversionOnly025() {
         ByteBuffer sourceBuffer = RESULT_25_DATA;
         sourceBuffer.position(0);
         
@@ -147,12 +152,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod025_short() {
+    @ExperimentSize(25)
+    public void invokeTestMethod025() {
         TEST_METHOD_25_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly050_short() {
+    @ExperimentSize(50)
+    public void resultConversionOnly050() {
         ByteBuffer sourceBuffer = RESULT_50_DATA;
         sourceBuffer.position(0);
         
@@ -163,12 +170,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod050_short() {
+    @ExperimentSize(50)
+    public void invokeTestMethod050() {
         TEST_METHOD_50_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly075_short() {
+    @ExperimentSize(75)
+    public void resultConversionOnly075() {
         ByteBuffer sourceBuffer = RESULT_75_DATA;
         sourceBuffer.position(0);
         
@@ -179,12 +188,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod075_short() {
+    @ExperimentSize(75)
+    public void invokeTestMethod075() {
         TEST_METHOD_75_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly100_short() {
+    @ExperimentSize(100)
+    public void resultConversionOnly100() {
         ByteBuffer sourceBuffer = RESULT_100_DATA;
         sourceBuffer.position(0);
         
@@ -195,12 +206,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod100_short() {
+    @ExperimentSize(100)
+    public void invokeTestMethod100() {
         TEST_METHOD_100_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly250_long() {
+    @ExperimentSize(250)
+    public void resultConversionOnly250() {
     	ByteBuffer sourceBuffer = RESULT_250_DATA;
     	sourceBuffer.position(0);
     	
@@ -211,12 +224,14 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod250_long() {
+    @ExperimentSize(250)
+    public void invokeTestMethod250() {
         TEST_METHOD_250_PROXY.invoke(CONSUMER_PARAMETER);
     }
     
     @Benchmark
-    public void resultConversionOnly500_long() {
+    @ExperimentSize(500)
+    public void resultConversionOnly500() {
         ByteBuffer sourceBuffer = RESULT_500_DATA;
         sourceBuffer.position(0);
         
@@ -227,7 +242,8 @@ public class FixedFormatConversionBenchmarks extends JMHBenchmarkTemplate {
     }
     
     @Benchmark
-    public void invokeTestMethod500_long() {
+    @ExperimentSize(500)
+    public void invokeTestMethod500() {
         TEST_METHOD_500_PROXY.invoke(CONSUMER_PARAMETER);
     }
     

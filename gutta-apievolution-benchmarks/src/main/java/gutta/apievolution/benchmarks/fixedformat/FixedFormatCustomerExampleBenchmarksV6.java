@@ -58,7 +58,7 @@ public class FixedFormatCustomerExampleBenchmarksV6 extends FixedFormatCustomerE
     private static final UpsertOperationConsumerProxyV6 CONSUMER_PROXY = new UpsertOperationConsumerProxyV6(REQUEST_ROUTER, MAPPER, CHARSET);
     
     @Benchmark
-    public void invokeFromV6Client_short() {
+    public void invokeFromV6Client() {
         CONSUMER_PROXY.invoke(CUSTOMER);
     }    
 

@@ -1,5 +1,6 @@
 package gutta.apievolution.benchmarks.resolution;
 
+import gutta.apievolution.benchmarks.ExperimentSize;
 import gutta.apievolution.core.apimodel.consumer.ConsumerApiDefinition;
 import gutta.apievolution.core.apimodel.provider.RevisionHistory;
 import gutta.apievolution.core.resolution.DefinitionResolver;
@@ -88,77 +89,88 @@ public class DefinitionResolutionBenchmarks {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth001_short() {
+    @ExperimentSize(1)
+    public void resolveHistoryDepth001() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_1, SUPPORTED_REVISIONS_1, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth010_short() {
+    @ExperimentSize(10)
+    public void resolveHistoryDepth010() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_10, SUPPORTED_REVISIONS_10, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth020_short() {
+    @ExperimentSize(20)
+    public void resolveHistoryDepth020() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_20, SUPPORTED_REVISIONS_20, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth030_short() {
+    @ExperimentSize(30)
+    public void resolveHistoryDepth030() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_30, SUPPORTED_REVISIONS_30, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth040_short() {
+    @ExperimentSize(40)
+    public void resolveHistoryDepth040() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_40, SUPPORTED_REVISIONS_40, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth050_short() {
+    @ExperimentSize(50)
+    public void resolveHistoryDepth050() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_50, SUPPORTED_REVISIONS_50, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth060_short() {
+    @ExperimentSize(60)
+    public void resolveHistoryDepth060() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_60, SUPPORTED_REVISIONS_60, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth070_short() {
+    @ExperimentSize(70)
+    public void resolveHistoryDepth070() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_70, SUPPORTED_REVISIONS_70, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth080_short() {
+    @ExperimentSize(80)
+    public void resolveHistoryDepth080() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_80, SUPPORTED_REVISIONS_80, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth090_short() {
+    @ExperimentSize(90)
+    public void resolveHistoryDepth090() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_90, SUPPORTED_REVISIONS_90, CONSUMER_API);
     }
     
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
-    public void resolveHistoryDepth100_short() {
+    @ExperimentSize(100)
+    public void resolveHistoryDepth100() {
         new DefinitionResolver().resolveConsumerDefinition(PROVIDER_REVISION_HISTORY_100, SUPPORTED_REVISIONS_100, CONSUMER_API);
     }
 

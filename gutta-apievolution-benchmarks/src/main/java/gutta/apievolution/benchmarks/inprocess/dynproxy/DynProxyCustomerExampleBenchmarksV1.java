@@ -37,7 +37,7 @@ public class DynProxyCustomerExampleBenchmarksV1 extends CustomerExampleDynProxy
     private static final ConsumerApi CONSUMER_API = createApi(ConsumerApi.class, CONSUMER_API_V1);
     
     @Benchmark
-    public void invokeFromV1Client_short() {
+    public void invokeFromV1Client() {
         CONSUMER_API.upsert(CUSTOMER);
     }
     
