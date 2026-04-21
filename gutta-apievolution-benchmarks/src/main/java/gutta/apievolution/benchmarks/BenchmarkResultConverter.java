@@ -63,7 +63,7 @@ public class BenchmarkResultConverter {
 		}
 	}
 	
-	private BenchmarkResultProcessor createProcessor(ResultConverterConfiguration converterConfiguration, Writer outputWriter) {
+	BenchmarkResultProcessor createProcessor(ResultConverterConfiguration converterConfiguration, Writer outputWriter) {
 		var modeName = converterConfiguration.mode();
 		var normalizedModeName = (modeName != null) ? modeName.toLowerCase() : "";
 		
@@ -82,6 +82,7 @@ public class BenchmarkResultConverter {
 	
 	void convertResult(Reader inputReader, BenchmarkResultProcessor resultProcessor) throws IOException {
 		try (var reader = new BufferedReader(inputReader)) {
+			resultProcessor.beforeFirstLine();
 			
 			while (true) {
 				var currentLine = reader.readLine();
@@ -97,12 +98,12 @@ public class BenchmarkResultConverter {
 				resultProcessor.processLine(parts[1]);
 			}
 		} finally {
-			resultProcessor.atEnd();
+			resultProcessor.afterLastLine();
 		}
 		
 	}
 	
-	private record ResultConverterConfiguration(String inputFileName, String outputFileName, String mode) {}
+	record ResultConverterConfiguration(String inputFileName, String outputFileName, String mode) {}
 		
 	private static class ConfigurationException extends RuntimeException {
 		

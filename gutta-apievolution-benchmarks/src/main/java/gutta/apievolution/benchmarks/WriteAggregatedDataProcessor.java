@@ -18,10 +18,8 @@ class WriteAggregatedDataProcessor extends AbstractBenchmarkResultProcessor {
 	
 	private static final double CONFIDENCE_LEVEL = 0.99;
 	
-	private static final double ALPHA = 1.0 - CONFIDENCE_LEVEL;
-	
-	private static final double BLOCK_SIZE = 1000;
-	
+	private static final double ALPHA = (1.0 - CONFIDENCE_LEVEL);
+		
 	private final Writer outputWriter;
 	
 	private final Map<ExperimentKey, List<Integer>> durations = new LinkedHashMap<>();
@@ -48,14 +46,15 @@ class WriteAggregatedDataProcessor extends AbstractBenchmarkResultProcessor {
 	}
 		
 	@Override
-	public void atEnd() {
+	public void afterLastLine() {
 		this.durations.forEach(this::writeResultsForExperiment);
 	}
 	
 	private void writeResultsForExperiment(ExperimentKey key, List<Integer> durationsMs) {
-		var durationsMsDouble = new double[durationsMs.size()];
+		var numberOfValues = durationsMs.size();
+		var durationsMsDouble = new double[numberOfValues];
 		
-		for (var index = 0; index < durationsMs.size(); index++) {
+		for (var index = 0; index < numberOfValues; index++) {
 			durationsMsDouble[index] = durationsMs.get(index).doubleValue();
 		}
 		
@@ -66,7 +65,7 @@ class WriteAggregatedDataProcessor extends AbstractBenchmarkResultProcessor {
 		// Calculate the width of the confidence interval
 		var normalDistribution = new NormalDistribution();
 		var criticalValue = normalDistribution.inverseCumulativeProbability(1.0 - (ALPHA / 2));
-		var marginOfError = criticalValue * (stdDevDurationMs / Math.sqrt(BLOCK_SIZE));			
+		var marginOfError = criticalValue * (stdDevDurationMs / Math.sqrt(numberOfValues));			
 				
 		try {
 			this.outputWriter.write(key.name());
